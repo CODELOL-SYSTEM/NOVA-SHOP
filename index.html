@@ -9,10 +9,15 @@
 <script src="https://cdn.jsdelivr.net/npm/topojson-client@3"></script>
 
 <style>
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0
+}
+
 :root{
   --bg:#030712;
   --panel:#071426;
-  --panel2:#0a1b31;
   --border:#18385d;
   --text:#f5f8ff;
   --muted:#8da1b9;
@@ -20,517 +25,1048 @@
   --blue2:#52b4ff;
   --red:#ff3154;
   --green:#32e58b;
-  --yellow:#ffd04d;
-}
-
-*{
-  box-sizing:border-box;
-  margin:0;
-  padding:0;
+  --yellow:#ffd04d
 }
 
 body{
   min-height:100vh;
-  background:
-    radial-gradient(circle at 15% 10%,rgba(22,131,255,.14),transparent 30%),
-    radial-gradient(circle at 85% 20%,rgba(255,49,84,.10),transparent 30%),
-    var(--bg);
   color:var(--text);
   font-family:Arial,Helvetica,sans-serif;
-}
-
-button,input,select{
-  font:inherit;
+  background:
+    radial-gradient(circle at 15% 0%,rgba(22,131,255,.16),transparent 30%),
+    radial-gradient(circle at 90% 20%,rgba(255,49,84,.10),transparent 25%),
+    var(--bg)
 }
 
 button{
-  cursor:pointer;
+  font-family:inherit;
+  cursor:pointer
 }
 
-.hidden{
-  display:none!important;
+header{
+  position:sticky;
+  top:0;
+  z-index:1000;
+  background:rgba(3,7,18,.88);
+  backdrop-filter:blur(18px);
+  border-bottom:1px solid #132b48
 }
 
-.app{
-  width:min(1400px,94%);
+.navbar{
+  max-width:1250px;
+  min-height:70px;
   margin:auto;
-  padding:24px 0 50px;
-}
-
-.topbar{
+  padding:12px 20px;
   display:flex;
   align-items:center;
   justify-content:space-between;
-  gap:15px;
-  margin-bottom:22px;
+  gap:20px
 }
 
 .logo{
-  font-size:28px;
-  font-weight:900;
-  letter-spacing:-1px;
+  font-size:21px;
+  font-weight:1000;
+  letter-spacing:1px;
+  white-space:nowrap
 }
 
-.logo span{
-  color:var(--blue);
+.logo b{
+  color:var(--blue2)
 }
 
-.top-actions{
+.nav{
   display:flex;
-  gap:8px;
   flex-wrap:wrap;
+  justify-content:center;
+  gap:7px
 }
 
-.btn{
-  border:1px solid var(--border);
-  background:var(--panel);
-  color:var(--text);
-  padding:11px 15px;
-  border-radius:12px;
-  transition:.2s;
+.nav button{
+  color:#91a4bb;
+  background:transparent;
+  border:0;
+  padding:10px 14px;
+  border-radius:10px
 }
 
-.btn:hover{
-  transform:translateY(-2px);
-  border-color:var(--blue);
-}
-
-.btn.blue{
-  background:var(--blue);
-  border-color:var(--blue);
+.nav button:hover,
+.nav button.active{
   color:white;
+  background:#0d2745
 }
 
-.btn.red{
-  background:rgba(255,49,84,.12);
-  border-color:var(--red);
-  color:#ff7189;
+main{
+  max-width:1250px;
+  margin:auto;
+  padding:20px
 }
 
-.btn.green{
-  background:rgba(50,229,139,.1);
-  border-color:var(--green);
-  color:var(--green);
+.section{
+  display:none
+}
+
+.section.active{
+  display:block
 }
 
 .hero{
-  background:
-    linear-gradient(135deg,rgba(22,131,255,.10),rgba(255,49,84,.05)),
-    var(--panel);
-  border:1px solid var(--border);
-  border-radius:22px;
-  padding:30px;
-  margin-bottom:20px;
+  min-height:650px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  text-align:center
+}
+
+.hero-globe{
+  font-size:90px;
+  animation:float 3s ease-in-out infinite;
+  filter:drop-shadow(0 0 30px #1683ff)
+}
+
+@keyframes float{
+  50%{
+    transform:translateY(-14px)
+  }
 }
 
 .hero h1{
-  font-size:clamp(34px,6vw,68px);
-  line-height:.95;
-  margin-bottom:15px;
+  margin:20px 0 12px;
+  font-size:clamp(45px,8vw,90px);
+  line-height:1;
+  font-weight:1000;
+  background:linear-gradient(
+    90deg,
+    #fff,
+    #55b5ff,
+    #fff,
+    #ff506c,
+    #fff
+  );
+  background-size:250%;
+  -webkit-background-clip:text;
+  color:transparent;
+  animation:shine 5s linear infinite
 }
 
-.hero h1 span{
-  color:var(--blue);
+@keyframes shine{
+  to{
+    background-position:250%
+  }
 }
 
 .hero p{
-  color:var(--muted);
-  font-size:17px;
   max-width:700px;
+  color:var(--muted);
+  font-size:18px;
+  line-height:1.7
 }
 
-.stats{
+.primary{
+  border:0;
+  border-radius:13px;
+  padding:15px 24px;
+  color:white;
+  font-weight:900;
+  background:linear-gradient(135deg,#0874ff,#46baff);
+  box-shadow:0 10px 30px rgba(22,131,255,.25);
+  transition:.2s
+}
+
+.primary:hover{
+  transform:translateY(-3px)
+}
+
+.secondary{
+  border:1px solid #24486e;
+  border-radius:13px;
+  padding:14px 20px;
+  color:white;
+  background:#0a192c
+}
+
+.home-stats{
+  display:flex;
+  justify-content:center;
+  flex-wrap:wrap;
+  gap:12px;
+  margin-top:30px
+}
+
+.home-stat{
+  min-width:150px;
+  padding:15px 20px;
+  background:#071528;
+  border:1px solid #18385d;
+  border-radius:15px
+}
+
+.home-stat strong{
+  display:block;
+  font-size:24px;
+  color:var(--blue2)
+}
+
+.home-stat span{
+  color:var(--muted);
+  font-size:12px
+}
+
+.student-dashboard{
+  width:100%;
+  max-width:850px;
+  margin:35px auto 0;
+  padding:22px;
+  border:1px solid #1b4168;
+  border-radius:20px;
+  background:
+    radial-gradient(circle at top right,rgba(22,131,255,.12),transparent 40%),
+    #071426
+}
+
+.student-dashboard h3{
+  text-align:center;
+  margin-bottom:6px;
+  font-size:22px
+}
+
+.dashboard-subtitle{
+  text-align:center;
+  color:var(--muted);
+  font-size:12px;
+  margin-bottom:18px
+}
+
+.dashboard-grid{
   display:grid;
   grid-template-columns:repeat(3,1fr);
-  gap:12px;
-  margin-top:24px;
+  gap:12px
 }
 
-.stat{
-  background:rgba(255,255,255,.025);
-  border:1px solid var(--border);
-  border-radius:15px;
+.dashboard-card{
   padding:18px;
+  text-align:center;
+  border:1px solid #1c4166;
+  border-radius:15px;
+  background:#091a2e
 }
 
-.stat strong{
+.dashboard-card strong{
   display:block;
   font-size:28px;
-  margin-bottom:5px;
+  margin-bottom:5px
 }
 
-.stat small{
+.dashboard-card small{
+  color:#8297ae;
+  font-size:11px
+}
+
+.dashboard-card.quiz strong{
+  color:#55b5ff
+}
+
+.dashboard-card.points strong{
+  color:#32e58b
+}
+
+.dashboard-card.final strong{
+  color:#ffd04d
+}
+
+.dashboard-live{
+  text-align:center;
+  margin-top:14px;
+  color:#687f98;
+  font-size:11px
+}
+
+.section-title{
+  margin:35px 0 20px
+}
+
+.section-title h2{
+  font-size:40px;
+  margin-bottom:8px
+}
+
+.section-title p{
+  color:var(--muted)
+}
+
+.map-card{
+  padding:20px;
+  border-radius:22px;
+  border:1px solid #1b4168;
+  background:
+    radial-gradient(circle at center,rgba(15,69,120,.15),transparent 65%),
+    #061223;
+  box-shadow:0 20px 70px rgba(0,0,0,.25)
+}
+
+#map{
+  width:100%;
+  height:550px;
+  overflow:hidden;
+  border-radius:16px;
+  background:radial-gradient(circle,#0c2947,#04101f)
+}
+
+#worldMap{
+  width:100%;
+  height:100%
+}
+
+.country-path{
+  stroke:#08111e;
+  stroke-width:.7;
+  transition:.15s
+}
+
+.country-path:hover{
+  stroke:white;
+  stroke-width:1.5;
+  filter:brightness(1.35)
+}
+
+.map-tooltip{
+  position:fixed;
+  display:none;
+  pointer-events:none;
+  z-index:5000;
+  padding:10px 14px;
+  border-radius:10px;
+  border:1px solid #31577d;
+  background:#071426;
+  box-shadow:0 10px 30px rgba(0,0,0,.4);
+  font-size:13px
+}
+
+.map-controls{
+  display:flex;
+  justify-content:center;
+  gap:10px;
+  margin-top:15px
+}
+
+.map-controls button{
+  width:45px;
+  height:45px;
+  border-radius:12px;
+  border:1px solid #24486e;
+  color:white;
+  background:#0a192c;
+  font-size:22px;
+  font-weight:900
+}
+
+.legend{
+  margin-top:20px;
+  display:flex;
+  justify-content:center;
+  flex-wrap:wrap;
+  gap:20px
+}
+
+.legend-item{
+  display:flex;
+  align-items:center;
+  gap:9px;
+  padding:11px 16px;
+  border-radius:12px;
+  background:#09192c;
+  border:1px solid #1b3b60
+}
+
+.legend-color{
+  width:18px;
+  height:18px;
+  border-radius:5px
+}
+
+.legend-red{
+  background:var(--red)
+}
+
+.legend-blue{
+  background:var(--blue)
+}
+
+.legend-gray{
+  background:#1b334c
+}
+
+.legend-text{
+  color:#c4d0de;
+  font-size:14px
+}
+
+.map-info{
+  margin-top:18px;
+  text-align:center;
   color:var(--muted);
+  line-height:1.6
 }
 
-.grid{
+.search{
+  width:100%;
+  padding:16px;
+  border-radius:13px;
+  outline:none;
+  color:white;
+  background:#071629;
+  border:1px solid #1d4166;
+  margin-bottom:20px
+}
+
+.search:focus{
+  border-color:var(--blue)
+}
+
+.country-grid{
   display:grid;
-  grid-template-columns:repeat(2,1fr);
-  gap:15px;
+  grid-template-columns:repeat(auto-fit,minmax(230px,1fr));
+  gap:15px
 }
 
-.card{
-  background:var(--panel);
-  border:1px solid var(--border);
+.country{
+  padding:20px;
   border-radius:18px;
-  padding:22px;
+  border:1px solid #193b61;
+  background:linear-gradient(145deg,#091b30,#061120);
+  transition:.2s
 }
 
-.card h2{
-  margin-bottom:8px;
+.country:hover{
+  transform:translateY(-4px);
+  border-color:#479fff
 }
 
-.card p{
+.country.primary-country{
+  border-left:4px solid var(--red)
+}
+
+.country.secondary-country{
+  border-left:4px solid var(--blue)
+}
+
+.country.other-country{
+  border-left:4px solid #35404e
+}
+
+.flag{
+  font-size:42px
+}
+
+.country h3{
+  margin:9px 0
+}
+
+.country p{
   color:var(--muted);
+  line-height:1.7;
+  font-size:14px
+}
+
+.country-tag{
+  display:inline-block;
+  margin-top:12px;
+  padding:6px 9px;
+  border-radius:8px;
+  font-size:11px;
+  font-weight:900
+}
+
+.red-tag{
+  background:rgba(255,49,84,.12);
+  color:#ff7188
+}
+
+.blue-tag{
+  background:rgba(22,131,255,.12);
+  color:#63b8ff
+}
+
+.gray-tag{
+  background:rgba(100,120,140,.12);
+  color:#9aaabd
+}
+
+.quiz-start{
+  text-align:center;
+  max-width:950px;
+  margin:auto
+}
+
+.quiz-logo{
+  font-size:70px;
+  margin-top:40px
 }
 
 .mode-grid{
   display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:10px;
-  margin-top:18px;
+  grid-template-columns:repeat(auto-fit,minmax(210px,1fr));
+  gap:15px;
+  margin:30px 0
 }
 
 .mode{
   text-align:left;
-  min-height:130px;
-  border:1px solid var(--border);
-  background:var(--panel2);
-  color:var(--text);
-  border-radius:15px;
-  padding:16px;
-  transition:.2s;
+  color:white;
+  background:#071629;
+  border:1px solid #1b4168;
+  border-radius:18px;
+  padding:22px;
+  transition:.2s
 }
 
 .mode:hover{
-  border-color:var(--blue);
-  transform:translateY(-3px);
+  transform:translateY(-5px);
+  border-color:var(--blue2);
+  box-shadow:0 15px 35px rgba(22,131,255,.12)
 }
 
-.mode .icon{
-  font-size:28px;
-  margin-bottom:10px;
+.mode h3{
+  margin-bottom:9px
 }
 
-.mode strong{
-  display:block;
-  margin-bottom:6px;
-}
-
-.mode small{
+.mode p{
   color:var(--muted);
+  font-size:13px;
+  line-height:1.6
 }
 
-#mapWrap{
-  position:relative;
-  height:600px;
-  overflow:hidden;
-  border-radius:18px;
-  background:#04101e;
-  border:1px solid var(--border);
-  margin-top:15px;
+.best-box{
+  color:#ffd052;
+  font-weight:900
 }
 
-#mapSvg{
-  width:100%;
-  height:100%;
+.quiz-game{
+  max-width:900px;
+  margin:25px auto;
+  display:none
+}
+
+.quiz-stats{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:10px
+}
+
+.stat{
+  padding:14px;
+  text-align:center;
+  border-radius:14px;
+  border:1px solid #193d63;
+  background:#071629
+}
+
+.stat small{
   display:block;
+  color:#8297ae;
+  font-size:10px;
+  margin-bottom:5px
 }
 
-.country-path{
-  stroke:#071426;
-  stroke-width:.5;
-  cursor:pointer;
-  transition:opacity .15s;
+.stat strong{
+  font-size:22px
 }
 
-.country-path:hover{
-  opacity:.72;
+#comboStat{
+  color:#ffd052
 }
 
-.map-legend{
-  display:flex;
-  gap:15px;
-  flex-wrap:wrap;
-  margin-top:14px;
-  color:var(--muted);
+#multiplierStat{
+  color:#58c0ff
 }
 
-.legend{
-  display:flex;
-  align-items:center;
-  gap:7px;
-}
-
-.dot{
-  width:12px;
-  height:12px;
-  border-radius:50%;
-}
-
-.tooltip{
-  position:fixed;
-  z-index:1000;
-  pointer-events:none;
-  background:#020711;
-  border:1px solid var(--blue);
-  border-radius:10px;
-  padding:10px 12px;
-  box-shadow:0 10px 30px #0008;
-  display:none;
-}
-
-.quiz{
-  margin-top:20px;
-}
-
-.quiz-head{
+.progress-info{
   display:flex;
   justify-content:space-between;
-  gap:10px;
-  flex-wrap:wrap;
-  margin-bottom:15px;
-}
-
-.quiz-stat{
-  background:var(--panel);
-  border:1px solid var(--border);
-  border-radius:12px;
-  padding:10px 14px;
-}
-
-.quiz-stat b{
-  color:var(--blue2);
+  color:#91a5bb;
+  margin:18px 2px 7px;
+  font-size:13px
 }
 
 .progress{
-  width:100%;
   height:8px;
-  background:#0c1c30;
-  border-radius:99px;
   overflow:hidden;
-  margin:12px 0 20px;
+  border-radius:20px;
+  background:#0a1a2d
 }
 
-.progress div{
+.progress-fill{
+  width:0%;
   height:100%;
-  width:0;
-  background:linear-gradient(90deg,var(--blue),var(--red));
-  transition:.3s;
+  background:linear-gradient(90deg,#1683ff,#54c1ff);
+  transition:.3s
 }
 
-.question{
-  font-size:28px;
-  line-height:1.2;
-  margin-bottom:20px;
+.timer{
+  margin:15px 0 20px
+}
+
+.timer-top{
+  display:flex;
+  justify-content:space-between;
+  margin-bottom:7px;
+  font-weight:900
+}
+
+#timerText{
+  color:#59b9ff
+}
+
+.timer-bar{
+  height:12px;
+  border-radius:20px;
+  overflow:hidden;
+  background:#0a192b
+}
+
+#timerFill{
+  width:100%;
+  height:100%;
+  background:var(--blue);
+  transition:width .1s linear
+}
+
+.question-card{
+  padding:32px;
+  border-radius:22px;
+  border:1px solid #214b75;
+  background:
+    radial-gradient(circle at top right,rgba(22,131,255,.1),transparent 35%),
+    #071629;
+  box-shadow:0 20px 70px rgba(0,0,0,.3)
+}
+
+.level{
+  display:inline-block;
+  padding:7px 11px;
+  border-radius:8px;
+  font-size:11px;
+  font-weight:900;
+  margin-bottom:18px
+}
+
+.easy{
+  color:#4ee69b;
+  background:rgba(50,229,139,.1)
+}
+
+.medium{
+  color:#ffd052;
+  background:rgba(255,208,82,.1)
+}
+
+.hard{
+  color:#ff637c;
+  background:rgba(255,49,84,.1)
+}
+
+#questionText{
+  font-size:clamp(24px,4vw,38px);
+  line-height:1.25;
+  margin-bottom:25px
 }
 
 .answers{
   display:grid;
-  grid-template-columns:repeat(2,1fr);
-  gap:12px;
+  grid-template-columns:1fr 1fr;
+  gap:12px
 }
 
 .answer{
-  border:1px solid var(--border);
-  background:var(--panel2);
-  color:var(--text);
-  border-radius:14px;
-  padding:18px;
+  min-height:70px;
+  padding:15px;
   text-align:left;
-  min-height:65px;
+  color:white;
+  border:1px solid #21476c;
+  border-radius:14px;
+  background:#0a1c31;
+  transition:.15s
 }
 
-.answer:hover{
-  border-color:var(--blue);
+.answer:hover:not(:disabled){
+  transform:translateY(-2px);
+  border-color:#5bb8ff;
+  background:#102a46
 }
 
 .answer.correct{
   border-color:var(--green);
-  background:rgba(50,229,139,.12);
+  background:#0c3928
 }
 
 .answer.wrong{
   border-color:var(--red);
-  background:rgba(255,49,84,.12);
+  background:#401722
 }
 
-.timerbar{
-  width:100%;
-  height:7px;
-  background:#111b29;
-  border-radius:99px;
-  overflow:hidden;
-  margin-bottom:15px;
+.answer:disabled{
+  cursor:default
 }
 
-.timerbar div{
-  height:100%;
-  width:100%;
-  background:var(--yellow);
-  transition:width 1s linear;
+.feedback{
+  min-height:35px;
+  margin-top:18px;
+  font-size:16px;
+  font-weight:900
 }
 
-.result-box{
-  text-align:center;
+.next{
+  display:none;
+  margin-top:8px
+}
+
+.victory{
+  display:none;
+  max-width:800px;
+  margin:70px auto;
+  text-align:center
+}
+
+.victory-icon{
+  font-size:90px
+}
+
+.victory h2{
+  margin:15px 0;
+  font-size:50px
+}
+
+.final-score{
+  font-size:55px;
+  font-weight:1000;
+  color:#59baff
+}
+
+.result-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:12px;
+  margin:30px 0
+}
+
+.result{
+  padding:18px;
+  border:1px solid #1d4166;
+  border-radius:15px;
+  background:#071629
+}
+
+.result strong{
+  display:block;
+  font-size:25px
+}
+
+.result span{
+  color:#8297ad;
+  font-size:11px
+}
+
+.new-record{
+  color:#ffd052;
+  font-weight:1000;
+  margin:15px
+}
+
+.combo-popup{
+  position:fixed;
+  right:20px;
+  top:90px;
+  z-index:3000;
+  padding:13px 18px;
+  border-radius:13px;
+  color:white;
+  font-weight:1000;
+  background:#0b2039;
+  border:1px solid #4daeff;
+  transform:translateX(150%);
+  transition:.3s
+}
+
+.combo-popup.show{
+  transform:translateX(0)
+}
+
+/* PROFESSOR */
+
+.professor-section{
+  max-width:1100px;
+  margin:auto
+}
+
+.professor-head{
   padding:30px;
+  border-radius:22px;
+  border:1px solid #1b4168;
+  background:
+    radial-gradient(circle at top right,rgba(255,49,84,.12),transparent 40%),
+    #071426;
+  margin-top:25px
 }
 
-.big-score{
-  font-size:70px;
-  font-weight:900;
-  color:var(--blue2);
+.professor-head h2{
+  font-size:38px;
+  margin-bottom:8px
 }
+
+.professor-head p{
+  color:var(--muted)
+}
+
+.professor-panel{
+  margin-top:20px;
+  padding:25px;
+  border-radius:20px;
+  border:1px solid #193d63;
+  background:#071629
+}
+
+.professor-panel h3{
+  margin-bottom:18px;
+  font-size:24px
+}
+
+.professor-form{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap
+}
+
+.professor-form input{
+  flex:1;
+  min-width:220px;
+  padding:15px;
+  color:white;
+  background:#091a2e;
+  border:1px solid #21476c;
+  border-radius:12px;
+  outline:none
+}
+
+.professor-form input:focus{
+  border-color:var(--blue)
+}
+
+.points-list{
+  margin-top:25px;
+  display:grid;
+  gap:10px
+}
+
+.point-row{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:15px;
+  padding:15px;
+  border-radius:13px;
+  border:1px solid #193d63;
+  background:#091a2e
+}
+
+.point-row strong{
+  color:#52b4ff
+}
+
+.delete-btn{
+  border:1px solid #6b2635;
+  color:#ff7188;
+  background:#24101a;
+  padding:9px 13px;
+  border-radius:9px;
+  font-weight:900
+}
+
+.delete-btn:hover{
+  background:#401722
+}
+
+.results-table-wrap{
+  overflow-x:auto
+}
+
+.results-table{
+  width:100%;
+  border-collapse:collapse;
+  min-width:650px
+}
+
+.results-table th,
+.results-table td{
+  padding:14px;
+  text-align:left;
+  border-bottom:1px solid #19334f
+}
+
+.results-table th{
+  color:#75bfff;
+  font-size:12px;
+  text-transform:uppercase
+}
+
+.results-table td{
+  color:#d9e4ef
+}
+
+.score-final{
+  color:#ffd04d!important;
+  font-weight:1000
+}
+
+.empty{
+  text-align:center;
+  color:var(--muted);
+  padding:30px
+}
+
+/* MODALS */
 
 .modal{
   position:fixed;
   inset:0;
-  z-index:5000;
-  background:#000b;
+  z-index:10000;
   display:flex;
   align-items:center;
   justify-content:center;
   padding:20px;
+  background:rgba(0,0,0,.75);
+  backdrop-filter:blur(12px)
+}
+
+.modal.hidden{
+  display:none
 }
 
 .modal-box{
-  width:min(500px,100%);
-  background:var(--panel);
-  border:1px solid var(--border);
-  border-radius:20px;
-  padding:25px;
+  width:100%;
+  max-width:500px;
+  padding:32px;
+  border-radius:22px;
+  border:1px solid #24517c;
+  background:
+    radial-gradient(circle at top right,rgba(22,131,255,.15),transparent 45%),
+    #071426;
+  box-shadow:0 30px 100px rgba(0,0,0,.6);
+  text-align:center
 }
 
 .modal-box h2{
-  margin-bottom:8px;
+  font-size:30px;
+  margin-bottom:10px
 }
 
 .modal-box p{
   color:var(--muted);
-  margin-bottom:18px;
+  line-height:1.6;
+  margin-bottom:20px
 }
 
-.input{
+.modal-input{
   width:100%;
-  padding:13px 14px;
-  border-radius:12px;
-  border:1px solid var(--border);
-  background:#030b16;
+  padding:15px;
   color:white;
+  background:#091a2e;
+  border:1px solid #24486e;
+  border-radius:12px;
   outline:none;
-  margin-bottom:10px;
+  margin-bottom:12px
 }
 
-.input:focus{
-  border-color:var(--blue);
+.modal-input:focus{
+  border-color:var(--blue)
 }
 
-.lang-grid{
+.language-buttons{
   display:grid;
   grid-template-columns:1fr 1fr;
-  gap:12px;
-  margin-top:20px;
+  gap:12px
 }
 
-.lang-btn{
-  padding:22px;
-  background:var(--panel2);
+.language-buttons button{
+  padding:18px;
   color:white;
-  border:1px solid var(--border);
-  border-radius:15px;
-  font-size:20px;
+  border:1px solid #24486e;
+  border-radius:13px;
+  background:#0a192c;
+  font-size:16px;
+  font-weight:900
 }
 
-.lang-btn:hover{
-  border-color:var(--blue);
+.language-buttons button:hover{
+  border-color:var(--blue2);
+  background:#102a46
 }
 
-.prof-panel{
-  margin-top:20px;
+.close-modal{
+  margin-top:12px;
+  border:0;
+  color:#8da1b9;
+  background:transparent
 }
 
-.prof-card{
-  background:var(--panel);
-  border:1px solid var(--border);
-  border-radius:18px;
-  padding:22px;
-  margin-bottom:15px;
+.prof-button{
+  position:fixed;
+  bottom:18px;
+  right:18px;
+  z-index:2000;
+  border:1px solid #274d70;
+  color:#a7bdd3;
+  background:#071426;
+  border-radius:12px;
+  padding:10px 14px;
+  font-size:11px;
+  font-weight:900
 }
 
-.prof-card h2{
-  margin-bottom:15px;
+.prof-button:hover{
+  color:white;
+  border-color:#52b4ff
 }
 
-.points-form{
-  display:grid;
-  grid-template-columns:1fr 160px auto;
-  gap:10px;
+.hidden{
+  display:none!important
 }
 
-.table-wrap{
-  overflow:auto;
-}
+@media(max-width:700px){
 
-table{
-  width:100%;
-  border-collapse:collapse;
-}
-
-th,td{
-  padding:13px 10px;
-  border-bottom:1px solid var(--border);
-  text-align:left;
-}
-
-th{
-  color:var(--blue2);
-}
-
-.empty{
-  color:var(--muted);
-  text-align:center;
-  padding:25px;
-}
-
-.footer{
-  text-align:center;
-  color:var(--muted);
-  margin-top:30px;
-}
-
-@media(max-width:900px){
-  .mode-grid{
-    grid-template-columns:repeat(2,1fr);
+  .navbar{
+    flex-direction:column
   }
 
-  .grid{
-    grid-template-columns:1fr;
-  }
-
-  .points-form{
-    grid-template-columns:1fr;
-  }
-}
-
-@media(max-width:600px){
-  .stats{
-    grid-template-columns:1fr;
+  .quiz-stats{
+    grid-template-columns:1fr 1fr
   }
 
   .answers{
-    grid-template-columns:1fr;
+    grid-template-columns:1fr
   }
 
-  .mode-grid{
-    grid-template-columns:1fr;
+  .question-card{
+    padding:22px
   }
 
-  #mapWrap{
-    height:420px;
+  #map{
+    height:350px
   }
 
-  .hero{
-    padding:22px;
+  .result-grid{
+    grid-template-columns:1fr
+  }
+
+  .hero h1{
+    font-size:48px
+  }
+
+  .dashboard-grid{
+    grid-template-columns:1fr
+  }
+
+  .professor-head h2{
+    font-size:30px
   }
 }
 </style>
@@ -538,333 +1074,588 @@ th{
 
 <body>
 
-<div id="languageModal" class="modal">
-  <div class="modal-box">
-    <h2>🌍 World English Explorer</h2>
-    <p>Choose your language / Choisis ta langue</p>
+<header>
+<div class="navbar">
 
-    <div class="lang-grid">
-      <button class="lang-btn" onclick="chooseLanguage('fr')">
-        🇫🇷 Français
-      </button>
-
-      <button class="lang-btn" onclick="chooseLanguage('en')">
-        🇬🇧 English
-      </button>
-    </div>
-  </div>
+<div class="logo">
+🌍 <b>WORLD</b> ENGLISH
 </div>
 
-<div id="usernameModal" class="modal hidden">
-  <div class="modal-box">
-    <h2 id="usernameTitle">👤 Ton pseudo</h2>
-    <p id="usernameDescription">Entre ton pseudo pour sauvegarder tes résultats.</p>
+<nav class="nav">
+<button class="active" data-section="home">Accueil</button>
+<button data-section="mapSection">🗺️ Carte</button>
+<button data-section="countries">🌎 Pays</button>
+<button data-section="quiz">🎯 Quiz</button>
+</nav>
 
-    <input
-      id="usernameInput"
-      class="input"
-      maxlength="30"
-      placeholder="Ton pseudo"
-    >
-
-    <button class="btn blue" style="width:100%" onclick="saveUsername()">
-      Continuer
-    </button>
-  </div>
 </div>
-
-<div id="profCodeModal" class="modal hidden">
-  <div class="modal-box">
-    <h2>👨‍🏫 Espace professeur</h2>
-    <p>Entre le code professeur.</p>
-
-    <input
-      id="profCodeInput"
-      class="input"
-      type="password"
-      placeholder="Code professeur"
-      autocomplete="off"
-    >
-
-    <div style="display:flex;gap:10px">
-      <button class="btn blue" style="flex:1" onclick="checkProfessorCode()">
-        Entrer
-      </button>
-
-      <button class="btn" onclick="closeModal('profCodeModal')">
-        Fermer
-      </button>
-    </div>
-  </div>
-</div>
-
-<div class="tooltip" id="tooltip"></div>
-
-<div class="app">
-
-<header class="topbar">
-  <div class="logo">
-    World <span>English</span> Explorer
-  </div>
-
-  <div class="top-actions">
-    <button class="btn" onclick="openProfessor()">👨‍🏫 Professeur</button>
-    <button class="btn" onclick="changeLanguage()">🌐</button>
-    <button class="btn" onclick="changeUsername()">👤 <span id="topUsername">---</span></button>
-  </div>
 </header>
 
-<main id="homeSection">
+<main>
 
-<section class="hero">
-  <h1>WORLD <span>ENGLISH</span><br>EXPLORER 🌍</h1>
+<!-- ACCUEIL -->
 
-  <p id="heroDescription">
-    Explore les pays du monde, apprends leurs capitales et teste ton anglais.
-  </p>
+<section id="home" class="section active">
 
-  <div class="stats">
-    <div class="stat">
-      <strong id="bestScore">0</strong>
-      <small id="bestLabel">Meilleur score</small>
-    </div>
+<div class="hero">
 
-    <div class="stat">
-      <strong>195</strong>
-      <small id="countriesLabel">Pays disponibles</small>
-    </div>
+<div class="hero-globe">🌍</div>
 
-    <div class="stat">
-      <strong>10</strong>
-      <small id="questionsLabel">Questions maximum</small>
-    </div>
-  </div>
+<h1>WORLD ENGLISH</h1>
+
+<p>
+Découvre les 195 pays du monde, leurs capitales et la place de l’anglais.
+Puis teste tes connaissances avec des quiz rapides.
+</p>
+
+<br>
+
+<button class="primary" id="homeQuiz">
+🚀 JOUER AU QUIZ
+</button>
+
+<div class="home-stats">
+
+<div class="home-stat">
+<strong id="homeBest">0</strong>
+<span>Meilleur score</span>
+</div>
+
+<div class="home-stat">
+<strong id="countryCount">195</strong>
+<span>Pays</span>
+</div>
+
+<div class="home-stat">
+<strong>10</strong>
+<span>Questions max</span>
+</div>
+
+</div>
+
+<!-- DASHBOARD ELEVE -->
+
+<div class="student-dashboard">
+
+<h3>👤 Mon score</h3>
+
+<div class="dashboard-subtitle">
+<span id="dashboardUsername">Élève</span>
+</div>
+
+<div class="dashboard-grid">
+
+<div class="dashboard-card quiz">
+<strong id="homeQuizScore">0</strong>
+<small>⭐ Score du quiz</small>
+</div>
+
+<div class="dashboard-card points">
+<strong id="homeBonusPoints">0</strong>
+<small>➕ Points ajoutés</small>
+</div>
+
+<div class="dashboard-card final">
+<strong id="homeFinalScore">0</strong>
+<small>🏆 Score final</small>
+</div>
+
+</div>
+
+<div class="dashboard-live">
+🔄 Score actualisé automatiquement
+</div>
+
+</div>
+
+</div>
+
 </section>
 
-<section class="card">
-  <h2 id="quizModesTitle">🎯 Choisis ton quiz</h2>
-  <p id="quizModesDescription">
-    Jusqu'à 10 questions par partie.
-  </p>
 
-  <div class="mode-grid">
+<!-- CARTE -->
 
-    <button class="mode" onclick="startQuiz('classic')">
-      <div class="icon">🌍</div>
-      <strong id="classicTitle">Classic</strong>
-      <small id="classicDesc">Pays, continents et anglais</small>
-    </button>
+<section id="mapSection" class="section">
 
-    <button class="mode" onclick="startQuiz('capitals')">
-      <div class="icon">🏛️</div>
-      <strong id="capitalsTitle">Capitales</strong>
-      <small id="capitalsDesc">Trouve la bonne capitale</small>
-    </button>
+<div class="section-title">
 
-    <button class="mode" onclick="startQuiz('countries')">
-      <div class="icon">🗺️</div>
-      <strong id="countriesTitle">Countries</strong>
-      <small id="countriesDesc">Reconnais les pays</small>
-    </button>
+<h2>🗺️ Carte du monde anglophone</h2>
 
-    <button class="mode" onclick="startQuiz('challenge')">
-      <div class="icon">🔥</div>
-      <strong id="challengeTitle">Challenge</strong>
-      <small id="challengeDesc">Plus rapide, plus difficile</small>
-    </button>
+<p>
+Les frontières sont celles de la carte mondiale.
+Rouge = anglais principal, bleu = seconde langue / officiel, gris = autres.
+</p>
 
-  </div>
+</div>
+
+<div class="map-card">
+
+<div id="map">
+<svg id="worldMap"></svg>
+</div>
+
+<div class="map-controls">
+<button id="zoomOut">−</button>
+<button id="zoomReset">⌂</button>
+<button id="zoomIn">+</button>
+</div>
+
+<div class="legend">
+
+<div class="legend-item">
+<div class="legend-color legend-red"></div>
+<div class="legend-text">
+🔴 Anglais comme langue principale
+</div>
+</div>
+
+<div class="legend-item">
+<div class="legend-color legend-blue"></div>
+<div class="legend-text">
+🔵 Anglais comme seconde langue / langue officielle
+</div>
+</div>
+
+<div class="legend-item">
+<div class="legend-color legend-gray"></div>
+<div class="legend-text">
+⚫ Autres pays
+</div>
+</div>
+
+</div>
+
+<div class="map-info">
+Molette = zoom / dézoom • Clique-glisse = déplacer la carte • Double-clic désactivé
+</div>
+
+</div>
+
 </section>
 
-<section class="card" style="margin-top:15px">
-  <h2 id="mapTitle">🗺️ Carte du monde</h2>
-  <p id="mapDescription">
-    Clique sur un pays pour voir ses informations. Molette pour zoomer.
-  </p>
 
-  <div id="mapWrap">
-    <svg id="mapSvg"></svg>
-  </div>
+<!-- PAYS -->
 
-  <div class="map-legend">
-    <div class="legend">
-      <span class="dot" style="background:#ff3154"></span>
-      <span id="primaryLegend">Anglais principal</span>
-    </div>
+<section id="countries" class="section">
 
-    <div class="legend">
-      <span class="dot" style="background:#1683ff"></span>
-      <span id="secondaryLegend">Anglais secondaire</span>
-    </div>
+<div class="section-title">
 
-    <div class="legend">
-      <span class="dot" style="background:#173049"></span>
-      <span id="otherLegend">Autre</span>
-    </div>
-  </div>
+<h2>🌎 Les 195 pays</h2>
+
+<p>
+Recherche un pays, une capitale ou un continent.
+</p>
+
+</div>
+
+<input
+id="countrySearch"
+class="search"
+placeholder="🔎 Rechercher un pays..."
+>
+
+<div id="countryGrid" class="country-grid"></div>
+
+</section>
+
+
+<!-- QUIZ -->
+
+<section id="quiz" class="section">
+
+<div id="quizStart" class="quiz-start">
+
+<div class="quiz-logo">🎯</div>
+
+<div class="section-title">
+
+<h2>WORLD QUIZ</h2>
+
+<p>
+10 questions maximum par partie.
+La difficulté augmente.
+</p>
+
+</div>
+
+<div class="mode-grid">
+
+<button class="mode" data-mode="classic">
+<h3>🔥 Classique</h3>
+<p>Capitales + pays</p>
+</button>
+
+<button class="mode" data-mode="capitals">
+<h3>🏛️ Capitales</h3>
+<p>Trouve la bonne capitale</p>
+</button>
+
+<button class="mode" data-mode="countries">
+<h3>🌍 Pays</h3>
+<p>Identifie les pays</p>
+</button>
+
+<button class="mode" data-mode="challenge">
+<h3>💀 Challenge</h3>
+<p>Questions plus difficiles</p>
+</button>
+
+</div>
+
+<div class="best-box">
+🏆 MEILLEUR SCORE :
+<span id="startBest">0</span>
+</div>
+
+</div>
+
+
+<div id="quizGame" class="quiz-game">
+
+<div class="quiz-stats">
+
+<div class="stat">
+<small>SCORE</small>
+<strong id="scoreStat">0</strong>
+</div>
+
+<div class="stat">
+<small>COMBO 🔥</small>
+<strong id="comboStat">0</strong>
+</div>
+
+<div class="stat">
+<small>MULTIPLICATEUR</small>
+<strong id="multiplierStat">x1</strong>
+</div>
+
+<div class="stat">
+<small>RECORD 🏆</small>
+<strong id="bestStat">0</strong>
+</div>
+
+</div>
+
+<div class="progress-info">
+
+<span id="questionNumber">
+Question 1/10
+</span>
+
+<span id="difficultyText">
+FACILE
+</span>
+
+</div>
+
+<div class="progress">
+<div id="progressFill" class="progress-fill"></div>
+</div>
+
+<div class="timer">
+
+<div class="timer-top">
+<span>⏱️ TEMPS</span>
+<span id="timerText">15s</span>
+</div>
+
+<div class="timer-bar">
+<div id="timerFill"></div>
+</div>
+
+</div>
+
+<div class="question-card">
+
+<div id="levelBadge" class="level easy">
+🟢 FACILE
+</div>
+
+<h2 id="questionText">
+Question
+</h2>
+
+<div id="answers" class="answers"></div>
+
+<div id="feedback" class="feedback"></div>
+
+<button id="nextBtn" class="primary next">
+Question suivante →
+</button>
+
+</div>
+
+</div>
+
+
+<div id="victory" class="victory">
+
+<div id="victoryIcon" class="victory-icon">
+🏆
+</div>
+
+<h2 id="victoryTitle">
+VICTOIRE !
+</h2>
+
+<div id="finalScore" class="final-score">
+0
+</div>
+
+<p id="victoryMessage"></p>
+
+<div class="result-grid">
+
+<div class="result">
+<strong id="finalCorrect">0/10</strong>
+<span>BONNES RÉPONSES</span>
+</div>
+
+<div class="result">
+<strong id="finalAccuracy">0%</strong>
+<span>PRÉCISION</span>
+</div>
+
+<div class="result">
+<strong id="finalCombo">0</strong>
+<span>MEILLEUR COMBO</span>
+</div>
+
+</div>
+
+<div id="newRecord" class="new-record"></div>
+
+<button id="replayBtn" class="primary">
+🔄 REJOUER
+</button>
+
+<button id="homeBtn" class="secondary">
+🏠 ACCUEIL
+</button>
+
+</div>
+
+</section>
+
+
+<!-- PROFESSEUR -->
+
+<section id="professorSection" class="section">
+
+<div class="professor-section">
+
+<div class="professor-head">
+
+<h2>👨‍🏫 Espace professeur</h2>
+
+<p>
+Gestion des points et des résultats des élèves.
+</p>
+
+</div>
+
+
+<!-- POINTS -->
+
+<div id="pointsPanel" class="professor-panel hidden">
+
+<h3>➕ Ajouter des points</h3>
+
+<div class="professor-form">
+
+<input
+id="studentNameInput"
+placeholder="Pseudo de l'élève"
+>
+
+<input
+id="pointsAmountInput"
+type="number"
+min="1"
+placeholder="Nombre de points"
+>
+
+<button
+id="addPointsBtn"
+class="primary"
+>
+Ajouter
+</button>
+
+</div>
+
+<div id="pointsMessage" class="feedback"></div>
+
+<div id="pointsList" class="points-list"></div>
+
+</div>
+
+
+<!-- RESULTATS -->
+
+<div id="resultsPanel" class="professor-panel hidden">
+
+<h3>📊 Résultats des élèves</h3>
+
+<div class="results-table-wrap">
+
+<table class="results-table">
+
+<thead>
+
+<tr>
+<th>Élève</th>
+<th>Mode</th>
+<th>Score final</th>
+<th>Date</th>
+<th>Action</th>
+</tr>
+
+</thead>
+
+<tbody id="resultsTableBody"></tbody>
+
+</table>
+
+</div>
+
+</div>
+
+</div>
+
 </section>
 
 </main>
 
-<section id="quizSection" class="hidden quiz">
 
-  <div class="quiz-head">
-    <div class="quiz-stat">
-      <b id="quizModeName">QUIZ</b>
-    </div>
+<div id="mapTooltip" class="map-tooltip"></div>
 
-    <div class="quiz-stat">
-      <span id="questionLabel">Question</span>
-      <b id="questionNumber">1/10</b>
-    </div>
+<div id="comboPopup" class="combo-popup">
+🔥 COMBO !
+</div>
 
-    <div class="quiz-stat">
-      🔥 <b id="comboValue">0</b>
-    </div>
 
-    <div class="quiz-stat">
-      ⭐ <b id="quizScore">0</b>
-    </div>
+<!-- LANGUAGE MODAL -->
 
-    <button class="btn" onclick="quitQuiz()">✕</button>
-  </div>
+<div id="languageModal" class="modal">
 
-  <div class="progress">
-    <div id="quizProgress"></div>
-  </div>
+<div class="modal-box">
 
-  <div class="timerbar">
-    <div id="timerProgress"></div>
-  </div>
+<h2>🌍 Bienvenue</h2>
 
-  <div class="card">
-    <div id="questionText" class="question"></div>
-    <div id="answers" class="answers"></div>
-  </div>
+<p>
+Choisis la langue du site.
+</p>
 
-</section>
+<div class="language-buttons">
 
-<section id="resultSection" class="hidden quiz">
+<button id="frBtn">
+🇫🇷 Français
+</button>
 
-  <div class="card result-box">
-    <h2 id="resultTitle">🎉 Résultat</h2>
+<button id="enBtn">
+🇬🇧 English
+</button>
 
-    <div class="big-score" id="finalQuizScore">0</div>
-
-    <p id="resultMessage">Bien joué !</p>
-
-    <div style="margin-top:20px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
-      <button class="btn blue" onclick="backHome()">
-        🏠 Accueil
-      </button>
-
-      <button class="btn" onclick="restartLastQuiz()">
-        🔄 Rejouer
-      </button>
-    </div>
-  </div>
-
-</section>
-
-<section id="professorSection" class="hidden prof-panel">
-
-  <div class="hero">
-    <h1 style="font-size:42px">👨‍🏫 <span id="profTitle">Professeur</span></h1>
-    <p id="profDescription">Gestion de World English Explorer.</p>
-  </div>
-
-  <div id="pointsPanel" class="prof-card hidden">
-
-    <h2>➕ Ajouter des points</h2>
-
-    <p style="color:var(--muted);margin-bottom:18px">
-      Les points ajoutés seront automatiquement ajoutés au score final de l'élève.
-    </p>
-
-    <div class="points-form">
-
-      <input
-        id="pointsUsername"
-        class="input"
-        placeholder="Nom de l'élève"
-      >
-
-      <input
-        id="pointsAmount"
-        class="input"
-        type="number"
-        min="1"
-        step="1"
-        placeholder="Points"
-      >
-
-      <button class="btn green" onclick="addProfessorPoints()">
-        Ajouter
-      </button>
-
-    </div>
-
-    <div id="pointsStatus" style="margin-top:12px"></div>
-
-  </div>
-
-  <div id="resultsPanel" class="prof-card hidden">
-
-    <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
-      <h2>📊 Résultats</h2>
-
-      <button class="btn" onclick="loadProfessorResults()">
-        🔄 Actualiser
-      </button>
-    </div>
-
-    <div class="table-wrap" style="margin-top:15px">
-
-      <table>
-        <thead>
-          <tr>
-            <th>Élève</th>
-            <th>Mode</th>
-            <th>Score final</th>
-            <th>Date</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-
-        <tbody id="resultsTable">
-        </tbody>
-      </table>
-
-    </div>
-
-  </div>
-
-  <button class="btn" onclick="backHome()">
-    🏠 Retour à l'accueil
-  </button>
-
-</section>
-
-<div class="footer">
-  World English Explorer • 195 countries 🌍
 </div>
 
 </div>
 
-<script>
+</div>
+
+
+<!-- USERNAME MODAL -->
+
+<div id="usernameModal" class="modal hidden">
+
+<div class="modal-box">
+
+<h2>👤 Ton pseudo</h2>
+
+<p>
+Entre ton pseudo pour enregistrer tes résultats.
+</p>
+
+<input
+id="usernameInput"
+class="modal-input"
+placeholder="Ton pseudo..."
+maxlength="30"
+>
+
+<button id="usernameBtn" class="primary">
+Continuer →
+</button>
+
+</div>
+
+</div>
+
+
+<!-- PROFESSOR CODE MODAL -->
+
+<div id="profCodeModal" class="modal hidden">
+
+<div class="modal-box">
+
+<h2>🔐 Espace professeur</h2>
+
+<p>
+Entre l'un des deux codes professeur.
+</p>
+
+<input
+id="profCodeInput"
+class="modal-input"
+placeholder="Code professeur..."
+autocomplete="off"
+>
+
+<button id="profCodeBtn" class="primary">
+Entrer
+</button>
+
+<br>
+
+<button
+class="close-modal"
+id="closeProfModal"
+>
+Annuler
+</button>
+
+</div>
+
+</div>
+
+
+<button class="prof-button" id="professorButton">
+🔐 PROFESSEUR
+</button>
+
+
+<script type="module">
+
+/* =========================================================
+   FIREBASE
+========================================================= */
+
 const firebaseConfig = {
-  apiKey: "AIzaSyAxf_h-uxZcWBXgdkUy6CCyr6yS-mUzdFM",
-  authDomain: "world-english-explorer.firebaseapp.com",
-  projectId: "world-english-explorer",
-  storageBucket: "world-english-explorer.firebasestorage.app",
-  messagingSenderId: "435091959800",
-  appId: "1:435091959800:web:a3626b385bf15534d9f00d",
-  measurementId: "G-SJSZ5KCDQS"
+  apiKey:"AIzaSyAxf_h-uxZcWBXGdkUy6CCyr6yS-mUzdFM",
+  authDomain:"world-english-explorer.firebaseapp.com",
+  projectId:"world-english-explorer",
+  storageBucket:"world-english-explorer.firebasestorage.app",
+  messagingSenderId:"435091959800",
+  appId:"1:435091959800:web:a3626b385bf15534d9f00d",
+  measurementId:"G-SJSZ5KCDQS"
 };
 
 window.firebaseReady = (async()=>{
+
   const {initializeApp} =
-    await import("https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js");
+    await import(
+      "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js"
+    );
 
   const {
     getFirestore,
@@ -875,9 +1666,12 @@ window.firebaseReady = (async()=>{
     deleteDoc,
     doc
   } =
-    await import("https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js");
+    await import(
+      "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js"
+    );
 
   const app = initializeApp(firebaseConfig);
+
   const db = getFirestore(app);
 
   window.firebaseDB = db;
@@ -889,965 +1683,2060 @@ window.firebaseReady = (async()=>{
   window.firebaseDoc = doc;
 
   return db;
+
 })();
-</script><script>
+
+
+/* =========================================================
+   195 PAYS
+========================================================= */
+
 const countries = [
-{id:"004",code:"AF",name:"Afghanistan",capital:"Kaboul",continent:"Asie",type:"other"},
-{id:"008",code:"AL",name:"Albanie",capital:"Tirana",continent:"Europe",type:"other"},
-{id:"012",code:"DZ",name:"Algérie",capital:"Alger",continent:"Afrique",type:"other"},
-{id:"020",code:"AD",name:"Andorre",capital:"Andorre-la-Vieille",continent:"Europe",type:"other"},
-{id:"024",code:"AO",name:"Angola",capital:"Luanda",continent:"Afrique",type:"other"},
-{id:"028",code:"AG",name:"Antigua-et-Barbuda",capital:"Saint John's",continent:"Amérique",type:"secondary"},
-{id:"032",code:"AR",name:"Argentine",capital:"Buenos Aires",continent:"Amérique",type:"other"},
-{id:"051",code:"AM",name:"Arménie",capital:"Erevan",continent:"Asie",type:"other"},
-{id:"036",code:"AU",name:"Australie",capital:"Canberra",continent:"Océanie",type:"primary"},
-{id:"040",code:"AT",name:"Autriche",capital:"Vienne",continent:"Europe",type:"other"},
-{id:"031",code:"AZ",name:"Azerbaïdjan",capital:"Bakou",continent:"Asie",type:"other"},
-{id:"044",code:"BS",name:"Bahamas",capital:"Nassau",continent:"Amérique",type:"secondary"},
-{id:"048",code:"BH",name:"Bahreïn",capital:"Manama",continent:"Asie",type:"other"},
-{id:"050",code:"BD",name:"Bangladesh",capital:"Dacca",continent:"Asie",type:"secondary"},
-{id:"052",code:"BB",name:"Barbade",capital:"Bridgetown",continent:"Amérique",type:"secondary"},
-{id:"112",code:"BY",name:"Biélorussie",capital:"Minsk",continent:"Europe",type:"other"},
-{id:"056",code:"BE",name:"Belgique",capital:"Bruxelles",continent:"Europe",type:"other"},
-{id:"084",code:"BZ",name:"Belize",capital:"Belmopan",continent:"Amérique",type:"primary"},
-{id:"204",code:"BJ",name:"Bénin",capital:"Porto-Novo",continent:"Afrique",type:"other"},
-{id:"064",code:"BT",name:"Bhoutan",capital:"Thimphou",continent:"Asie",type:"other"},
-{id:"068",code:"BO",name:"Bolivie",capital:"Sucre",continent:"Amérique",type:"other"},
-{id:"070",code:"BA",name:"Bosnie-Herzégovine",capital:"Sarajevo",continent:"Europe",type:"other"},
-{id:"072",code:"BW",name:"Botswana",capital:"Gaborone",continent:"Afrique",type:"primary"},
-{id:"076",code:"BR",name:"Brésil",capital:"Brasilia",continent:"Amérique",type:"other"},
-{id:"096",code:"BN",name:"Brunei",capital:"Bandar Seri Begawan",continent:"Asie",type:"secondary"},
-{id:"100",code:"BG",name:"Bulgarie",capital:"Sofia",continent:"Europe",type:"other"},
-{id:"854",code:"BF",name:"Burkina Faso",capital:"Ouagadougou",continent:"Afrique",type:"other"},
-{id:"108",code:"BI",name:"Burundi",capital:"Gitega",continent:"Afrique",type:"other"},
-{id:"116",code:"KH",name:"Cambodge",capital:"Phnom Penh",continent:"Asie",type:"other"},
-{id:"120",code:"CM",name:"Cameroun",capital:"Yaoundé",continent:"Afrique",type:"other"},
-{id:"124",code:"CA",name:"Canada",capital:"Ottawa",continent:"Amérique",type:"primary"},
-{id:"140",code:"CF",name:"République centrafricaine",capital:"Bangui",continent:"Afrique",type:"other"},
-{id:"148",code:"TD",name:"Tchad",capital:"N'Djamena",continent:"Afrique",type:"other"},
-{id:"152",code:"CL",name:"Chili",capital:"Santiago",continent:"Amérique",type:"other"},
-{id:"156",code:"CN",name:"Chine",capital:"Pékin",continent:"Asie",type:"other"},
-{id:"170",code:"CO",name:"Colombie",capital:"Bogota",continent:"Amérique",type:"other"},
-{id:"174",code:"KM",name:"Comores",capital:"Moroni",continent:"Afrique",type:"other"},
-{id:"178",code:"CG",name:"République du Congo",capital:"Brazzaville",continent:"Afrique",type:"other"},
-{id:"180",code:"CD",name:"République démocratique du Congo",capital:"Kinshasa",continent:"Afrique",type:"other"},
-{id:"188",code:"CR",name:"Costa Rica",capital:"San José",continent:"Amérique",type:"other"},
-{id:"384",code:"CI",name:"Côte d'Ivoire",capital:"Yamoussoukro",continent:"Afrique",type:"other"},
-{id:"191",code:"HR",name:"Croatie",capital:"Zagreb",continent:"Europe",type:"other"},
-{id:"192",code:"CU",name:"Cuba",capital:"La Havane",continent:"Amérique",type:"other"},
-{id:"196",code:"CY",name:"Chypre",capital:"Nicosie",continent:"Europe",type:"other"},
-{id:"203",code:"CZ",name:"Tchéquie",capital:"Prague",continent:"Europe",type:"other"},
-{id:"208",code:"DK",name:"Danemark",capital:"Copenhague",continent:"Europe",type:"other"},
-{id:"262",code:"DJ",name:"Djibouti",capital:"Djibouti",continent:"Afrique",type:"other"},
-{id:"212",code:"DM",name:"Dominique",capital:"Roseau",continent:"Amérique",type:"secondary"},
-{id:"214",code:"DO",name:"République dominicaine",capital:"Saint-Domingue",continent:"Amérique",type:"other"},
-{id:"218",code:"EC",name:"Équateur",capital:"Quito",continent:"Amérique",type:"other"},
-{id:"818",code:"EG",name:"Égypte",capital:"Le Caire",continent:"Afrique",type:"other"},
-{id:"222",code:"SV",name:"Salvador",capital:"San Salvador",continent:"Amérique",type:"other"},
-{id:"226",code:"GQ",name:"Guinée équatoriale",capital:"Malabo",continent:"Afrique",type:"other"},
-{id:"232",code:"ER",name:"Érythrée",capital:"Asmara",continent:"Afrique",type:"other"},
-{id:"233",code:"EE",name:"Estonie",capital:"Tallinn",continent:"Europe",type:"other"},
-{id:"748",code:"SZ",name:"Eswatini",capital:"Mbabane",continent:"Afrique",type:"primary"},
-{id:"231",code:"ET",name:"Éthiopie",capital:"Addis-Abeba",continent:"Afrique",type:"other"},
-{id:"242",code:"FJ",name:"Fidji",capital:"Suva",continent:"Océanie",type:"primary"},
-{id:"246",code:"FI",name:"Finlande",capital:"Helsinki",continent:"Europe",type:"other"},
-{id:"250",code:"FR",name:"France",capital:"Paris",continent:"Europe",type:"other"},
-{id:"266",code:"GA",name:"Gabon",capital:"Libreville",continent:"Afrique",type:"other"},
-{id:"270",code:"GM",name:"Gambie",capital:"Banjul",continent:"Afrique",type:"primary"},
-{id:"268",code:"GE",name:"Géorgie",capital:"Tbilissi",continent:"Asie",type:"other"},
-{id:"276",code:"DE",name:"Allemagne",capital:"Berlin",continent:"Europe",type:"other"},
-{id:"288",code:"GH",name:"Ghana",capital:"Accra",continent:"Afrique",type:"primary"},
-{id:"300",code:"GR",name:"Grèce",capital:"Athènes",continent:"Europe",type:"other"},
-{id:"308",code:"GD",name:"Grenade",capital:"Saint-Georges",continent:"Amérique",type:"secondary"},
-{id:"320",code:"GT",name:"Guatemala",capital:"Guatemala",continent:"Amérique",type:"other"},
-{id:"324",code:"GN",name:"Guinée",capital:"Conakry",continent:"Afrique",type:"other"},
-{id:"624",code:"GW",name:"Guinée-Bissau",capital:"Bissau",continent:"Afrique",type:"other"},
-{id:"328",code:"GY",name:"Guyana",capital:"Georgetown",continent:"Amérique",type:"primary"},
-{id:"332",code:"HT",name:"Haïti",capital:"Port-au-Prince",continent:"Amérique",type:"other"},
-{id:"336",code:"VA",name:"Vatican",capital:"Vatican",continent:"Europe",type:"other"},
-{id:"340",code:"HN",name:"Honduras",capital:"Tegucigalpa",continent:"Amérique",type:"other"},
-{id:"348",code:"HU",name:"Hongrie",capital:"Budapest",continent:"Europe",type:"other"},
-{id:"352",code:"IS",name:"Islande",capital:"Reykjavik",continent:"Europe",type:"other"},
-{id:"356",code:"IN",name:"Inde",capital:"New Delhi",continent:"Asie",type:"secondary"},
-{id:"360",code:"ID",name:"Indonésie",capital:"Jakarta",continent:"Asie",type:"other"},
-{id:"364",code:"IR",name:"Iran",capital:"Téhéran",continent:"Asie",type:"other"},
-{id:"368",code:"IQ",name:"Irak",capital:"Bagdad",continent:"Asie",type:"other"},
-{id:"372",code:"IE",name:"Irlande",capital:"Dublin",continent:"Europe",type:"primary"},
-{id:"376",code:"IL",name:"Israël",capital:"Jérusalem",continent:"Asie",type:"other"},
-{id:"380",code:"IT",name:"Italie",capital:"Rome",continent:"Europe",type:"other"},
-{id:"388",code:"JM",name:"Jamaïque",capital:"Kingston",continent:"Amérique",type:"primary"},
-{id:"392",code:"JP",name:"Japon",capital:"Tokyo",continent:"Asie",type:"other"},
-{id:"400",code:"JO",name:"Jordanie",capital:"Amman",continent:"Asie",type:"other"},
-{id:"398",code:"KZ",name:"Kazakhstan",capital:"Astana",continent:"Asie",type:"other"},
-{id:"404",code:"KE",name:"Kenya",capital:"Nairobi",continent:"Afrique",type:"primary"},
-{id:"296",code:"KI",name:"Kiribati",capital:"Tarawa-Sud",continent:"Océanie",type:"primary"},
-{id:"408",code:"KP",name:"Corée du Nord",capital:"Pyongyang",continent:"Asie",type:"other"},
-{id:"410",code:"KR",name:"Corée du Sud",capital:"Séoul",continent:"Asie",type:"other"},
-{id:"414",code:"KW",name:"Koweït",capital:"Koweït",continent:"Asie",type:"other"},
-{id:"417",code:"KG",name:"Kirghizistan",capital:"Bichkek",continent:"Asie",type:"other"},
-{id:"418",code:"LA",name:"Laos",capital:"Vientiane",continent:"Asie",type:"other"},
-{id:"428",code:"LV",name:"Lettonie",capital:"Riga",continent:"Europe",type:"other"},
-{id:"422",code:"LB",name:"Liban",capital:"Beyrouth",continent:"Asie",type:"other"},
-{id:"426",code:"LS",name:"Lesotho",capital:"Maseru",continent:"Afrique",type:"primary"},
-{id:"430",code:"LR",name:"Liberia",capital:"Monrovia",continent:"Afrique",type:"primary"},
-{id:"434",code:"LY",name:"Libye",capital:"Tripoli",continent:"Afrique",type:"other"},
-{id:"438",code:"LI",name:"Liechtenstein",capital:"Vaduz",continent:"Europe",type:"other"},
-{id:"440",code:"LT",name:"Lituanie",capital:"Vilnius",continent:"Europe",type:"other"},
-{id:"442",code:"LU",name:"Luxembourg",capital:"Luxembourg",continent:"Europe",type:"other"},
-{id:"450",code:"MG",name:"Madagascar",capital:"Antananarivo",continent:"Afrique",type:"other"},
-{id:"454",code:"MW",name:"Malawi",capital:"Lilongwe",continent:"Afrique",type:"primary"},
-{id:"458",code:"MY",name:"Malaisie",capital:"Kuala Lumpur",continent:"Asie",type:"secondary"},
-{id:"462",code:"MV",name:"Maldives",capital:"Malé",continent:"Asie",type:"secondary"},
-{id:"466",code:"ML",name:"Mali",capital:"Bamako",continent:"Afrique",type:"other"},
-{id:"470",code:"MT",name:"Malte",capital:"La Valette",continent:"Europe",type:"secondary"},
-{id:"584",code:"MH",name:"Îles Marshall",capital:"Majuro",continent:"Océanie",type:"primary"},
-{id:"478",code:"MR",name:"Mauritanie",capital:"Nouakchott",continent:"Afrique",type:"other"},
-{id:"480",code:"MU",name:"Maurice",capital:"Port-Louis",continent:"Afrique",type:"primary"},
-{id:"484",code:"MX",name:"Mexique",capital:"Mexico",continent:"Amérique",type:"other"},
-{id:"583",code:"FM",name:"Micronésie",capital:"Palikir",continent:"Océanie",type:"primary"},
-{id:"498",code:"MD",name:"Moldavie",capital:"Chișinău",continent:"Europe",type:"other"},
-{id:"492",code:"MC",name:"Monaco",capital:"Monaco",continent:"Europe",type:"other"},
-{id:"496",code:"MN",name:"Mongolie",capital:"Oulan-Bator",continent:"Asie",type:"other"},
-{id:"499",code:"ME",name:"Monténégro",capital:"Podgorica",continent:"Europe",type:"other"},
-{id:"504",code:"MA",name:"Maroc",capital:"Rabat",continent:"Afrique",type:"other"},
-{id:"508",code:"MZ",name:"Mozambique",capital:"Maputo",continent:"Afrique",type:"other"},
-{id:"104",code:"MM",name:"Myanmar",capital:"Naypyidaw",continent:"Asie",type:"other"},
-{id:"516",code:"NA",name:"Namibie",capital:"Windhoek",continent:"Afrique",type:"primary"},
-{id:"520",code:"NR",name:"Nauru",capital:"Yaren",continent:"Océanie",type:"primary"},
-{id:"524",code:"NP",name:"Népal",capital:"Katmandou",continent:"Asie",type:"other"},
-{id:"528",code:"NL",name:"Pays-Bas",capital:"Amsterdam",continent:"Europe",type:"other"},
-{id:"554",code:"NZ",name:"Nouvelle-Zélande",capital:"Wellington",continent:"Océanie",type:"primary"},
-{id:"558",code:"NI",name:"Nicaragua",capital:"Managua",continent:"Amérique",type:"other"},
-{id:"562",code:"NE",name:"Niger",capital:"Niamey",continent:"Afrique",type:"other"},
-{id:"566",code:"NG",name:"Nigeria",capital:"Abuja",continent:"Afrique",type:"primary"},
-{id:"807",code:"MK",name:"Macédoine du Nord",capital:"Skopje",continent:"Europe",type:"other"},
-{id:"578",code:"NO",name:"Norvège",capital:"Oslo",continent:"Europe",type:"other"},
-{id:"512",code:"OM",name:"Oman",capital:"Mascate",continent:"Asie",type:"other"},
-{id:"586",code:"PK",name:"Pakistan",capital:"Islamabad",continent:"Asie",type:"secondary"},
-{id:"585",code:"PW",name:"Palaos",capital:"Ngerulmud",continent:"Océanie",type:"primary"},
-{id:"591",code:"PA",name:"Panama",capital:"Panama",continent:"Amérique",type:"other"},
-{id:"598",code:"PG",name:"Papouasie-Nouvelle-Guinée",capital:"Port Moresby",continent:"Océanie",type:"primary"},
-{id:"600",code:"PY",name:"Paraguay",capital:"Asunción",continent:"Amérique",type:"other"},
-{id:"604",code:"PE",name:"Pérou",capital:"Lima",continent:"Amérique",type:"other"},
-{id:"608",code:"PH",name:"Philippines",capital:"Manille",continent:"Asie",type:"secondary"},
-{id:"616",code:"PL",name:"Pologne",capital:"Varsovie",continent:"Europe",type:"other"},
-{id:"620",code:"PT",name:"Portugal",capital:"Lisbonne",continent:"Europe",type:"other"},
-{id:"634",code:"QA",name:"Qatar",capital:"Doha",continent:"Asie",type:"other"},
-{id:"642",code:"RO",name:"Roumanie",capital:"Bucarest",continent:"Europe",type:"other"},
-{id:"643",code:"RU",name:"Russie",capital:"Moscou",continent:"Europe",type:"other"},
-{id:"646",code:"RW",name:"Rwanda",capital:"Kigali",continent:"Afrique",type:"primary"},
-{id:"659",code:"KN",name:"Saint-Christophe-et-Niévès",capital:"Basseterre",continent:"Amérique",type:"secondary"},
-{id:"662",code:"LC",name:"Sainte-Lucie",capital:"Castries",continent:"Amérique",type:"secondary"},
-{id:"670",code:"VC",name:"Saint-Vincent-et-les-Grenadines",capital:"Kingstown",continent:"Amérique",type:"secondary"},
-{id:"882",code:"WS",name:"Samoa",capital:"Apia",continent:"Océanie",type:"primary"},
-{id:"674",code:"SM",name:"Saint-Marin",capital:"Saint-Marin",continent:"Europe",type:"other"},
-{id:"678",code:"ST",name:"São Tomé-et-Príncipe",capital:"São Tomé",continent:"Afrique",type:"other"},
-{id:"682",code:"SA",name:"Arabie saoudite",capital:"Riyad",continent:"Asie",type:"other"},
-{id:"686",code:"SN",name:"Sénégal",capital:"Dakar",continent:"Afrique",type:"other"},
-{id:"688",code:"RS",name:"Serbie",capital:"Belgrade",continent:"Europe",type:"other"},
-{id:"690",code:"SC",name:"Seychelles",capital:"Victoria",continent:"Afrique",type:"secondary"},
-{id:"694",code:"SL",name:"Sierra Leone",capital:"Freetown",continent:"Afrique",type:"primary"},
-{id:"702",code:"SG",name:"Singapour",capital:"Singapour",continent:"Asie",type:"primary"},
-{id:"703",code:"SK",name:"Slovaquie",capital:"Bratislava",continent:"Europe",type:"other"},
-{id:"705",code:"SI",name:"Slovénie",capital:"Ljubljana",continent:"Europe",type:"other"},
-{id:"090",code:"SB",name:"Îles Salomon",capital:"Honiara",continent:"Océanie",type:"primary"},
-{id:"706",code:"SO",name:"Somalie",capital:"Mogadiscio",continent:"Afrique",type:"other"},
-{id:"710",code:"ZA",name:"Afrique du Sud",capital:"Pretoria",continent:"Afrique",type:"primary"},
-{id:"728",code:"SS",name:"Soudan du Sud",capital:"Djouba",continent:"Afrique",type:"primary"},
-{id:"724",code:"ES",name:"Espagne",capital:"Madrid",continent:"Europe",type:"other"},
-{id:"144",code:"LK",name:"Sri Lanka",capital:"Sri Jayawardenepura Kotte",continent:"Asie",type:"secondary"},
-{id:"729",code:"SD",name:"Soudan",capital:"Khartoum",continent:"Afrique",type:"other"},
-{id:"740",code:"SR",name:"Suriname",capital:"Paramaribo",continent:"Amérique",type:"other"},
-{id:"752",code:"SE",name:"Suède",capital:"Stockholm",continent:"Europe",type:"other"},
-{id:"756",code:"CH",name:"Suisse",capital:"Berne",continent:"Europe",type:"other"},
-{id:"760",code:"SY",name:"Syrie",capital:"Damas",continent:"Asie",type:"other"},
-{id:"762",code:"TJ",name:"Tadjikistan",capital:"Douchanbé",continent:"Asie",type:"other"},
-{id:"834",code:"TZ",name:"Tanzanie",capital:"Dodoma",continent:"Afrique",type:"primary"},
-{id:"764",code:"TH",name:"Thaïlande",capital:"Bangkok",continent:"Asie",type:"other"},
-{id:"626",code:"TL",name:"Timor oriental",capital:"Dili",continent:"Asie",type:"other"},
-{id:"768",code:"TG",name:"Togo",capital:"Lomé",continent:"Afrique",type:"other"},
-{id:"776",code:"TO",name:"Tonga",capital:"Nuku'alofa",continent:"Océanie",type:"primary"},
-{id:"780",code:"TT",name:"Trinité-et-Tobago",capital:"Port-d'Espagne",continent:"Amérique",type:"primary"},
-{id:"788",code:"TN",name:"Tunisie",capital:"Tunis",continent:"Afrique",type:"other"},
-{id:"792",code:"TR",name:"Turquie",capital:"Ankara",continent:"Asie",type:"other"},
-{id:"795",code:"TM",name:"Turkménistan",capital:"Achgabat",continent:"Asie",type:"other"},
-{id:"798",code:"TV",name:"Tuvalu",capital:"Funafuti",continent:"Océanie",type:"primary"},
-{id:"800",code:"UG",name:"Ouganda",capital:"Kampala",continent:"Afrique",type:"primary"},
-{id:"804",code:"UA",name:"Ukraine",capital:"Kyiv",continent:"Europe",type:"other"},
-{id:"784",code:"AE",name:"Émirats arabes unis",capital:"Abou Dabi",continent:"Asie",type:"other"},
-{id:"826",code:"GB",name:"Royaume-Uni",capital:"Londres",continent:"Europe",type:"primary"},
-{id:"834",code:"US",name:"États-Unis",capital:"Washington D.C.",continent:"Amérique",type:"primary"},
-{id:"858",code:"UY",name:"Uruguay",capital:"Montevideo",continent:"Amérique",type:"other"},
-{id:"860",code:"UZ",name:"Ouzbékistan",capital:"Tachkent",continent:"Asie",type:"other"},
-{id:"548",code:"VU",name:"Vanuatu",capital:"Port-Vila",continent:"Océanie",type:"primary"},
-{id:"862",code:"VE",name:"Venezuela",capital:"Caracas",continent:"Amérique",type:"other"},
-{id:"704",code:"VN",name:"Viêt Nam",capital:"Hanoï",continent:"Asie",type:"other"},
-{id:"887",code:"YE",name:"Yémen",capital:"Sanaa",continent:"Asie",type:"other"},
-{id:"894",code:"ZM",name:"Zambie",capital:"Lusaka",continent:"Afrique",type:"primary"},
-{id:"716",code:"ZW",name:"Zimbabwe",capital:"Harare",continent:"Afrique",type:"primary"},
-{id:"275",code:"PS",name:"Palestine",capital:"Ramallah",continent:"Asie",type:"other"}
+
+{"id":"004","code":"AF","name":"Afghanistan","capital":"Kaboul","continent":"Asie","type":"other"},
+{"id":"008","code":"AL","name":"Albanie","capital":"Tirana","continent":"Europe","type":"other"},
+{"id":"012","code":"DZ","name":"Algérie","capital":"Alger","continent":"Afrique","type":"other"},
+{"id":"020","code":"AD","name":"Andorre","capital":"Andorre-la-Vieille","continent":"Europe","type":"other"},
+{"id":"024","code":"AO","name":"Angola","capital":"Luanda","continent":"Afrique","type":"other"},
+{"id":"028","code":"AG","name":"Antigua-et-Barbuda","capital":"Saint John’s","continent":"Amérique du Nord","type":"primary"},
+{"id":"032","code":"AR","name":"Argentine","capital":"Buenos Aires","continent":"Amérique du Sud","type":"other"},
+{"id":"051","code":"AM","name":"Arménie","capital":"Erevan","continent":"Asie","type":"other"},
+{"id":"036","code":"AU","name":"Australie","capital":"Canberra","continent":"Océanie","type":"primary"},
+{"id":"040","code":"AT","name":"Autriche","capital":"Vienne","continent":"Europe","type":"other"},
+{"id":"031","code":"AZ","name":"Azerbaïdjan","capital":"Bakou","continent":"Asie","type":"other"},
+{"id":"044","code":"BS","name":"Bahamas","capital":"Nassau","continent":"Amérique du Nord","type":"primary"},
+{"id":"048","code":"BH","name":"Bahreïn","capital":"Manama","continent":"Asie","type":"other"},
+{"id":"050","code":"BD","name":"Bangladesh","capital":"Dacca","continent":"Asie","type":"secondary"},
+{"id":"052","code":"BB","name":"Barbade","capital":"Bridgetown","continent":"Amérique du Nord","type":"primary"},
+{"id":"112","code":"BY","name":"Biélorussie","capital":"Minsk","continent":"Europe","type":"other"},
+{"id":"056","code":"BE","name":"Belgique","capital":"Bruxelles","continent":"Europe","type":"other"},
+{"id":"084","code":"BZ","name":"Belize","capital":"Belmopan","continent":"Amérique du Nord","type":"secondary"},
+{"id":"204","code":"BJ","name":"Bénin","capital":"Porto-Novo","continent":"Afrique","type":"other"},
+{"id":"064","code":"BT","name":"Bhoutan","capital":"Thimphou","continent":"Asie","type":"other"},
+{"id":"068","code":"BO","name":"Bolivie","capital":"Sucre","continent":"Amérique du Sud","type":"other"},
+{"id":"070","code":"BA","name":"Bosnie-Herzégovine","capital":"Sarajevo","continent":"Europe","type":"other"},
+{"id":"072","code":"BW","name":"Botswana","capital":"Gaborone","continent":"Afrique","type":"secondary"},
+{"id":"076","code":"BR","name":"Brésil","capital":"Brasília","continent":"Amérique du Sud","type":"other"},
+{"id":"096","code":"BN","name":"Brunei","capital":"Bandar Seri Begawan","continent":"Asie","type":"secondary"},
+{"id":"100","code":"BG","name":"Bulgarie","capital":"Sofia","continent":"Europe","type":"other"},
+{"id":"854","code":"BF","name":"Burkina Faso","capital":"Ouagadougou","continent":"Afrique","type":"other"},
+{"id":"108","code":"BI","name":"Burundi","capital":"Gitega","continent":"Afrique","type":"other"},
+{"id":"132","code":"CV","name":"Cap-Vert","capital":"Praia","continent":"Afrique","type":"other"},
+{"id":"116","code":"KH","name":"Cambodge","capital":"Phnom Penh","continent":"Asie","type":"other"},
+{"id":"120","code":"CM","name":"Cameroun","capital":"Yaoundé","continent":"Afrique","type":"other"},
+{"id":"124","code":"CA","name":"Canada","capital":"Ottawa","continent":"Amérique du Nord","type":"secondary"},
+{"id":"140","code":"CF","name":"République centrafricaine","capital":"Bangui","continent":"Afrique","type":"other"},
+{"id":"148","code":"TD","name":"Tchad","capital":"N’Djamena","continent":"Afrique","type":"other"},
+{"id":"152","code":"CL","name":"Chili","capital":"Santiago","continent":"Amérique du Sud","type":"other"},
+{"id":"156","code":"CN","name":"Chine","capital":"Pékin","continent":"Asie","type":"other"},
+{"id":"170","code":"CO","name":"Colombie","capital":"Bogota","continent":"Amérique du Sud","type":"other"},
+{"id":"174","code":"KM","name":"Comores","capital":"Moroni","continent":"Afrique","type":"other"},
+{"id":"178","code":"CG","name":"République du Congo","capital":"Brazzaville","continent":"Afrique","type":"other"},
+{"id":"180","code":"CD","name":"République démocratique du Congo","capital":"Kinshasa","continent":"Afrique","type":"other"},
+{"id":"188","code":"CR","name":"Costa Rica","capital":"San José","continent":"Amérique du Nord","type":"other"},
+{"id":"384","code":"CI","name":"Côte d’Ivoire","capital":"Yamoussoukro","continent":"Afrique","type":"other"},
+{"id":"191","code":"HR","name":"Croatie","capital":"Zagreb","continent":"Europe","type":"other"},
+{"id":"192","code":"CU","name":"Cuba","capital":"La Havane","continent":"Amérique du Nord","type":"other"},
+{"id":"196","code":"CY","name":"Chypre","capital":"Nicosie","continent":"Europe","type":"other"},
+{"id":"203","code":"CZ","name":"Tchéquie","capital":"Prague","continent":"Europe","type":"other"},
+{"id":"208","code":"DK","name":"Danemark","capital":"Copenhague","continent":"Europe","type":"other"},
+{"id":"262","code":"DJ","name":"Djibouti","capital":"Djibouti","continent":"Afrique","type":"other"},
+{"id":"212","code":"DM","name":"Dominique","capital":"Roseau","continent":"Amérique du Nord","type":"primary"},
+{"id":"214","code":"DO","name":"République dominicaine","capital":"Saint-Domingue","continent":"Amérique du Nord","type":"other"},
+{"id":"218","code":"EC","name":"Équateur","capital":"Quito","continent":"Amérique du Sud","type":"other"},
+{"id":"818","code":"EG","name":"Égypte","capital":"Le Caire","continent":"Afrique","type":"other"},
+{"id":"222","code":"SV","name":"Salvador","capital":"San Salvador","continent":"Amérique du Nord","type":"other"},
+{"id":"226","code":"GQ","name":"Guinée équatoriale","capital":"Malabo","continent":"Afrique","type":"other"},
+{"id":"232","code":"ER","name":"Érythrée","capital":"Asmara","continent":"Afrique","type":"other"},
+{"id":"233","code":"EE","name":"Estonie","capital":"Tallinn","continent":"Europe","type":"other"},
+{"id":"748","code":"SZ","name":"Eswatini","capital":"Mbabane","continent":"Afrique","type":"secondary"},
+{"id":"231","code":"ET","name":"Éthiopie","capital":"Addis-Abeba","continent":"Afrique","type":"other"},
+{"id":"242","code":"FJ","name":"Fidji","capital":"Suva","continent":"Océanie","type":"secondary"},
+{"id":"246","code":"FI","name":"Finlande","capital":"Helsinki","continent":"Europe","type":"other"},
+{"id":"250","code":"FR","name":"France","capital":"Paris","continent":"Europe","type":"other"},
+{"id":"266","code":"GA","name":"Gabon","capital":"Libreville","continent":"Afrique","type":"other"},
+{"id":"270","code":"GM","name":"Gambie","capital":"Banjul","continent":"Afrique","type":"secondary"},
+{"id":"268","code":"GE","name":"Géorgie","capital":"Tbilissi","continent":"Asie","type":"other"},
+{"id":"276","code":"DE","name":"Allemagne","capital":"Berlin","continent":"Europe","type":"other"},
+{"id":"288","code":"GH","name":"Ghana","capital":"Accra","continent":"Afrique","type":"secondary"},
+{"id":"300","code":"GR","name":"Grèce","capital":"Athènes","continent":"Europe","type":"other"},
+{"id":"308","code":"GD","name":"Grenade","capital":"Saint-Georges","continent":"Amérique du Nord","type":"primary"},
+{"id":"320","code":"GT","name":"Guatemala","capital":"Guatemala","continent":"Amérique du Nord","type":"other"},
+{"id":"324","code":"GN","name":"Guinée","capital":"Conakry","continent":"Afrique","type":"other"},
+{"id":"624","code":"GW","name":"Guinée-Bissau","capital":"Bissau","continent":"Afrique","type":"other"},
+{"id":"328","code":"GY","name":"Guyana","capital":"Georgetown","continent":"Amérique du Sud","type":"primary"},
+{"id":"332","code":"HT","name":"Haïti","capital":"Port-au-Prince","continent":"Amérique du Nord","type":"other"},
+{"id":"340","code":"HN","name":"Honduras","capital":"Tegucigalpa","continent":"Amérique du Nord","type":"other"},
+{"id":"348","code":"HU","name":"Hongrie","capital":"Budapest","continent":"Europe","type":"other"},
+{"id":"352","code":"IS","name":"Islande","capital":"Reykjavik","continent":"Europe","type":"other"},
+{"id":"356","code":"IN","name":"Inde","capital":"New Delhi","continent":"Asie","type":"secondary"},
+{"id":"360","code":"ID","name":"Indonésie","capital":"Jakarta","continent":"Asie","type":"other"},
+{"id":"364","code":"IR","name":"Iran","capital":"Téhéran","continent":"Asie","type":"other"},
+{"id":"368","code":"IQ","name":"Irak","capital":"Bagdad","continent":"Asie","type":"other"},
+{"id":"372","code":"IE","name":"Irlande","capital":"Dublin","continent":"Europe","type":"primary"},
+{"id":"376","code":"IL","name":"Israël","capital":"Jérusalem","continent":"Asie","type":"other"},
+{"id":"380","code":"IT","name":"Italie","capital":"Rome","continent":"Europe","type":"other"},
+{"id":"388","code":"JM","name":"Jamaïque","capital":"Kingston","continent":"Amérique du Nord","type":"primary"},
+{"id":"392","code":"JP","name":"Japon","capital":"Tokyo","continent":"Asie","type":"other"},
+{"id":"400","code":"JO","name":"Jordanie","capital":"Amman","continent":"Asie","type":"other"},
+{"id":"398","code":"KZ","name":"Kazakhstan","capital":"Astana","continent":"Asie","type":"other"},
+{"id":"404","code":"KE","name":"Kenya","capital":"Nairobi","continent":"Afrique","type":"secondary"},
+{"id":"296","code":"KI","name":"Kiribati","capital":"Tarawa-Sud","continent":"Océanie","type":"secondary"},
+{"id":"408","code":"KP","name":"Corée du Nord","capital":"Pyongyang","continent":"Asie","type":"other"},
+{"id":"410","code":"KR","name":"Corée du Sud","capital":"Séoul","continent":"Asie","type":"other"},
+{"id":"414","code":"KW","name":"Koweït","capital":"Koweït","continent":"Asie","type":"other"},
+{"id":"417","code":"KG","name":"Kirghizistan","capital":"Bichkek","continent":"Asie","type":"other"},
+{"id":"418","code":"LA","name":"Laos","capital":"Vientiane","continent":"Asie","type":"other"},
+{"id":"428","code":"LV","name":"Lettonie","capital":"Riga","continent":"Europe","type":"other"},
+{"id":"422","code":"LB","name":"Liban","capital":"Beyrouth","continent":"Asie","type":"other"},
+{"id":"426","code":"LS","name":"Lesotho","capital":"Maseru","continent":"Afrique","type":"secondary"},
+{"id":"430","code":"LR","name":"Liberia","capital":"Monrovia","continent":"Afrique","type":"secondary"},
+{"id":"434","code":"LY","name":"Libye","capital":"Tripoli","continent":"Afrique","type":"other"},
+{"id":"438","code":"LI","name":"Liechtenstein","capital":"Vaduz","continent":"Europe","type":"other"},
+{"id":"440","code":"LT","name":"Lituanie","capital":"Vilnius","continent":"Europe","type":"other"},
+{"id":"442","code":"LU","name":"Luxembourg","capital":"Luxembourg","continent":"Europe","type":"other"},
+{"id":"450","code":"MG","name":"Madagascar","capital":"Antananarivo","continent":"Afrique","type":"other"},
+{"id":"454","code":"MW","name":"Malawi","capital":"Lilongwe","continent":"Afrique","type":"secondary"},
+{"id":"458","code":"MY","name":"Malaisie","capital":"Kuala Lumpur","continent":"Asie","type":"secondary"},
+{"id":"462","code":"MV","name":"Maldives","capital":"Malé","continent":"Asie","type":"other"},
+{"id":"466","code":"ML","name":"Mali","capital":"Bamako","continent":"Afrique","type":"other"},
+{"id":"470","code":"MT","name":"Malte","capital":"La Valette","continent":"Europe","type":"secondary"},
+{"id":"584","code":"MH","name":"Îles Marshall","capital":"Majuro","continent":"Océanie","type":"secondary"},
+{"id":"478","code":"MR","name":"Mauritanie","capital":"Nouakchott","continent":"Afrique","type":"other"},
+{"id":"480","code":"MU","name":"Maurice","capital":"Port-Louis","continent":"Afrique","type":"secondary"},
+{"id":"484","code":"MX","name":"Mexique","capital":"Mexico","continent":"Amérique du Nord","type":"other"},
+{"id":"583","code":"FM","name":"Micronésie","capital":"Palikir","continent":"Océanie","type":"secondary"},
+{"id":"498","code":"MD","name":"Moldavie","capital":"Chișinău","continent":"Europe","type":"other"},
+{"id":"492","code":"MC","name":"Monaco","capital":"Monaco","continent":"Europe","type":"other"},
+{"id":"496","code":"MN","name":"Mongolie","capital":"Oulan-Bator","continent":"Asie","type":"other"},
+{"id":"499","code":"ME","name":"Monténégro","capital":"Podgorica","continent":"Europe","type":"other"},
+{"id":"504","code":"MA","name":"Maroc","capital":"Rabat","continent":"Afrique","type":"other"},
+{"id":"508","code":"MZ","name":"Mozambique","capital":"Maputo","continent":"Afrique","type":"other"},
+{"id":"104","code":"MM","name":"Myanmar","capital":"Naypyidaw","continent":"Asie","type":"other"},
+{"id":"516","code":"NA","name":"Namibie","capital":"Windhoek","continent":"Afrique","type":"secondary"},
+{"id":"520","code":"NR","name":"Nauru","capital":"Yaren","continent":"Océanie","type":"secondary"},
+{"id":"524","code":"NP","name":"Népal","capital":"Katmandou","continent":"Asie","type":"other"},
+{"id":"528","code":"NL","name":"Pays-Bas","capital":"Amsterdam","continent":"Europe","type":"other"},
+{"id":"554","code":"NZ","name":"Nouvelle-Zélande","capital":"Wellington","continent":"Océanie","type":"primary"},
+{"id":"558","code":"NI","name":"Nicaragua","capital":"Managua","continent":"Amérique du Nord","type":"other"},
+{"id":"562","code":"NE","name":"Niger","capital":"Niamey","continent":"Afrique","type":"other"},
+{"id":"566","code":"NG","name":"Nigeria","capital":"Abuja","continent":"Afrique","type":"secondary"},
+{"id":"807","code":"MK","name":"Macédoine du Nord","capital":"Skopje","continent":"Europe","type":"other"},
+{"id":"578","code":"NO","name":"Norvège","capital":"Oslo","continent":"Europe","type":"other"},
+{"id":"512","code":"OM","name":"Oman","capital":"Mascate","continent":"Asie","type":"other"},
+{"id":"586","code":"PK","name":"Pakistan","capital":"Islamabad","continent":"Asie","type":"secondary"},
+{"id":"585","code":"PW","name":"Palaos","capital":"Ngerulmud","continent":"Océanie","type":"secondary"},
+{"id":"591","code":"PA","name":"Panama","capital":"Panama","continent":"Amérique du Nord","type":"other"},
+{"id":"598","code":"PG","name":"Papouasie-Nouvelle-Guinée","capital":"Port Moresby","continent":"Océanie","type":"secondary"},
+{"id":"600","code":"PY","name":"Paraguay","capital":"Asunción","continent":"Amérique du Sud","type":"other"},
+{"id":"604","code":"PE","name":"Pérou","capital":"Lima","continent":"Amérique du Sud","type":"other"},
+{"id":"608","code":"PH","name":"Philippines","capital":"Manille","continent":"Asie","type":"secondary"},
+{"id":"616","code":"PL","name":"Pologne","capital":"Varsovie","continent":"Europe","type":"other"},
+{"id":"620","code":"PT","name":"Portugal","capital":"Lisbonne","continent":"Europe","type":"other"},
+{"id":"634","code":"QA","name":"Qatar","capital":"Doha","continent":"Asie","type":"other"},
+{"id":"642","code":"RO","name":"Roumanie","capital":"Bucarest","continent":"Europe","type":"other"},
+{"id":"643","code":"RU","name":"Russie","capital":"Moscou","continent":"Europe","type":"other"},
+{"id":"646","code":"RW","name":"Rwanda","capital":"Kigali","continent":"Afrique","type":"secondary"},
+{"id":"659","code":"KN","name":"Saint-Christophe-et-Niévès","capital":"Basseterre","continent":"Amérique du Nord","type":"primary"},
+{"id":"662","code":"LC","name":"Sainte-Lucie","capital":"Castries","continent":"Amérique du Nord","type":"primary"},
+{"id":"670","code":"VC","name":"Saint-Vincent-et-les-Grenadines","capital":"Kingstown","continent":"Amérique du Nord","type":"primary"},
+{"id":"882","code":"WS","name":"Samoa","capital":"Apia","continent":"Océanie","type":"secondary"},
+{"id":"674","code":"SM","name":"Saint-Marin","capital":"Saint-Marin","continent":"Europe","type":"other"},
+{"id":"678","code":"ST","name":"Sao Tomé-et-Principe","capital":"Sao Tomé","continent":"Afrique","type":"other"},
+{"id":"682","code":"SA","name":"Arabie saoudite","capital":"Riyad","continent":"Asie","type":"other"},
+{"id":"686","code":"SN","name":"Sénégal","capital":"Dakar","continent":"Afrique","type":"other"},
+{"id":"688","code":"RS","name":"Serbie","capital":"Belgrade","continent":"Europe","type":"other"},
+{"id":"690","code":"SC","name":"Seychelles","capital":"Victoria","continent":"Afrique","type":"secondary"},
+{"id":"694","code":"SL","name":"Sierra Leone","capital":"Freetown","continent":"Afrique","type":"secondary"},
+{"id":"702","code":"SG","name":"Singapour","capital":"Singapour","continent":"Asie","type":"secondary"},
+{"id":"703","code":"SK","name":"Slovaquie","capital":"Bratislava","continent":"Europe","type":"other"},
+{"id":"705","code":"SI","name":"Slovénie","capital":"Ljubljana","continent":"Europe","type":"other"},
+{"id":"090","code":"SB","name":"Îles Salomon","capital":"Honiara","continent":"Océanie","type":"secondary"},
+{"id":"706","code":"SO","name":"Somalie","capital":"Mogadiscio","continent":"Afrique","type":"other"},
+{"id":"710","code":"ZA","name":"Afrique du Sud","capital":"Pretoria","continent":"Afrique","type":"secondary"},
+{"id":"728","code":"SS","name":"Soudan du Sud","capital":"Djouba","continent":"Afrique","type":"other"},
+{"id":"724","code":"ES","name":"Espagne","capital":"Madrid","continent":"Europe","type":"other"},
+{"id":"144","code":"LK","name":"Sri Lanka","capital":"Sri Jayawardenepura Kotte","continent":"Asie","type":"other"},
+{"id":"729","code":"SD","name":"Soudan","capital":"Khartoum","continent":"Afrique","type":"other"},
+{"id":"740","code":"SR","name":"Suriname","capital":"Paramaribo","continent":"Amérique du Sud","type":"other"},
+{"id":"752","code":"SE","name":"Suède","capital":"Stockholm","continent":"Europe","type":"other"},
+{"id":"756","code":"CH","name":"Suisse","capital":"Berne","continent":"Europe","type":"other"},
+{"id":"760","code":"SY","name":"Syrie","capital":"Damas","continent":"Asie","type":"other"},
+{"id":"762","code":"TJ","name":"Tadjikistan","capital":"Douchanbé","continent":"Asie","type":"other"},
+{"id":"834","code":"TZ","name":"Tanzanie","capital":"Dodoma","continent":"Afrique","type":"other"},
+{"id":"764","code":"TH","name":"Thaïlande","capital":"Bangkok","continent":"Asie","type":"other"},
+{"id":"626","code":"TL","name":"Timor oriental","capital":"Dili","continent":"Asie","type":"other"},
+{"id":"768","code":"TG","name":"Togo","capital":"Lomé","continent":"Afrique","type":"other"},
+{"id":"776","code":"TO","name":"Tonga","capital":"Nuku’alofa","continent":"Océanie","type":"secondary"},
+{"id":"780","code":"TT","name":"Trinité-et-Tobago","capital":"Port-d’Espagne","continent":"Amérique du Nord","type":"primary"},
+{"id":"788","code":"TN","name":"Tunisie","capital":"Tunis","continent":"Afrique","type":"other"},
+{"id":"792","code":"TR","name":"Turquie","capital":"Ankara","continent":"Asie","type":"other"},
+{"id":"795","code":"TM","name":"Turkménistan","capital":"Achgabat","continent":"Asie","type":"other"},
+{"id":"798","code":"TV","name":"Tuvalu","capital":"Funafuti","continent":"Océanie","type":"other"},
+{"id":"800","code":"UG","name":"Ouganda","capital":"Kampala","continent":"Afrique","type":"secondary"},
+{"id":"804","code":"UA","name":"Ukraine","capital":"Kyiv","continent":"Europe","type":"other"},
+{"id":"784","code":"AE","name":"Émirats arabes unis","capital":"Abou Dabi","continent":"Asie","type":"other"},
+{"id":"826","code":"GB","name":"Royaume-Uni","capital":"Londres","continent":"Europe","type":"primary"},
+{"id":"840","code":"US","name":"États-Unis","capital":"Washington D.C.","continent":"Amérique du Nord","type":"primary"},
+{"id":"858","code":"UY","name":"Uruguay","capital":"Montevideo","continent":"Amérique du Sud","type":"other"},
+{"id":"860","code":"UZ","name":"Ouzbékistan","capital":"Tachkent","continent":"Asie","type":"other"},
+{"id":"548","code":"VU","name":"Vanuatu","capital":"Port-Vila","continent":"Océanie","type":"secondary"},
+{"id":"336","code":"VA","name":"Vatican","capital":"Cité du Vatican","continent":"Europe","type":"other"},
+{"id":"862","code":"VE","name":"Venezuela","capital":"Caracas","continent":"Amérique du Sud","type":"other"},
+{"id":"704","code":"VN","name":"Viêt Nam","capital":"Hanoï","continent":"Asie","type":"other"},
+{"id":"887","code":"YE","name":"Yémen","capital":"Sanaa","continent":"Asie","type":"other"},
+{"id":"894","code":"ZM","name":"Zambie","capital":"Lusaka","continent":"Afrique","type":"secondary"},
+{"id":"716","code":"ZW","name":"Zimbabwe","capital":"Harare","continent":"Afrique","type":"secondary"},
+{"id":"275","code":"PS","name":"Palestine","capital":"Ramallah","continent":"Asie","type":"other"}
+
 ];
 
-const flag = code => {
-  if(!code || code.length !== 2) return "🌍";
-  return [...code.toUpperCase()]
-    .map(c => String.fromCodePoint(127397+c.charCodeAt(0)))
+
+/* =========================================================
+   PAYS / FLAGS
+========================================================= */
+
+const primaryIDs =
+  new Set(
+    countries
+      .filter(c=>c.type==="primary")
+      .map(c=>c.id)
+  );
+
+const secondaryIDs =
+  new Set(
+    countries
+      .filter(c=>c.type==="secondary")
+      .map(c=>c.id)
+  );
+
+const byId =
+  new Map(
+    countries.map(c=>[c.id,c])
+  );
+
+function flag(code){
+
+  return [...code]
+    .map(
+      c =>
+        String.fromCodePoint(
+          127397+c.charCodeAt(0)
+        )
+    )
     .join("");
-};
 
-const primaryIDs = new Set(
-  countries.filter(c=>c.type==="primary").map(c=>c.id)
-);
-
-const secondaryIDs = new Set(
-  countries.filter(c=>c.type==="secondary").map(c=>c.id)
-);
-
-const byId = new Map(
-  countries.map(c=>[String(c.id),c])
-);
-
-console.log("Pays chargés :",countries.length);
-</script><script>
-let language = localStorage.getItem("wexLanguage") || "";
-let username = localStorage.getItem("wexUsername") || "";
-
-const translations = {
-  fr:{
-    usernameTitle:"👤 Ton pseudo",
-    usernameDescription:"Entre ton pseudo pour sauvegarder tes résultats.",
-    usernamePlaceholder:"Ton pseudo",
-    continue:"Continuer",
-    hero:"Explore les pays du monde, apprends leurs capitales et teste ton anglais.",
-    best:"Meilleur score",
-    countries:"Pays disponibles",
-    questions:"Questions maximum",
-    modes:"🎯 Choisis ton quiz",
-    modesDesc:"Jusqu'à 10 questions par partie.",
-    classic:"Classic",
-    classicDesc:"Pays, continents et anglais",
-    capitals:"Capitales",
-    capitalsDesc:"Trouve la bonne capitale",
-    countriesMode:"Countries",
-    countriesDesc:"Reconnais les pays",
-    challenge:"Challenge",
-    challengeDesc:"Plus rapide, plus difficile",
-    map:"🗺️ Carte du monde",
-    mapDesc:"Clique sur un pays pour voir ses informations. Molette pour zoomer.",
-    primary:"Anglais principal",
-    secondary:"Anglais secondaire",
-    other:"Autre",
-    question:"Question",
-    result:"🎉 Résultat",
-    good:"Bien joué !",
-    home:"🏠 Accueil",
-    replay:"🔄 Rejouer"
-  },
-
-  en:{
-    usernameTitle:"👤 Your username",
-    usernameDescription:"Enter your username to save your results.",
-    usernamePlaceholder:"Your username",
-    continue:"Continue",
-    hero:"Explore the countries of the world, learn their capitals and test your English.",
-    best:"Best score",
-    countries:"Available countries",
-    questions:"Maximum questions",
-    modes:"🎯 Choose your quiz",
-    modesDesc:"Up to 10 questions per game.",
-    classic:"Classic",
-    classicDesc:"Countries, continents and English",
-    capitals:"Capitals",
-    capitalsDesc:"Find the correct capital",
-    countriesMode:"Countries",
-    countriesDesc:"Recognize countries",
-    challenge:"Challenge",
-    challengeDesc:"Faster and harder",
-    map:"🗺️ World map",
-    mapDesc:"Click a country to see its information. Use the wheel to zoom.",
-    primary:"Main English",
-    secondary:"Secondary English",
-    other:"Other",
-    question:"Question",
-    result:"🎉 Result",
-    good:"Well done!",
-    home:"🏠 Home",
-    replay:"🔄 Play again"
-  }
-};
-
-function t(key){
-  return (translations[language] || translations.fr)[key] || key;
 }
 
-function chooseLanguage(lang){
-  language=lang;
-  localStorage.setItem("wexLanguage",lang);
+countries.forEach(c=>{
+  c.flag=flag(c.code);
+});
 
-  document.getElementById("languageModal").classList.add("hidden");
+document.getElementById("countryCount").textContent =
+  countries.length;
 
-  if(!username){
-    document.getElementById("usernameModal").classList.remove("hidden");
+
+/* =========================================================
+   NAVIGATION
+========================================================= */
+
+const navButtons =
+  document.querySelectorAll(".nav button");
+
+let timerInterval=null;
+
+function showSection(id){
+
+  document
+    .querySelectorAll(".section")
+    .forEach(
+      s=>s.classList.remove("active")
+    );
+
+  const section=document.getElementById(id);
+
+  if(section){
+    section.classList.add("active");
   }
 
-  applyLanguage();
-}
+  navButtons.forEach(
+    b =>
+      b.classList.toggle(
+        "active",
+        b.dataset.section===id
+      )
+  );
 
-function changeLanguage(){
-  document.getElementById("languageModal").classList.remove("hidden");
-}
+  clearInterval(timerInterval);
 
-function changeUsername(){
-  document.getElementById("usernameModal").classList.remove("hidden");
-  document.getElementById("usernameInput").value=username;
-}
+  window.scrollTo({
+    top:0,
+    behavior:"smooth"
+  });
 
-function saveUsername(){
-  const value=document.getElementById("usernameInput").value.trim();
-
-  if(!value){
-    alert(language==="en" ? "Enter a username." : "Entre un pseudo.");
-    return;
+  if(id==="mapSection"){
+    setTimeout(drawMap,100);
   }
 
-  username=value.slice(0,30);
-  localStorage.setItem("wexUsername",username);
+  if(id==="home"){
+    refreshStudentDashboard();
+  }
 
-  document.getElementById("usernameModal").classList.add("hidden");
-
-  updateUsername();
 }
 
-function updateUsername(){
-  document.getElementById("topUsername").textContent=username || "---";
+navButtons.forEach(
+  b =>
+    b.addEventListener(
+      "click",
+      ()=>showSection(b.dataset.section)
+    )
+);
+
+
+/* =========================================================
+   PAYS GRID
+========================================================= */
+
+const grid =
+  document.getElementById("countryGrid");
+
+function renderCountries(list){
+
+  grid.innerHTML="";
+
+  list.forEach(c=>{
+
+    const d=document.createElement("div");
+
+    d.className =
+      "country "+
+      (
+        c.type==="primary"
+          ?"primary-country"
+          :
+        c.type==="secondary"
+          ?"secondary-country"
+          :
+          "other-country"
+      );
+
+    let label =
+      c.type==="primary"
+        ?"🔴 Anglais principal"
+        :
+      c.type==="secondary"
+        ?"🔵 Anglais seconde langue / officiel"
+        :
+        "⚫ Autre pays";
+
+    let tag =
+      c.type==="primary"
+        ?"red-tag"
+        :
+      c.type==="secondary"
+        ?"blue-tag"
+        :
+        "gray-tag";
+
+    d.innerHTML=`
+
+      <div class="flag">
+        ${c.flag}
+      </div>
+
+      <h3>
+        ${c.name}
+      </h3>
+
+      <p>
+        🏛️ Capitale :
+        <strong>${c.capital}</strong>
+        <br>
+        🌍 Continent :
+        ${c.continent}
+      </p>
+
+      <span class="country-tag ${tag}">
+        ${label}
+      </span>
+
+    `;
+
+    grid.appendChild(d);
+
+  });
+
 }
 
-function applyLanguage(){
+renderCountries(countries);
 
-  document.documentElement.lang=language;
+document
+  .getElementById("countrySearch")
+  .addEventListener(
+    "input",
+    e=>{
 
-  document.getElementById("usernameTitle").textContent=t("usernameTitle");
-  document.getElementById("usernameDescription").textContent=t("usernameDescription");
-  document.getElementById("usernameInput").placeholder=t("usernamePlaceholder");
+      const v =
+        e.target.value
+          .toLowerCase()
+          .trim();
 
-  document.getElementById("heroDescription").textContent=t("hero");
+      renderCountries(
+        countries.filter(
+          c =>
+            (
+              c.name+" "+
+              c.capital+" "+
+              c.continent+" "+
+              c.code
+            )
+            .toLowerCase()
+            .includes(v)
+        )
+      );
 
-  document.getElementById("bestLabel").textContent=t("best");
-  document.getElementById("countriesLabel").textContent=t("countries");
-  document.getElementById("questionsLabel").textContent=t("questions");
+    }
+  );
 
-  document.getElementById("quizModesTitle").textContent=t("modes");
-  document.getElementById("quizModesDescription").textContent=t("modesDesc");
 
-  document.getElementById("classicTitle").textContent=t("classic");
-  document.getElementById("classicDesc").textContent=t("classicDesc");
-
-  document.getElementById("capitalsTitle").textContent=t("capitals");
-  document.getElementById("capitalsDesc").textContent=t("capitalsDesc");
-
-  document.getElementById("countriesTitle").textContent=t("countriesMode");
-  document.getElementById("countriesDesc").textContent=t("countriesDesc");
-
-  document.getElementById("challengeTitle").textContent=t("challenge");
-  document.getElementById("challengeDesc").textContent=t("challengeDesc");
-
-  document.getElementById("mapTitle").textContent=t("map");
-  document.getElementById("mapDescription").textContent=t("mapDesc");
-
-  document.getElementById("primaryLegend").textContent=t("primary");
-  document.getElementById("secondaryLegend").textContent=t("secondary");
-  document.getElementById("otherLegend").textContent=t("other");
-
-  document.getElementById("questionLabel").textContent=t("question");
-  document.getElementById("resultTitle").textContent=t("result");
-  document.getElementById("resultMessage").textContent=t("good");
-
-  document.querySelector("#resultSection .btn.blue").textContent=t("home");
-  document.querySelector("#resultSection .btn:not(.blue)").textContent=t("replay");
-
-  updateUsername();
-}
+/* =========================================================
+   CARTE
+========================================================= */
 
 let mapLoaded=false;
 let mapZoomBehavior=null;
 let mapZoomLevel=1;
 
-async function drawMap(){
+function drawMap(){
 
-  if(mapLoaded) return;
+  if(mapLoaded)return;
 
-  mapLoaded=true;
+  const container=
+    document.getElementById("map");
 
-  const svg=d3.select("#mapSvg");
+  const width=container.clientWidth;
+  const height=container.clientHeight;
 
-  const width=document.getElementById("mapWrap").clientWidth;
-  const height=document.getElementById("mapWrap").clientHeight;
+  if(width<100)return;
 
-  svg.attr("viewBox",`0 0 ${width} ${height}`);
+  const svg=d3.select("#worldMap");
 
-  const projection=d3.geoNaturalEarth1()
-    .fitSize(
-      [width,height],
-      {type:"Sphere"}
-    );
-
-  const path=d3.geoPath().projection(projection);
-
-  mapZoomBehavior=d3.zoom()
-    .scaleExtent([1,8])
-    .on("zoom",event=>{
-      mapZoomLevel=event.transform.k;
-
-      svg.select("g.map-layer")
-        .attr("transform",event.transform);
-    });
-
-  svg.call(mapZoomBehavior);
-
-  svg.on("dblclick.zoom",null);
-
-  const world=await d3.json(
-    "https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json"
+  svg.attr(
+    "viewBox",
+    `0 0 ${width} ${height}`
   );
 
-  const features=topojson.feature(
-    world,
-    world.objects.countries
-  ).features;
+  svg.selectAll("*").remove();
 
-  const layer=svg.append("g")
-    .attr("class","map-layer");
-
-  layer.selectAll(".country-path")
-    .data(features)
-    .join("path")
-    .attr("class","country-path")
-    .attr("d",path)
-    .attr("fill",d=>{
-
-      const id=String(d.id).padStart(3,"0");
-
-      if(primaryIDs.has(id)) return "#ff3154";
-      if(secondaryIDs.has(id)) return "#1683ff";
-
-      return "#173049";
-    })
-    .on("mouseenter",function(event,d){
-
-      const id=String(d.id).padStart(3,"0");
-      const country=byId.get(id);
-
-      if(!country) return;
-
-      const tooltip=document.getElementById("tooltip");
-
-      tooltip.innerHTML=`
-        <strong>${flag(country.code)} ${country.name}</strong><br>
-        🏛️ ${country.capital}<br>
-        🌎 ${country.continent}
-      `;
-
-      tooltip.style.display="block";
-    })
-    .on("mousemove",event=>{
-
-      const tooltip=document.getElementById("tooltip");
-
-      tooltip.style.left=(event.clientX+14)+"px";
-      tooltip.style.top=(event.clientY+14)+"px";
-    })
-    .on("mouseleave",()=>{
-      document.getElementById("tooltip").style.display="none";
-    })
-    .on("click",(event,d)=>{
-
-      const id=String(d.id).padStart(3,"0");
-      const country=byId.get(id);
-
-      if(!country) return;
-
-      alert(
-        `${flag(country.code)} ${country.name}\n\n`+
-        `🏛️ ${country.capital}\n`+
-        `🌎 ${country.continent}`
+  const projection =
+    d3.geoNaturalEarth1()
+      .fitSize(
+        [width,height],
+        {type:"Sphere"}
       );
-    });
-}
 
-window.addEventListener("resize",()=>{
-  if(!mapLoaded) return;
+  const path =
+    d3.geoPath()
+      .projection(projection);
 
-  mapLoaded=false;
-  document.getElementById("mapSvg").innerHTML="";
-  drawMap();
-});
+  const content =
+    svg.append("g")
+      .attr("class","map-content");
 
-function showSection(id){
+  content
+    .append("path")
+    .datum({type:"Sphere"})
+    .attr("fill","#061a30")
+    .attr("stroke","#28537c")
+    .attr("stroke-width","1")
+    .attr("d",path);
 
-  [
-    "homeSection",
-    "quizSection",
-    "resultSection",
-    "professorSection"
-  ].forEach(section=>{
-    document.getElementById(section).classList.add("hidden");
+  d3.json(
+    "https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json"
+  )
+  .then(world=>{
+
+    const land =
+      topojson.feature(
+        world,
+        world.objects.countries
+      );
+
+    const tooltip =
+      document.getElementById("mapTooltip");
+
+    content
+      .selectAll(".country-path")
+      .data(land.features)
+      .enter()
+      .append("path")
+      .attr("class","country-path")
+      .attr("d",path)
+      .attr(
+        "fill",
+        d=>{
+
+          const id =
+            String(d.id)
+              .padStart(3,"0");
+
+          return primaryIDs.has(id)
+            ?"#ff3154"
+            :
+          secondaryIDs.has(id)
+            ?"#1683ff"
+            :
+            "#173049";
+
+        }
+      )
+      .on(
+        "mousemove",
+        (event,d)=>{
+
+          const id =
+            String(d.id)
+              .padStart(3,"0");
+
+          const c=byId.get(id);
+
+          if(c){
+
+            tooltip.style.display="block";
+
+            tooltip.innerHTML=`
+
+              <strong>
+                ${c.flag} ${c.name}
+              </strong>
+
+              <br>
+
+              Capitale :
+              ${c.capital}
+
+              <br>
+
+              ${
+                c.type==="primary"
+                  ?"🔴 Anglais principal"
+                  :
+                c.type==="secondary"
+                  ?"🔵 Anglais seconde langue / officiel"
+                  :
+                  "⚫ Autre pays"
+              }
+
+            `;
+
+            tooltip.style.left =
+              (event.clientX+15)+"px";
+
+            tooltip.style.top =
+              (event.clientY+15)+"px";
+
+          }
+
+        }
+      )
+      .on(
+        "mouseleave",
+        ()=>{
+          tooltip.style.display="none";
+        }
+      );
+
+    mapZoomBehavior =
+      d3.zoom()
+        .scaleExtent([1,8])
+        .on(
+          "zoom",
+          event=>{
+            content.attr(
+              "transform",
+              event.transform
+            );
+          }
+        );
+
+    svg.call(mapZoomBehavior);
+
+    svg.on("dblclick.zoom",null);
+
+    mapZoomLevel=1;
+
+    mapLoaded=true;
+
+  })
+  .catch(()=>{
+
+    content
+      .append("text")
+      .attr("x",width/2)
+      .attr("y",height/2)
+      .attr("text-anchor","middle")
+      .attr("fill","#8da1b9")
+      .attr("font-size","18")
+      .text(
+        "Impossible de charger la carte. Vérifie Internet."
+      );
+
   });
 
-  document.getElementById(id).classList.remove("hidden");
-
-  if(id==="homeSection"){
-    setTimeout(drawMap,50);
-  }
 }
 
-function backHome(){
-  showSection("homeSection");
+function changeMapZoom(direction){
+
+  if(
+    !document
+      .getElementById("mapSection")
+      .classList
+      .contains("active")
+  )return;
+
+  if(!mapLoaded || !mapZoomBehavior)return;
+
+  mapZoomLevel =
+    Math.max(
+      1,
+      Math.min(
+        8,
+        mapZoomLevel*
+          (
+            direction>0
+              ?1.35
+              :
+              1/1.35
+          )
+      )
+    );
+
+  d3
+    .select("#worldMap")
+    .transition()
+    .duration(180)
+    .call(
+      mapZoomBehavior.scaleTo,
+      mapZoomLevel
+    );
+
 }
 
-function closeModal(id){
-  document.getElementById(id).classList.add("hidden");
-}
+document
+  .getElementById("zoomIn")
+  .addEventListener(
+    "click",
+    ()=>changeMapZoom(1)
+  );
 
-function openProfessor(){
-  document.getElementById("profCodeInput").value="";
-  document.getElementById("profCodeModal").classList.remove("hidden");
-}
-</script><script>
-let currentMode="";
+document
+  .getElementById("zoomOut")
+  .addEventListener(
+    "click",
+    ()=>changeMapZoom(-1)
+  );
+
+document
+  .getElementById("zoomReset")
+  .addEventListener(
+    "click",
+    ()=>{
+
+      if(
+        mapLoaded &&
+        mapZoomBehavior
+      ){
+
+        mapZoomLevel=1;
+
+        d3
+          .select("#worldMap")
+          .transition()
+          .duration(180)
+          .call(
+            mapZoomBehavior.transform,
+            d3.zoomIdentity
+          );
+
+      }
+
+    }
+  );
+
+
+/* =========================================================
+   QUESTIONS
+========================================================= */
+
+const questionPools={
+
+classic:[
+
+[
+"Quelle est la capitale de l’Angleterre ?",
+"Londres",
+["Londres","Manchester","Liverpool","Birmingham"],
+1
+],
+
+[
+"Quelle est la capitale des États-Unis ?",
+"Washington D.C.",
+["New York","Washington D.C.","Chicago","Boston"],
+1
+],
+
+[
+"Quelle est la capitale du Canada ?",
+"Ottawa",
+["Toronto","Ottawa","Vancouver","Montréal"],
+1
+],
+
+[
+"Quelle est la capitale de l’Australie ?",
+"Canberra",
+["Sydney","Canberra","Melbourne","Perth"],
+1
+],
+
+[
+"Quelle est la capitale du Bangladesh ?",
+"Dacca",
+["Dacca","Chittagong","Sylhet","Rajshahi"],
+2
+],
+
+[
+"Quelle est la capitale de l’Inde ?",
+"New Delhi",
+["Mumbai","New Delhi","Kolkata","Chennai"],
+2
+],
+
+[
+"Quelle est la capitale du Ghana ?",
+"Accra",
+["Accra","Kumasi","Lagos","Abuja"],
+2
+],
+
+[
+"Quelle est la capitale du Nigeria ?",
+"Abuja",
+["Lagos","Abuja","Kano","Ibadan"],
+3
+],
+
+[
+"Quelle est la capitale de la Namibie ?",
+"Windhoek",
+["Windhoek","Gaborone","Lusaka","Harare"],
+3
+],
+
+[
+"Quelle est la capitale du Rwanda ?",
+"Kigali",
+["Kigali","Nairobi","Kampala","Bujumbura"],
+3
+]
+
+],
+
+capitals:[
+
+[
+"Londres est la capitale de quel pays ?",
+"Royaume-Uni",
+["Royaume-Uni","Canada","Australie","Irlande"],
+1
+],
+
+[
+"Washington D.C. est la capitale de quel pays ?",
+"États-Unis",
+["États-Unis","Canada","Royaume-Uni","Australie"],
+1
+],
+
+[
+"Canberra est la capitale de quel pays ?",
+"Australie",
+["Australie","Nouvelle-Zélande","Canada","Irlande"],
+1
+],
+
+[
+"Dacca est la capitale de quel pays ?",
+"Bangladesh",
+["Bangladesh","Pakistan","Inde","Malaisie"],
+2
+],
+
+[
+"Ottawa est la capitale de quel pays ?",
+"Canada",
+["Canada","États-Unis","Australie","Nouvelle-Zélande"],
+2
+],
+
+[
+"New Delhi est la capitale de quel pays ?",
+"Inde",
+["Inde","Pakistan","Bangladesh","Malaisie"],
+2
+],
+
+[
+"Islamabad est la capitale de quel pays ?",
+"Pakistan",
+["Pakistan","Inde","Bangladesh","Malaisie"],
+2
+],
+
+[
+"Pretoria est la capitale administrative de quel pays ?",
+"Afrique du Sud",
+["Afrique du Sud","Kenya","Nigeria","Ghana"],
+3
+],
+
+[
+"Kuala Lumpur est la capitale de quel pays ?",
+"Malaisie",
+["Malaisie","Singapour","Indonésie","Philippines"],
+3
+],
+
+[
+"Bridgetown est la capitale de quel pays ?",
+"Barbade",
+["Barbade","Bahamas","Jamaïque","Belize"],
+3
+]
+
+],
+
+countries:[
+
+[
+"Quel pays a Londres comme capitale ?",
+"Royaume-Uni",
+["Royaume-Uni","Irlande","Canada","Australie"],
+1
+],
+
+[
+"Quel pays a Canberra comme capitale ?",
+"Australie",
+["Australie","Nouvelle-Zélande","Fidji","Canada"],
+1
+],
+
+[
+"Quel pays a Wellington comme capitale ?",
+"Nouvelle-Zélande",
+["Nouvelle-Zélande","Australie","Irlande","Fidji"],
+1
+],
+
+[
+"Quel pays a Dacca comme capitale ?",
+"Bangladesh",
+["Bangladesh","Pakistan","Inde","Malaisie"],
+2
+],
+
+[
+"Quel pays a Nairobi comme capitale ?",
+"Kenya",
+["Kenya","Ghana","Nigeria","Ouganda"],
+2
+],
+
+[
+"Quel pays a Kampala comme capitale ?",
+"Ouganda",
+["Ouganda","Kenya","Rwanda","Ghana"],
+2
+],
+
+[
+"Quel pays a Lusaka comme capitale ?",
+"Zambie",
+["Zambie","Zimbabwe","Namibie","Botswana"],
+2
+],
+
+[
+"Quel pays a Harare comme capitale ?",
+"Zimbabwe",
+["Zimbabwe","Zambie","Botswana","Namibie"],
+3
+],
+
+[
+"Quel pays a Gaborone comme capitale ?",
+"Botswana",
+["Botswana","Namibie","Zambie","Rwanda"],
+3
+],
+
+[
+"Quel pays a Windhoek comme capitale ?",
+"Namibie",
+["Namibie","Botswana","Zimbabwe","Afrique du Sud"],
+3
+]
+
+],
+
+challenge:[
+
+[
+"Dans quel pays l’anglais et le français sont-ils langues officielles ?",
+"Canada",
+["Canada","Australie","Jamaïque","Ghana"],
+1
+],
+
+[
+"Quel pays d’Océanie a Suva pour capitale ?",
+"Fidji",
+["Fidji","Australie","Nouvelle-Zélande","Samoa"],
+1
+],
+
+[
+"Quel pays a Nassau pour capitale ?",
+"Bahamas",
+["Bahamas","Jamaïque","Barbade","Belize"],
+2
+],
+
+[
+"Quel pays a Dacca pour capitale ?",
+"Bangladesh",
+["Bangladesh","Inde","Pakistan","Népal"],
+2
+],
+
+[
+"Quel pays a Accra pour capitale ?",
+"Ghana",
+["Ghana","Nigeria","Kenya","Ouganda"],
+2
+],
+
+[
+"Quel pays a Abuja pour capitale ?",
+"Nigeria",
+["Nigeria","Ghana","Kenya","Zambie"],
+3
+],
+
+[
+"Quel pays a Kigali pour capitale ?",
+"Rwanda",
+["Rwanda","Ouganda","Kenya","Burundi"],
+3
+],
+
+[
+"Quel pays a Windhoek pour capitale ?",
+"Namibie",
+["Namibie","Botswana","Zimbabwe","Zambie"],
+3
+],
+
+[
+"Quel pays a Islamabad pour capitale ?",
+"Pakistan",
+["Pakistan","Inde","Malaisie","Philippines"],
+3
+],
+
+[
+"Quel pays a Pretoria pour capitale administrative ?",
+"Afrique du Sud",
+["Afrique du Sud","Nigeria","Ghana","Kenya"],
+3
+]
+
+]
+
+};
+
+
+/* =========================================================
+   QUIZ VARIABLES
+========================================================= */
+
 let quizQuestions=[];
 let currentQuestion=0;
-let quizScore=0;
+let score=0;
 let combo=0;
-let timer=null;
-let timeLeft=0;
-let lastQuizMode="classic";
+let maxCombo=0;
+let correctAnswers=0;
+let timeLeft=15;
+let maxTime=15;
+let currentMode="classic";
+let answered=false;
 
-function randomArray(array){
-  return [...array].sort(()=>Math.random()-.5);
+let bestScore =
+  Number(
+    localStorage.getItem(
+      "worldEnglishBest"
+    )||0
+  );
+
+
+/* =========================================================
+   QUIZ
+========================================================= */
+
+function shuffle(a){
+
+  const x=[...a];
+
+  for(
+    let i=x.length-1;
+    i>0;
+    i--
+  ){
+
+    const j =
+      Math.floor(
+        Math.random()*(i+1)
+      );
+
+    [x[i],x[j]] =
+      [x[j],x[i]];
+
+  }
+
+  return x;
 }
 
-function randomCountries(count=10){
-  return randomArray(countries).slice(0,count);
+function getMultiplier(){
+
+  return combo>=8
+    ?4
+    :
+  combo>=6
+    ?3
+    :
+  combo>=4
+    ?2
+    :
+  combo>=2
+    ?1.5
+    :
+    1;
+
 }
 
-function getWrongCapitals(correct,count=3){
+function levelData(l){
 
-  return randomArray(
-    countries.filter(c=>c.capital!==correct)
-  )
-  .slice(0,count)
-  .map(c=>c.capital);
-}
-
-function getWrongCountries(correct,count=3){
-
-  return randomArray(
-    countries.filter(c=>c.name!==correct)
-  )
-  .slice(0,count)
-  .map(c=>c.name);
-}
-
-function createClassicQuestion(country){
-
-  const types=[
-    "capital",
-    "continent",
-    "country"
-  ];
-
-  const type=types[Math.floor(Math.random()*types.length)];
-
-  if(type==="capital"){
-
-    const answers=randomArray([
-      country.capital,
-      ...getWrongCapitals(country.capital,3)
-    ]);
-
-    return {
-      text:language==="en"
-        ? `What is the capital of ${country.name}?`
-        : `Quelle est la capitale de ${country.name} ?`,
-      answers,
-      correct:country.capital
+  return l===1
+    ?{
+      name:"FACILE",
+      icon:"🟢",
+      time:15,
+      base:100,
+      cls:"easy"
+    }
+    :
+  l===2
+    ?{
+      name:"MOYEN",
+      icon:"🟡",
+      time:12,
+      base:150,
+      cls:"medium"
+    }
+    :
+    {
+      name:"DIFFICILE",
+      icon:"🔴",
+      time:9,
+      base:200,
+      cls:"hard"
     };
-  }
 
-  if(type==="continent"){
-
-    const answers=randomArray([
-      country.continent,
-      ...randomArray(
-        ["Europe","Asie","Afrique","Amérique","Océanie"]
-        .filter(x=>x!==country.continent)
-      ).slice(0,3)
-    ]);
-
-    return {
-      text:language==="en"
-        ? `Which continent is ${country.name} in?`
-        : `Sur quel continent se trouve ${country.name} ?`,
-      answers,
-      correct:country.continent
-    };
-  }
-
-  const answers=randomArray([
-    country.name,
-    ...getWrongCountries(country.name,3)
-  ]);
-
-  return {
-    text:language==="en"
-      ? `Which country has ${country.capital} as its capital?`
-      : `Quel pays a ${country.capital} comme capitale ?`,
-    answers,
-    correct:country.name
-  };
 }
 
-function createCapitalQuestion(country){
+document
+  .querySelectorAll(".mode")
+  .forEach(
+    b =>
+      b.addEventListener(
+        "click",
+        ()=>startQuiz(b.dataset.mode)
+      )
+  );
 
-  const answers=randomArray([
-    country.capital,
-    ...getWrongCapitals(country.capital,3)
-  ]);
+document
+  .getElementById("homeQuiz")
+  .addEventListener(
+    "click",
+    ()=>showSection("quiz")
+  );
 
-  return {
-    text:language==="en"
-      ? `What is the capital of ${country.name}?`
-      : `Quelle est la capitale de ${country.name} ?`,
-    answers,
-    correct:country.capital
-  };
-}
-
-function createCountryQuestion(country){
-
-  const answers=randomArray([
-    country.name,
-    ...getWrongCountries(country.name,3)
-  ]);
-
-  return {
-    text:language==="en"
-      ? `Which country has ${country.capital} as its capital?`
-      : `Quel pays a ${country.capital} comme capitale ?`,
-    answers,
-    correct:country.name
-  };
-}
-
-function createChallengeQuestion(country){
-
-  const possible=[
-    "capital",
-    "continent",
-    "country"
-  ];
-
-  const type=possible[
-    Math.floor(Math.random()*possible.length)
-  ];
-
-  let q;
-
-  if(type==="capital"){
-    q=createCapitalQuestion(country);
-  }else if(type==="country"){
-    q=createCountryQuestion(country);
-  }else{
-    q=createClassicQuestion(country);
-  }
-
-  return q;
-}
 
 function startQuiz(mode){
 
-  if(!username){
-    document.getElementById("usernameModal").classList.remove("hidden");
-    return;
-  }
-
   currentMode=mode;
-  lastQuizMode=mode;
-  currentQuestion=0;
-  quizScore=0;
+
+  clearInterval(timerInterval);
+
+  score=0;
   combo=0;
+  maxCombo=0;
+  correctAnswers=0;
+  currentQuestion=0;
 
-  const selected=randomCountries(10);
+  quizQuestions =
+    shuffle(
+      questionPools[mode]
+    )
+    .slice(0,10)
+    .map(
+      x=>({
+        q:x[0],
+        a:x[1],
+        options:x[2],
+        level:x[3]
+      })
+    );
 
-  quizQuestions=selected.map(country=>{
+  document
+    .getElementById("quizStart")
+    .style.display="none";
 
-    if(mode==="capitals"){
-      return createCapitalQuestion(country);
-    }
+  document
+    .getElementById("victory")
+    .style.display="none";
 
-    if(mode==="countries"){
-      return createCountryQuestion(country);
-    }
+  document
+    .getElementById("quizGame")
+    .style.display="block";
 
-    if(mode==="challenge"){
-      return createChallengeQuestion(country);
-    }
+  updateQuizStats();
 
-    return createClassicQuestion(country);
+  loadQuestion();
+
+  window.scrollTo({
+    top:0,
+    behavior:"smooth"
   });
 
-  showSection("quizSection");
-
-  updateQuizHeader();
-  showQuestion();
 }
 
-function updateQuizHeader(){
 
-  const names={
-    classic:"🌍 Classic",
-    capitals:"🏛️ Capitales",
-    countries:"🗺️ Countries",
-    challenge:"🔥 Challenge"
-  };
+function loadQuestion(){
 
-  document.getElementById("quizModeName").textContent=
-    names[currentMode] || "QUIZ";
+  clearInterval(timerInterval);
 
-  document.getElementById("questionNumber").textContent=
-    `${currentQuestion+1}/${quizQuestions.length}`;
+  answered=false;
 
-  document.getElementById("comboValue").textContent=combo;
-  document.getElementById("quizScore").textContent=quizScore;
+  const q=
+    quizQuestions[currentQuestion];
 
-  const progress=
-    (currentQuestion/quizQuestions.length)*100;
+  const d=
+    levelData(q.level);
 
-  document.getElementById("quizProgress").style.width=
-    progress+"%";
+  maxTime=d.time;
+  timeLeft=maxTime;
+
+  document
+    .getElementById("questionNumber")
+    .textContent =
+      `Question ${currentQuestion+1}/${quizQuestions.length}`;
+
+  document
+    .getElementById("difficultyText")
+    .textContent=d.name;
+
+  const badge=
+    document.getElementById("levelBadge");
+
+  badge.textContent =
+    `${d.icon} ${d.name}`;
+
+  badge.className =
+    `level ${d.cls}`;
+
+  document
+    .getElementById("questionText")
+    .textContent=q.q;
+
+  document
+    .getElementById("feedback")
+    .innerHTML="";
+
+  document
+    .getElementById("nextBtn")
+    .style.display="none";
+
+  document
+    .getElementById("progressFill")
+    .style.width =
+      `${currentQuestion/quizQuestions.length*100}%`;
+
+  const box=
+    document.getElementById("answers");
+
+  box.innerHTML="";
+
+  shuffle(q.options)
+    .forEach(o=>{
+
+      const b=
+        document.createElement("button");
+
+      b.className="answer";
+
+      b.textContent=o;
+
+      b.addEventListener(
+        "click",
+        ()=>answerQuestion(o,b)
+      );
+
+      box.appendChild(b);
+
+    });
+
+  updateTimer();
+
+  timerInterval =
+    setInterval(
+      ()=>{
+
+        timeLeft =
+          Math.max(
+            0,
+            timeLeft-.1
+          );
+
+        updateTimer();
+
+        if(timeLeft<=0){
+
+          clearInterval(timerInterval);
+
+          timeoutQuestion();
+
+        }
+
+      },
+      100
+    );
+
 }
 
-function getQuestionTime(){
 
-  if(currentMode==="challenge") return 8;
-  if(currentMode==="capitals") return 12;
-  if(currentMode==="countries") return 12;
+function updateTimer(){
 
-  return 15;
-}
+  const p=
+    timeLeft/maxTime*100;
 
-function startTimer(){
+  document
+    .getElementById("timerFill")
+    .style.width =
+      p+"%";
 
-  clearInterval(timer);
+  document
+    .getElementById("timerText")
+    .textContent =
+      Math.ceil(timeLeft)+"s";
 
-  timeLeft=getQuestionTime();
+  const f=
+    document.getElementById("timerFill");
 
-  const total=timeLeft;
+  const t=
+    document.getElementById("timerText");
 
-  const bar=document.getElementById("timerProgress");
+  if(p<=30){
 
-  bar.style.width="100%";
+    f.style.background="#ff3154";
+    t.style.color="#ff637d";
 
-  timer=setInterval(()=>{
+  }else if(p<=60){
 
-    timeLeft--;
-
-    bar.style.width=
-      Math.max(0,(timeLeft/total)*100)+"%";
-
-    if(timeLeft<=0){
-
-      clearInterval(timer);
-
-      answerQuestion(null);
-    }
-
-  },1000);
-}
-
-function showQuestion(){
-
-  clearInterval(timer);
-
-  if(currentQuestion>=quizQuestions.length){
-    finishQuiz();
-    return;
-  }
-
-  const q=quizQuestions[currentQuestion];
-
-  document.getElementById("questionText").textContent=q.text;
-
-  const answers=document.getElementById("answers");
-
-  answers.innerHTML="";
-
-  q.answers.forEach(answer=>{
-
-    const button=document.createElement("button");
-
-    button.className="answer";
-    button.textContent=answer;
-
-    button.onclick=()=>{
-      answerQuestion(answer,button);
-    };
-
-    answers.appendChild(button);
-  });
-
-  updateQuizHeader();
-  startTimer();
-}
-
-function answerQuestion(answer,clickedButton){
-
-  clearInterval(timer);
-
-  const q=quizQuestions[currentQuestion];
-
-  const buttons=[
-    ...document.querySelectorAll(".answer")
-  ];
-
-  buttons.forEach(b=>{
-    b.disabled=true;
-
-    if(b.textContent===q.correct){
-      b.classList.add("correct");
-    }
-  });
-
-  if(answer===q.correct){
-
-    if(clickedButton){
-      clickedButton.classList.add("correct");
-    }
-
-    combo++;
-
-    let points=100;
-
-    points+=Math.max(0,timeLeft*5);
-    points+=Math.min(combo*20,100);
-
-    if(currentMode==="challenge"){
-      points=Math.round(points*1.5);
-    }
-
-    quizScore+=points;
+    f.style.background="#ffd04d";
+    t.style.color="#ffd04d";
 
   }else{
 
-    combo=0;
+    f.style.background="#1683ff";
+    t.style.color="#59baff";
 
-    if(clickedButton){
-      clickedButton.classList.add("wrong");
-    }
   }
 
-  updateQuizHeader();
-
-  setTimeout(()=>{
-
-    currentQuestion++;
-
-    showQuestion();
-
-  },850);
 }
+
+
+function answerQuestion(sel,btn){
+
+  if(answered)return;
+
+  answered=true;
+
+  clearInterval(timerInterval);
+
+  const q=
+    quizQuestions[currentQuestion];
+
+  document
+    .querySelectorAll(".answer")
+    .forEach(
+      b=>{
+
+        b.disabled=true;
+
+        if(b.textContent===q.a){
+          b.classList.add("correct");
+        }
+
+      }
+    );
+
+  if(sel===q.a){
+
+    btn.classList.add("correct");
+
+    correctAnswers++;
+
+    combo++;
+
+    maxCombo =
+      Math.max(
+        maxCombo,
+        combo
+      );
+
+    const d=
+      levelData(q.level);
+
+    const mult=
+      getMultiplier();
+
+    const bonus=
+      Math.round(
+        timeLeft/maxTime*50
+      );
+
+    const points=
+      Math.round(
+        d.base*mult
+      )+bonus;
+
+    score+=points;
+
+    document
+      .getElementById("feedback")
+      .innerHTML =
+        `✅ Correct ! <span style="color:#50e99b">+${points} points</span>`;
+
+    if(combo>=2){
+      showCombo();
+    }
+
+  }else{
+
+    btn.classList.add("wrong");
+
+    combo=0;
+
+    document
+      .getElementById("feedback")
+      .innerHTML =
+        `❌ Raté ! La bonne réponse était <strong>${q.a}</strong>`;
+
+  }
+
+  updateQuizStats();
+
+  document
+    .getElementById("nextBtn")
+    .style.display="inline-block";
+
+}
+
+
+function timeoutQuestion(){
+
+  if(answered)return;
+
+  answered=true;
+
+  combo=0;
+
+  const q=
+    quizQuestions[currentQuestion];
+
+  document
+    .querySelectorAll(".answer")
+    .forEach(
+      b=>{
+
+        b.disabled=true;
+
+        if(b.textContent===q.a){
+          b.classList.add("correct");
+        }
+
+      }
+    );
+
+  document
+    .getElementById("feedback")
+    .innerHTML =
+      `⏰ Temps écoulé ! La réponse était <strong>${q.a}</strong>`;
+
+  updateQuizStats();
+
+  document
+    .getElementById("nextBtn")
+    .style.display="inline-block";
+
+}
+
+
+document
+  .getElementById("nextBtn")
+  .addEventListener(
+    "click",
+    ()=>{
+
+      currentQuestion++;
+
+      currentQuestion>=quizQuestions.length
+        ?finishQuiz()
+        :loadQuestion();
+
+    }
+  );
+
+
+function updateQuizStats(){
+
+  document
+    .getElementById("scoreStat")
+    .textContent=score;
+
+  document
+    .getElementById("comboStat")
+    .textContent=combo;
+
+  document
+    .getElementById("multiplierStat")
+    .textContent=
+      "x"+getMultiplier();
+
+  document
+    .getElementById("bestStat")
+    .textContent=bestScore;
+
+  document
+    .getElementById("homeBest")
+    .textContent=bestScore;
+
+  document
+    .getElementById("startBest")
+    .textContent=bestScore;
+
+}
+
+
+function showCombo(){
+
+  const p=
+    document.getElementById("comboPopup");
+
+  p.textContent =
+    `🔥 COMBO x${combo} • MULTIPLICATEUR x${getMultiplier()}`;
+
+  p.classList.add("show");
+
+  setTimeout(
+    ()=>p.classList.remove("show"),
+    1200
+  );
+
+}
+
+
+/* =========================================================
+   FIN QUIZ
+========================================================= */
 
 async function finishQuiz(){
 
-  clearInterval(timer);
+  clearInterval(timerInterval);
 
-  showSection("resultSection");
+  document
+    .getElementById("quizGame")
+    .style.display="none";
 
-  document.getElementById("finalQuizScore").textContent=
-    quizScore;
+  document
+    .getElementById("victory")
+    .style.display="block";
 
-  document.getElementById("resultMessage").textContent=
-    language==="en"
-      ? `You scored ${quizScore} points!`
-      : `Tu as obtenu ${quizScore} points !`;
+  const total=
+    quizQuestions.length;
 
-  const best=
-    Number(localStorage.getItem("wexBestScore")||0);
+  const acc=
+    Math.round(
+      correctAnswers/total*100
+    );
 
-  if(quizScore>best){
-    localStorage.setItem("wexBestScore",quizScore);
-    updateBestScore();
+  let title;
+  let icon;
+  let msg;
+
+  if(acc>=90){
+
+    icon="🏆";
+    title="MAÎTRE DU MONDE";
+    msg=
+      "Tu connais vraiment bien les pays anglophones.";
+
+  }else if(acc>=70){
+
+    icon="🔥";
+    title="EXCELLENT";
+    msg=
+      "Très bon résultat. Continue comme ça !";
+
+  }else if(acc>=50){
+
+    icon="🌍";
+    title="BIEN JOUÉ";
+    msg=
+      "Tu progresses, encore quelques révisions !";
+
+  }else{
+
+    icon="📚";
+    title="À RÉVISER";
+    msg=
+      "Rejoue une partie pour améliorer ton score !";
+
   }
 
-  await saveQuizResult();
+  document
+    .getElementById("victoryIcon")
+    .textContent=icon;
+
+  document
+    .getElementById("victoryTitle")
+    .textContent=title;
+
+  document
+    .getElementById("finalScore")
+    .textContent=
+      score+" points";
+
+  document
+    .getElementById("victoryMessage")
+    .textContent=msg;
+
+  document
+    .getElementById("finalCorrect")
+    .textContent=
+      `${correctAnswers}/${total}`;
+
+  document
+    .getElementById("finalAccuracy")
+    .textContent=
+      acc+"%";
+
+  document
+    .getElementById("finalCombo")
+    .textContent=maxCombo;
+
+  const rec=
+    document.getElementById("newRecord");
+
+  if(score>bestScore){
+
+    bestScore=score;
+
+    localStorage.setItem(
+      "worldEnglishBest",
+      bestScore
+    );
+
+    rec.textContent=
+      "🏆 NOUVEAU RECORD !";
+
+  }else{
+
+    rec.textContent=
+      `🏆 Record à battre : ${bestScore}`;
+
+  }
+
+  updateQuizStats();
+
+  /* ENREGISTREMENT FIREBASE */
+
+  if(username){
+
+    try{
+
+      await window.firebaseReady;
+
+      await window.firebaseAddDoc(
+        window.firebaseCollection(
+          window.firebaseDB,
+          "results"
+        ),
+        {
+          username:username,
+          mode:currentMode,
+          score:score,
+          timestamp:
+            window.firebaseServerTimestamp()
+        }
+      );
+
+      await refreshStudentDashboard();
+
+    }catch(error){
+
+      console.error(
+        "Erreur Firebase résultat:",
+        error
+      );
+
+    }
+
+  }
+
+  window.scrollTo({
+    top:0,
+    behavior:"smooth"
+  });
+
 }
 
-async function saveQuizResult(){
+
+/* =========================================================
+   BOUTONS FIN
+========================================================= */
+
+document
+  .getElementById("replayBtn")
+  .addEventListener(
+    "click",
+    ()=>startQuiz(currentMode)
+  );
+
+document
+  .getElementById("homeBtn")
+  .addEventListener(
+    "click",
+    ()=>{
+
+      document
+        .getElementById("victory")
+        .style.display="none";
+
+      document
+        .getElementById("quizStart")
+        .style.display="block";
+
+      showSection("home");
+
+    }
+  );
+
+
+/* =========================================================
+   LANGUE
+========================================================= */
+
+let language =
+  localStorage.getItem(
+    "worldEnglishLanguage"
+  )||"";
+
+let username =
+  localStorage.getItem(
+    "worldEnglishUsername"
+  )||"";
+
+if(language){
+
+  document
+    .getElementById("languageModal")
+    .classList.add("hidden");
+
+}else{
+
+  document
+    .getElementById("languageModal")
+    .classList.remove("hidden");
+
+}
+
+
+function selectLanguage(lang){
+
+  language=lang;
+
+  localStorage.setItem(
+    "worldEnglishLanguage",
+    lang
+  );
+
+  document
+    .getElementById("languageModal")
+    .classList.add("hidden");
+
+  if(!username){
+
+    document
+      .getElementById("usernameModal")
+      .classList.remove("hidden");
+
+  }
+
+}
+
+
+document
+  .getElementById("frBtn")
+  .addEventListener(
+    "click",
+    ()=>selectLanguage("fr")
+  );
+
+document
+  .getElementById("enBtn")
+  .addEventListener(
+    "click",
+    ()=>selectLanguage("en")
+  );
+
+
+/* =========================================================
+   USERNAME
+========================================================= */
+
+function saveUsername(){
+
+  const value =
+    document
+      .getElementById("usernameInput")
+      .value
+      .trim();
+
+  if(!value){
+
+    alert(
+      language==="en"
+        ?"Please enter a username."
+        :"Entre ton pseudo."
+    );
+
+    return;
+
+  }
+
+  username=value;
+
+  localStorage.setItem(
+    "worldEnglishUsername",
+    username
+  );
+
+  document
+    .getElementById("usernameModal")
+    .classList.add("hidden");
+
+  document
+    .getElementById("dashboardUsername")
+    .textContent=username;
+
+  refreshStudentDashboard();
+
+}
+
+
+document
+  .getElementById("usernameBtn")
+  .addEventListener(
+    "click",
+    saveUsername
+  );
+
+document
+  .getElementById("usernameInput")
+  .addEventListener(
+    "keydown",
+    e=>{
+      if(e.key==="Enter"){
+        saveUsername();
+      }
+    }
+  );
+
+
+if(username){
+
+  document
+    .getElementById("dashboardUsername")
+    .textContent=username;
+
+}else if(language){
+
+  document
+    .getElementById("usernameModal")
+    .classList.remove("hidden");
+
+}
+
+
+/* =========================================================
+   DASHBOARD ELEVE
+========================================================= */
+
+async function refreshStudentDashboard(){
+
+  if(!username)return;
 
   try{
 
     await window.firebaseReady;
 
-    await window.firebaseAddDoc(
-      window.firebaseCollection(
-        window.firebaseDB,
-        "results"
-      ),
-      {
-        username,
-        mode:currentMode,
-        score:quizScore,
-        timestamp:window.firebaseServerTimestamp()
+    const resultsSnap =
+      await window.firebaseGetDocs(
+        window.firebaseCollection(
+          window.firebaseDB,
+          "results"
+        )
+      );
+
+    let latestScore=0;
+    let latestTime=-1;
+    let foundResult=false;
+
+    resultsSnap.forEach(
+      docSnap=>{
+
+        const data=docSnap.data();
+
+        const user =
+          String(data.username||"")
+            .trim()
+            .toLowerCase();
+
+        if(
+          user===
+          username
+            .trim()
+            .toLowerCase()
+        ){
+
+          foundResult=true;
+
+          const seconds =
+            data.timestamp?.seconds||0;
+
+          if(seconds>=latestTime){
+
+            latestTime=seconds;
+
+            latestScore =
+              Number(
+                data.score||0
+              );
+
+          }
+
+        }
+
       }
     );
 
+    const pointsSnap =
+      await window.firebaseGetDocs(
+        window.firebaseCollection(
+          window.firebaseDB,
+          "points"
+        )
+      );
+
+    let totalPoints=0;
+
+    pointsSnap.forEach(
+      docSnap=>{
+
+        const data=docSnap.data();
+
+        const user =
+          String(data.username||"")
+            .trim()
+            .toLowerCase();
+
+        if(
+          user===
+          username
+            .trim()
+            .toLowerCase()
+        ){
+
+          totalPoints +=
+            Number(
+              data.points||0
+            );
+
+        }
+
+      }
+    );
+
+    /*
+      Même sans résultat,
+      les points sont visibles.
+    */
+
+    const finalScore =
+      latestScore+totalPoints;
+
+    document
+      .getElementById("homeQuizScore")
+      .textContent=
+        latestScore;
+
+    document
+      .getElementById("homeBonusPoints")
+      .textContent=
+        totalPoints;
+
+    document
+      .getElementById("homeFinalScore")
+      .textContent=
+        finalScore;
+
+    document
+      .getElementById("studentQuizScore")
+      ?.textContent;
+
+    /*
+      Si aucun résultat n'existe,
+      score quiz = 0.
+      Si le professeur supprime tout,
+      les trois valeurs deviennent automatiquement 0.
+    */
+
   }catch(error){
 
-    console.error("Firebase result error:",error);
+    console.error(
+      "Dashboard Firebase:",
+      error
+    );
 
   }
+
 }
 
-function updateBestScore(){
 
-  const best=
-    Number(localStorage.getItem("wexBestScore")||0);
+/* =========================================================
+   PROFESSOR
+========================================================= */
 
-  document.getElementById("bestScore").textContent=best;
-}
-
-function restartLastQuiz(){
-  startQuiz(lastQuizMode);
-}
-
-function quitQuiz(){
-
-  clearInterval(timer);
-
-  if(confirm(
-    language==="en"
-      ? "Quit this quiz?"
-      : "Quitter ce quiz ?"
-  )){
-    backHome();
-  }else{
-    showSection("quizSection");
-    showQuestion();
-  }
-}
-
-updateBestScore();
-</script><script>
 let professorSpace="";
+
+
+document
+  .getElementById("professorButton")
+  .addEventListener(
+    "click",
+    ()=>{
+
+      document
+        .getElementById("profCodeInput")
+        .value="";
+
+      document
+        .getElementById("profCodeModal")
+        .classList
+        .remove("hidden");
+
+      setTimeout(
+        ()=>{
+          document
+            .getElementById("profCodeInput")
+            .focus();
+        },
+        100
+      );
+
+    }
+  );
+
+
+function closeProfessorModal(){
+
+  document
+    .getElementById("profCodeModal")
+    .classList
+    .add("hidden");
+
+}
+
+
+document
+  .getElementById("closeProfModal")
+  .addEventListener(
+    "click",
+    closeProfessorModal
+  );
+
+
+document
+  .getElementById("profCodeBtn")
+  .addEventListener(
+    "click",
+    checkProfessorCode
+  );
+
+
+document
+  .getElementById("profCodeInput")
+  .addEventListener(
+    "keydown",
+    e=>{
+
+      if(e.key==="Enter"){
+        checkProfessorCode();
+      }
+
+    }
+  );
+
 
 function checkProfessorCode(){
 
-  const code=
-    document.getElementById("profCodeInput")
+  const code =
+    document
+      .getElementById("profCodeInput")
       .value
       .trim();
 
-  closeModal("profCodeModal");
+  closeProfessorModal();
+
+  /*
+    CODE 1 :
+    POINTS DIRECTEMENT
+  */
 
   if(code==="WEX-POINTS-2026"){
 
@@ -1855,14 +3744,26 @@ function checkProfessorCode(){
 
     showSection("professorSection");
 
-    document.getElementById("pointsPanel")
-      .classList.remove("hidden");
+    document
+      .getElementById("pointsPanel")
+      .classList
+      .remove("hidden");
 
-    document.getElementById("resultsPanel")
-      .classList.add("hidden");
+    document
+      .getElementById("resultsPanel")
+      .classList
+      .add("hidden");
+
+    loadProfessorPoints();
 
     return;
+
   }
+
+  /*
+    CODE 2 :
+    RESULTATS DIRECTEMENT
+  */
 
   if(code==="WEX-RESULTS-2026"){
 
@@ -1870,60 +3771,86 @@ function checkProfessorCode(){
 
     showSection("professorSection");
 
-    document.getElementById("pointsPanel")
-      .classList.add("hidden");
+    document
+      .getElementById("pointsPanel")
+      .classList
+      .add("hidden");
 
-    document.getElementById("resultsPanel")
-      .classList.remove("hidden");
+    document
+      .getElementById("resultsPanel")
+      .classList
+      .remove("hidden");
 
     loadProfessorResults();
 
     return;
+
   }
 
   alert(
     language==="en"
-      ? "Invalid professor code."
-      : "Code professeur incorrect."
+      ?"Invalid professor code."
+      :"Code professeur incorrect."
   );
+
 }
+
+
+/* =========================================================
+   AJOUT POINTS
+========================================================= */
+
+document
+  .getElementById("addPointsBtn")
+  .addEventListener(
+    "click",
+    addProfessorPoints
+  );
+
 
 async function addProfessorPoints(){
 
-  const student=
-    document.getElementById("pointsUsername")
+  const student =
+    document
+      .getElementById("studentNameInput")
       .value
       .trim();
 
-  const amount=
+  const amount =
     Number(
-      document.getElementById("pointsAmount")
+      document
+        .getElementById("pointsAmountInput")
         .value
     );
 
-  const status=
-    document.getElementById("pointsStatus");
+  const message =
+    document
+      .getElementById("pointsMessage");
 
   if(!student){
 
-    status.style.color="var(--red)";
-    status.textContent=
+    message.style.color="#ff637d";
+
+    message.textContent =
       language==="en"
-        ? "Enter the student's name."
-        : "Entre le nom de l'élève.";
+        ?"Enter the student's username."
+        :"Entre le pseudo de l'élève.";
 
     return;
+
   }
 
-  if(!Number.isFinite(amount) || amount<=0){
+  if(!Number.isFinite(amount)||amount<=0){
 
-    status.style.color="var(--red)";
-    status.textContent=
+    message.style.color="#ff637d";
+
+    message.textContent =
       language==="en"
-        ? "Enter a valid number of points."
-        : "Entre un nombre de points valide.";
+        ?"Enter a valid number of points."
+        :"Entre un nombre de points valide.";
 
     return;
+
   }
 
   try{
@@ -1938,40 +3865,67 @@ async function addProfessorPoints(){
       {
         username:student,
         points:amount,
-        timestamp:window.firebaseServerTimestamp()
+        timestamp:
+          window.firebaseServerTimestamp()
       }
     );
 
-    status.style.color="var(--green)";
+    message.style.color="#32e58b";
 
-    status.textContent=
-      language==="en"
-        ? `${amount} points added to ${student}.`
-        : `${amount} points ajoutés à ${student}.`;
+    message.textContent =
+      `✅ +${amount} points ajoutés à ${student}`;
 
-    document.getElementById("pointsUsername").value="";
-    document.getElementById("pointsAmount").value="";
+    document
+      .getElementById("studentNameInput")
+      .value="";
+
+    document
+      .getElementById("pointsAmountInput")
+      .value="";
+
+    await loadProfessorPoints();
+
+    /*
+      Si le professeur ajoute les points
+      à l'élève actuellement connecté,
+      le dashboard se met à jour.
+    */
+
+    await refreshStudentDashboard();
 
   }catch(error){
 
     console.error(error);
 
-    status.style.color="var(--red)";
+    message.style.color="#ff637d";
 
-    status.textContent=
+    message.textContent =
       language==="en"
-        ? "Firebase error. Check your Firestore settings."
-        : "Erreur Firebase. Vérifie les réglages Firestore.";
+        ?"Could not add points."
+        :"Impossible d'ajouter les points.";
+
   }
+
 }
 
-async function getStudentBonusPoints(student){
+
+/* =========================================================
+   LISTE POINTS PROF
+========================================================= */
+
+async function loadProfessorPoints(){
+
+  const box =
+    document.getElementById("pointsList");
+
+  box.innerHTML =
+    `<div class="empty">Chargement...</div>`;
 
   try{
 
     await window.firebaseReady;
 
-    const snap=
+    const snap =
       await window.firebaseGetDocs(
         window.firebaseCollection(
           window.firebaseDB,
@@ -1979,34 +3933,556 @@ async function getStudentBonusPoints(student){
         )
       );
 
-    let total=0;
+    const rows=[];
 
-    snap.forEach(docSnap=>{
+    snap.forEach(
+      docSnap=>{
 
-      const data=docSnap.data();
+        const data=docSnap.data();
 
-      if(
-        String(data.username||"")
-          .trim()
-          .toLowerCase()
-        ===
-        String(student||"")
-          .trim()
-          .toLowerCase()
-      ){
+        rows.push({
+          id:docSnap.id,
+          username:data.username||"—",
+          points:Number(data.points||0),
+          timestamp:data.timestamp
+        });
 
-        total+=Number(data.points||0);
       }
-    });
+    );
 
-    return total;
+    rows.sort(
+      (a,b)=>
+        (b.timestamp?.seconds||0)-
+        (a.timestamp?.seconds||0)
+    );
+
+    if(!rows.length){
+
+      box.innerHTML =
+        `<div class="empty">
+          Aucun point ajouté.
+        </div>`;
+
+      return;
+
+    }
+
+    box.innerHTML="";
+
+    rows.forEach(row=>{
+
+      const div =
+        document.createElement("div");
+
+      div.className="point-row";
+
+      const date =
+        formatDate(row.timestamp);
+
+      div.innerHTML=`
+
+        <div>
+          <strong>
+            +${row.points}
+          </strong>
+          points →
+          <b>${escapeHtml(row.username)}</b>
+
+          <br>
+
+          <small style="color:#7188a0">
+            ${date}
+          </small>
+        </div>
+
+        <button
+          class="delete-btn"
+          data-point-id="${row.id}"
+        >
+          Supprimer
+        </button>
+
+      `;
+
+      div
+        .querySelector(".delete-btn")
+        .addEventListener(
+          "click",
+          ()=>deleteProfessorPoint(row.id)
+        );
+
+      box.appendChild(div);
+
+    });
 
   }catch(error){
 
     console.error(error);
-    return 0;
+
+    box.innerHTML =
+      `<div class="empty">
+        Impossible de charger les points.
+      </div>`;
+
   }
+
 }
+
+
+/* =========================================================
+   DELETE POINT
+========================================================= */
+
+async function deleteProfessorPoint(id){
+
+  const confirmed =
+    confirm(
+      language==="en"
+        ?"Delete this added point?"
+        :"Supprimer ce point ajouté ?"
+    );
+
+  if(!confirmed)return;
+
+  try{
+
+    await window.firebaseReady;
+
+    await window.firebaseDeleteDoc(
+      window.firebaseDoc(
+        window.firebaseDB,
+        "points",
+        id
+      )
+    );
+
+    await loadProfessorPoints();
+
+    await refreshStudentDashboard();
+
+  }catch(error){
+
+    console.error(error);
+
+    alert(
+      language==="en"
+        ?"Could not delete the point."
+        :"Impossible de supprimer le point."
+    );
+
+  }
+
+}
+
+
+/* =========================================================
+   RESULTATS PROF
+========================================================= */
+
+async function loadProfessorResults(){
+
+  const body =
+    document.getElementById(
+      "resultsTableBody"
+    );
+
+  body.innerHTML=`
+
+    <tr>
+      <td colspan="5" class="empty">
+        Chargement...
+      </td>
+    </tr>
+
+  `;
+
+  try{
+
+    await window.firebaseReady;
+
+    const resultsSnap =
+      await window.firebaseGetDocs(
+        window.firebaseCollection(
+          window.firebaseDB,
+          "results"
+        )
+      );
+
+    const pointsSnap =
+      await window.firebaseGetDocs(
+        window.firebaseCollection(
+          window.firebaseDB,
+          "points"
+        )
+      );
+
+    /*
+      TOTAL DES POINTS PAR ELEVE
+    */
+
+    const pointsByUser={};
+
+    pointsSnap.forEach(
+      docSnap=>{
+
+        const data=docSnap.data();
+
+        const user =
+          String(data.username||"")
+            .trim()
+            .toLowerCase();
+
+        if(!pointsByUser[user]){
+          pointsByUser[user]=0;
+        }
+
+        pointsByUser[user] +=
+          Number(data.points||0);
+
+      }
+    );
+
+
+    const results=[];
+
+    resultsSnap.forEach(
+      docSnap=>{
+
+        const data=docSnap.data();
+
+        const usernameValue =
+          data.username||"—";
+
+        const normalized =
+          String(usernameValue)
+            .trim()
+            .toLowerCase();
+
+        const quizScore =
+          Number(
+            data.score||0
+          );
+
+        const bonus =
+          pointsByUser[normalized]||0;
+
+        results.push({
+
+          id:docSnap.id,
+
+          username:usernameValue,
+
+          mode:data.mode||"—",
+
+          score:quizScore,
+
+          finalScore:
+            quizScore+bonus,
+
+          timestamp:data.timestamp
+
+        });
+
+      }
+    );
+
+
+    results.sort(
+      (a,b)=>
+        (b.timestamp?.seconds||0)-
+        (a.timestamp?.seconds||0)
+    );
+
+
+    if(!results.length){
+
+      body.innerHTML=`
+
+        <tr>
+          <td
+            colspan="5"
+            class="empty"
+          >
+            Aucun résultat.
+          </td>
+        </tr>
+
+      `;
+
+      return;
+
+    }
+
+
+    body.innerHTML="";
+
+
+    results.forEach(r=>{
+
+      const tr =
+        document.createElement("tr");
+
+      tr.innerHTML=`
+
+        <td>
+          <b>
+            ${escapeHtml(r.username)}
+          </b>
+        </td>
+
+        <td>
+          ${modeName(r.mode)}
+        </td>
+
+        <td class="score-final">
+          ${r.finalScore} points
+        </td>
+
+        <td>
+          ${formatDate(r.timestamp)}
+        </td>
+
+        <td>
+          <button
+            class="delete-btn"
+            data-result-id="${r.id}"
+          >
+            🗑️ Supprimer
+          </button>
+        </td>
+
+      `;
+
+      tr
+        .querySelector(".delete-btn")
+        .addEventListener(
+          "click",
+          ()=>deleteProfessorResult(r.id)
+        );
+
+      body.appendChild(tr);
+
+    });
+
+
+  }catch(error){
+
+    console.error(error);
+
+    body.innerHTML=`
+
+      <tr>
+        <td
+          colspan="5"
+          class="empty"
+        >
+          Impossible de charger les résultats.
+        </td>
+      </tr>
+
+    `;
+
+  }
+
+}
+
+
+/* =========================================================
+   DELETE RESULTAT + POINTS
+========================================================= */
+
+async function deleteProfessorResult(id){
+
+  const confirmed =
+    confirm(
+      language==="en"
+        ?"Delete this result and all points added to this student?"
+        :"Supprimer ce résultat et tous les points ajoutés à cet élève ?"
+    );
+
+  if(!confirmed)return;
+
+
+  try{
+
+    await window.firebaseReady;
+
+    const db =
+      window.firebaseDB;
+
+
+    /*
+      On récupère le pseudo
+      du résultat à supprimer.
+    */
+
+    const resultSnap =
+      await window.firebaseGetDocs(
+        window.firebaseCollection(
+          db,
+          "results"
+        )
+      );
+
+    let studentToReset="";
+
+
+    resultSnap.forEach(
+      docSnap=>{
+
+        if(docSnap.id===id){
+
+          const data=
+            docSnap.data();
+
+          studentToReset =
+            String(
+              data.username||""
+            )
+            .trim()
+            .toLowerCase();
+
+        }
+
+      }
+    );
+
+
+    /*
+      SUPPRESSION DU RESULTAT
+    */
+
+    await window.firebaseDeleteDoc(
+      window.firebaseDoc(
+        db,
+        "results",
+        id
+      )
+    );
+
+
+    /*
+      SUPPRESSION DE TOUS LES POINTS
+      DE CET ELEVE
+    */
+
+    const pointsSnap =
+      await window.firebaseGetDocs(
+        window.firebaseCollection(
+          db,
+          "points"
+        )
+      );
+
+    const deletePromises=[];
+
+
+    pointsSnap.forEach(
+      docSnap=>{
+
+        const data=
+          docSnap.data();
+
+        const pointUser =
+          String(
+            data.username||""
+          )
+          .trim()
+          .toLowerCase();
+
+        if(
+          pointUser===
+          studentToReset
+        ){
+
+          deletePromises.push(
+            window.firebaseDeleteDoc(
+              window.firebaseDoc(
+                db,
+                "points",
+                docSnap.id
+              )
+            )
+          );
+
+        }
+
+      }
+    );
+
+
+    await Promise.all(
+      deletePromises
+    );
+
+
+    /*
+      SI C'EST L'ELEVE ACTUEL
+      SON ECRAN PASSE A 0
+    */
+
+    if(
+      String(username||"")
+        .trim()
+        .toLowerCase()
+      ===
+      studentToReset
+    ){
+
+      document
+        .getElementById("homeQuizScore")
+        .textContent="0";
+
+      document
+        .getElementById("homeBonusPoints")
+        .textContent="0";
+
+      document
+        .getElementById("homeFinalScore")
+        .textContent="0";
+
+    }
+
+
+    /*
+      Recharge tout
+    */
+
+    await loadProfessorResults();
+
+    await refreshStudentDashboard();
+
+
+  }catch(error){
+
+    console.error(error);
+
+    alert(
+      language==="en"
+        ?"Could not delete the result."
+        :"Impossible de supprimer le résultat."
+    );
+
+  }
+
+}
+
+
+/* =========================================================
+   OUTILS
+========================================================= */
+
+function escapeHtml(value){
+
+  return String(value)
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
+
+}
+
 
 function formatDate(timestamp){
 
@@ -2018,273 +4494,117 @@ function formatDate(timestamp){
 
     let date;
 
-    if(timestamp.toDate){
-      date=timestamp.toDate();
+    if(timestamp.seconds){
+
+      date =
+        new Date(
+          timestamp.seconds*1000
+        );
+
     }else{
+
       date=new Date(timestamp);
+
     }
 
-    return date.toLocaleDateString(
-      language==="en" ? "en-GB" : "fr-FR",
+    return date.toLocaleString(
+      "fr-FR",
       {
         day:"2-digit",
         month:"2-digit",
-        year:"numeric"
+        year:"numeric",
+        hour:"2-digit",
+        minute:"2-digit"
       }
     );
 
   }catch{
+
     return "—";
+
   }
+
 }
 
-function modeLabel(mode){
 
-  const labels={
-    classic:"🌍 Classic",
+function modeName(mode){
+
+  const names={
+    classic:"🔥 Classique",
     capitals:"🏛️ Capitales",
-    countries:"🗺️ Countries",
-    challenge:"🔥 Challenge"
+    countries:"🌍 Pays",
+    challenge:"💀 Challenge"
   };
 
-  return labels[mode] || mode;
+  return names[mode]||mode;
+
 }
 
-async function loadProfessorResults(){
 
-  const table=
-    document.getElementById("resultsTable");
+/* =========================================================
+   INITIALISATION
+========================================================= */
 
-  table.innerHTML=`
-    <tr>
-      <td colspan="5" class="empty">
-        Chargement...
-      </td>
-    </tr>
-  `;
+document
+  .getElementById("homeBest")
+  .textContent=bestScore;
 
-  try{
+document
+  .getElementById("startBest")
+  .textContent=bestScore;
 
-    await window.firebaseReady;
+document
+  .getElementById("bestStat")
+  .textContent=bestScore;
 
-    const resultSnap=
-      await window.firebaseGetDocs(
-        window.firebaseCollection(
-          window.firebaseDB,
-          "results"
-        )
-      );
 
-    const pointSnap=
-      await window.firebaseGetDocs(
-        window.firebaseCollection(
-          window.firebaseDB,
-          "points"
-        )
-      );
+/*
+  Actualisation automatique toutes les 3 secondes.
+  Donc si le professeur ajoute des points sur son PC,
+  l'écran de l'élève finit automatiquement par afficher :
 
-    const bonusMap=new Map();
+  Score quiz
+  + Points ajoutés
+  = Score final
 
-    pointSnap.forEach(docSnap=>{
+  Et si le professeur supprime le résultat,
+  tout revient à 0.
+*/
 
-      const data=docSnap.data();
+setInterval(
+  ()=>{
+    if(username){
+      refreshStudentDashboard();
+    }
+  },
+  3000
+);
 
-      const key=
-        String(data.username||"")
-          .trim()
-          .toLowerCase();
 
-      bonusMap.set(
-        key,
-        (bonusMap.get(key)||0)+Number(data.points||0)
-      );
-    });
+/* =========================================================
+   RESIZE CARTE
+========================================================= */
 
-    const results=[];
+window.addEventListener(
+  "resize",
+  ()=>{
 
-    resultSnap.forEach(docSnap=>{
+    if(mapLoaded){
 
-      const data=docSnap.data();
+      mapLoaded=false;
 
-      const key=
-        String(data.username||"")
-          .trim()
-          .toLowerCase();
+      d3
+        .select("#worldMap")
+        .selectAll("*")
+        .remove();
 
-      const bonus=
-        bonusMap.get(key)||0;
+      drawMap();
 
-      const finalScore=
-        Number(data.score||0)+bonus;
-
-      results.push({
-        id:docSnap.id,
-        username:data.username||"—",
-        mode:data.mode||"—",
-        score:Number(data.score||0),
-        finalScore,
-        timestamp:data.timestamp
-      });
-
-    });
-
-    results.sort((a,b)=>{
-
-      const ta=
-        a.timestamp?.seconds || 0;
-
-      const tb=
-        b.timestamp?.seconds || 0;
-
-      return tb-ta;
-    });
-
-    renderProfessorResults(results);
-
-  }catch(error){
-
-    console.error(error);
-
-    table.innerHTML=`
-      <tr>
-        <td colspan="5" class="empty">
-          Erreur Firebase.
-        </td>
-      </tr>
-    `;
-  }
-}
-
-function renderProfessorResults(results){
-
-  const table=
-    document.getElementById("resultsTable");
-
-  if(!results.length){
-
-    table.innerHTML=`
-      <tr>
-        <td colspan="5" class="empty">
-          Aucun résultat.
-        </td>
-      </tr>
-    `;
-
-    return;
-  }
-
-  table.innerHTML="";
-
-  results.forEach(result=>{
-
-    const tr=document.createElement("tr");
-
-    const tdStudent=document.createElement("td");
-    tdStudent.textContent=result.username;
-
-    const tdMode=document.createElement("td");
-    tdMode.textContent=modeLabel(result.mode);
-
-    const tdScore=document.createElement("td");
-    tdScore.innerHTML=
-      `<strong style="color:var(--blue2)">
-        ${result.finalScore}
-      </strong>`;
-
-    const tdDate=document.createElement("td");
-    tdDate.textContent=formatDate(result.timestamp);
-
-    const tdAction=document.createElement("td");
-
-    const deleteButton=document.createElement("button");
-
-    deleteButton.className="btn red";
-    deleteButton.textContent="🗑️ Supprimer";
-
-    deleteButton.onclick=()=>{
-      deleteProfessorResult(result.id);
-    };
-
-    tdAction.appendChild(deleteButton);
-
-    tr.append(
-      tdStudent,
-      tdMode,
-      tdScore,
-      tdDate,
-      tdAction
-    );
-
-    table.appendChild(tr);
-  });
-}
-
-async function deleteProfessorResult(id){
-
-  const confirmed=confirm(
-    language==="en"
-      ? "Delete this result?"
-      : "Supprimer ce résultat ?"
-  );
-
-  if(!confirmed) return;
-
-  try{
-
-    await window.firebaseReady;
-
-    await window.firebaseDeleteDoc(
-      window.firebaseDoc(
-        window.firebaseDB,
-        "results",
-        id
-      )
-    );
-
-    await loadProfessorResults();
-
-  }catch(error){
-
-    console.error(error);
-
-    alert(
-      language==="en"
-        ? "Could not delete the result."
-        : "Impossible de supprimer le résultat."
-    );
-  }
-}
-</script><script>
-function initApp(){
-
-  updateBestScore();
-
-  if(language){
-    document.getElementById("languageModal")
-      .classList.add("hidden");
-
-    applyLanguage();
-
-    if(!username){
-
-      document.getElementById("usernameModal")
-        .classList.remove("hidden");
-
-    }else{
-
-      updateUsername();
     }
 
-  }else{
-
-    document.getElementById("languageModal")
-      .classList.remove("hidden");
   }
+);
 
-  drawMap();
-}
-
-initApp();
 </script>
 
 </body>
