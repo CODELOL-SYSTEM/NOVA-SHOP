@@ -1,12 +1,19 @@
 /* =========================================================
-   NOVASHOP - APP.JS
-   Firebase Auth + Firestore + commandes + compte + admin
+   NOVASHOP - APP.JS COMPLET
+   Firebase Authentication
+   Firestore
+   Comptes
+   Commandes
+   Admin
+   Validation adresse
+   Panier
+   Favoris
    ========================================================= */
 
 "use strict";
 
 /* =========================================================
-   FIREBASE CONFIG
+   CONFIGURATION FIREBASE
    ========================================================= */
 
 const FIREBASE_CONFIG = {
@@ -19,11 +26,14 @@ const FIREBASE_CONFIG = {
   measurementId: "G-XNY5X2VMY9"
 };
 
-const ADMIN_EMAIL = "pc2alex.les@gmail.com";
-const ADMIN_CODE = "NOVA-ADMIN-2026";
+const ADMIN_EMAIL =
+  "pc2alex.les@gmail.com";
+
+const ADMIN_CODE =
+  "NOVA-ADMIN-2026";
 
 /* =========================================================
-   FIREBASE
+   FIREBASE VARIABLES
    ========================================================= */
 
 let firebaseApp = null;
@@ -33,45 +43,240 @@ let firebaseTools = null;
 let firestore = null;
 let firestoreTools = null;
 
-async function initFirebase() {
-  try {
-    const appModule = await import(
-      "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js"
+window.currentUser = null;
+
+let currentProfile = null;
+let currentOrders = [];
+
+/* =========================================================
+   STORAGE
+   ========================================================= */
+
+const STORAGE = {
+
+  cart:
+    "novashop_cart",
+
+  favorites:
+    "novashop_favorites",
+
+  profiles:
+    "novashop_profiles",
+
+  products:
+    "novashop_products"
+};
+
+/* =========================================================
+   DOM HELPER
+   ========================================================= */
+
+function $(id) {
+  return document.getElementById(id);
+}
+
+/* =========================================================
+   TOAST
+   ========================================================= */
+
+function toast(message) {
+
+  let box =
+    document.querySelector(
+      ".nova-toast"
     );
 
-    const authModule = await import(
-      "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js"
-    );
+  if (!box) {
 
-    const firestoreModule = await import(
-      "https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js"
-    );
+    box =
+      document.createElement(
+        "div"
+      );
 
-    firebaseApp = appModule.initializeApp(FIREBASE_CONFIG);
+    box.className =
+      "nova-toast";
 
-    firebaseAuth = authModule.getAuth(firebaseApp);
-    firebaseTools = authModule;
-
-    firestore = firestoreModule.getFirestore(firebaseApp);
-    firestoreTools = firestoreModule;
-
-    authModule.onAuthStateChanged(firebaseAuth, async user => {
-      window.currentUser = user || null;
-
-      updateAccountUI();
-
-      if (user) {
-        await loadUserProfile(user);
-        await loadUserOrders();
-      } else {
-        clearUserOrders();
+    Object.assign(
+      box.style,
+      {
+        position: "fixed",
+        left: "50%",
+        bottom: "25px",
+        transform:
+          "translateX(-50%)",
+        zIndex: "999999",
+        background: "#111827",
+        color: "#fff",
+        padding:
+          "14px 20px",
+        borderRadius:
+          "12px",
+        boxShadow:
+          "0 10px 30px rgba(0,0,0,.35)",
+        fontWeight: "700",
+        maxWidth: "90%",
+        textAlign: "center",
+        transition: ".25s",
+        opacity: "0"
       }
-    });
+    );
 
-    console.log("Firebase initialisé.");
+    document.body.appendChild(
+      box
+    );
+  }
+
+  box.textContent =
+    message;
+
+  box.style.opacity =
+    "1";
+
+  clearTimeout(
+    box._timer
+  );
+
+  box._timer =
+    setTimeout(
+      () => {
+        box.style.opacity =
+          "0";
+      },
+      3500
+    );
+}
+
+/* =========================================================
+   LOCAL STORAGE LOAD
+   ========================================================= */
+
+function load(
+  key,
+  fallback
+) {
+
+  try {
+
+    const value =
+      localStorage.getItem(
+        key
+      );
+
+    if (!value) {
+      return fallback;
+    }
+
+    return JSON.parse(
+      value
+    );
+
+  } catch {
+
+    return fallback;
+  }
+}
+
+/* =========================================================
+   LOCAL STORAGE SAVE
+   ========================================================= */
+
+function save(
+  key,
+  value
+) {
+
+  localStorage.setItem(
+    key,
+    JSON.stringify(value)
+  );
+}
+
+/* =========================================================
+   FIREBASE INITIALISATION
+   ========================================================= */
+
+async function initFirebase() {
+
+  try {
+
+    const appModule =
+      await import(
+        "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js"
+      );
+
+    const authModule =
+      await import(
+        "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js"
+      );
+
+    const firestoreModule =
+      await import(
+        "https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js"
+      );
+
+    firebaseApp =
+      appModule.initializeApp(
+        FIREBASE_CONFIG
+      );
+
+    firebaseAuth =
+      authModule.getAuth(
+        firebaseApp
+      );
+
+    firebaseTools =
+      authModule;
+
+    firestore =
+      firestoreModule.getFirestore(
+        firebaseApp
+      );
+
+    firestoreTools =
+      firestoreModule;
+
+    console.log(
+      "🔥 Firebase initialisé"
+    );
+
+    authModule.onAuthStateChanged(
+      firebaseAuth,
+      async user => {
+
+        window.currentUser =
+          user || null;
+
+        if (user) {
+
+          console.log(
+            "👤 Utilisateur connecté :",
+            user.email
+          );
+
+          await loadUserProfile(
+            user
+          );
+
+          await loadUserOrders();
+
+        } else {
+
+          currentProfile =
+            null;
+
+          clearUserOrders();
+        }
+
+        updateAccountUI();
+      }
+    );
 
   } catch (error) {
-    console.error("Erreur initialisation Firebase :", error);
+
+    console.error(
+      "❌ Erreur Firebase :",
+      error
+    );
 
     toast(
       "❌ Firebase n'a pas pu être chargé."
@@ -80,99 +285,15 @@ async function initFirebase() {
 }
 
 /* =========================================================
-   HELPERS
+   FIREBASE AUTH ERRORS
    ========================================================= */
 
-function $(id) {
-  return document.getElementById(id);
-}
+function showAuthError(
+  error
+) {
 
-function toast(message) {
-  let box = document.querySelector(".nova-toast");
-
-  if (!box) {
-    box = document.createElement("div");
-    box.className = "nova-toast";
-
-    Object.assign(box.style, {
-      position: "fixed",
-      left: "50%",
-      bottom: "25px",
-      transform: "translateX(-50%)",
-      zIndex: "999999",
-      background: "#111827",
-      color: "white",
-      padding: "13px 18px",
-      borderRadius: "12px",
-      boxShadow: "0 10px 30px rgba(0,0,0,.35)",
-      fontWeight: "700",
-      maxWidth: "90%",
-      textAlign: "center",
-      transition: ".25s"
-    });
-
-    document.body.appendChild(box);
-  }
-
-  box.textContent = message;
-  box.style.opacity = "1";
-
-  clearTimeout(box._timer);
-
-  box._timer = setTimeout(() => {
-    box.style.opacity = "0";
-  }, 3500);
-}
-
-/* =========================================================
-   LOCAL STORAGE
-   ========================================================= */
-
-const STORAGE = {
-  cart: "novashop_cart",
-  favorites: "novashop_favorites",
-  profiles: "novashop_profiles",
-  products: "novashop_products"
-};
-
-function load(key, fallback) {
-  try {
-    const value = localStorage.getItem(key);
-
-    if (!value) {
-      return fallback;
-    }
-
-    return JSON.parse(value);
-
-  } catch {
-    return fallback;
-  }
-}
-
-function save(key, value) {
-  localStorage.setItem(
-    key,
-    JSON.stringify(value)
-  );
-}
-
-/* =========================================================
-   USER
-   ========================================================= */
-
-window.currentUser = null;
-
-let currentProfile = null;
-let currentOrders = [];
-
-/* =========================================================
-   FIREBASE AUTH ERROR
-   ========================================================= */
-
-function showAuthError(error) {
   console.error(
-    "================================="
+    "================================"
   );
 
   console.error(
@@ -180,25 +301,27 @@ function showAuthError(error) {
   );
 
   console.error(
-    "Code :",
+    "CODE :",
     error?.code
   );
 
   console.error(
-    "Message :",
+    "MESSAGE :",
     error?.message
   );
 
   console.error(
-    "Erreur complète :",
+    "ERREUR :",
     error
   );
 
   console.error(
-    "================================="
+    "================================"
   );
 
-  const code = error?.code || "unknown";
+  const code =
+    error?.code ||
+    "unknown";
 
   const messages = {
 
@@ -218,22 +341,22 @@ function showAuthError(error) {
       "❌ Cet e-mail est déjà utilisé.",
 
     "auth/weak-password":
-      "❌ Mot de passe trop faible. Minimum 6 caractères.",
+      "❌ Mot de passe trop faible.",
 
     "auth/invalid-email":
       "❌ Adresse e-mail invalide.",
 
-    "auth/missing-password":
-      "❌ Mot de passe manquant.",
-
     "auth/missing-email":
-      "❌ E-mail manquant.",
+      "❌ Adresse e-mail obligatoire.",
+
+    "auth/missing-password":
+      "❌ Mot de passe obligatoire.",
 
     "auth/unauthorized-domain":
       "❌ Ce domaine n'est pas autorisé dans Firebase.",
 
     "auth/operation-not-allowed":
-      "❌ La connexion par e-mail n'est pas activée dans Firebase.",
+      "❌ Connexion par e-mail non activée dans Firebase.",
 
     "auth/network-request-failed":
       "❌ Problème de connexion Internet.",
@@ -242,19 +365,19 @@ function showAuthError(error) {
       "❌ Trop de tentatives. Réessaie plus tard.",
 
     "auth/popup-closed-by-user":
-      "❌ La fenêtre Google a été fermée.",
+      "❌ Fenêtre Google fermée.",
 
     "auth/popup-blocked":
-      "❌ Le navigateur bloque la fenêtre Google.",
+      "❌ Fenêtre Google bloquée par le navigateur.",
 
     "auth/configuration-not-found":
-      "❌ Firebase Auth n'est pas correctement configuré.",
+      "❌ Configuration Firebase Auth manquante.",
 
     "auth/internal-error":
       "❌ Erreur interne Firebase.",
 
     "auth/app-not-authorized":
-      "❌ Cette application n'est pas autorisée par Firebase.",
+      "❌ Application non autorisée par Firebase.",
 
     "auth/invalid-api-key":
       "❌ Clé API Firebase invalide.",
@@ -267,88 +390,246 @@ function showAuthError(error) {
     messages[code] ||
     `❌ Erreur Firebase : ${code}`
   );
+
+  console.error(
+    "Code Firebase :",
+    code
+  );
 }
 
 /* =========================================================
-   SIGNUP
+   PASSWORD VALIDATION
    ========================================================= */
 
-async function signupEmail(e) {
+function validatePassword(
+  password
+) {
+
+  /*
+    Règles :
+
+    6 caractères minimum
+    30 caractères maximum
+    1 minuscule
+    1 majuscule
+    1 chiffre
+
+    Les caractères spéciaux sont autorisés.
+  */
+
+  if (
+    password.length < 6
+  ) {
+
+    return {
+      valid: false,
+      message:
+        "Le mot de passe doit contenir au moins 6 caractères."
+    };
+  }
+
+  if (
+    password.length > 30
+  ) {
+
+    return {
+      valid: false,
+      message:
+        "Le mot de passe doit contenir maximum 30 caractères."
+    };
+  }
+
+  if (
+    !/[a-z]/.test(
+      password
+    )
+  ) {
+
+    return {
+      valid: false,
+      message:
+        "Il faut au moins une minuscule."
+    };
+  }
+
+  if (
+    !/[A-Z]/.test(
+      password
+    )
+  ) {
+
+    return {
+      valid: false,
+      message:
+        "Il faut au moins une majuscule."
+    };
+  }
+
+  if (
+    !/[0-9]/.test(
+      password
+    )
+  ) {
+
+    return {
+      valid: false,
+      message:
+        "Il faut au moins un chiffre."
+    };
+  }
+
+  return {
+    valid: true,
+    message:
+      "Mot de passe valide."
+  };
+}
+
+/* =========================================================
+   SIGN UP
+   ========================================================= */
+
+async function signupEmail(
+  e
+) {
+
   e.preventDefault();
 
-  if (!firebaseAuth || !firebaseTools) {
+  if (
+    !firebaseAuth ||
+    !firebaseTools
+  ) {
+
     toast(
       "❌ Firebase n'est pas encore chargé."
     );
+
     return;
   }
 
-  const emailInput = $("signupEmail");
-  const phoneInput = $("signupPhone");
-  const passwordInput = $("signupPassword");
-  const confirmInput = $("signupConfirm");
+  const emailInput =
+    $("signupEmail");
 
-  if (!emailInput || !passwordInput || !confirmInput) {
+  const phoneInput =
+    $("signupPhone");
+
+  const passwordInput =
+    $("signupPassword");
+
+  const confirmInput =
+    $("signupConfirm");
+
+  if (
+    !emailInput ||
+    !passwordInput ||
+    !confirmInput
+  ) {
+
     toast(
       "❌ Formulaire d'inscription introuvable."
     );
+
     return;
   }
 
-  const email = emailInput.value.trim();
-  const phone = phoneInput
-    ? phoneInput.value.trim()
-    : "";
+  const email =
+    emailInput.value.trim();
 
-  const password = passwordInput.value;
-  const confirm = confirmInput.value;
+  const phone =
+    phoneInput
+      ? phoneInput.value.trim()
+      : "";
+
+  const password =
+    passwordInput.value;
+
+  const confirm =
+    confirmInput.value;
+
+  /* =========================================
+     EMAIL
+     ========================================= */
 
   if (!email) {
-    toast("❌ Entre ton adresse e-mail.");
-    return;
-  }
 
-  if (!password) {
-    toast("❌ Entre un mot de passe.");
-    return;
-  }
-
-  if (password.length < 6) {
     toast(
-      "❌ Le mot de passe doit contenir au moins 6 caractères."
+      "❌ Entre ton adresse e-mail."
     );
+
     return;
   }
 
-  if (password !== confirm) {
+  /* =========================================
+     PASSWORD
+     ========================================= */
+
+  const passwordCheck =
+    validatePassword(
+      password
+    );
+
+  if (
+    !passwordCheck.valid
+  ) {
+
+    toast(
+      "❌ " +
+      passwordCheck.message
+    );
+
+    return;
+  }
+
+  /* =========================================
+     CONFIRMATION
+     ========================================= */
+
+  if (
+    password !== confirm
+  ) {
+
     toast(
       "❌ Les mots de passe ne correspondent pas."
     );
+
     return;
   }
 
-  if (phone && phone.length < 8) {
+  /* =========================================
+     TELEPHONE
+     ========================================= */
+
+  if (
+    phone &&
+    phone.length < 8
+  ) {
+
     toast(
       "❌ Numéro de téléphone invalide."
     );
+
     return;
   }
 
   try {
 
-    toast("⏳ Création du compte...");
+    toast(
+      "⏳ Création du compte..."
+    );
 
     const result =
-      await firebaseTools.createUserWithEmailAndPassword(
-        firebaseAuth,
-        email,
-        password
-      );
+      await firebaseTools
+        .createUserWithEmailAndPassword(
+          firebaseAuth,
+          email,
+          password
+        );
 
-    const user = result.user;
+    const user =
+      result.user;
 
     console.log(
-      "Compte Firebase créé :",
+      "✅ Compte créé :",
       user.uid
     );
 
@@ -357,12 +638,25 @@ async function signupEmail(e) {
        ========================================= */
 
     const profiles =
-      load(STORAGE.profiles, {});
+      load(
+        STORAGE.profiles,
+        {}
+      );
 
     profiles[user.uid] = {
-      email: email,
-      phone: phone,
-      createdAt: new Date().toISOString()
+
+      uid:
+        user.uid,
+
+      email:
+        email,
+
+      phone:
+        phone,
+
+      createdAt:
+        new Date()
+          .toISOString()
     };
 
     save(
@@ -374,25 +668,40 @@ async function signupEmail(e) {
        PROFIL FIRESTORE
        ========================================= */
 
-    if (firestore && firestoreTools) {
+    if (
+      firestore &&
+      firestoreTools
+    ) {
 
       await firestoreTools.setDoc(
+
         firestoreTools.doc(
           firestore,
           "users",
           user.uid
         ),
+
         {
-          uid: user.uid,
-          email: email,
-          phone: phone,
+
+          uid:
+            user.uid,
+
+          email:
+            email,
+
+          phone:
+            phone,
+
           createdAt:
-            firestoreTools.serverTimestamp()
+            firestoreTools
+              .serverTimestamp()
         }
       );
     }
 
-    closeModal("authModal");
+    closeModal(
+      "authModal"
+    );
 
     toast(
       "✅ Compte créé avec succès !"
@@ -402,7 +711,9 @@ async function signupEmail(e) {
 
   } catch (error) {
 
-    showAuthError(error);
+    showAuthError(
+      error
+    );
   }
 }
 
@@ -410,23 +721,39 @@ async function signupEmail(e) {
    LOGIN
    ========================================================= */
 
-async function loginEmail(e) {
+async function loginEmail(
+  e
+) {
+
   e.preventDefault();
 
-  if (!firebaseAuth || !firebaseTools) {
+  if (
+    !firebaseAuth ||
+    !firebaseTools
+  ) {
+
     toast(
       "❌ Firebase n'est pas encore chargé."
     );
+
     return;
   }
 
-  const emailInput = $("loginEmail");
-  const passwordInput = $("loginPassword");
+  const emailInput =
+    $("loginEmail");
 
-  if (!emailInput || !passwordInput) {
+  const passwordInput =
+    $("loginPassword");
+
+  if (
+    !emailInput ||
+    !passwordInput
+  ) {
+
     toast(
       "❌ Formulaire de connexion introuvable."
     );
+
     return;
   }
 
@@ -437,36 +764,45 @@ async function loginEmail(e) {
     passwordInput.value;
 
   if (!email) {
+
     toast(
       "❌ Entre ton adresse e-mail."
     );
+
     return;
   }
 
   if (!password) {
+
     toast(
       "❌ Entre ton mot de passe."
     );
+
     return;
   }
 
   try {
 
-    toast("⏳ Connexion...");
+    toast(
+      "⏳ Connexion..."
+    );
 
     const result =
-      await firebaseTools.signInWithEmailAndPassword(
-        firebaseAuth,
-        email,
-        password
-      );
+      await firebaseTools
+        .signInWithEmailAndPassword(
+          firebaseAuth,
+          email,
+          password
+        );
 
     console.log(
-      "Connexion réussie :",
+      "✅ Connexion réussie :",
       result.user.uid
     );
 
-    closeModal("authModal");
+    closeModal(
+      "authModal"
+    );
 
     toast(
       "✅ Connexion réussie !"
@@ -476,7 +812,9 @@ async function loginEmail(e) {
 
   } catch (error) {
 
-    showAuthError(error);
+    showAuthError(
+      error
+    );
   }
 }
 
@@ -486,28 +824,38 @@ async function loginEmail(e) {
 
 async function loginGoogle() {
 
-  if (!firebaseAuth || !firebaseTools) {
+  if (
+    !firebaseAuth ||
+    !firebaseTools
+  ) {
+
     toast(
       "❌ Firebase n'est pas encore chargé."
     );
+
     return;
   }
 
   try {
 
     const provider =
-      new firebaseTools.GoogleAuthProvider();
+      new firebaseTools
+        .GoogleAuthProvider();
 
     provider.setCustomParameters({
-      prompt: "select_account"
+      prompt:
+        "select_account"
     });
 
-    await firebaseTools.signInWithPopup(
-      firebaseAuth,
-      provider
-    );
+    await firebaseTools
+      .signInWithPopup(
+        firebaseAuth,
+        provider
+      );
 
-    closeModal("authModal");
+    closeModal(
+      "authModal"
+    );
 
     toast(
       "✅ Connexion Google réussie !"
@@ -515,7 +863,9 @@ async function loginGoogle() {
 
   } catch (error) {
 
-    showAuthError(error);
+    showAuthError(
+      error
+    );
   }
 }
 
@@ -525,18 +875,29 @@ async function loginGoogle() {
 
 async function logout() {
 
-  if (!firebaseAuth || !firebaseTools) {
+  if (
+    !firebaseAuth ||
+    !firebaseTools
+  ) {
+
     return;
   }
 
   try {
 
-    await firebaseTools.signOut(
-      firebaseAuth
-    );
+    await firebaseTools
+      .signOut(
+        firebaseAuth
+      );
 
-    currentProfile = null;
-    currentOrders = [];
+    currentProfile =
+      null;
+
+    currentOrders =
+      [];
+
+    window.currentUser =
+      null;
 
     toast(
       "👋 Déconnexion réussie."
@@ -558,49 +919,67 @@ async function logout() {
 }
 
 /* =========================================================
-   USER PROFILE
+   LOAD USER PROFILE
    ========================================================= */
 
-async function loadUserProfile(user) {
+async function loadUserProfile(
+  user
+) {
 
   currentProfile = {
-    uid: user.uid,
-    email: user.email || "",
-    phone: ""
+
+    uid:
+      user.uid,
+
+    email:
+      user.email || "",
+
+    phone:
+      ""
   };
 
-  if (firestore && firestoreTools) {
+  if (
+    !firestore ||
+    !firestoreTools
+  ) {
 
-    try {
-
-      const ref =
-        firestoreTools.doc(
-          firestore,
-          "users",
-          user.uid
-        );
-
-      const snap =
-        await firestoreTools.getDoc(ref);
-
-      if (snap.exists()) {
-
-        currentProfile = {
-          uid: user.uid,
-          ...snap.data()
-        };
-      }
-
-    } catch (error) {
-
-      console.error(
-        "Erreur chargement profil :",
-        error
-      );
-    }
+    return;
   }
 
-  updateAccountUI();
+  try {
+
+    const ref =
+      firestoreTools.doc(
+        firestore,
+        "users",
+        user.uid
+      );
+
+    const snapshot =
+      await firestoreTools.getDoc(
+        ref
+      );
+
+    if (
+      snapshot.exists()
+    ) {
+
+      currentProfile = {
+
+        uid:
+          user.uid,
+
+        ...snapshot.data()
+      };
+    }
+
+  } catch (error) {
+
+    console.error(
+      "Erreur profil :",
+      error
+    );
+  }
 }
 
 /* =========================================================
@@ -612,89 +991,97 @@ function updateAccountUI() {
   const user =
     window.currentUser;
 
-  const accountButtons =
-    document.querySelectorAll(
+  document
+    .querySelectorAll(
       "[data-account]"
-    );
-
-  accountButtons.forEach(button => {
-
-    if (user) {
+    )
+    .forEach(button => {
 
       button.textContent =
-        user.email || "Mon compte";
-
-    } else {
-
-      button.textContent =
+        user?.email ||
         "Compte";
-    }
-  });
+    });
 
-  const loginElements =
-    document.querySelectorAll(
+  document
+    .querySelectorAll(
       ".logged-out"
-    );
+    )
+    .forEach(element => {
 
-  const userElements =
-    document.querySelectorAll(
+      element.style.display =
+        user
+          ? "none"
+          : "";
+    });
+
+  document
+    .querySelectorAll(
       ".logged-in"
-    );
+    )
+    .forEach(element => {
 
-  loginElements.forEach(el => {
-    el.style.display =
-      user ? "none" : "";
-  });
+      element.style.display =
+        user
+          ? ""
+          : "none";
+    });
 
-  userElements.forEach(el => {
-    el.style.display =
-      user ? "" : "none";
-  });
-
-  const emailElements =
-    document.querySelectorAll(
+  document
+    .querySelectorAll(
       "[data-user-email]"
-    );
+    )
+    .forEach(element => {
 
-  emailElements.forEach(el => {
-
-    el.textContent =
-      user?.email || "";
-  });
+      element.textContent =
+        user?.email ||
+        "";
+    });
 }
 
 /* =========================================================
    MODALS
    ========================================================= */
 
-function openModal(id) {
+function openModal(
+  id
+) {
 
-  const modal = $(id);
+  const modal =
+    $(id);
 
   if (!modal) {
     return;
   }
 
-  modal.classList.add("active");
+  modal.classList.add(
+    "active"
+  );
 
-  modal.style.display = "flex";
+  modal.style.display =
+    "flex";
 }
 
-function closeModal(id) {
+function closeModal(
+  id
+) {
 
-  const modal = $(id);
+  const modal =
+    $(id);
 
   if (!modal) {
     return;
   }
 
-  modal.classList.remove("active");
+  modal.classList.remove(
+    "active"
+  );
 
-  modal.style.display = "none";
+  modal.style.display =
+    "none";
 }
 
 /* =========================================================
-   AUTH MODAL
+   LOGIN / SIGNUP MODAL
    ========================================================= */
 
 function showLogin() {
@@ -706,14 +1093,20 @@ function showLogin() {
     $("signupForm");
 
   if (login) {
-    login.style.display = "block";
+
+    login.style.display =
+      "block";
   }
 
   if (signup) {
-    signup.style.display = "none";
+
+    signup.style.display =
+      "none";
   }
 
-  openModal("authModal");
+  openModal(
+    "authModal"
+  );
 }
 
 function showSignup() {
@@ -725,23 +1118,33 @@ function showSignup() {
     $("signupForm");
 
   if (login) {
-    login.style.display = "none";
+
+    login.style.display =
+      "none";
   }
 
   if (signup) {
-    signup.style.display = "block";
+
+    signup.style.display =
+      "block";
   }
 
-  openModal("authModal");
+  openModal(
+    "authModal"
+  );
 }
 
 /* =========================================================
    ORDERS
    ========================================================= */
 
-async function createOrder(orderData) {
+async function createOrder(
+  orderData
+) {
 
-  if (!firebaseAuth?.currentUser) {
+  if (
+    !firebaseAuth?.currentUser
+  ) {
 
     toast(
       "❌ Connecte-toi avant de commander."
@@ -750,7 +1153,10 @@ async function createOrder(orderData) {
     return null;
   }
 
-  if (!firestore || !firestoreTools) {
+  if (
+    !firestore ||
+    !firestoreTools
+  ) {
 
     toast(
       "❌ Firestore n'est pas disponible."
@@ -764,7 +1170,7 @@ async function createOrder(orderData) {
 
   try {
 
-    const orderRef =
+    const ordersRef =
       firestoreTools.collection(
         firestore,
         "orders"
@@ -772,7 +1178,8 @@ async function createOrder(orderData) {
 
     const order = {
 
-      userId: user.uid,
+      userId:
+        user.uid,
 
       email:
         user.email || "",
@@ -787,30 +1194,38 @@ async function createOrder(orderData) {
         "Entrepôt NovaShop",
 
       destination:
-        orderData.destination || "",
+        orderData.destination ||
+        "",
 
       deliveryDate:
-        orderData.deliveryDate || "",
+        orderData.deliveryDate ||
+        "",
 
       deliveryDuration:
-        orderData.deliveryDuration || "",
+        orderData.deliveryDuration ||
+        "",
 
       products:
-        orderData.products || [],
+        orderData.products ||
+        [],
 
       total:
-        Number(orderData.total || 0),
+        Number(
+          orderData.total || 0
+        ),
 
       createdAt:
-        firestoreTools.serverTimestamp(),
+        firestoreTools
+          .serverTimestamp(),
 
       updatedAt:
-        firestoreTools.serverTimestamp()
+        firestoreTools
+          .serverTimestamp()
     };
 
     const created =
       await firestoreTools.addDoc(
-        orderRef,
+        ordersRef,
         order
       );
 
@@ -825,7 +1240,7 @@ async function createOrder(orderData) {
   } catch (error) {
 
     console.error(
-      "Erreur création commande :",
+      "Erreur commande :",
       error
     );
 
@@ -838,16 +1253,23 @@ async function createOrder(orderData) {
 }
 
 /* =========================================================
-   LOAD USER ORDERS
+   LOAD ORDERS
    ========================================================= */
 
 async function loadUserOrders() {
 
-  if (!firebaseAuth?.currentUser) {
+  if (
+    !firebaseAuth?.currentUser
+  ) {
+
     return;
   }
 
-  if (!firestore || !firestoreTools) {
+  if (
+    !firestore ||
+    !firestoreTools
+  ) {
+
     return;
   }
 
@@ -864,12 +1286,15 @@ async function loadUserOrders() {
 
     const q =
       firestoreTools.query(
+
         ordersRef,
+
         firestoreTools.where(
           "userId",
           "==",
           user.uid
         ),
+
         firestoreTools.orderBy(
           "createdAt",
           "desc"
@@ -877,26 +1302,28 @@ async function loadUserOrders() {
       );
 
     const snapshot =
-      await firestoreTools.getDocs(q);
+      await firestoreTools.getDocs(
+        q
+      );
 
     currentOrders =
-      snapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      }));
+      snapshot.docs.map(
+        doc => ({
+          id:
+            doc.id,
+
+          ...doc.data()
+        })
+      );
 
     renderUserOrders();
 
   } catch (error) {
 
     console.error(
-      "Erreur chargement commandes :",
+      "Erreur commandes :",
       error
     );
-
-    /* =========================================
-       FALLBACK SANS ORDER BY
-       ========================================= */
 
     try {
 
@@ -908,7 +1335,9 @@ async function loadUserOrders() {
 
       const q =
         firestoreTools.query(
+
           ordersRef,
+
           firestoreTools.where(
             "userId",
             "==",
@@ -917,21 +1346,19 @@ async function loadUserOrders() {
         );
 
       const snapshot =
-        await firestoreTools.getDocs(q);
+        await firestoreTools.getDocs(
+          q
+        );
 
       currentOrders =
-        snapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data()
-        }));
+        snapshot.docs.map(
+          doc => ({
+            id:
+              doc.id,
 
-      currentOrders.sort(
-        (a, b) =>
-          String(b.createdAt || "")
-            .localeCompare(
-              String(a.createdAt || "")
-            )
-      );
+            ...doc.data()
+          })
+        );
 
       renderUserOrders();
 
@@ -951,7 +1378,8 @@ async function loadUserOrders() {
 
 function clearUserOrders() {
 
-  currentOrders = [];
+  currentOrders =
+    [];
 
   renderUserOrders();
 }
@@ -967,152 +1395,218 @@ function renderUserOrders() {
       "[data-orders]"
     );
 
-  containers.forEach(container => {
+  containers.forEach(
+    container => {
 
-    if (!window.currentUser) {
+      if (
+        !window.currentUser
+      ) {
 
-      container.innerHTML = `
-        <div class="empty-orders">
-          <div style="font-size:40px">🔒</div>
-          <h3>Connecte-toi</h3>
-          <p>
-            Connecte-toi pour voir tes commandes.
-          </p>
-        </div>
-      `;
-
-      return;
-    }
-
-    if (!currentOrders.length) {
-
-      container.innerHTML = `
-        <div class="empty-orders">
-          <div style="font-size:40px">📦</div>
-          <h3>Aucune commande</h3>
-          <p>
-            Tes commandes apparaîtront ici.
-          </p>
-        </div>
-      `;
-
-      return;
-    }
-
-    container.innerHTML =
-      currentOrders.map(order => {
-
-        const products =
-          Array.isArray(order.products)
-            ? order.products
-            : [];
-
-        const productHTML =
-          products.map(product => `
-            <div class="order-product">
-              <span>
-                ${escapeHTML(
-                  product.name || "Produit"
-                )}
-              </span>
-
-              <strong>
-                ×${Number(
-                  product.quantity || 1
-                )}
-              </strong>
-            </div>
-          `).join("");
-
-        return `
-          <article class="order-card">
-
-            <div class="order-header">
-
-              <div>
-                <small>COMMANDE</small>
-
-                <strong>
-                  #${escapeHTML(order.id)}
-                </strong>
-              </div>
-
-              <span class="order-status">
-                ${escapeHTML(
-                  order.status ||
-                  "Préparation"
-                )}
-              </span>
-
+        container.innerHTML = `
+          <div class="empty-orders">
+            <div style="font-size:40px">
+              🔒
             </div>
 
-            <div class="order-info">
+            <h3>
+              Connecte-toi
+            </h3>
 
-              <div>
-                <span>📍 Position actuelle</span>
-                <strong>
-                  ${escapeHTML(
-                    order.currentLocation ||
-                    "Non définie"
-                  )}
-                </strong>
-              </div>
-
-              <div>
-                <span>🏠 Destination</span>
-                <strong>
-                  ${escapeHTML(
-                    order.destination ||
-                    "Non définie"
-                  )}
-                </strong>
-              </div>
-
-              <div>
-                <span>🚚 Suivi</span>
-                <strong>
-                  ${escapeHTML(
-                    order.tracking ||
-                    "En préparation"
-                  )}
-                </strong>
-              </div>
-
-              <div>
-                <span>📅 Livraison</span>
-                <strong>
-                  ${escapeHTML(
-                    order.deliveryDate ||
-                    "Date non définie"
-                  )}
-                </strong>
-              </div>
-
-            </div>
-
-            <div class="order-products">
-              ${productHTML}
-            </div>
-
-            <div class="order-total">
-
-              <span>Total</span>
-
-              <strong>
-                ${formatPrice(order.total)}
-              </strong>
-
-            </div>
-
-          </article>
+            <p>
+              Connecte-toi pour voir tes commandes.
+            </p>
+          </div>
         `;
 
-      }).join("");
-  });
+        return;
+      }
+
+      if (
+        !currentOrders.length
+      ) {
+
+        container.innerHTML = `
+          <div class="empty-orders">
+            <div style="font-size:40px">
+              📦
+            </div>
+
+            <h3>
+              Aucune commande
+            </h3>
+
+            <p>
+              Tes commandes apparaîtront ici.
+            </p>
+          </div>
+        `;
+
+        return;
+      }
+
+      container.innerHTML =
+        currentOrders
+          .map(order => {
+
+            const products =
+              Array.isArray(
+                order.products
+              )
+                ? order.products
+                : [];
+
+            const productHTML =
+              products
+                .map(product => `
+
+                  <div class="order-product">
+
+                    <span>
+                      ${escapeHTML(
+                        product.name ||
+                        "Produit"
+                      )}
+                    </span>
+
+                    <strong>
+                      ×${Number(
+                        product.quantity ||
+                        1
+                      )}
+                    </strong>
+
+                  </div>
+
+                `)
+                .join("");
+
+            return `
+
+              <article class="order-card">
+
+                <div class="order-header">
+
+                  <div>
+
+                    <small>
+                      COMMANDE
+                    </small>
+
+                    <strong>
+                      #${escapeHTML(
+                        order.id
+                      )}
+                    </strong>
+
+                  </div>
+
+                  <span class="order-status">
+
+                    ${escapeHTML(
+                      order.status ||
+                      "Préparation"
+                    )}
+
+                  </span>
+
+                </div>
+
+                <div class="order-info">
+
+                  <div>
+
+                    <span>
+                      📍 Position actuelle
+                    </span>
+
+                    <strong>
+                      ${escapeHTML(
+                        order.currentLocation ||
+                        "Non définie"
+                      )}
+                    </strong>
+
+                  </div>
+
+                  <div>
+
+                    <span>
+                      🏠 Destination
+                    </span>
+
+                    <strong>
+                      ${escapeHTML(
+                        order.destination ||
+                        "Non définie"
+                      )}
+                    </strong>
+
+                  </div>
+
+                  <div>
+
+                    <span>
+                      🚚 Suivi
+                    </span>
+
+                    <strong>
+                      ${escapeHTML(
+                        order.tracking ||
+                        "En préparation"
+                      )}
+                    </strong>
+
+                  </div>
+
+                  <div>
+
+                    <span>
+                      📅 Livraison
+                    </span>
+
+                    <strong>
+                      ${escapeHTML(
+                        order.deliveryDate ||
+                        "Date non définie"
+                      )}
+                    </strong>
+
+                  </div>
+
+                </div>
+
+                <div class="order-products">
+
+                  ${productHTML}
+
+                </div>
+
+                <div class="order-total">
+
+                  <span>
+                    Total
+                  </span>
+
+                  <strong>
+                    ${formatPrice(
+                      order.total
+                    )}
+                  </strong>
+
+                </div>
+
+              </article>
+
+            `;
+
+          })
+          .join("");
+    }
+  );
 }
 
 /* =========================================================
-   ADMIN CHECK
+   ADMIN
    ========================================================= */
 
 function isAdmin() {
@@ -1125,15 +1619,16 @@ function isAdmin() {
   }
 
   return (
-    String(user.email || "")
-      .toLowerCase()
-      ===
+    String(
+      user.email || ""
+    ).toLowerCase()
+    ===
     ADMIN_EMAIL.toLowerCase()
   );
 }
 
 /* =========================================================
-   ADMIN ORDERS
+   ADMIN LOAD ORDERS
    ========================================================= */
 
 async function loadAdminOrders() {
@@ -1147,7 +1642,11 @@ async function loadAdminOrders() {
     return [];
   }
 
-  if (!firestore || !firestoreTools) {
+  if (
+    !firestore ||
+    !firestoreTools
+  ) {
+
     return [];
   }
 
@@ -1155,21 +1654,28 @@ async function loadAdminOrders() {
 
     const snapshot =
       await firestoreTools.getDocs(
+
         firestoreTools.collection(
           firestore,
           "orders"
         )
+
       );
 
-    return snapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data()
-    }));
+    return snapshot.docs.map(
+      doc => ({
+
+        id:
+          doc.id,
+
+        ...doc.data()
+      })
+    );
 
   } catch (error) {
 
     console.error(
-      "Erreur commandes admin :",
+      "Erreur admin :",
       error
     );
 
@@ -1185,7 +1691,10 @@ async function loadAdminOrders() {
    ADMIN UPDATE ORDER
    ========================================================= */
 
-async function updateOrder(orderId, changes) {
+async function updateOrder(
+  orderId,
+  changes
+) {
 
   if (!isAdmin()) {
 
@@ -1196,11 +1705,11 @@ async function updateOrder(orderId, changes) {
     return false;
   }
 
-  if (!firestore || !firestoreTools) {
-    return false;
-  }
+  if (
+    !firestore ||
+    !firestoreTools
+  ) {
 
-  if (!orderId) {
     return false;
   }
 
@@ -1216,9 +1725,12 @@ async function updateOrder(orderId, changes) {
     await firestoreTools.updateDoc(
       ref,
       {
+
         ...changes,
+
         updatedAt:
-          firestoreTools.serverTimestamp()
+          firestoreTools
+            .serverTimestamp()
       }
     );
 
@@ -1231,7 +1743,7 @@ async function updateOrder(orderId, changes) {
   } catch (error) {
 
     console.error(
-      "Erreur mise à jour commande :",
+      "Erreur modification :",
       error
     );
 
@@ -1244,10 +1756,12 @@ async function updateOrder(orderId, changes) {
 }
 
 /* =========================================================
-   DELETE ORDER ADMIN
+   ADMIN DELETE ORDER
    ========================================================= */
 
-async function deleteOrder(orderId) {
+async function deleteOrder(
+  orderId
+) {
 
   if (!isAdmin()) {
 
@@ -1258,24 +1772,33 @@ async function deleteOrder(orderId) {
     return false;
   }
 
-  if (!firestore || !firestoreTools) {
+  if (
+    !firestore ||
+    !firestoreTools
+  ) {
+
     return false;
   }
 
-  if (!confirm(
-    "Supprimer cette commande définitivement ?"
-  )) {
+  const confirmation =
+    confirm(
+      "Supprimer cette commande définitivement ?"
+    );
+
+  if (!confirmation) {
     return false;
   }
 
   try {
 
     await firestoreTools.deleteDoc(
+
       firestoreTools.doc(
         firestore,
         "orders",
         orderId
       )
+
     );
 
     toast(
@@ -1300,17 +1823,25 @@ async function deleteOrder(orderId) {
 }
 
 /* =========================================================
-   ADDRESS VALIDATION
-   API ADRESSE DU GOUVERNEMENT
+   ADDRESS API
    ========================================================= */
 
-async function validateFrenchAddress(address) {
+async function validateFrenchAddress(
+  address
+) {
 
-  if (!address || address.trim().length < 5) {
+  if (
+    !address ||
+    address.trim().length < 5
+  ) {
 
     return {
-      valid: false,
-      message: "Adresse trop courte."
+
+      valid:
+        false,
+
+      message:
+        "Adresse trop courte."
     };
   }
 
@@ -1318,16 +1849,23 @@ async function validateFrenchAddress(address) {
 
     const url =
       "https://api-adresse.data.gouv.fr/search/?q=" +
-      encodeURIComponent(address) +
+      encodeURIComponent(
+        address
+      ) +
       "&limit=5";
 
     const response =
-      await fetch(url);
+      await fetch(
+        url
+      );
 
     if (!response.ok) {
 
       return {
-        valid: false,
+
+        valid:
+          false,
+
         message:
           "Impossible de vérifier l'adresse."
       };
@@ -1342,7 +1880,10 @@ async function validateFrenchAddress(address) {
     ) {
 
       return {
-        valid: false,
+
+        valid:
+          false,
+
         message:
           "Adresse introuvable."
       };
@@ -1355,16 +1896,26 @@ async function validateFrenchAddress(address) {
       best.properties || {};
 
     return {
-      valid: true,
+
+      valid:
+        true,
+
       label:
         properties.label ||
         address,
+
       postcode:
-        properties.postcode || "",
+        properties.postcode ||
+        "",
+
       city:
-        properties.city || "",
+        properties.city ||
+        "",
+
       score:
-        properties.score || 0,
+        properties.score ||
+        0,
+
       feature:
         best
     };
@@ -1377,7 +1928,10 @@ async function validateFrenchAddress(address) {
     );
 
     return {
-      valid: false,
+
+      valid:
+        false,
+
       message:
         "Erreur lors de la vérification."
     };
@@ -1405,7 +1959,9 @@ async function validateCheckoutAddress() {
       address
     );
 
-  if (!result.valid) {
+  if (
+    !result.valid
+  ) {
 
     toast(
       "❌ " +
@@ -1417,6 +1973,10 @@ async function validateCheckoutAddress() {
 
     input.classList.add(
       "invalid"
+    );
+
+    input.classList.remove(
+      "valid"
     );
 
     return false;
@@ -1431,8 +1991,7 @@ async function validateCheckoutAddress() {
   );
 
   toast(
-    "✅ Adresse validée : " +
-    result.label
+    "✅ Adresse validée."
   );
 
   return result;
@@ -1442,32 +2001,59 @@ async function validateCheckoutAddress() {
    PRICE
    ========================================================= */
 
-function formatPrice(value) {
-
-  const number =
-    Number(value || 0);
+function formatPrice(
+  value
+) {
 
   return new Intl.NumberFormat(
     "fr-FR",
     {
-      style: "currency",
-      currency: "EUR"
+
+      style:
+        "currency",
+
+      currency:
+        "EUR"
     }
-  ).format(number);
+
+  ).format(
+    Number(
+      value || 0
+    )
+  );
 }
 
 /* =========================================================
    ESCAPE HTML
    ========================================================= */
 
-function escapeHTML(value) {
+function escapeHTML(
+  value
+) {
 
-  return String(value ?? "")
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;");
+  return String(
+    value ?? ""
+  )
+    .replaceAll(
+      "&",
+      "&amp;"
+    )
+    .replaceAll(
+      "<",
+      "&lt;"
+    )
+    .replaceAll(
+      ">",
+      "&gt;"
+    )
+    .replaceAll(
+      '"',
+      "&quot;"
+    )
+    .replaceAll(
+      "'",
+      "&#039;"
+    );
 }
 
 /* =========================================================
@@ -1482,7 +2068,9 @@ function getCart() {
   );
 }
 
-function saveCart(cart) {
+function saveCart(
+  cart
+) {
 
   save(
     STORAGE.cart,
@@ -1492,7 +2080,9 @@ function saveCart(cart) {
   updateCartUI();
 }
 
-function addToCart(product) {
+function addToCart(
+  product
+) {
 
   if (!product) {
     return;
@@ -1512,25 +2102,34 @@ function addToCart(product) {
   if (existing) {
 
     existing.quantity =
-      Number(existing.quantity || 1)
-      + 1;
+      Number(
+        existing.quantity ||
+        1
+      ) + 1;
 
   } else {
 
     cart.push({
+
       ...product,
-      quantity: 1
+
+      quantity:
+        1
     });
   }
 
-  saveCart(cart);
+  saveCart(
+    cart
+  );
 
   toast(
     "🛒 Produit ajouté au panier."
   );
 }
 
-function removeFromCart(productId) {
+function removeFromCart(
+  productId
+) {
 
   const cart =
     getCart()
@@ -1541,12 +2140,16 @@ function removeFromCart(productId) {
           String(productId)
       );
 
-  saveCart(cart);
+  saveCart(
+    cart
+  );
 }
 
 function clearCart() {
 
-  saveCart([]);
+  saveCart(
+    []
+  );
 
   toast(
     "🗑️ Panier vidé."
@@ -1576,24 +2179,36 @@ function updateCartQuantity(
   product.quantity =
     Math.max(
       1,
-      Number(quantity || 1)
+      Number(
+        quantity || 1
+      )
     );
 
-  saveCart(cart);
+  saveCart(
+    cart
+  );
 }
 
 function getCartTotal() {
 
-  return getCart().reduce(
-    (total, item) => {
+  return getCart()
+    .reduce(
+      (
+        total,
+        item
+      ) => {
 
-      return total +
-        Number(item.price || 0) *
-        Number(item.quantity || 1);
+        return total +
+          Number(
+            item.price || 0
+          ) *
+          Number(
+            item.quantity || 1
+          );
 
-    },
-    0
-  );
+      },
+      0
+    );
 }
 
 function updateCartUI() {
@@ -1603,9 +2218,14 @@ function updateCartUI() {
 
   const count =
     cart.reduce(
-      (sum, item) =>
-        sum +
-        Number(item.quantity || 1),
+      (
+        total,
+        item
+      ) =>
+        total +
+        Number(
+          item.quantity || 1
+        ),
       0
     );
 
@@ -1613,23 +2233,27 @@ function updateCartUI() {
     .querySelectorAll(
       "[data-cart-count]"
     )
-    .forEach(el => {
+    .forEach(
+      element => {
 
-      el.textContent =
-        count;
-    });
+        element.textContent =
+          count;
+      }
+    );
 
   document
     .querySelectorAll(
       "[data-cart-total]"
     )
-    .forEach(el => {
+    .forEach(
+      element => {
 
-      el.textContent =
-        formatPrice(
-          getCartTotal()
-        );
-    });
+        element.textContent =
+          formatPrice(
+            getCartTotal()
+          );
+      }
+    );
 }
 
 /* =========================================================
@@ -1644,7 +2268,9 @@ function getFavorites() {
   );
 }
 
-function toggleFavorite(productId) {
+function toggleFavorite(
+  productId
+) {
 
   let favorites =
     getFavorites();
@@ -1657,7 +2283,9 @@ function toggleFavorite(productId) {
         String(productId)
     );
 
-  if (index >= 0) {
+  if (
+    index >= 0
+  ) {
 
     favorites.splice(
       index,
@@ -1696,29 +2324,35 @@ function updateFavoriteUI() {
     .querySelectorAll(
       "[data-favorite-id]"
     )
-    .forEach(button => {
+    .forEach(
+      button => {
 
-      const id =
-        button.dataset.favoriteId;
+        const id =
+          button.dataset.favoriteId;
 
-      const active =
-        favorites.some(
-          favorite =>
-            String(favorite)
-            ===
-            String(id)
+        const active =
+          favorites.some(
+            favorite =>
+              String(
+                favorite
+              )
+              ===
+              String(
+                id
+              )
+          );
+
+        button.classList.toggle(
+          "active",
+          active
         );
 
-      button.classList.toggle(
-        "active",
-        active
-      );
-
-      button.textContent =
-        active
-          ? "♥"
-          : "♡";
-    });
+        button.textContent =
+          active
+            ? "♥"
+            : "♡";
+      }
+    );
 }
 
 /* =========================================================
@@ -1727,7 +2361,9 @@ function updateFavoriteUI() {
 
 async function checkout() {
 
-  if (!firebaseAuth?.currentUser) {
+  if (
+    !firebaseAuth?.currentUser
+  ) {
 
     toast(
       "❌ Connecte-toi avant de payer."
@@ -1772,7 +2408,9 @@ async function checkout() {
       address
     );
 
-  if (!validation.valid) {
+  if (
+    !validation.valid
+  ) {
 
     toast(
       "❌ Paiement bloqué : adresse invalide."
@@ -1794,19 +2432,26 @@ async function checkout() {
         "",
 
       products:
-        cart.map(item => ({
-          id:
-            item.id,
+        cart.map(
+          item => ({
 
-          name:
-            item.name,
+            id:
+              item.id,
 
-          price:
-            Number(item.price || 0),
+            name:
+              item.name,
 
-          quantity:
-            Number(item.quantity || 1)
-        })),
+            price:
+              Number(
+                item.price || 0
+              ),
+
+            quantity:
+              Number(
+                item.quantity || 1
+              )
+          })
+        ),
 
       total:
         getCartTotal()
@@ -1843,38 +2488,57 @@ document.addEventListener(
     const action =
       target.dataset.action;
 
-    if (action === "login") {
-      showLogin();
-    }
+    switch (action) {
 
-    if (action === "signup") {
-      showSignup();
-    }
+      case "login":
 
-    if (action === "logout") {
-      logout();
-    }
+        showLogin();
 
-    if (action === "google-login") {
-      loginGoogle();
-    }
+        break;
 
-    if (action === "close-auth") {
-      closeModal("authModal");
-    }
+      case "signup":
 
-    if (action === "checkout") {
-      checkout();
-    }
+        showSignup();
 
-    if (action === "clear-cart") {
-      clearCart();
+        break;
+
+      case "logout":
+
+        logout();
+
+        break;
+
+      case "google-login":
+
+        loginGoogle();
+
+        break;
+
+      case "close-auth":
+
+        closeModal(
+          "authModal"
+        );
+
+        break;
+
+      case "checkout":
+
+        checkout();
+
+        break;
+
+      case "clear-cart":
+
+        clearCart();
+
+        break;
     }
   }
 );
 
 /* =========================================================
-   FORMS
+   FORM LISTENER
    ========================================================= */
 
 document.addEventListener(
@@ -1887,7 +2551,9 @@ document.addEventListener(
       "loginForm"
     ) {
 
-      loginEmail(event);
+      loginEmail(
+        event
+      );
     }
 
     if (
@@ -1896,13 +2562,15 @@ document.addEventListener(
       "signupForm"
     ) {
 
-      signupEmail(event);
+      signupEmail(
+        event
+      );
     }
   }
 );
 
 /* =========================================================
-   ESCAPE MODAL
+   ESCAPE
    ========================================================= */
 
 document.addEventListener(
@@ -1911,15 +2579,19 @@ document.addEventListener(
 
     if (
       event.key
-      ===
+      !==
       "Escape"
     ) {
 
-      document
-        .querySelectorAll(
-          ".modal.active"
-        )
-        .forEach(modal => {
+      return;
+    }
+
+    document
+      .querySelectorAll(
+        ".modal.active"
+      )
+      .forEach(
+        modal => {
 
           modal.classList.remove(
             "active"
@@ -1927,8 +2599,8 @@ document.addEventListener(
 
           modal.style.display =
             "none";
-        });
-    }
+        }
+      );
   }
 );
 
@@ -1969,16 +2641,17 @@ document.addEventListener(
   async () => {
 
     updateCartUI();
+
     updateFavoriteUI();
+
     updateAccountUI();
 
     await initFirebase();
-
   }
 );
 
 /* =========================================================
-   GLOBALS
+   GLOBAL NOVASHOP API
    ========================================================= */
 
 window.NovaShop = {
@@ -1989,41 +2662,65 @@ window.NovaShop = {
   signup:
     signupEmail,
 
-  logout,
+  logout:
+    logout,
 
-  loginGoogle,
+  loginGoogle:
+    loginGoogle,
 
-  createOrder,
+  createOrder:
+    createOrder,
 
-  loadUserOrders,
+  loadUserOrders:
+    loadUserOrders,
 
-  loadAdminOrders,
+  loadAdminOrders:
+    loadAdminOrders,
 
-  updateOrder,
+  updateOrder:
+    updateOrder,
 
-  deleteOrder,
+  deleteOrder:
+    deleteOrder,
 
-  validateFrenchAddress,
+  validateFrenchAddress:
+    validateFrenchAddress,
 
-  validateCheckoutAddress,
+  validateCheckoutAddress:
+    validateCheckoutAddress,
 
-  getCart,
+  getCart:
+    getCart,
 
-  addToCart,
+  addToCart:
+    addToCart,
 
-  removeFromCart,
+  removeFromCart:
+    removeFromCart,
 
-  clearCart,
+  clearCart:
+    clearCart,
 
-  updateCartQuantity,
+  updateCartQuantity:
+    updateCartQuantity,
 
-  getCartTotal,
+  getCartTotal:
+    getCartTotal,
 
-  toggleFavorite,
+  toggleFavorite:
+    toggleFavorite,
 
-  isAdmin
+  isAdmin:
+    isAdmin,
+
+  validatePassword:
+    validatePassword
 };
 
+/* =========================================================
+   FIN
+   ========================================================= */
+
 console.log(
-  "🚀 NovaShop chargé."
+  "🚀 NovaShop prêt."
 );
