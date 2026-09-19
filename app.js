@@ -1,1829 +1,1635 @@
-"use strict";
+import {
+  initializeApp
+} from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
 
-/*
-  NOVASHOP
-  Version marketplace démo
-  2 fichiers uniquement :
-  index.html
-  app.js
-*/
+import {
+  getAnalytics
+} from "https://www.gstatic.com/firebasejs/12.3.0/firebase-analytics.js";
 
-const PRODUCTS = [
-
-  {
-    id:"p1",
-    name:"AMD Ryzen 5 9600X",
-    brand:"AMD",
-    category:"Processeurs",
-    price:229.90,
-    code:"NS-CPU-9600X",
-    image:"https://cdn.idealo.com/folder/Product/204581/7/204581794/s4_produktbild_gross/amd-ryzen-5-9600x-boxed.jpg",
-    description:"Processeur gaming AMD Ryzen 5 9600X."
-  },
-
-  {
-    id:"p2",
-    name:"Corsair Vengeance RGB 32GB DDR5 6000 CL38",
-    brand:"Corsair",
-    category:"RAM",
-    price:119.90,
-    code:"NS-RAM-COR-32",
-    image:"https://cdn.idealo.com/folder/Product/212257/2/212257224/s4_produktbild_gross/corsair-vengeance-rgb-kit-32go-ddr5-6000-cl38-gris-cmh32gx5m2d6000z38.jpg",
-    description:"Kit 32 Go DDR5 avec RGB."
-  },
-
-  {
-    id:"p3",
-    name:"Kingston Fury Beast RGB 32GB DDR5 5600 CL36",
-    brand:"Kingston",
-    category:"RAM",
-    price:99.90,
-    code:"NS-RAM-KF-32",
-    image:"https://cdn.idealo.com/folder/Product/202133/2/202133232/s4_produktbild_gross/kingston-fury-beast-rgb-32-go-kit-ddr5-5600-cl36-kf556c36bbeak2-32.jpg",
-    description:"Kit mémoire DDR5 32 Go RGB."
-  },
-
-  {
-    id:"p4",
-    name:"Samsung 990 PRO 1TB",
-    brand:"Samsung",
-    category:"SSD",
-    price:109.90,
-    code:"NS-SSD-990P-1T",
-    image:"https://images.samsung.com/is/image/samsung/p6pim/fr/mz-v9p1t0bw/gallery/fr-990-pro-nvme-ssd-mz-v9p1t0bw-538116922?$650_519_PNG$",
-    description:"SSD NVMe PCIe 4.0 haute performance."
-  },
-
-  {
-    id:"p5",
-    name:"Samsung 990 PRO 2TB",
-    brand:"Samsung",
-    category:"SSD",
-    price:169.90,
-    code:"NS-SSD-990P-2T",
-    image:"https://images.samsung.com/is/image/samsung/p6pim/fr/mz-v9p2t0bw/gallery/fr-990-pro-nvme-ssd-mz-v9p2t0bw-538116939?$650_519_PNG$",
-    description:"SSD NVMe 2 To PCIe 4.0."
-  },
-
-  {
-    id:"p6",
-    name:"Corsair RM850x",
-    brand:"Corsair",
-    category:"Alimentations",
-    price:139.90,
-    code:"NS-PSU-RM850X",
-    image:"https://assets.corsair.com/image/upload/c_pad,q_auto,h_1024,w_1024/products/PSUs/CP-9020270-NA/Gallery/RM850x_01.webp",
-    description:"Alimentation 850 W destinée aux configurations gaming."
-  },
-
-  {
-    id:"p7",
-    name:"Corsair 5000D Airflow",
-    brand:"Corsair",
-    category:"Boîtiers",
-    price:159.90,
-    code:"NS-CASE-5000D",
-    image:"https://assets.corsair.com/image/upload/c_pad,q_auto,h_1024,w_1024/products/Cases/CC-9011210-WW/Gallery/5000D_AF_WHITE_01.webp",
-    description:"Boîtier ATX orienté airflow."
-  },
-
-  {
-    id:"p8",
-    name:"ARCTIC Liquid Freezer III 360",
-    brand:"ARCTIC",
-    category:"Refroidissement",
-    price:129.90,
-    code:"NS-AIO-LF3-360",
-    image:"https://www.arctic.de/media/17/9c/4f/1712927838/liquid-freezer-III-360-black-gallery-1.png",
-    description:"Refroidissement liquide 360 mm."
-  },
-
-  {
-    id:"p9",
-    name:"Samsung Odyssey OLED G6",
-    brand:"Samsung",
-    category:"Écrans",
-    price:699.90,
-    code:"NS-MON-OLED-G6",
-    image:"https://images.samsung.com/is/image/samsung/p6pim/fr/ls27dg602suxen/gallery/fr-odyssey-oled-g6-g60sd-ls27dg602suxen-541415717?$650_519_PNG$",
-    description:"Écran gaming OLED haut taux de rafraîchissement."
-  },
-
-  {
-    id:"p10",
-    name:"Logitech G PRO X TKL",
-    brand:"Logitech",
-    category:"Claviers",
-    price:199.90,
-    code:"NS-KB-PROX-TKL",
-    image:"https://resource.logitech.com/w_800,c_limit,q_auto,f_auto,dpr_auto/d_transparent.gif/content/dam/logitech/en/products/keyboards/pro-x-tkl-wireless/gallery/pro-x-tkl-wireless-black-gallery-1.png",
-    description:"Clavier gaming PRO X TKL."
-  },
-
-  {
-    id:"p11",
-    name:"Logitech G PRO X SUPERLIGHT 2",
-    brand:"Logitech",
-    category:"Souris",
-    price:159.90,
-    code:"NS-MOUSE-SUPERLIGHT2",
-    image:"https://resource.logitech.com/w_800,c_limit,q_auto,f_auto,dpr_auto/d_transparent.gif/content/dam/logitech/en/products/mice/pro-x2-superlight-wireless-mouse/gallery/pro-x2-superlight-black-gallery-1.png",
-    description:"Souris gaming sans fil légère."
-  },
-
-  {
-    id:"p12",
-    name:"Elgato Wave:3",
-    brand:"Elgato",
-    category:"Micros",
-    price:139.90,
-    code:"NS-MIC-WAVE3",
-    image:"https://help.elgato.com/hc/article_attachments/360093559172/Wave_3.png",
-    description:"Microphone USB pour streaming et création."
-  },
-
-  {
-    id:"p13",
-    name:"Sony DualSense PS5",
-    brand:"Sony",
-    category:"Manettes",
-    price:74.90,
-    code:"NS-GAMEPAD-DS5",
-    image:"https://gmedia.playstation.com/is/image/SIEPDC/dualsense-ps5-controller-product-thumbnail-01-en-14sep21?$1600px$",
-    description:"Manette sans fil DualSense."
-  },
-
-  {
-    id:"p14",
-    name:"AMD Radeon RX 7600",
-    brand:"AMD",
-    category:"Cartes graphiques",
-    price:289.90,
-    code:"NS-GPU-RX7600",
-    image:"https://cdn.idealo.com/folder/Product/202813/8/202813846/s4_produktbild_gross/gigabyte-radeon-rx-7600-gaming-oc-8g.jpg",
-    description:"Carte graphique AMD Radeon RX 7600 8 Go."
-  },
-
-  {
-    id:"p15",
-    name:"ASUS TUF Gaming B650-PLUS",
-    brand:"ASUS",
-    category:"Cartes mères",
-    price:189.90,
-    code:"NS-MB-TUF-B650",
-    image:"https://media.materiel.net/r550/products/MN0005986139.jpg",
-    description:"Carte mère AM5 ASUS TUF Gaming B650-PLUS."
-  },
-
-  {
-    id:"p16",
-    name:"MSI MAG B650 Tomahawk WiFi",
-    brand:"MSI",
-    category:"Cartes mères",
-    price:219.90,
-    code:"NS-MB-MSI-B650",
-    image:"https://m.media-amazon.com/images/I/71TYAcZ4J8L._AC_SL1200_.jpg",
-    description:"Carte mère AM5 MSI MAG B650 Tomahawk WiFi."
-  },
-
-  {
-    id:"p17",
-    name:"Gigabyte B650 AORUS Elite AX",
-    brand:"Gigabyte",
-    category:"Cartes mères",
-    price:199.90,
-    code:"NS-MB-AORUS-B650",
-    image:"https://m.media-amazon.com/images/I/81JFKzNyl+L._AC_SL1500_.jpg",
-    description:"Carte mère gaming AM5 Gigabyte B650 AORUS Elite AX."
-  },
-
-  {
-    id:"p18",
-    name:"PC Gamer Ryzen 7 7800X3D + RX 9070 XT + 32 Go DDR5",
-    brand:"AMD / MemoryPC",
-    category:"PC complets",
-    price:2237.65,
-    code:"NS-PC-7800X3D-9070XT",
-    image:"https://www.memorypc.fr/thumbnail/53/79/73/1786604635/019f8f1c2c6972a8a3ea1ee9516a0652_1784812416_800x800.png",
-    description:"PC Gamer complet équipé d'un Ryzen 7 7800X3D, d'une RX 9070 XT et de 32 Go DDR5."
-  },
-
-  {
-    id:"p19",
-    name:"HyperX Cloud II",
-    brand:"HyperX",
-    category:"Casques",
-    price:49.99,
-    code:"NS-HEAD-HX-CLOUD2",
-    image:"https://cdn.shopify.com/s/files/1/0551/0548/6979/files/hyperx_cloud_ii_red_1_main_64x64.jpg?v=1764129756",
-    description:"Casque gaming HyperX Cloud II."
-  },
-
-  {
-    id:"p20",
-    name:"TECURS Clavier Gamer Mécanique 60 % AZERTY",
-    brand:"TECURS",
-    category:"Claviers",
-    price:30,
-    code:"NS-KB-TECURS-60",
-    image:"https://m.media-amazon.com/images/I/71-lhAU97VL._AC_SL1500_.jpg",
-    description:"Clavier mécanique 60 % AZERTY avec switches rouges et LED rétroéclairées."
-  },
-
-  {
-    id:"p21",
-    name:"Clavier Magnétique 65 % Celshading Noir",
-    brand:"Celshading",
-    category:"Claviers",
-    price:120.90,
-    code:"NS-KB-CELSHADE-65",
-    image:"https://tryhard-gear.com/cdn/shop/files/TestCelshadingnoirV2.webp?v=1762273866&width=832",
-    description:"Clavier gaming magnétique 65 % noir."
-  },
-
-  {
-    id:"p22",
-    name:"Ajazz AJ199 MAX Carbon Fiber Wireless",
-    brand:"Ajazz",
-    category:"Souris",
-    price:49.99,
-    code:"NS-MOUSE-AJ199MAX",
-    image:"https://ae-pic-a1.aliexpress-media.com/kf/S1e981b53ccfe4e1391cd5b5deb4fce87o.png_960x960.png_.avif",
-    description:"Souris gaming sans fil tri-mode avec capteur PAW3395, DPI réglable et batterie 800 mAh."
-  },
-
-  {
-    id:"p23",
-    name:"Logitech G PRO X2 SUPERSTRIKE Blanc et Noir",
-    brand:"Logitech",
-    category:"Souris",
-    price:150.99,
-    code:"NS-MOUSE-PROX2-SS",
-    image:"https://static.fnac-static.com/multimedia/Images/FR/MDM/7a/34/bc/29111418/1540-1.jpg",
-    description:"Souris gaming sans fil Logitech G PRO X2 SUPERSTRIKE."
-  }
-
-];
+import {
+  getAuth,
+  GoogleAuthProvider,
+  signInWithPopup,
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
+  signInWithPhoneNumber,
+  RecaptchaVerifier,
+  onAuthStateChanged,
+  signOut
+} from "https://www.gstatic.com/firebasejs/12.3.0/firebase-auth.js";
 
 
-const CATEGORIES = [
-  "Tous",
-  "Processeurs",
-  "Cartes graphiques",
-  "Cartes mères",
-  "RAM",
-  "SSD",
-  "PC complets",
-  "Boîtiers",
-  "Alimentations",
-  "Refroidissement",
-  "Écrans",
-  "Claviers",
-  "Souris",
-  "Casques",
-  "Micros",
-  "Manettes"
-];
+/* =========================================================
+   FIREBASE
+========================================================= */
 
-
-const PROMOS = {
-  NOVA100:100,
-  NOVA20:20,
-  NOVA10:10
+const firebaseConfig = {
+  apiKey: "AIzaSyAZ5vAkAEfIBpfLyhxgO7uvNdJ67KYKWD0",
+  authDomain: "novashop-4ee63.firebaseapp.com",
+  projectId: "novashop-4ee63",
+  storageBucket: "novashop-4ee63.firebasestorage.app",
+  messagingSenderId: "1044964015809",
+  appId: "1:1044964015809:web:4eafe0b1aede48f8539e40",
+  measurementId: "G-XNY5X2VMY9"
 };
 
+const firebaseApp = initializeApp(firebaseConfig);
+getAnalytics(firebaseApp);
+
+const auth = getAuth(firebaseApp);
+const googleProvider = new GoogleAuthProvider();
+
+
+/* =========================================================
+   CONFIG
+========================================================= */
 
 const ADMIN_CODE = "NOVA-ADMIN-2026";
 
+const PROMOS = {
+  NOVA100: {
+    type: "percent",
+    value: 100,
+    label: "100 % offert"
+  },
 
-const STATUS = [
-  "Commande reçue",
-  "Préparation",
-  "Expédiée",
-  "En livraison",
-  "Livrée"
+  NOVA20: {
+    type: "percent",
+    value: 20,
+    label: "20 % de réduction"
+  },
+
+  NOVA10: {
+    type: "percent",
+    value: 10,
+    label: "10 % de réduction"
+  }
+};
+
+
+/* =========================================================
+   PRODUCTS
+========================================================= */
+
+const PRODUCTS = [
+
+{
+id:"ryzen-5-9600x",
+brand:"AMD",
+name:"AMD Ryzen 5 9600X",
+category:"Processeurs",
+price:229.90,
+oldPrice:249.90,
+stock:18,
+rating:4.8,
+reviews:37,
+description:"Processeur gaming moderne avec 6 cœurs et 12 threads.",
+image:"https://cdn.idealo.com/folder/Product/204581/7/204581794/s4_produktbild_gross/amd-ryzen-5-9600x-boxed.jpg"
+},
+
+{
+id:"corsair-vengeance-32",
+brand:"Corsair",
+name:"Corsair Vengeance RGB 32GB DDR5 6000 CL38",
+category:"Mémoire",
+price:119.90,
+oldPrice:139.90,
+stock:24,
+rating:4.7,
+reviews:54,
+description:"Kit mémoire DDR5 32 Go avec éclairage RGB.",
+image:"https://cdn.idealo.com/folder/Product/212257/2/212257224/s4_produktbild_gross/corsair-vengeance-rgb-kit-32go-ddr5-6000-cl38-gris-cmh32gx5m2d6000z38.jpg"
+},
+
+{
+id:"kingston-fury-32",
+brand:"Kingston",
+name:"Kingston Fury Beast RGB 32GB DDR5 5600 CL36",
+category:"Mémoire",
+price:99.90,
+oldPrice:119.90,
+stock:31,
+rating:4.6,
+reviews:41,
+description:"Mémoire DDR5 RGB 32 Go pour PC gaming.",
+image:"https://cdn.idealo.com/folder/Product/202133/2/202133232/s4_produktbild_gross/kingston-fury-beast-rgb-32-go-kit-ddr5-5600-cl36-kf556c36bbeak2-32.jpg"
+},
+
+{
+id:"samsung-990-1tb",
+brand:"Samsung",
+name:"Samsung 990 PRO 1TB",
+category:"SSD",
+price:109.90,
+oldPrice:129.90,
+stock:17,
+rating:4.9,
+reviews:63,
+description:"SSD NVMe PCIe 4.0 haute performance.",
+image:"https://images.samsung.com/is/image/samsung/p6pim/fr/mz-v9p1t0bw/gallery/fr-990-pro-nvme-ssd-mz-v9p1t0bw-538116922?$650_519_PNG$"
+},
+
+{
+id:"samsung-990-2tb",
+brand:"Samsung",
+name:"Samsung 990 PRO 2TB",
+category:"SSD",
+price:169.90,
+oldPrice:199.90,
+stock:13,
+rating:4.9,
+reviews:72,
+description:"SSD NVMe 2 To avec performances PCIe 4.0.",
+image:"https://images.samsung.com/is/image/samsung/p6pim/fr/mz-v9p2t0bw/gallery/fr-990-pro-nvme-ssd-mz-v9p2t0bw-538116939?$650_519_PNG$"
+},
+
+{
+id:"corsair-rm850x",
+brand:"Corsair",
+name:"Corsair RM850x",
+category:"Alimentations",
+price:139.90,
+oldPrice:159.90,
+stock:11,
+rating:4.8,
+reviews:48,
+description:"Alimentation 850 W destinée aux configurations gaming puissantes.",
+image:"https://assets.corsair.com/image/upload/c_pad,q_auto,h_1024,w_1024/products/PSUs/CP-9020270-NA/Gallery/RM850x_01.webp"
+},
+
+{
+id:"corsair-5000d",
+brand:"Corsair",
+name:"Corsair 5000D Airflow",
+category:"Boîtiers",
+price:159.90,
+oldPrice:179.90,
+stock:8,
+rating:4.8,
+reviews:46,
+description:"Boîtier ATX orienté airflow avec façade mesh.",
+image:"https://assets.corsair.com/image/upload/c_pad,q_auto,h_1024,w_1024/products/Cases/CC-9011210-WW/Gallery/5000D_AF_WHITE_01.webp"
+},
+
+{
+id:"arctic-liquid-360",
+brand:"ARCTIC",
+name:"ARCTIC Liquid Freezer III 360",
+category:"Refroidissement",
+price:129.90,
+oldPrice:149.90,
+stock:9,
+rating:4.8,
+reviews:29,
+description:"Watercooling AIO 360 mm pour processeurs performants.",
+image:"https://www.arctic.de/media/17/9c/4f/1712927838/liquid-freezer-III-360-black-gallery-1.png"
+},
+
+{
+id:"odyssey-oled-g6",
+brand:"Samsung",
+name:"Samsung Odyssey OLED G6",
+category:"Écrans",
+price:699.90,
+oldPrice:749.90,
+stock:5,
+rating:4.9,
+reviews:33,
+description:"Écran gaming OLED haute fréquence.",
+image:"https://images.samsung.com/is/image/samsung/p6pim/fr/ls27dg602suxen/gallery/fr-odyssey-oled-g6-g60sd-ls27dg602suxen-541415717?$650_519_PNG$"
+},
+
+{
+id:"logitech-tkl",
+brand:"Logitech",
+name:"Logitech G PRO X TKL",
+category:"Claviers",
+price:199.90,
+oldPrice:219.90,
+stock:12,
+rating:4.7,
+reviews:39,
+description:"Clavier gaming TKL haut de gamme.",
+image:"https://resource.logitech.com/w_800,c_limit,q_auto,f_auto,dpr_auto/d_transparent.gif/content/dam/logitech/en/products/keyboards/pro-x-tkl-wireless/gallery/pro-x-tkl-wireless-black-gallery-1.png"
+},
+
+{
+id:"superlight-2",
+brand:"Logitech",
+name:"Logitech G PRO X SUPERLIGHT 2",
+category:"Souris",
+price:159.90,
+oldPrice:179.90,
+stock:15,
+rating:4.8,
+reviews:61,
+description:"Souris gaming sans fil légère et performante.",
+image:"https://resource.logitech.com/w_800,c_limit,q_auto,f_auto,dpr_auto/d_transparent.gif/content/dam/logitech/en/products/mice/pro-x2-superlight-wireless-mouse/gallery/pro-x2-superlight-black-gallery-1.png"
+},
+
+{
+id:"elgato-wave-3",
+brand:"Elgato",
+name:"Elgato Wave:3",
+category:"Audio",
+price:139.90,
+oldPrice:159.90,
+stock:7,
+rating:4.7,
+reviews:28,
+description:"Microphone USB conçu pour le streaming et la création.",
+image:"https://help.elgato.com/hc/article_attachments/360093559172/Wave_3.png"
+},
+
+{
+id:"dualsense",
+brand:"Sony",
+name:"Sony DualSense PS5",
+category:"Manettes",
+price:74.90,
+oldPrice:79.90,
+stock:21,
+rating:4.8,
+reviews:84,
+description:"Manette officielle PlayStation 5.",
+image:"https://gmedia.playstation.com/is/image/SIEPDC/dualsense-ps5-controller-product-thumbnail-01-en-14sep21?$1600px$"
+},
+
+{
+id:"rx7600",
+brand:"AMD",
+name:"AMD Radeon RX 7600",
+category:"Cartes graphiques",
+price:289.90,
+oldPrice:319.90,
+stock:6,
+rating:4.6,
+reviews:44,
+description:"Carte graphique gaming Radeon avec 8 Go de mémoire.",
+image:"https://cdn.idealo.com/folder/Product/202813/8/202813846/s4_produktbild_gross/gigabyte-radeon-rx-7600-gaming-oc-8g.jpg"
+},
+
+{
+id:"tuf-b650",
+brand:"ASUS",
+name:"ASUS TUF Gaming B650-PLUS",
+category:"Cartes mères",
+price:189.90,
+oldPrice:209.90,
+stock:10,
+rating:4.7,
+reviews:35,
+description:"Carte mère AM5 ATX pour configurations gaming.",
+image:"https://media.materiel.net/r550/products/MN0005986139.jpg"
+},
+
+{
+id:"b650-tomahawk",
+brand:"MSI",
+name:"MSI MAG B650 Tomahawk WiFi",
+category:"Cartes mères",
+price:219.90,
+oldPrice:239.90,
+stock:8,
+rating:4.8,
+reviews:49,
+description:"Carte mère B650 avec Wi-Fi intégré.",
+image:"https://m.media-amazon.com/images/I/71TYAcZ4J8L._AC_SL1200_.jpg"
+},
+
+{
+id:"aorus-b650",
+brand:"Gigabyte",
+name:"Gigabyte B650 AORUS Elite AX",
+category:"Cartes mères",
+price:199.90,
+oldPrice:219.90,
+stock:9,
+rating:4.7,
+reviews:38,
+description:"Carte mère B650 gaming avec Wi-Fi.",
+image:"https://m.media-amazon.com/images/I/81JFKzNyl+L._AC_SL1500_.jpg"
+},
+
+{
+id:"gaming-pc-7800x3d",
+brand:"NOVASHOP",
+name:"PC Gamer Ryzen 7 7800X3D + RX 9070 XT + 32 Go DDR5",
+category:"PC Gamer",
+price:2237.65,
+oldPrice:2399.90,
+stock:3,
+rating:4.9,
+reviews:17,
+description:"Configuration gaming complète haut de gamme.",
+image:"https://www.memorypc.fr/thumbnail/53/79/73/1786604635/019f8f1c2c6972a8a3ea1ee9516a0652_1784812416_800x800.png"
+},
+
+{
+id:"hyperx-cloud-2",
+brand:"HyperX",
+name:"HyperX Cloud II",
+category:"Casques",
+price:49.99,
+oldPrice:59.99,
+stock:20,
+rating:4.6,
+reviews:57,
+description:"Casque gaming filaire confortable.",
+image:"https://cdn.shopify.com/s/files/1/0551/0548/6979/files/hyperx_cloud_ii_red_1_main_64x64.jpg?v=1764129756"
+},
+
+{
+id:"tecurs-60",
+brand:"TECURS",
+name:"TECURS Clavier Gamer Mécanique 60 % AZERTY",
+category:"Claviers",
+price:30,
+oldPrice:39.99,
+stock:26,
+rating:4.4,
+reviews:19,
+description:"Clavier mécanique compact 60 % au format AZERTY.",
+image:"https://m.media-amazon.com/images/I/71-lhAU97VL._AC_SL1500_.jpg"
+},
+
+{
+id:"celshading-65",
+brand:"TryHard",
+name:"Clavier Magnétique 65 % Celshading Noir",
+category:"Claviers",
+price:120.90,
+oldPrice:139.90,
+stock:7,
+rating:4.7,
+reviews:22,
+description:"Clavier magnétique compact noir.",
+image:"https://tryhard-gear.com/cdn/shop/files/TestCelshadingnoirV2.webp?v=1762273866&width=832"
+},
+
+{
+id:"ajazz-aj199",
+brand:"Ajazz",
+name:"Ajazz AJ199 MAX Carbon Fiber Wireless",
+category:"Souris",
+price:49.99,
+oldPrice:59.99,
+stock:14,
+rating:4.6,
+reviews:31,
+description:"Souris sans fil légère avec finition carbone.",
+image:"https://ae-pic-a1.aliexpress-media.com/kf/S1e981b53ccfe4e1391cd5b5deb4fce87o.png_960x960.png_.avif"
+},
+
+{
+id:"superstrike",
+brand:"Logitech",
+name:"Logitech G PRO X2 SUPERSTRIKE Blanc et Noir",
+category:"Souris",
+price:150.99,
+oldPrice:169.99,
+stock:6,
+rating:4.8,
+reviews:14,
+description:"Souris gaming haut de gamme blanc et noir.",
+image:"https://static.fnac-static.com/multimedia/Images/FR/MDM/7a/34/bc/29111418/1540-1.jpg"
+}
+
 ];
 
 
-const LS = {
-  users:"novashop_users",
-  session:"novashop_session",
+/* =========================================================
+   STATE
+========================================================= */
+
+const STORAGE = {
+  cart:"novashop_cart",
+  favorites:"novashop_favorites",
+  reviews:"novashop_reviews",
   orders:"novashop_orders",
-  reviews:"novashop_reviews"
+  users:"novashop_users",
+  admin:"novashop_admin"
 };
 
+let currentUser = null;
 
-let state = {
-  category:"Tous",
-  search:"",
-  sort:"relevance",
-  cart:[],
-  favorites:[],
-  currentUser:null,
-  orders:[],
-  appliedPromo:null,
-  discountPercent:0
-};
+let cart = loadJSON(STORAGE.cart, []);
+let favorites = loadJSON(STORAGE.favorites, []);
+let reviews = loadJSON(STORAGE.reviews, []);
+let orders = loadJSON(STORAGE.orders, []);
 
-
-/* =========================
-   OUTILS
-========================= */
-
-function getJSON(key,fallback){
-  try{
-    const value=localStorage.getItem(key);
-    return value ? JSON.parse(value) : fallback;
-  }catch{
-    return fallback;
-  }
-}
+let activeCategory = "Tous";
+let searchTerm = "";
+let maxPrice = Infinity;
+let currentProductId = null;
+let currentCheckoutTotal = 0;
+let currentPromo = null;
+let phoneConfirmation = null;
+let recaptchaVerifier = null;
 
 
-function setJSON(key,value){
-  localStorage.setItem(key,JSON.stringify(value));
-}
-
-
-function uid(prefix){
-  return prefix+"-"+Date.now().toString(36)+"-"+Math.random().toString(36).slice(2,8).toUpperCase();
-}
-
-
-function money(value){
-  return new Intl.NumberFormat("fr-FR",{
-    style:"currency",
-    currency:"EUR"
-  }).format(value);
-}
-
-
-function escapeHTML(value){
-  return String(value ?? "")
-    .replace(/&/g,"&amp;")
-    .replace(/</g,"&lt;")
-    .replace(/>/g,"&gt;")
-    .replace(/"/g,"&quot;")
-    .replace(/'/g,"&#039;");
-}
-
+/* =========================================================
+   HELPERS
+========================================================= */
 
 function $(id){
   return document.getElementById(id);
 }
 
 
-function toast(message){
-  const el=$("toast");
+function loadJSON(key, fallback){
+  try{
+    const value = localStorage.getItem(key);
+    if(!value) return fallback;
 
-  el.textContent=message;
-  el.classList.add("show");
+    const parsed = JSON.parse(value);
 
-  clearTimeout(toast.timer);
+    return parsed ?? fallback;
+  }catch{
+    return fallback;
+  }
+}
 
-  toast.timer=setTimeout(()=>{
-    el.classList.remove("show");
-  },2600);
+
+function saveJSON(key, value){
+  localStorage.setItem(key, JSON.stringify(value));
+}
+
+
+function euro(value){
+  return new Intl.NumberFormat("fr-FR",{
+    style:"currency",
+    currency:"EUR"
+  }).format(Number(value)||0);
+}
+
+
+function escapeHTML(value){
+  return String(value ?? "")
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
+}
+
+
+function stars(value){
+  const rounded = Math.round(Number(value)||0);
+
+  return "★".repeat(Math.max(0,Math.min(5,rounded))) +
+         "☆".repeat(Math.max(0,5-rounded));
+}
+
+
+function showToast(message){
+  const toast = $("toast");
+
+  if(!toast) return;
+
+  toast.textContent = message;
+  toast.classList.add("show");
+
+  clearTimeout(window.__toastTimer);
+
+  window.__toastTimer = setTimeout(()=>{
+    toast.classList.remove("show");
+  },2800);
 }
 
 
 function openModal(id){
-  const el=$(id);
-
-  if(el){
-    el.classList.add("show");
-    document.body.style.overflow="hidden";
-  }
+  $(id)?.classList.add("show");
 }
 
 
 function closeModal(id){
-  const el=$(id);
-
-  if(el){
-    el.classList.remove("show");
-  }
-
-  if(!document.querySelector(".modal.show")){
-    document.body.style.overflow="";
-  }
+  $(id)?.classList.remove("show");
 }
 
-
-/* =========================
-   USERS
-========================= */
-
-function getUsers(){
-  return getJSON(LS.users,[]);
-}
-
-
-function saveUsers(users){
-  setJSON(LS.users,users);
-}
-
-
-/* =========================
-   PRODUITS
-========================= */
 
 function getProduct(id){
-  return PRODUCTS.find(product=>product.id===id);
+  return PRODUCTS.find(p=>p.id===id);
 }
 
 
-function filteredProducts(){
+function getProductRating(product){
+  const list = reviews.filter(r=>r.productId===product.id);
 
-  let list=[...PRODUCTS];
+  if(!list.length){
+    return {
+      average:product.rating,
+      count:product.reviews
+    };
+  }
 
-  if(state.category!=="Tous"){
-    list=list.filter(
-      product=>product.category===state.category
+  const total = list.reduce((sum,r)=>sum+Number(r.rating),0);
+
+  return {
+    average:total/list.length,
+    count:product.reviews + list.length
+  };
+}
+
+
+/* =========================================================
+   CATEGORIES
+========================================================= */
+
+function renderCategories(){
+
+  const categories = [
+    "Tous",
+    ...new Set(PRODUCTS.map(p=>p.category))
+  ];
+
+  const nav = $("categoryNav");
+  const filters = $("filterCategories");
+
+  nav.innerHTML = categories.map(category=>`
+    <button
+      class="${activeCategory===category ? "active":""}"
+      data-category="${escapeHTML(category)}"
+    >
+      ${escapeHTML(category)}
+    </button>
+  `).join("");
+
+  filters.innerHTML = categories.map(category=>`
+    <button
+      class="filter-category ${activeCategory===category ? "active":""}"
+      data-category="${escapeHTML(category)}"
+    >
+      ${escapeHTML(category)}
+    </button>
+  `).join("");
+}
+
+
+/* =========================================================
+   PRODUCTS
+========================================================= */
+
+function getVisibleProducts(){
+
+  let list = [...PRODUCTS];
+
+  if(activeCategory!=="Tous"){
+    list = list.filter(p=>p.category===activeCategory);
+  }
+
+  if(searchTerm.trim()){
+    const q = searchTerm.toLowerCase();
+
+    list = list.filter(p=>
+      p.name.toLowerCase().includes(q) ||
+      p.brand.toLowerCase().includes(q) ||
+      p.category.toLowerCase().includes(q)
     );
   }
 
-  const query=state.search.trim().toLowerCase();
-
-  if(query){
-    list=list.filter(product=>{
-      return (
-        product.name.toLowerCase().includes(query) ||
-        product.brand.toLowerCase().includes(query) ||
-        product.category.toLowerCase().includes(query) ||
-        product.code.toLowerCase().includes(query)
-      );
-    });
+  if(Number.isFinite(maxPrice)){
+    list = list.filter(p=>p.price<=maxPrice);
   }
 
-  if(state.sort==="priceAsc"){
+  const sort = $("sortSelect")?.value || "relevance";
+
+  if(sort==="priceAsc"){
     list.sort((a,b)=>a.price-b.price);
   }
 
-  if(state.sort==="priceDesc"){
+  if(sort==="priceDesc"){
     list.sort((a,b)=>b.price-a.price);
   }
 
-  if(state.sort==="name"){
+  if(sort==="nameAsc"){
     list.sort((a,b)=>a.name.localeCompare(b.name,"fr"));
+  }
+
+  if(sort==="rating"){
+    list.sort((a,b)=>getProductRating(b).average-getProductRating(a).average);
   }
 
   return list;
 }
 
 
-/* =========================
-   CATEGORIES
-========================= */
+function productCard(product){
 
-function renderCategories(){
-
-  $("categories").innerHTML=CATEGORIES.map(category=>`
-
-    <button
-      class="cat ${state.category===category?"active":""}"
-      data-category="${escapeHTML(category)}">
-
-      ${escapeHTML(category)}
-
-    </button>
-
-  `).join("");
-}
-
-
-/* =========================
-   FAVORIS
-========================= */
-
-function favoritesKey(){
-
-  return state.currentUser
-    ? `novashop_favorites_${state.currentUser.id}`
-    : "novashop_guest_favorites";
-}
-
-
-function cartKey(){
-
-  return state.currentUser
-    ? `novashop_cart_${state.currentUser.id}`
-    : "novashop_guest_cart";
-}
-
-
-function loadUserData(){
-
-  state.cart=getJSON(cartKey(),[]);
-  state.favorites=getJSON(favoritesKey(),[]);
-}
-
-
-function saveCart(){
-  setJSON(cartKey(),state.cart);
-}
-
-
-function saveFavorites(){
-  setJSON(favoritesKey(),state.favorites);
-}
-
-
-function toggleFavorite(id){
-
-  if(state.favorites.includes(id)){
-
-    state.favorites=
-      state.favorites.filter(productId=>productId!==id);
-
-    toast("Article retiré des favoris");
-
-  }else{
-
-    state.favorites.push(id);
-
-    toast("❤️ Article ajouté aux favoris");
-
-  }
-
-  saveFavorites();
-  renderProducts();
-}
-
-
-/* =========================
-   AVIS
-========================= */
-
-function getReviews(){
-  return getJSON(LS.reviews,[]);
-}
-
-
-function saveReviews(reviews){
-  setJSON(LS.reviews,reviews);
-}
-
-
-function reviewerName(name){
-
-  const clean=String(name||"Client").trim();
-
-  if(clean.length<=3){
-    return clean+"***";
-  }
-
-  return clean.slice(0,3)+"***";
-}
-
-
-function starsHTML(note){
-
-  let html="";
-
-  for(let i=1;i<=5;i++){
-
-    html+=
-      i<=note
-      ? `<span style="color:#f59e0b">★</span>`
-      : `<span style="color:#d1d5db">★</span>`;
-
-  }
-
-  return html;
-}
-
-
-function getProductReviews(productId){
-
-  return getReviews()
-    .filter(review=>review.productId===productId)
-    .sort(
-      (a,b)=>new Date(b.date)-new Date(a.date)
-    );
-}
-
-
-function getProductRating(productId){
-
-  const reviews=getProductReviews(productId);
-
-  if(!reviews.length){
-    return {
-      average:0,
-      count:0
-    };
-  }
-
-  const average=
-    reviews.reduce(
-      (sum,review)=>sum+review.rating,
-      0
-    ) / reviews.length;
-
-  return {
-    average:Number(average.toFixed(1)),
-    count:reviews.length
-  };
-}
-
-
-function ratingBadge(productId){
-
-  const rating=getProductRating(productId);
-
-  if(!rating.count){
-
-    return `
-      <span style="color:#94a3b8;font-size:12px">
-        Aucun avis
-      </span>
-    `;
-
-  }
+  const rating = getProductRating(product);
+  const favorite = favorites.includes(product.id);
 
   return `
-    <span class="rating-stars">
-      ${starsHTML(Math.round(rating.average))}
-    </span>
+    <article class="product">
 
-    <strong>${rating.average}/5</strong>
+      <div class="product-image" id="image-${escapeHTML(product.id)}">
 
-    <span style="color:#94a3b8;font-size:12px">
-      (${rating.count})
-    </span>
-  `;
-}
+        <div class="badges">
 
+          ${
+            product.oldPrice > product.price
+            ? `<span class="badge blue">PROMO</span>`
+            : ""
+          }
 
-function userAlreadyReviewed(productId){
+          ${
+            product.stock <= 5
+            ? `<span class="badge">STOCK LIMITÉ</span>`
+            : ""
+          }
 
-  if(!state.currentUser){
-    return false;
-  }
-
-  return getReviews().some(review=>
-    review.productId===productId &&
-    review.userId===state.currentUser.id
-  );
-}
-
-
-function reviewForm(productId){
-
-  if(!state.currentUser){
-
-    return `
-      <div
-        style="
-          background:#f8fafc;
-          padding:16px;
-          border-radius:11px;
-          margin-top:25px
-        ">
-
-        <strong>⭐ Donner une note</strong>
-
-        <p
-          style="
-            color:#64748b;
-            margin:6px 0 12px
-          ">
-
-          Connecte-toi pour publier un avis.
-
-        </p>
+        </div>
 
         <button
-          class="primary"
-          data-open-login>
-
-          Se connecter
-
+          class="like ${favorite ? "active":""}"
+          data-action="favorite"
+          data-id="${escapeHTML(product.id)}"
+          title="Favori"
+        >
+          ${favorite ? "♥":"♡"}
         </button>
 
-      </div>
-    `;
-  }
+        <img
+          src="${escapeHTML(product.image)}"
+          alt="${escapeHTML(product.name)}"
+          loading="lazy"
+          referrerpolicy="no-referrer"
+          onerror="imageFailed('${escapeHTML(product.id)}',this)"
+        >
 
-
-  if(userAlreadyReviewed(productId)){
-
-    return `
-      <div
-        style="
-          background:#f0fdf4;
-          color:#166534;
-          padding:15px;
-          border-radius:10px;
-          margin-top:25px
-        ">
-
-        ✓ Tu as déjà donné ton avis sur cet article.
+        <div class="image-error">
+          <span>🖼️</span>
+          <span>Image indisponible</span>
+        </div>
 
       </div>
-    `;
-  }
 
+      <div class="product-body">
 
-  return `
+        <div class="product-brand">
+          ${escapeHTML(product.brand)}
+        </div>
 
-    <div
-      style="
-        margin-top:27px;
-        border-top:1px solid #e5e7eb;
-        padding-top:22px
-      ">
+        <div class="product-name">
+          ${escapeHTML(product.name)}
+        </div>
 
-      <h3>⭐ Donner une note</h3>
+        <div class="rating">
 
-      <div
-        class="rating-selector"
-        id="ratingSelector"
-        style="margin:9px 0 13px">
+          <span class="stars">
+            ${stars(rating.average)}
+          </span>
 
-        ${[1,2,3,4,5].map(number=>`
+          <span>
+            ${rating.average.toFixed(1)}
+          </span>
+
+          <span class="rating-count">
+            (${rating.count})
+          </span>
+
+        </div>
+
+        <div class="product-price">
+
+          ${euro(product.price)}
+
+          ${
+            product.oldPrice > product.price
+            ? `<span class="old-price">${euro(product.oldPrice)}</span>`
+            : ""
+          }
+
+        </div>
+
+        <div class="stock">
+          ${product.stock > 0
+            ? `✓ ${product.stock} disponible${product.stock>1?"s":""}`
+            : "Rupture de stock"}
+        </div>
+
+        <div class="product-actions">
 
           <button
-            type="button"
-            data-rating="${number}">
-
-            ★
-
+            class="view-btn"
+            data-action="view"
+            data-id="${escapeHTML(product.id)}"
+          >
+            Voir
           </button>
 
-        `).join("")}
+          <button
+            class="add-btn"
+            data-action="add"
+            data-id="${escapeHTML(product.id)}"
+            ${product.stock<=0 ? "disabled":""}
+          >
+            🛒 Ajouter
+          </button>
+
+        </div>
 
       </div>
 
-      <textarea
-        id="reviewText"
-        maxlength="500"
-        placeholder="Ton avis sur cet article..."
-        style="
-          width:100%;
-          min-height:105px;
-          resize:vertical;
-          padding:12px;
-          border:1px solid #dbe1e8;
-          border-radius:9px;
-          outline:none;
-          font:inherit
-        "></textarea>
-
-      <button
-        class="primary"
-        data-review-product="${productId}"
-        style="margin-top:10px">
-
-        Publier mon avis
-
-      </button>
-
-    </div>
-
+    </article>
   `;
 }
 
 
-function reviewsHTML(productId){
+window.imageFailed = function(id,img){
 
-  const reviews=getProductReviews(productId);
+  const container = $("image-"+id);
 
-  if(!reviews.length){
+  if(!container) return;
 
-    return `
-      <div
-        style="
-          margin-top:20px;
-          padding:20px;
-          background:#f8fafc;
-          border-radius:10px;
-          color:#64748b
-        ">
+  img.style.display = "none";
+  container.classList.add("failed");
+};
 
-        Aucun avis pour le moment.
-        Sois le premier ⭐
-
-      </div>
-    `;
-  }
-
-
-  return `
-
-    <div style="margin-top:27px">
-
-      <h3 style="margin-bottom:12px">
-        ⭐ Avis clients
-      </h3>
-
-      <div
-        style="
-          display:grid;
-          gap:10px
-        ">
-
-        ${reviews.map(review=>`
-
-          <div class="review">
-
-            <div class="review-top">
-
-              <strong>
-                ${escapeHTML(
-                  reviewerName(review.name)
-                )}
-              </strong>
-
-              <span>
-                ${starsHTML(review.rating)}
-              </span>
-
-            </div>
-
-            ${
-              review.comment
-              ? `
-                <p
-                  style="
-                    margin:10px 0 5px;
-                    color:#374151;
-                    line-height:1.5
-                  ">
-
-                  ${escapeHTML(review.comment)}
-
-                </p>
-              `
-              :""
-            }
-
-            <small style="color:#94a3b8">
-
-              ${new Date(
-                review.date
-              ).toLocaleDateString("fr-FR")}
-
-            </small>
-
-          </div>
-
-        `).join("")}
-
-      </div>
-
-    </div>
-
-  `;
-}
-
-
-function submitReview(productId){
-
-  if(!state.currentUser){
-    openAuth("login");
-    return;
-  }
-
-  if(userAlreadyReviewed(productId)){
-    toast("Tu as déjà noté cet article");
-    return;
-  }
-
-  const selected=
-    document.querySelector(
-      "#ratingSelector [data-rating].selected"
-    );
-
-  if(!selected){
-    toast("Choisis une note ⭐");
-    return;
-  }
-
-  const rating=Number(selected.dataset.rating);
-
-  const comment=
-    $("reviewText").value.trim();
-
-  const reviews=getReviews();
-
-  reviews.push({
-    id:uid("REVIEW"),
-    productId,
-    userId:state.currentUser.id,
-    name:state.currentUser.name,
-    rating,
-    comment,
-    date:new Date().toISOString()
-  });
-
-  saveReviews(reviews);
-
-  toast("⭐ Avis publié !");
-
-  openProduct(productId);
-}
-
-
-/* =========================
-   PRODUITS
-========================= */
 
 function renderProducts(){
 
-  const products=filteredProducts();
+  const grid = $("productsGrid");
+  const empty = $("emptyState");
+  const result = $("resultCount");
 
-  $("resultCount").textContent=
-    `(${products.length})`;
+  const list = getVisibleProducts();
 
-  $("emptyState").style.display=
-    products.length ? "none" : "block";
+  result.textContent =
+    `${list.length} produit${list.length>1?"s":""}`;
 
+  if(!list.length){
 
-  $("productsGrid").innerHTML=
-    products.map(product=>{
+    grid.innerHTML = "";
+    empty.classList.remove("hidden");
 
-      const liked=
-        state.favorites.includes(product.id);
-
-      return `
-
-        <article
-          class="card"
-          data-product="${product.id}">
-
-          <button
-            class="fav ${liked?"active":""}"
-            data-action="favorite"
-            data-id="${product.id}">
-
-            ${liked?"♥":"♡"}
-
-          </button>
-
-          <div class="imgbox">
-
-            <img
-              src="${escapeHTML(product.image)}"
-              alt="${escapeHTML(product.name)}"
-              loading="lazy">
-
-          </div>
-
-          <div class="info">
-
-            <div class="brand">
-              ${escapeHTML(product.brand)}
-            </div>
-
-            <div class="name">
-              ${escapeHTML(product.name)}
-            </div>
-
-            <div style="margin:6px 0">
-              ${ratingBadge(product.id)}
-            </div>
-
-            <div class="price">
-              ${money(product.price)}
-            </div>
-
-            <div class="code">
-              Réf. ${escapeHTML(product.code)}
-            </div>
-
-            <div class="cardBtns">
-
-              <button
-                data-action="details"
-                data-id="${product.id}">
-
-                Voir
-
-              </button>
-
-              <button
-                class="add"
-                data-action="add"
-                data-id="${product.id}">
-
-                🛒 Ajouter
-
-              </button>
-
-            </div>
-
-          </div>
-
-        </article>
-
-      `;
-
-    }).join("");
-}
-
-
-/* =========================
-   PANIER
-========================= */
-
-function cartTotal(){
-
-  return state.cart.reduce(
-    (total,item)=>{
-
-      const product=getProduct(item.id);
-
-      return total+
-        (
-          product
-          ? product.price*item.qty
-          : 0
-        );
-
-    },
-    0
-  );
-}
-
-
-function cartCount(){
-
-  return state.cart.reduce(
-    (total,item)=>total+item.qty,
-    0
-  );
-}
-
-
-function discountedTotal(){
-
-  const total=cartTotal();
-
-  return total*
-    (1-state.discountPercent/100);
-}
-
-
-function addToCart(id){
-
-  const product=getProduct(id);
-
-  if(!product){
     return;
   }
 
-  const existing=
-    state.cart.find(item=>item.id===id);
+  empty.classList.add("hidden");
+
+  grid.innerHTML = list.map(productCard).join("");
+}
+
+
+/* =========================================================
+   FAVORITES
+========================================================= */
+
+function toggleFavorite(id){
+
+  if(favorites.includes(id)){
+    favorites = favorites.filter(x=>x!==id);
+    showToast("Retiré des favoris");
+  }else{
+    favorites.push(id);
+    showToast("Ajouté aux favoris ❤️");
+  }
+
+  saveJSON(STORAGE.favorites,favorites);
+
+  renderProducts();
+
+  if(currentProductId===id){
+    renderProductDetail(id);
+  }
+}
+
+
+/* =========================================================
+   CART
+========================================================= */
+
+function addToCart(id){
+
+  const product = getProduct(id);
+
+  if(!product) return;
+
+  if(product.stock<=0){
+    showToast("Produit en rupture de stock");
+    return;
+  }
+
+  const existing = cart.find(item=>item.id===id);
 
   if(existing){
+    if(existing.qty>=product.stock){
+      showToast("Stock maximum atteint");
+      return;
+    }
+
     existing.qty++;
   }else{
-    state.cart.push({
+    cart.push({
       id,
       qty:1
     });
   }
 
-  saveCart();
+  saveJSON(STORAGE.cart,cart);
+
   renderCart();
 
-  toast(
-    `${product.name} ajouté au panier 🛒`
-  );
+  showToast("Produit ajouté au panier 🛒");
+}
+
+
+function changeQuantity(id,delta){
+
+  const item = cart.find(x=>x.id===id);
+
+  if(!item) return;
+
+  const product = getProduct(id);
+
+  item.qty += delta;
+
+  if(item.qty<=0){
+    cart = cart.filter(x=>x.id!==id);
+  }
+
+  if(product && item.qty>product.stock){
+    item.qty=product.stock;
+  }
+
+  saveJSON(STORAGE.cart,cart);
+
+  renderCart();
 }
 
 
 function removeFromCart(id){
 
-  state.cart=
-    state.cart.filter(item=>item.id!==id);
+  cart = cart.filter(x=>x.id!==id);
 
-  saveCart();
+  saveJSON(STORAGE.cart,cart);
+
   renderCart();
 }
 
 
-function changeQty(id,delta){
+function cartTotal(){
 
-  const item=
-    state.cart.find(item=>item.id===id);
+  return cart.reduce((sum,item)=>{
 
-  if(!item){
-    return;
-  }
+    const product = getProduct(item.id);
 
-  item.qty+=delta;
+    return sum +
+      (product ? product.price * item.qty : 0);
 
-  if(item.qty<=0){
-    removeFromCart(id);
-    return;
-  }
+  },0);
+}
 
-  saveCart();
-  renderCart();
+
+function cartQuantity(){
+
+  return cart.reduce((sum,item)=>sum+item.qty,0);
 }
 
 
 function renderCart(){
 
-  $("cartCount").textContent=
-    cartCount();
+  $("cartCount").textContent = cartQuantity();
 
+  const container = $("cartItems");
 
-  if(!state.cart.length){
+  if(!cart.length){
 
-    $("cartItems").innerHTML=`
-
-      <div
-        style="
-          text-align:center;
-          padding:55px 15px;
-          color:#64748b
-        ">
-
-        <div style="font-size:48px">
-          🛒
-        </div>
-
-        <h3 style="margin:10px 0">
-          Ton panier est vide
-        </h3>
-
-        <p>
-          Ajoute un article pour commencer.
-        </p>
-
+    container.innerHTML = `
+      <div class="empty">
+        <strong>Votre panier est vide</strong>
+        Ajoutez un produit pour commencer.
       </div>
-
     `;
 
-  }else{
+    $("cartTotal").textContent = euro(0);
 
-    $("cartItems").innerHTML=
-      state.cart.map(item=>{
-
-        const product=
-          getProduct(item.id);
-
-        if(!product){
-          return "";
-        }
-
-        return `
-
-          <div class="cart-item">
-
-            <img
-              src="${escapeHTML(product.image)}"
-              alt="${escapeHTML(product.name)}">
-
-            <div class="cart-info">
-
-              <strong>
-                ${escapeHTML(product.name)}
-              </strong>
-
-              <div
-                style="
-                  margin-top:4px;
-                  font-weight:800
-                ">
-
-                ${money(product.price)}
-
-              </div>
-
-              <div class="qty">
-
-                <button
-                  data-cart="minus"
-                  data-id="${product.id}">
-
-                  −
-
-                </button>
-
-                <strong>
-                  ${item.qty}
-                </strong>
-
-                <button
-                  data-cart="plus"
-                  data-id="${product.id}">
-
-                  +
-
-                </button>
-
-                <button
-                  class="remove"
-                  data-cart="remove"
-                  data-id="${product.id}">
-
-                  Supprimer
-
-                </button>
-
-              </div>
-
-            </div>
-
-          </div>
-
-        `;
-
-      }).join("");
-  }
-
-
-  $("cartTotal").textContent=
-    money(cartTotal());
-}
-
-
-/* =========================
-   PRODUIT DETAIL
-========================= */
-
-function openProduct(id){
-
-  const product=getProduct(id);
-
-  if(!product){
     return;
   }
 
+  container.innerHTML = cart.map(item=>{
 
-  $("productBody").innerHTML=`
+    const product = getProduct(item.id);
 
-    <div>
+    if(!product) return "";
 
-      <div class="product-detail-grid">
+    return `
+      <div class="cart-item">
 
-        <div class="product-detail-image">
+        <div class="cart-item-image">
 
           <img
             src="${escapeHTML(product.image)}"
-            alt="${escapeHTML(product.name)}">
+            alt="${escapeHTML(product.name)}"
+            referrerpolicy="no-referrer"
+          >
 
         </div>
 
         <div>
 
-          <div class="brand">
-            ${escapeHTML(product.brand)}
-          </div>
-
-          <h2 style="font-size:29px;line-height:1.15">
+          <div class="cart-item-name">
             ${escapeHTML(product.name)}
-          </h2>
-
-          <div style="margin:10px 0">
-            ${ratingBadge(product.id)}
           </div>
 
-          <p
-            style="
-              color:#64748b;
-              line-height:1.65;
-              margin-top:13px
-            ">
-
-            ${escapeHTML(product.description)}
-
-          </p>
-
-          <div class="price">
-            ${money(product.price)}
+          <div class="cart-item-price">
+            ${euro(product.price * item.qty)}
           </div>
 
-          <div class="code">
-            Référence : ${escapeHTML(product.code)}
+          <div class="qty">
+
+            <button
+              data-cart-action="minus"
+              data-id="${escapeHTML(product.id)}"
+            >
+              −
+            </button>
+
+            <strong>${item.qty}</strong>
+
+            <button
+              data-cart-action="plus"
+              data-id="${escapeHTML(product.id)}"
+            >
+              +
+            </button>
+
           </div>
 
           <button
-            class="primary"
-            data-detail-add="${product.id}"
-            style="margin-top:20px">
-
-            🛒 Ajouter au panier
-
+            class="remove"
+            data-cart-action="remove"
+            data-id="${escapeHTML(product.id)}"
+          >
+            Supprimer
           </button>
 
         </div>
 
       </div>
+    `;
 
-      ${reviewForm(product.id)}
+  }).join("");
 
-      ${reviewsHTML(product.id)}
+  $("cartTotal").textContent = euro(cartTotal());
+}
+
+
+/* =========================================================
+   PRODUCT DETAIL
+========================================================= */
+
+function renderProductDetail(id){
+
+  const product = getProduct(id);
+
+  if(!product) return;
+
+  currentProductId=id;
+
+  const rating = getProductRating(product);
+
+  const productReviews =
+    reviews.filter(r=>r.productId===id);
+
+  const userAlreadyReviewed =
+    currentUser &&
+    productReviews.some(
+      r=>r.userId===currentUser.uid
+    );
+
+  $("productDetail").innerHTML = `
+
+    <div class="product-detail">
+
+      <div>
+
+        <div class="detail-image">
+
+          <img
+            src="${escapeHTML(product.image)}"
+            alt="${escapeHTML(product.name)}"
+            referrerpolicy="no-referrer"
+          >
+
+        </div>
+
+      </div>
+
+      <div>
+
+        <div class="detail-brand">
+          ${escapeHTML(product.brand)}
+        </div>
+
+        <div class="detail-title">
+          ${escapeHTML(product.name)}
+        </div>
+
+        <div class="rating">
+
+          <span class="stars">
+            ${stars(rating.average)}
+          </span>
+
+          <strong>${rating.average.toFixed(1)}</strong>
+
+          <span class="rating-count">
+            (${rating.count} avis)
+          </span>
+
+        </div>
+
+        <div class="detail-price">
+          ${euro(product.price)}
+        </div>
+
+        <div class="detail-stock">
+          ✓ ${product.stock} disponible${product.stock>1?"s":""}
+        </div>
+
+        <div class="detail-description">
+          ${escapeHTML(product.description)}
+        </div>
+
+        <button
+          class="primary"
+          data-detail-add="${escapeHTML(product.id)}"
+        >
+          🛒 Ajouter au panier
+        </button>
+
+        <div class="review-box">
+
+          <h3>Avis clients</h3>
+
+          ${
+            productReviews.length
+            ?
+            productReviews.map(review=>`
+
+              <div class="review">
+
+                <div class="review-head">
+
+                  <span>
+                    ${escapeHTML(review.name)}
+                    ·
+                    <span class="stars">
+                      ${stars(review.rating)}
+                    </span>
+                  </span>
+
+                  <span class="review-date">
+                    ${escapeHTML(review.date)}
+                  </span>
+
+                </div>
+
+                <div class="review-text">
+                  ${escapeHTML(review.comment)}
+                </div>
+
+              </div>
+
+            `).join("")
+            :
+            `<div class="auth-note">Aucun avis ajouté pour le moment.</div>`
+          }
+
+          <div style="margin-top:20px">
+
+            <h3>Donner votre avis</h3>
+
+            ${
+              !currentUser
+              ?
+              `<div class="auth-note">
+                Connecte-toi pour laisser un avis.
+              </div>`
+              :
+              userAlreadyReviewed
+              ?
+              `<div class="auth-note">
+                Tu as déjà laissé un avis sur ce produit.
+              </div>`
+              :
+              `
+
+              <form class="form" id="reviewForm">
+
+                <div class="field">
+
+                  <label>Note</label>
+
+                  <select id="reviewRating" required>
+
+                    <option value="">Choisir</option>
+                    <option value="5">★★★★★ 5/5</option>
+                    <option value="4">★★★★☆ 4/5</option>
+                    <option value="3">★★★☆☆ 3/5</option>
+                    <option value="2">★★☆☆☆ 2/5</option>
+                    <option value="1">★☆☆☆☆ 1/5</option>
+
+                  </select>
+
+                </div>
+
+                <div class="field">
+
+                  <label>Commentaire</label>
+
+                  <textarea
+                    id="reviewComment"
+                    required
+                    maxlength="500"
+                    placeholder="Ton avis..."
+                  ></textarea>
+
+                </div>
+
+                <button class="primary">
+                  Publier mon avis
+                </button>
+
+              </form>
+
+              `
+            }
+
+          </div>
+
+        </div>
+
+      </div>
 
     </div>
-
   `;
 
   openModal("productModal");
 }
 
 
-/* =========================
-   AUTH
-========================= */
+/* =========================================================
+   AUTH TABS
+========================================================= */
 
-function renderAuth(){
+function switchAuthTab(tab){
 
-  const logged=
-    !!state.currentUser;
+  document
+    .querySelectorAll(".auth-tab")
+    .forEach(button=>{
+      button.classList.toggle(
+        "active",
+        button.dataset.authTab===tab
+      );
+    });
 
-  $("accountText").textContent=
-    logged
-    ? state.currentUser.name.split(" ")[0]
-    : "Compte";
+  document
+    .querySelectorAll(".auth-panel")
+    .forEach(panel=>{
+      panel.classList.remove("active");
+    });
 
-  $("ordersBtn").classList.toggle(
-    "hidden",
-    !logged
-  );
+  const target = {
+    google:"authGoogle",
+    email:"authEmail",
+    phone:"authPhone"
+  }[tab];
 
-  $("dashboardBtn").classList.toggle(
-    "hidden",
-    !(logged &&
-      state.currentUser.role==="admin")
-  );
+  $(target)?.classList.add("active");
+
+  if(tab==="phone"){
+    setupRecaptcha();
+  }
 }
 
 
-function openAuth(tab="login"){
+/* =========================================================
+   GOOGLE AUTH
+========================================================= */
 
-  openModal("authModal");
+async function loginGoogle(){
 
-  $("loginForm").classList.toggle(
-    "hidden",
-    tab!=="login"
-  );
+  try{
 
-  $("signupForm").classList.toggle(
-    "hidden",
-    tab!=="signup"
-  );
+    const result =
+      await signInWithPopup(auth,googleProvider);
 
-  $("loginTab").classList.toggle(
-    "active",
-    tab==="login"
-  );
+    if(result.user){
 
-  $("signupTab").classList.toggle(
-    "active",
-    tab==="signup"
-  );
-}
+      showToast(
+        `Bienvenue ${result.user.displayName || "sur NOVASHOP"} 👋`
+      );
 
+      closeModal("authModal");
+    }
 
-function login(email,password,adminCode){
+  }catch(error){
 
-  const users=getUsers();
+    console.error(error);
 
-  const user=users.find(
-    current=>
-      current.email.toLowerCase()===
-      email.toLowerCase() &&
-      current.password===password
-  );
+    if(error.code==="auth/popup-closed-by-user"){
+      showToast("Connexion Google annulée");
+      return;
+    }
 
-
-  if(!user){
-
-    toast(
-      "E-mail ou mot de passe incorrect"
+    showToast(
+      "Connexion Google impossible"
     );
+  }
+}
+
+
+/* =========================================================
+   EMAIL AUTH
+========================================================= */
+
+async function loginEmail(){
+
+  const email = $("emailInput").value.trim();
+  const password = $("passwordInput").value;
+
+  if(!email || !password){
+
+    showToast("Remplis l'e-mail et le mot de passe");
 
     return;
   }
 
+  try{
 
-  if(
-    adminCode &&
-    adminCode===ADMIN_CODE
-  ){
+    const result =
+      await signInWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
 
-    user.role="admin";
+    showToast(
+      `Bienvenue ${result.user.email} 👋`
+    );
 
-    saveUsers(users);
+    closeModal("authModal");
 
+  }catch(error){
+
+    console.error(error);
+
+    if(
+      error.code==="auth/invalid-credential" ||
+      error.code==="auth/user-not-found" ||
+      error.code==="auth/wrong-password"
+    ){
+
+      showToast(
+        "E-mail ou mot de passe incorrect"
+      );
+
+      return;
+    }
+
+    showToast(
+      "Impossible de se connecter"
+    );
   }
-
-
-  state.currentUser=user;
-
-  localStorage.setItem(
-    LS.session,
-    user.id
-  );
-
-  loadUserData();
-
-  renderAuth();
-  renderProducts();
-  renderCart();
-
-  closeModal("authModal");
-
-  toast(
-    user.role==="admin"
-    ? "Connexion administrateur réussie ⚙️"
-    : "Connexion réussie 👤"
-  );
 }
 
 
-function signup(
-  name,
-  email,
-  password,
-  confirm
-){
+async function signupEmail(){
+
+  const email = $("emailInput").value.trim();
+  const password = $("passwordInput").value;
+
+  if(!email || !password){
+
+    showToast("Remplis l'e-mail et le mot de passe");
+
+    return;
+  }
 
   if(password.length<6){
 
-    toast(
+    showToast(
       "Le mot de passe doit contenir au moins 6 caractères"
     );
 
     return;
   }
 
+  try{
 
-  if(password!==confirm){
+    const result =
+      await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
 
-    toast(
-      "Les mots de passe ne correspondent pas"
+    showToast(
+      `Compte créé : ${result.user.email} 🎉`
+    );
+
+    closeModal("authModal");
+
+  }catch(error){
+
+    console.error(error);
+
+    if(error.code==="auth/email-already-in-use"){
+
+      showToast(
+        "Cet e-mail possède déjà un compte"
+      );
+
+      return;
+    }
+
+    if(error.code==="auth/invalid-email"){
+
+      showToast(
+        "Adresse e-mail invalide"
+      );
+
+      return;
+    }
+
+    showToast(
+      "Impossible de créer le compte"
+    );
+  }
+}
+
+
+/* =========================================================
+   PHONE AUTH
+========================================================= */
+
+function setupRecaptcha(){
+
+  if(recaptchaVerifier) return;
+
+  try{
+
+    recaptchaVerifier =
+      new RecaptchaVerifier(
+        auth,
+        "recaptcha-container",
+        {
+          size:"normal",
+
+          callback:()=>{
+            showToast("Vérification réussie ✓");
+          },
+
+          "expired-callback":()=>{
+            showToast(
+              "Le reCAPTCHA a expiré"
+            );
+          }
+        }
+      );
+
+    recaptchaVerifier.render();
+
+  }catch(error){
+
+    console.error(error);
+
+  }
+}
+
+
+async function sendPhoneCode(){
+
+  const phone =
+    $("phoneInput").value.trim();
+
+  if(!phone){
+
+    showToast(
+      "Entre ton numéro de téléphone"
     );
 
     return;
   }
 
+  try{
 
-  const users=getUsers();
+    setupRecaptcha();
+
+    phoneConfirmation =
+      await signInWithPhoneNumber(
+        auth,
+        phone,
+        recaptchaVerifier
+      );
+
+    $("phoneCodeArea")
+      .classList.remove("hidden");
+
+    $("confirmPhoneCode")
+      .classList.remove("hidden");
+
+    showToast(
+      "Code SMS envoyé 📱"
+    );
+
+  }catch(error){
+
+    console.error(error);
+
+    showToast(
+      "Impossible d'envoyer le SMS"
+    );
+
+    if(recaptchaVerifier){
+
+      try{
+        recaptchaVerifier.clear();
+      }catch{}
+
+      recaptchaVerifier=null;
+    }
+  }
+}
 
 
-  if(
-    users.some(
-      user=>
-        user.email.toLowerCase()===
-        email.toLowerCase()
-    )
-  ){
+async function confirmPhoneCode(){
 
-    toast(
-      "Un compte existe déjà avec cet e-mail"
+  const code =
+    $("phoneCodeInput").value.trim();
+
+  if(!phoneConfirmation){
+
+    showToast(
+      "Demande d'abord un code SMS"
     );
 
     return;
   }
 
+  if(!code){
 
-  const user={
-    id:uid("USER"),
-    name:name.trim(),
-    email:email.trim(),
-    password,
-    role:"user",
-    createdAt:new Date().toISOString()
-  };
-
-
-  users.push(user);
-
-  saveUsers(users);
-
-  state.currentUser=user;
-
-  localStorage.setItem(
-    LS.session,
-    user.id
-  );
-
-  loadUserData();
-
-  renderAuth();
-  renderProducts();
-  renderCart();
-
-  closeModal("authModal");
-
-  toast(
-    "Compte créé avec succès 👤"
-  );
-}
-
-
-function logout(){
-
-  state.currentUser=null;
-
-  localStorage.removeItem(
-    LS.session
-  );
-
-  loadUserData();
-
-  renderAuth();
-  renderProducts();
-  renderCart();
-
-  closeModal("accountModal");
-
-  toast(
-    "Déconnexion effectuée"
-  );
-}
-
-
-function deleteMyAccount(){
-
-  if(!state.currentUser){
-    return;
-  }
-
-
-  const confirmed=
-    window.confirm(
-      "Supprimer ton compte et tes données locales ?"
+    showToast(
+      "Entre le code reçu"
     );
 
-
-  if(!confirmed){
     return;
   }
 
+  try{
 
-  const id=state.currentUser.id;
+    const result =
+      await phoneConfirmation.confirm(code);
 
+    showToast(
+      `Téléphone connecté : ${result.user.phoneNumber} 📱`
+    );
 
-  saveUsers(
-    getUsers().filter(
-      user=>user.id!==id
-    )
-  );
+    closeModal("authModal");
 
+  }catch(error){
 
-  localStorage.removeItem(
-    `novashop_cart_${id}`
-  );
+    console.error(error);
 
-  localStorage.removeItem(
-    `novashop_favorites_${id}`
-  );
-
-  localStorage.removeItem(
-    LS.session
-  );
+    showToast(
+      "Code SMS incorrect"
+    );
+  }
+}
 
 
-  state.currentUser=null;
-  state.cart=[];
-  state.favorites=[];
+/* =========================================================
+   FIREBASE USER STATE
+========================================================= */
+
+onAuthStateChanged(auth,user=>{
+
+  currentUser=user || null;
+
+  registerUser(user);
+
+  updateAuthUI();
+
+});
 
 
-  renderAuth();
-  renderProducts();
-  renderCart();
+function registerUser(user){
 
-  closeModal("accountModal");
+  if(!user) return;
 
-  toast(
-    "Compte supprimé"
+  const users =
+    loadJSON(STORAGE.users,[]);
+
+  const exists =
+    users.some(u=>u.uid===user.uid);
+
+  if(!exists){
+
+    users.push({
+      uid:user.uid,
+      name:user.displayName || "Utilisateur",
+      email:user.email || "",
+      phone:user.phoneNumber || "",
+      createdAt:new Date().toISOString()
+    });
+
+    saveJSON(STORAGE.users,users);
+  }
+}
+
+
+/* =========================================================
+   ADMIN
+========================================================= */
+
+function isAdmin(){
+
+  return Boolean(
+    localStorage.getItem(STORAGE.admin)==="true"
   );
 }
 
+
+function updateAuthUI(){
+
+  const accountButton=$("accountButton");
+  const ordersButton=$("ordersButton");
+  const adminButton=$("adminButton");
+
+  if(currentUser){
+
+    const name =
+      currentUser.displayName ||
+      currentUser.email ||
+      currentUser.phoneNumber ||
+      "Compte";
+
+    accountButton.textContent =
+      `👤 ${
+        name.length>18
+        ? name.slice(0,18)+"…"
+        : name
+      }`;
+
+    ordersButton.classList.remove("hidden");
+
+    if(isAdmin()){
+      adminButton.classList.remove("hidden");
+    }else{
+      adminButton.classList.add("hidden");
+    }
+
+  }else{
+
+    accountButton.textContent =
+      "👤 Connexion";
+
+    ordersButton.classList.add("hidden");
+    adminButton.classList.add("hidden");
+  }
+}
+
+
+/* =========================================================
+   ACCOUNT
+========================================================= */
 
 function openAccount(){
 
-  if(!state.currentUser){
+  if(!currentUser){
 
-    openAuth("login");
+    openModal("authModal");
 
     return;
   }
 
+  const name =
+    currentUser.displayName ||
+    "Utilisateur";
 
-  $("accountBody").innerHTML=`
+  $("profileName").textContent=name;
 
-    <h2>
-      ${escapeHTML(
-        state.currentUser.name
-      )}
-    </h2>
-
-    <p
-      style="
-        color:#64748b;
-        margin-top:5px
-      ">
-
-      ${escapeHTML(
-        state.currentUser.email
-      )}
-
-    </p>
-
-    <div
-      style="
-        margin-top:13px;
-        padding:12px;
-        background:#f8fafc;
-        border-radius:9px
-      ">
-
-      Type de compte :
-      <strong>
-        ${
-          state.currentUser.role==="admin"
-          ? "Administrateur"
-          : "Client"
-        }
-      </strong>
-
-    </div>
-
-    <div
-      style="
-        display:grid;
-        gap:10px;
-        margin-top:20px
-      ">
-
-      <button
-        class="primary"
-        id="accountOrders">
-
-        📦 Mes commandes
-
-      </button>
-
-      <button
-        id="logoutBtn"
-        class="header-btn">
-
-        Se déconnecter
-
-      </button>
-
-      <button
-        id="deleteAccountBtn"
-        class="danger">
-
-        Supprimer mon compte
-
-      </button>
-
-    </div>
-
-  `;
-
-
-  $("accountOrders").onclick=()=>{
-
-    closeModal("accountModal");
-
-    openOrders();
-
-  };
-
-
-  $("logoutBtn").onclick=logout;
-
-
-  $("deleteAccountBtn").onclick=
-    deleteMyAccount;
-
+  $("profileEmail").textContent =
+    currentUser.email ||
+    currentUser.phoneNumber ||
+    "Compte Firebase";
 
   openModal("accountModal");
 }
 
 
-/* =========================
-   COMMANDES
-========================= */
-
-function getCurrentOrders(){
-
-  if(!state.currentUser){
-    return [];
-  }
-
-  return state.orders.filter(
-    order=>
-      order.userId===
-      state.currentUser.id
-  );
-}
-
-
-function renderOrders(){
-
-  const orders=
-    getCurrentOrders();
-
-
-  if(!orders.length){
-
-    $("ordersBody").innerHTML=`
-
-      <div
-        style="
-          text-align:center;
-          padding:50px 15px
-        ">
-
-        <div style="font-size:50px">
-          📦
-        </div>
-
-        <h2 style="margin:10px 0">
-          Aucune commande
-        </h2>
-
-        <p class="muted">
-          Tu n'as encore passé aucune commande.
-        </p>
-
-      </div>
-
-    `;
-
-    return;
-  }
-
-
-  $("ordersBody").innerHTML=
-    orders.map(order=>`
-
-      <div class="order">
-
-        <div
-          style="
-            display:flex;
-            justify-content:space-between;
-            gap:10px;
-            flex-wrap:wrap
-          ">
-
-          <strong>
-            ${escapeHTML(order.id)}
-          </strong>
-
-          <span class="status">
-            ${escapeHTML(order.status)}
-          </span>
-
-        </div>
-
-        <p
-          class="muted"
-          style="margin:8px 0">
-
-          ${new Date(
-            order.createdAt
-          ).toLocaleString("fr-FR")}
-
-        </p>
-
-        <p>
-          ${order.items.reduce(
-            (number,item)=>
-              number+item.qty,
-            0
-          )}
-          article(s)
-          • Total :
-          <strong>
-            ${money(order.total)}
-          </strong>
-        </p>
-
-        <button
-          class="primary"
-          data-invoice="${order.id}"
-          style="margin-top:12px">
-
-          🧾 Voir la facture
-
-        </button>
-
-      </div>
-
-    `).join("");
-}
-
+/* =========================================================
+   ORDERS
+========================================================= */
 
 function openOrders(){
 
-  if(!state.currentUser){
+  if(!currentUser){
 
-    openAuth("login");
+    openModal("authModal");
 
     return;
   }
@@ -1834,203 +1640,296 @@ function openOrders(){
 }
 
 
-/* =========================
-   CHECKOUT
-========================= */
+function getUserOrders(){
 
-function updateCheckout(){
+  if(!currentUser) return [];
 
-  const subtotal=cartTotal();
-
-  const discount=
-    subtotal*
-    state.discountPercent/
-    100;
-
-  const total=
-    subtotal-discount;
-
-
-  $("checkoutSummary").innerHTML=`
-
-    <div
-      style="
-        display:flex;
-        justify-content:space-between
-      ">
-
-      <span>Sous-total</span>
-
-      <strong>
-        ${money(subtotal)}
-      </strong>
-
-    </div>
-
-    <div
-      style="
-        display:flex;
-        justify-content:space-between;
-        margin-top:8px;
-        color:#16a34a
-      ">
-
-      <span>Réduction</span>
-
-      <strong>
-        -${money(discount)}
-      </strong>
-
-    </div>
-
-    <hr style="margin:13px 0;border:0;border-top:1px solid #e5e7eb">
-
-    <div
-      style="
-        display:flex;
-        justify-content:space-between;
-        font-size:20px
-      ">
-
-      <strong>Total</strong>
-
-      <strong>
-        ${money(total)}
-      </strong>
-
-    </div>
-
-    ${
-      state.appliedPromo
-      ? `
-        <div
-          style="
-            margin-top:10px;
-            color:#16a34a;
-            font-size:13px;
-            font-weight:800
-          ">
-
-          ✓ Code
-          ${escapeHTML(state.appliedPromo)}
-          appliqué
-
-        </div>
-      `
-      :""
-    }
-
-  `;
-
-
-  const pay=$("payButton");
-
-
-  if(
-    total<=0 &&
-    state.discountPercent===100
-  ){
-
-    pay.disabled=false;
-
-    pay.textContent=
-      "✓ Finaliser gratuitement";
-
-  }else{
-
-    pay.disabled=true;
-
-    pay.textContent=
-      "🔒 Code NOVA100 requis";
-
-  }
+  return orders
+    .filter(order=>order.userId===currentUser.uid)
+    .sort((a,b)=>
+      new Date(b.date)-new Date(a.date)
+    );
 }
 
 
+function renderOrders(){
+
+  const list=$("ordersList");
+
+  const userOrders=getUserOrders();
+
+  if(!userOrders.length){
+
+    list.innerHTML=`
+      <div class="empty">
+        <strong>Aucune commande</strong>
+        Tes commandes apparaîtront ici.
+      </div>
+    `;
+
+    return;
+  }
+
+  list.innerHTML =
+    userOrders.map(order=>`
+
+      <div class="order">
+
+        <div class="order-top">
+
+          <div>
+
+            <div class="order-number">
+              ${escapeHTML(order.number)}
+            </div>
+
+            <div class="order-date">
+              ${escapeHTML(
+                new Date(order.date).toLocaleString("fr-FR")
+              )}
+            </div>
+
+          </div>
+
+          <strong>
+            ${euro(order.total)}
+          </strong>
+
+        </div>
+
+        <div class="order-status">
+          ${escapeHTML(order.status)}
+        </div>
+
+        <div style="margin-top:12px">
+
+          ${order.items.map(item=>`
+            <div style="
+              font-size:11px;
+              padding:4px 0;
+              color:#64748b;
+            ">
+              ${escapeHTML(item.name)}
+              × ${item.qty}
+            </div>
+          `).join("")}
+
+        </div>
+
+        <button
+          class="secondary-btn"
+          style="margin-top:12px"
+          data-invoice="${escapeHTML(order.id)}"
+        >
+          📄 Voir la facture
+        </button>
+
+      </div>
+
+    `).join("");
+}
+
+
+/* =========================================================
+   CHECKOUT
+========================================================= */
+
 function openCheckout(){
 
-  if(!state.cart.length){
+  if(!cart.length){
 
-    toast(
+    showToast(
       "Ton panier est vide"
     );
 
     return;
   }
 
+  if(!currentUser){
 
-  if(!state.currentUser){
+    closeCart();
 
-    openAuth("login");
+    openModal("authModal");
 
-    toast(
+    showToast(
       "Connecte-toi pour commander"
     );
 
     return;
   }
 
-
-  state.appliedPromo=null;
-  state.discountPercent=0;
-
+  currentPromo=null;
+  currentCheckoutTotal=cartTotal();
 
   $("promoCode").value="";
+  $("promoResult").textContent="";
 
-  $("fullName").value=
-    state.currentUser.name;
+  $("payButton").disabled=true;
 
+  renderCheckout();
 
-  $("address").value="";
-  $("postalCode").value="";
-  $("city").value="";
-  $("country").value="France";
-
-
-  updateCheckout();
+  closeCart();
 
   openModal("checkoutModal");
 }
 
 
-function createOrder(){
+function renderCheckout(){
 
-  if(!state.currentUser){
+  const container=$("checkoutItems");
+
+  container.innerHTML=cart.map(item=>{
+
+    const product=getProduct(item.id);
+
+    if(!product) return "";
+
+    return `
+      <div class="summary-item">
+
+        <span>
+          ${escapeHTML(product.name)}
+          ×${item.qty}
+        </span>
+
+        <strong>
+          ${euro(product.price*item.qty)}
+        </strong>
+
+      </div>
+    `;
+
+  }).join("");
+
+  currentCheckoutTotal=cartTotal();
+
+  $("checkoutTotal").textContent =
+    euro(currentCheckoutTotal);
+
+  updatePayButton();
+}
+
+
+function applyPromo(){
+
+  const code =
+    $("promoCode").value
+      .trim()
+      .toUpperCase();
+
+  const promo=PROMOS[code];
+
+  if(!promo){
+
+    currentPromo=null;
+    currentCheckoutTotal=cartTotal();
+
+    $("promoResult").textContent =
+      "Code invalide.";
+
+    $("promoResult").style.color =
+      "#dc2626";
+
+    $("payButton").disabled=true;
+
+    $("checkoutTotal").textContent =
+      euro(currentCheckoutTotal);
+
+    updatePayButton();
+
     return;
   }
 
+  currentPromo={
+    code,
+    ...promo
+  };
 
   const subtotal=cartTotal();
 
+  const discount =
+    subtotal * promo.value / 100;
+
+  currentCheckoutTotal =
+    Math.max(0,subtotal-discount);
+
+  $("promoResult").textContent =
+    `${promo.label} • Réduction ${euro(discount)}`;
+
+  $("promoResult").style.color =
+    "#16a34a";
+
+  $("checkoutTotal").textContent =
+    euro(currentCheckoutTotal);
+
+  updatePayButton();
+
+  showToast(
+    `Code ${code} appliqué ✓`
+  );
+}
+
+
+function updatePayButton(){
+
+  const button=$("payButton");
+
+  const total=currentCheckoutTotal;
 
   if(
-    state.discountPercent!==100 ||
-    discountedTotal()>0
+    currentPromo &&
+    currentPromo.value===100
   ){
 
-    toast(
-      "Le code NOVA100 est requis pour cette démo"
+    button.disabled=false;
+
+    button.textContent =
+      `🔒 Payer ${euro(total)} avec le code promotionnel`;
+
+  }else{
+
+    button.disabled=true;
+
+    button.textContent =
+      "🔒 Code NOVA100 requis pour la démo";
+  }
+}
+
+
+/* =========================================================
+   CREATE ORDER
+========================================================= */
+
+function createOrder(event){
+
+  event.preventDefault();
+
+  if(!currentUser){
+
+    showToast(
+      "Connecte-toi avant de commander"
     );
 
     return;
   }
 
+  if(
+    !currentPromo ||
+    currentPromo.value!==100
+  ){
 
-  const fullName=
-    $("fullName").value.trim();
+    showToast(
+      "Utilise un code promotionnel 100 %"
+    );
 
-  const address=
-    $("address").value.trim();
+    return;
+  }
 
-  const postalCode=
-    $("postalCode").value.trim();
-
-  const city=
-    $("city").value.trim();
-
-  const country=
-    $("country").value.trim();
-
+  const fullName=$("fullName").value.trim();
+  const address=$("address").value.trim();
+  const postalCode=$("postalCode").value.trim();
+  const city=$("city").value.trim();
+  const country=$("country").value.trim();
 
   if(
     !fullName ||
@@ -2040,1293 +1939,975 @@ function createOrder(){
     !country
   ){
 
-    toast(
-      "Complète toutes les informations de livraison"
+    showToast(
+      "Remplis toutes les informations"
     );
 
     return;
   }
 
+  const orderId =
+    "order_" +
+    Date.now() +
+    "_" +
+    Math.random()
+      .toString(36)
+      .slice(2,8);
 
-  const items=
-    state.cart.map(item=>{
+  const orderNumber =
+    "NOVA-" +
+    new Date().getFullYear() +
+    "-" +
+    Math.random()
+      .toString(36)
+      .slice(2,8)
+      .toUpperCase();
 
-      const product=
-        getProduct(item.id);
+  const subtotal=cartTotal();
 
-      return {
-        id:product.id,
-        name:product.name,
-        price:product.price,
-        qty:item.qty,
-        code:product.code,
-        image:product.image
-      };
-
-    });
-
+  const discount=subtotal;
 
   const order={
-
-    id:uid("NS"),
-
-    invoiceNumber:
-      `INV-${new Date().getFullYear()}-${Math.floor(100000+Math.random()*900000)}`,
-
-    userId:
-      state.currentUser.id,
+    id:orderId,
+    number:orderNumber,
+    userId:currentUser.uid,
 
     customer:{
       name:fullName,
+      email:currentUser.email || "",
+      phone:currentUser.phoneNumber || ""
+    },
+
+    address:{
       address,
       postalCode,
       city,
       country
     },
 
-    items,
+    warehouse:"Entrepôt",
+
+    items:cart.map(item=>{
+
+      const product=getProduct(item.id);
+
+      return {
+        id:product.id,
+        name:product.name,
+        price:product.price,
+        qty:item.qty
+      };
+
+    }),
 
     subtotal,
-
-    discountPercent:100,
-
-    discountAmount:subtotal,
-
+    discount,
     total:0,
 
-    paymentStatus:
-      "Payé par code promotionnel",
+    promoCode:currentPromo.code,
 
-    status:
-      "Commande reçue",
+    paymentMethod:"Code promotionnel",
 
-    warehouse:
-      "Entrepôt",
+    status:"Commande confirmée",
 
-    createdAt:
-      new Date().toISOString()
-
+    date:new Date().toISOString()
   };
 
+  orders.push(order);
 
-  state.orders.unshift(order);
+  saveJSON(STORAGE.orders,orders);
 
-  setJSON(
-    LS.orders,
-    state.orders
-  );
+  cart=[];
 
-
-  state.cart=[];
-
-  saveCart();
-
-
-  state.appliedPromo=null;
-  state.discountPercent=0;
-
+  saveJSON(STORAGE.cart,cart);
 
   renderCart();
-  renderAuth();
 
   closeModal("checkoutModal");
 
-  showInvoice(order);
-
-  toast(
-    "Commande créée avec succès 📦"
+  showToast(
+    "Commande créée avec succès 🎉"
   );
+
+  setTimeout(()=>{
+    openInvoice(order.id);
+  },300);
 }
 
 
-/* =========================
-   FACTURE
-========================= */
+/* =========================================================
+   INVOICE
+========================================================= */
 
-function showInvoice(order){
+function openInvoice(orderId){
 
-  $("invoiceBody").innerHTML=`
+  const order =
+    orders.find(o=>o.id===orderId);
 
-    <div class="invoice-top">
+  if(!order) return;
 
-      <div>
+  $("printArea").innerHTML=`
 
-        <div class="invoice-logo">
-          NOVA<span>SHOP</span>
-        </div>
+    <div class="invoice">
 
-        <p
-          style="
+      <div class="invoice-header">
+
+        <div>
+
+          <div class="invoice-logo">
+            NOVASHOP
+          </div>
+
+          <div style="
+            font-size:11px;
             color:#64748b;
-            margin-top:4px
-          ">
-
-          Marketplace gaming
-
-        </p>
-
-      </div>
-
-      <div style="text-align:right">
-
-        <strong style="font-size:19px">
-          FACTURE
-        </strong>
-
-        <div
-          style="
             margin-top:5px;
-            color:#475569
           ">
-
-          ${escapeHTML(
-            order.invoiceNumber
-          )}
+            Marketplace gaming
+          </div>
 
         </div>
 
-        <div
-          style="
-            color:#64748b;
-            margin-top:2px
-          ">
+        <div class="invoice-meta">
 
-          ${new Date(
-            order.createdAt
-          ).toLocaleDateString("fr-FR")}
+          <strong>FACTURE</strong><br>
+
+          ${escapeHTML(order.number)}<br>
+
+          ${new Date(order.date).toLocaleString("fr-FR")}
 
         </div>
 
       </div>
 
-    </div>
 
+      <div class="invoice-section">
 
-    <div class="invoice-grid">
+        <h3>Client</h3>
 
-      <div>
+        <div style="font-size:12px;line-height:1.7">
 
-        <strong>Client</strong>
+          <strong>
+            ${escapeHTML(order.customer.name)}
+          </strong><br>
 
-        <p
-          style="
-            color:#475569;
-            line-height:1.6;
-            margin-top:6px
-          ">
+          ${escapeHTML(order.customer.email || "")}<br>
 
-          ${escapeHTML(order.customer.name)}
-          <br>
+          ${escapeHTML(order.customer.phone || "")}
 
-          ${escapeHTML(order.customer.address)}
-          <br>
-
-          ${escapeHTML(order.customer.postalCode)}
-          ${escapeHTML(order.customer.city)}
-          <br>
-
-          ${escapeHTML(order.customer.country)}
-
-        </p>
+        </div>
 
       </div>
 
 
-      <div>
+      <div class="invoice-section">
 
-        <strong>
-          Informations commande
-        </strong>
+        <h3>Adresse de livraison</h3>
 
-        <p
-          style="
-            color:#475569;
-            line-height:1.6;
-            margin-top:6px
-          ">
+        <div style="font-size:12px;line-height:1.7">
 
-          Commande :
-          ${escapeHTML(order.id)}
+          ${escapeHTML(order.address.address)}<br>
 
-          <br>
+          ${escapeHTML(order.address.postalCode)}
+          ${escapeHTML(order.address.city)}<br>
 
-          Entrepôt :
-          ${escapeHTML(order.warehouse)}
+          ${escapeHTML(order.address.country)}
 
-          <br>
-
-          Statut :
-          ${escapeHTML(order.status)}
-
-          <br>
-
-          Paiement :
-          ${escapeHTML(order.paymentStatus)}
-
-        </p>
+        </div>
 
       </div>
 
-    </div>
 
+      <div class="invoice-section">
 
-    <table>
+        <h3>Articles</h3>
 
-      <thead>
+        <table class="invoice-table">
 
-        <tr>
+          <thead>
 
-          <th>Article</th>
-          <th>Qté</th>
-          <th>Prix</th>
-          <th>Total</th>
+            <tr>
+              <th>Produit</th>
+              <th>Quantité</th>
+              <th>Prix</th>
+              <th>Total</th>
+            </tr>
 
-        </tr>
+          </thead>
 
-      </thead>
+          <tbody>
 
-      <tbody>
+            ${order.items.map(item=>`
 
-        ${order.items.map(item=>`
+              <tr>
 
-          <tr>
+                <td>
+                  ${escapeHTML(item.name)}
+                </td>
 
-            <td>
-              ${escapeHTML(item.name)}
-            </td>
+                <td>
+                  ${item.qty}
+                </td>
 
-            <td>
-              ${item.qty}
-            </td>
+                <td>
+                  ${euro(item.price)}
+                </td>
 
-            <td>
-              ${money(item.price)}
-            </td>
+                <td>
+                  ${euro(item.price*item.qty)}
+                </td>
 
-            <td>
-              ${money(
-                item.price*item.qty
-              )}
-            </td>
+              </tr>
 
-          </tr>
+            `).join("")}
 
-        `).join("")}
+          </tbody>
 
-      </tbody>
-
-    </table>
-
-
-    <div class="invoice-total">
-
-      <div>
-
-        <span>
-          Sous-total
-        </span>
-
-        <strong>
-          ${money(order.subtotal)}
-        </strong>
+        </table>
 
       </div>
 
-      <div style="color:#16a34a">
 
-        <span>
-          Réduction
-        </span>
+      <div class="invoice-total">
 
-        <strong>
-          -${money(order.discountAmount)}
-        </strong>
+        <div>
+          <span>Sous-total</span>
+          <strong>${euro(order.subtotal)}</strong>
+        </div>
+
+        <div>
+          <span>Réduction</span>
+          <strong>-${euro(order.discount)}</strong>
+        </div>
+
+        <div>
+          <span>Code</span>
+          <strong>${escapeHTML(order.promoCode)}</strong>
+        </div>
+
+        <div class="grand">
+          <span>Total payé</span>
+          <strong>0,00 €</strong>
+        </div>
 
       </div>
 
-      <div class="grand">
 
-        <span>
-          Total payé
-        </span>
+      <div class="invoice-section">
 
-        <strong>
-          ${money(order.total)}
-        </strong>
+        <h3>Paiement</h3>
+
+        <div style="font-size:12px">
+          ${escapeHTML(order.paymentMethod)}
+        </div>
 
       </div>
 
-    </div>
 
+      <div class="invoice-footer">
 
-    <div
-      style="
-        margin-top:38px;
-        padding-top:18px;
-        border-top:1px solid #e5e7eb;
-        color:#64748b;
-        font-size:12px;
-        line-height:1.6
-      ">
+        NOVASHOP • Entrepôt<br>
 
-      Merci pour votre commande sur NovaShop.
-      <br>
+        Ceci est une facture générée par la démonstration NOVASHOP.
 
-      Facture générée automatiquement par le site.
-      <br>
-
-      Paiement enregistré :
-      code promotionnel.
+      </div>
 
     </div>
 
   `;
-
 
   openModal("invoiceModal");
 }
 
 
-/* =========================
+/* =========================================================
    ADMIN
-========================= */
+========================================================= */
 
-function requireAdmin(){
+function openAdmin(){
 
-  if(
-    !state.currentUser ||
-    state.currentUser.role!=="admin"
-  ){
+  if(!isAdmin()){
 
-    toast(
-      "Accès réservé à l'administration"
+    showToast(
+      "Accès administrateur requis"
     );
 
-    if(!state.currentUser){
-      openAuth("login");
-    }
-
-    return false;
-  }
-
-  return true;
-}
-
-
-function openDashboard(){
-
-  if(!requireAdmin()){
     return;
   }
 
-  renderDashboard();
+  renderAdmin();
 
   openModal("dashboardModal");
 }
 
 
-function renderDashboard(){
+function renderAdmin(){
 
-  const users=getUsers();
-
-  const totalOrders=
-    state.orders.length;
-
-  const freeOrders=
-    state.orders.filter(
-      order=>order.discountPercent===100
-    ).length;
-
-  const catalogValue=
+  const catalogValue =
     PRODUCTS.reduce(
-      (sum,product)=>
-        sum+product.price,
+      (sum,p)=>sum+p.price*p.stock,
       0
     );
 
+  const freeOrders =
+    orders.filter(o=>o.total===0).length;
 
-  $("dashboardBody").innerHTML=`
+  $("adminOrders").textContent =
+    orders.length;
 
-    <div class="dashboard-stats">
+  $("adminFreeOrders").textContent =
+    freeOrders;
 
-      <div class="stat">
+  $("adminCatalogValue").textContent =
+    euro(catalogValue);
 
-        Commandes
+  $("adminUsers").textContent =
+    loadJSON(STORAGE.users,[]).length;
 
-        <b>
-          ${totalOrders}
-        </b>
 
-      </div>
+  $("adminPromos").innerHTML =
+    Object.entries(PROMOS).map(([code,promo])=>`
 
-      <div class="stat">
+      <div class="promo-code">
 
-        Commandes gratuites
+        <span class="code">
+          ${escapeHTML(code)}
+        </span>
 
-        <b>
-          ${freeOrders}
-        </b>
-
-      </div>
-
-      <div class="stat">
-
-        Valeur catalogue
-
-        <b>
-          ${money(catalogValue)}
-        </b>
+        <span>
+          ${escapeHTML(promo.label)}
+        </span>
 
       </div>
 
-      <div class="stat">
-
-        Utilisateurs
-
-        <b>
-          ${users.length}
-        </b>
-
-      </div>
-
-    </div>
+    `).join("");
 
 
-    <div class="order">
+  const adminOrders=$("adminOrderList");
 
-      <h3>
-        📍 Entrepôt
-      </h3>
+  if(!orders.length){
 
-      <p
-        style="
-          margin-top:7px;
-          color:#64748b
-        ">
+    adminOrders.innerHTML =
+      `<div class="auth-note">Aucune commande.</div>`;
 
-        Point logistique par défaut :
+  }else{
 
-      </p>
-
-      <strong>
-        Entrepôt
-      </strong>
-
-    </div>
-
-
-    <div class="order">
-
-      <h3>
-        🎟️ Codes promotionnels
-      </h3>
-
-      <p style="margin-top:8px">
-        <strong>NOVA100</strong> : 100 %
-      </p>
-
-      <p>
-        <strong>NOVA20</strong> : 20 %
-      </p>
-
-      <p>
-        <strong>NOVA10</strong> : 10 %
-      </p>
-
-      <small
-        style="
-          display:block;
-          color:#64748b;
-          margin-top:8px
-        ">
-
-        Dans cette démo, seul NOVA100
-        permet de finaliser sans paiement réel.
-
-      </small>
-
-    </div>
-
-
-    <div class="order">
-
-      <h3>
-        🔐 Accès administrateur
-      </h3>
-
-      <p
-        style="
-          margin-top:7px;
-          color:#64748b
-        ">
-
-        Le dashboard n'est affiché
-        qu'aux comptes ayant le rôle
-        administrateur.
-
-      </p>
-
-    </div>
-
-
-    <h3 style="margin:25px 0 12px">
-      📦 Toutes les commandes
-    </h3>
-
-
-    ${
-      state.orders.length
-      ? state.orders.map(order=>`
+    adminOrders.innerHTML =
+      [...orders]
+      .sort((a,b)=>
+        new Date(b.date)-new Date(a.date)
+      )
+      .slice(0,15)
+      .map(order=>`
 
         <div class="order">
 
-          <strong>
-            ${escapeHTML(order.id)}
-          </strong>
+          <div class="order-top">
 
-          <p
-            style="
-              margin-top:7px;
-              color:#64748b
-            ">
+            <div>
 
-            Client :
-            ${escapeHTML(order.customer.name)}
+              <div class="order-number">
+                ${escapeHTML(order.number)}
+              </div>
 
-          </p>
+              <div class="order-date">
+                ${escapeHTML(order.customer.email)}
+              </div>
 
-          <p>
-            Total :
+            </div>
+
             <strong>
-              ${money(order.total)}
+              ${euro(order.total)}
             </strong>
-          </p>
 
-          <p>
-            Statut :
-            <strong>
-              ${escapeHTML(order.status)}
-            </strong>
-          </p>
+          </div>
 
-          <div
-            style="
-              display:flex;
-              gap:8px;
-              flex-wrap:wrap;
-              margin-top:10px
-            ">
-
-            <button
-              data-admin-invoice="${order.id}"
-              class="header-btn">
-
-              🧾 Facture
-
-            </button>
-
-            <button
-              data-status="${order.id}"
-              class="primary">
-
-              Avancer le statut
-
-            </button>
-
+          <div class="order-status">
+            ${escapeHTML(order.status)}
           </div>
 
         </div>
 
-      `).join("")
-      : `
-        <div
-          style="
-            padding:30px;
-            background:#f8fafc;
-            border-radius:10px;
-            color:#64748b
-          ">
-
-          Aucune commande.
-
-        </div>
-      `
-    }
-
-
-    <button
-      id="resetDemo"
-      class="danger"
-      style="margin-top:10px">
-
-      Réinitialiser les commandes de démonstration
-
-    </button>
-
-  `;
+      `).join("");
+  }
 }
 
 
-function advanceStatus(orderId){
+function activateAdminCode(){
 
-  if(!requireAdmin()){
-    return;
-  }
+  const code=prompt(
+    "Code administrateur NOVASHOP :"
+  );
 
+  if(code===ADMIN_CODE){
 
-  const order=
-    state.orders.find(
-      current=>current.id===orderId
+    localStorage.setItem(
+      STORAGE.admin,
+      "true"
     );
 
+    updateAuthUI();
 
-  if(!order){
-    return;
-  }
-
-
-  const index=
-    STATUS.indexOf(order.status);
-
-
-  if(index<STATUS.length-1){
-
-    order.status=
-      STATUS[index+1];
-
-    setJSON(
-      LS.orders,
-      state.orders
+    showToast(
+      "Mode administrateur activé ⚙️"
     );
 
-    renderDashboard();
-    renderOrders();
+  }else if(code!==null){
 
-    toast(
-      `Statut : ${order.status}`
-    );
-
-  }else{
-
-    toast(
-      "La commande est déjà livrée"
+    showToast(
+      "Code administrateur incorrect"
     );
   }
 }
 
+
+/* =========================================================
+   RESET
+========================================================= */
 
 function resetDemo(){
 
-  if(!requireAdmin()){
-    return;
-  }
-
-
-  const confirmed=
-    window.confirm(
-      "Supprimer toutes les commandes de démonstration ?"
+  const confirmed =
+    confirm(
+      "Réinitialiser le panier, favoris, avis et commandes ?"
     );
 
+  if(!confirmed) return;
 
-  if(!confirmed){
-    return;
-  }
+  localStorage.removeItem(STORAGE.cart);
+  localStorage.removeItem(STORAGE.favorites);
+  localStorage.removeItem(STORAGE.reviews);
+  localStorage.removeItem(STORAGE.orders);
 
-
-  state.orders=[];
-
-  setJSON(
-    LS.orders,
-    []
-  );
-
-  renderDashboard();
-
-  toast(
-    "Commandes supprimées"
-  );
-}
-
-
-/* =========================
-   RECHERCHE
-========================= */
-
-function performSearch(){
-
-  const query=
-    $("searchInput").value.trim();
-
-
-  if(
-    query.toUpperCase()===
-    ADMIN_CODE
-  ){
-
-    if(
-      state.currentUser &&
-      state.currentUser.role==="admin"
-    ){
-
-      openDashboard();
-
-    }else{
-
-      $("loginAdminCode").value=
-        query;
-
-      openAuth("login");
-
-      toast(
-        "Code administrateur détecté"
-      );
-
-    }
-
-    return;
-  }
-
-
-  state.search=query;
+  cart=[];
+  favorites=[];
+  reviews=[];
+  orders=[];
 
   renderProducts();
+  renderCart();
+
+  showToast(
+    "Données de démonstration réinitialisées"
+  );
+
+  renderAdmin();
 }
 
 
-/* =========================
-   EVENTS
-========================= */
+/* =========================================================
+   EVENT LISTENERS
+========================================================= */
 
-function setupEvents(){
+$("searchForm").addEventListener(
+  "submit",
+  event=>{
+    event.preventDefault();
 
-  /* catégories */
+    searchTerm =
+      $("searchInput").value.trim();
 
-  $("categories").addEventListener(
-    "click",
-    event=>{
+    renderProducts();
+  }
+);
 
-      const button=
-        event.target.closest(
-          "[data-category]"
-        );
 
-      if(!button){
-        return;
-      }
+$("sortSelect").addEventListener(
+  "change",
+  renderProducts
+);
 
-      state.category=
-        button.dataset.category;
 
-      renderCategories();
-      renderProducts();
+$("maxPrice").addEventListener(
+  "input",
+  event=>{
 
+    const value=
+      Number(event.target.value);
+
+    maxPrice =
+      value>0
+      ? value
+      : Infinity;
+
+    renderProducts();
+  }
+);
+
+
+$("categoryNav").addEventListener(
+  "click",
+  event=>{
+
+    const button =
+      event.target.closest("[data-category]");
+
+    if(!button) return;
+
+    activeCategory =
+      button.dataset.category;
+
+    renderCategories();
+    renderProducts();
+  }
+);
+
+
+$("filterCategories").addEventListener(
+  "click",
+  event=>{
+
+    const button =
+      event.target.closest("[data-category]");
+
+    if(!button) return;
+
+    activeCategory =
+      button.dataset.category;
+
+    renderCategories();
+    renderProducts();
+  }
+);
+
+
+$("productsGrid").addEventListener(
+  "click",
+  event=>{
+
+    const button =
+      event.target.closest("[data-action]");
+
+    if(!button) return;
+
+    const action =
+      button.dataset.action;
+
+    const id =
+      button.dataset.id;
+
+    if(action==="favorite"){
+      toggleFavorite(id);
     }
-  );
 
-
-  /* produits */
-
-  $("productsGrid").addEventListener(
-    "click",
-    event=>{
-
-      const button=
-        event.target.closest(
-          "[data-action]"
-        );
-
-      if(!button){
-        return;
-      }
-
-      const action=
-        button.dataset.action;
-
-      const id=
-        button.dataset.id;
-
-
-      if(action==="favorite"){
-        toggleFavorite(id);
-      }
-
-
-      if(action==="add"){
-        addToCart(id);
-      }
-
-
-      if(action==="details"){
-        openProduct(id);
-      }
-
+    if(action==="view"){
+      renderProductDetail(id);
     }
-  );
 
-
-  /* panier */
-
-  $("cartItems").addEventListener(
-    "click",
-    event=>{
-
-      const button=
-        event.target.closest(
-          "[data-cart]"
-        );
-
-      if(!button){
-        return;
-      }
-
-      const id=
-        button.dataset.id;
-
-      const action=
-        button.dataset.cart;
-
-
-      if(action==="plus"){
-        changeQty(id,1);
-      }
-
-
-      if(action==="minus"){
-        changeQty(id,-1);
-      }
-
-
-      if(action==="remove"){
-        removeFromCart(id);
-      }
-
+    if(action==="add"){
+      addToCart(id);
     }
-  );
+  }
+);
 
 
-  /* recherche */
+$("productDetail").addEventListener(
+  "click",
+  event=>{
 
-  $("searchBtn").onclick=
-    performSearch;
+    const add =
+      event.target.closest("[data-detail-add]");
 
-
-  $("searchInput").addEventListener(
-    "keydown",
-    event=>{
-
-      if(event.key==="Enter"){
-        performSearch();
-      }
-
+    if(add){
+      addToCart(add.dataset.detailAdd);
     }
-  );
+  }
+);
 
 
-  /* tri */
+$("productDetail").addEventListener(
+  "submit",
+  event=>{
 
-  $("sortSelect").onchange=
-    event=>{
+    if(event.target.id!=="reviewForm") return;
 
-      state.sort=
-        event.target.value;
+    event.preventDefault();
 
-      renderProducts();
+    if(!currentUser) return;
 
-    };
+    const rating=
+      Number($("reviewRating").value);
 
+    const comment=
+      $("reviewComment").value.trim();
 
-  /* panier */
+    if(!rating || !comment){
 
-  $("cartBtn").onclick=()=>{
-
-    $("cartDrawer")
-      .classList.add("show");
-
-    $("overlay")
-      .classList.add("show");
-
-  };
-
-
-  $("closeCart").onclick=()=>{
-
-    $("cartDrawer")
-      .classList.remove("show");
-
-    $("overlay")
-      .classList.remove("show");
-
-  };
-
-
-  $("overlay").onclick=()=>{
-
-    $("cartDrawer")
-      .classList.remove("show");
-
-    $("overlay")
-      .classList.remove("show");
-
-  };
-
-
-  /* compte */
-
-  $("accountBtn").onclick=
-    openAccount;
-
-
-  $("ordersBtn").onclick=
-    openOrders;
-
-
-  $("dashboardBtn").onclick=
-    openDashboard;
-
-
-  /* auth */
-
-  $("loginTab").onclick=
-    ()=>openAuth("login");
-
-
-  $("signupTab").onclick=
-    ()=>openAuth("signup");
-
-
-  $("loginForm").onsubmit=
-    event=>{
-
-      event.preventDefault();
-
-      login(
-        $("loginEmail").value.trim(),
-        $("loginPassword").value,
-        $("loginAdminCode").value.trim()
+      showToast(
+        "Remplis la note et le commentaire"
       );
 
-    };
+      return;
+    }
 
-
-  $("signupForm").onsubmit=
-    event=>{
-
-      event.preventDefault();
-
-      signup(
-        $("signupName").value.trim(),
-        $("signupEmail").value.trim(),
-        $("signupPassword").value,
-        $("signupConfirm").value
+    const exists =
+      reviews.some(
+        r=>
+          r.productId===currentProductId &&
+          r.userId===currentUser.uid
       );
 
-    };
+    if(exists){
 
+      showToast(
+        "Tu as déjà noté ce produit"
+      );
 
-  /* checkout */
-
-  $("checkoutBtn").onclick=
-    openCheckout;
-
-
-  $("promoCode").addEventListener(
-    "input",
-    ()=>{
-
-      const code=
-        $("promoCode")
-          .value
-          .trim()
-          .toUpperCase();
-
-
-      if(
-        PROMOS[code]!==undefined
-      ){
-
-        state.appliedPromo=code;
-
-        state.discountPercent=
-          PROMOS[code];
-
-      }else{
-
-        state.appliedPromo=null;
-
-        state.discountPercent=0;
-
-      }
-
-      updateCheckout();
-
+      return;
     }
-  );
+
+    const name =
+      currentUser.displayName ||
+      currentUser.email ||
+      "Utilisateur";
+
+    const shortName =
+      name.slice(0,3);
+
+    reviews.push({
+
+      productId:currentProductId,
+
+      userId:currentUser.uid,
+
+      name:
+        shortName +
+        "***",
+
+      rating,
+
+      comment,
+
+      date:
+        new Date()
+          .toLocaleDateString("fr-FR")
+
+    });
+
+    saveJSON(STORAGE.reviews,reviews);
+
+    showToast(
+      "Avis publié ⭐"
+    );
+
+    renderProductDetail(currentProductId);
+
+    renderProducts();
+  }
+);
 
 
-  $("checkoutForm").onsubmit=
-    event=>{
-
-      event.preventDefault();
-
-      createOrder();
-
-    };
-
-
-  /* facture */
-
-  $("printInvoice").onclick=
-    ()=>window.print();
+$("cartButton").addEventListener(
+  "click",
+  ()=>{
+    $("overlay").classList.add("show");
+    $("cartDrawer").classList.add("open");
+  }
+);
 
 
-  /* événements globaux */
+$("closeCart").addEventListener(
+  "click",
+  closeCart
+);
 
-  document.addEventListener(
-    "click",
-    event=>{
 
-      /* fermeture */
+function closeCart(){
 
-      const close=
-        event.target.closest(
-          "[data-close]"
+  $("overlay").classList.remove("show");
+  $("cartDrawer").classList.remove("open");
+}
+
+
+$("overlay").addEventListener(
+  "click",
+  closeCart
+);
+
+
+$("cartItems").addEventListener(
+  "click",
+  event=>{
+
+    const button =
+      event.target.closest("[data-cart-action]");
+
+    if(!button) return;
+
+    const id =
+      button.dataset.id;
+
+    const action =
+      button.dataset.cartAction;
+
+    if(action==="plus"){
+      changeQuantity(id,1);
+    }
+
+    if(action==="minus"){
+      changeQuantity(id,-1);
+    }
+
+    if(action==="remove"){
+      removeFromCart(id);
+    }
+  }
+);
+
+
+$("checkoutButton").addEventListener(
+  "click",
+  openCheckout
+);
+
+
+$("accountButton").addEventListener(
+  "click",
+  openAccount
+);
+
+
+$("ordersButton").addEventListener(
+  "click",
+  openOrders
+);
+
+
+$("accountOrders").addEventListener(
+  "click",
+  ()=>{
+    closeModal("accountModal");
+    openOrders();
+  }
+);
+
+
+$("logoutButton").addEventListener(
+  "click",
+  async()=>{
+
+    try{
+
+      await signOut(auth);
+
+      closeModal("accountModal");
+
+      showToast(
+        "Déconnexion réussie"
+      );
+
+    }catch(error){
+
+      console.error(error);
+
+      showToast(
+        "Erreur de déconnexion"
+      );
+    }
+  }
+);
+
+
+$("adminButton").addEventListener(
+  "click",
+  openAdmin
+);
+
+
+$("googleLogin").addEventListener(
+  "click",
+  loginGoogle
+);
+
+
+$("emailLogin").addEventListener(
+  "click",
+  loginEmail
+);
+
+
+$("emailSignup").addEventListener(
+  "click",
+  signupEmail
+);
+
+
+$("sendPhoneCode").addEventListener(
+  "click",
+  sendPhoneCode
+);
+
+
+$("confirmPhoneCode").addEventListener(
+  "click",
+  confirmPhoneCode
+);
+
+
+document
+  .querySelectorAll("[data-auth-tab]")
+  .forEach(button=>{
+
+    button.addEventListener(
+      "click",
+      ()=>{
+        switchAuthTab(
+          button.dataset.authTab
         );
+      }
+    );
 
-      if(close){
+  });
 
+
+$("applyPromo").addEventListener(
+  "click",
+  applyPromo
+);
+
+
+$("checkoutForm").addEventListener(
+  "submit",
+  createOrder
+);
+
+
+$("printInvoice").addEventListener(
+  "click",
+  ()=>{
+    window.print();
+  }
+);
+
+
+$("ordersList").addEventListener(
+  "click",
+  event=>{
+
+    const button =
+      event.target.closest("[data-invoice]");
+
+    if(!button) return;
+
+    openInvoice(
+      button.dataset.invoice
+    );
+  }
+);
+
+
+document
+  .querySelectorAll("[data-close]")
+  .forEach(button=>{
+
+    button.addEventListener(
+      "click",
+      ()=>{
         closeModal(
-          close.dataset.close
+          button.dataset.close
         );
-
       }
+    );
+
+  });
 
 
-      /* connexion */
+document
+  .querySelectorAll(".modal")
+  .forEach(modal=>{
 
-      const loginButton=
-        event.target.closest(
-          "[data-open-login]"
-        );
+    modal.addEventListener(
+      "click",
+      event=>{
 
-      if(loginButton){
-
-        openAuth("login");
-
-      }
-
-
-      /* ajout depuis détail */
-
-      const detailAdd=
-        event.target.closest(
-          "[data-detail-add]"
-        );
-
-      if(detailAdd){
-
-        addToCart(
-          detailAdd.dataset.detailAdd
-        );
-
-      }
-
-
-      /* facture utilisateur */
-
-      const invoice=
-        event.target.closest(
-          "[data-invoice]"
-        );
-
-      if(invoice){
-
-        const order=
-          state.orders.find(
-            current=>
-              current.id===
-              invoice.dataset.invoice
-          );
-
-        if(order){
-          showInvoice(order);
+        if(event.target===modal){
+          modal.classList.remove("show");
         }
 
       }
+    );
+
+  });
 
 
-      /* facture admin */
-
-      const adminInvoice=
-        event.target.closest(
-          "[data-admin-invoice]"
-        );
-
-      if(adminInvoice){
-
-        const order=
-          state.orders.find(
-            current=>
-              current.id===
-              adminInvoice.dataset.adminInvoice
-          );
-
-        if(order){
-          showInvoice(order);
-        }
-
-      }
+$("heroShop").addEventListener(
+  "click",
+  ()=>{
+    $("catalogue")
+      .scrollIntoView({
+        behavior:"smooth"
+      });
+  }
+);
 
 
-      /* statut */
-
-      const status=
-        event.target.closest(
-          "[data-status]"
-        );
-
-      if(status){
-
-        advanceStatus(
-          status.dataset.status
-        );
-
-      }
+$("heroAccount").addEventListener(
+  "click",
+  ()=>{
+    openModal("authModal");
+  }
+);
 
 
-      /* reset */
+$("mobileFilterButton").addEventListener(
+  "click",
+  ()=>{
+    const filters =
+      document.querySelector(".filters");
 
-      if(
-        event.target.id===
-        "resetDemo"
-      ){
-
-        resetDemo();
-
-      }
-
-
-      /* étoiles */
-
-      const rating=
-        event.target.closest(
-          "[data-rating]"
-        );
-
-      if(rating){
-
-        const value=
-          Number(
-            rating.dataset.rating
-          );
-
-
-        document
-          .querySelectorAll(
-            "#ratingSelector [data-rating]"
-          )
-          .forEach(button=>{
-
-            button.classList.remove(
-              "selected"
-            );
-
-            button.classList.toggle(
-              "hovered",
-              Number(
-                button.dataset.rating
-              )<=value
-            );
-
-          });
-
-
-        rating.classList.add(
-          "selected"
-        );
-
-      }
-
-
-      /* publication avis */
-
-      const submit=
-        event.target.closest(
-          "[data-review-product]"
-        );
-
-      if(submit){
-
-        submitReview(
-          submit.dataset.reviewProduct
-        );
-
-      }
-
+    if(filters.style.display==="block"){
+      filters.style.display="";
+    }else{
+      filters.style.display="block";
     }
-  );
+  }
+);
 
 
-  /* fermeture avec ESC */
+$("resetDemo").addEventListener(
+  "click",
+  resetDemo
+);
 
-  document.addEventListener(
-    "keydown",
-    event=>{
 
-      if(event.key!=="Escape"){
-        return;
-      }
+/* =========================================================
+   KEYBOARD
+========================================================= */
+
+document.addEventListener(
+  "keydown",
+  event=>{
+
+    if(event.key==="Escape"){
 
       document
         .querySelectorAll(".modal.show")
         .forEach(modal=>{
-          closeModal(modal.id);
+          modal.classList.remove("show");
         });
 
-      $("cartDrawer")
-        .classList.remove("show");
+      closeCart();
+    }
 
-      $("overlay")
-        .classList.remove("show");
+    if(
+      event.ctrlKey &&
+      event.shiftKey &&
+      event.key.toLowerCase()==="a"
+    ){
+
+      activateAdminCode();
 
     }
-  );
-
-}
-
-
-/* =========================
-   INIT
-========================= */
-
-function init(){
-
-  state.orders=
-    getJSON(
-      LS.orders,
-      []
-    );
-
-
-  const sessionId=
-    localStorage.getItem(
-      LS.session
-    );
-
-
-  if(sessionId){
-
-    const users=
-      getUsers();
-
-    state.currentUser=
-      users.find(
-        user=>user.id===sessionId
-      ) || null;
 
   }
+);
 
 
-  loadUserData();
+/* =========================================================
+   INIT
+========================================================= */
+
+function init(){
 
   renderCategories();
 
@@ -3334,11 +2915,12 @@ function init(){
 
   renderCart();
 
-  renderAuth();
+  updateAuthUI();
 
-  setupEvents();
+  console.log(
+    `NOVASHOP chargé : ${PRODUCTS.length} produits`
+  );
 
 }
-
 
 init();
