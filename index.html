@@ -2,2955 +2,755 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-<meta name="theme-color" content="#ffffff">
-<title>NovaShop</title>
-
-<style>
-*{
-  box-sizing:border-box;
-  margin:0;
-  padding:0;
-}
-
-:root{
-  --bg:#f5f6f8;
-  --white:#fff;
-  --black:#111318;
-  --text:#17191f;
-  --muted:#737780;
-  --border:#e5e7eb;
-  --blue:#2563eb;
-  --blue-dark:#1d4ed8;
-  --green:#16a34a;
-  --red:#dc2626;
-  --shadow:0 8px 30px rgba(15,23,42,.07);
-  --radius:18px;
-}
-
-body{
-  font-family:Inter,Arial,Helvetica,sans-serif;
-  background:var(--bg);
-  color:var(--text);
-}
-
-button,
-input,
-select{
-  font:inherit;
-}
-
-button{
-  cursor:pointer;
-  border:0;
-}
-
-img{
-  display:block;
-  max-width:100%;
-}
-
-a{
-  color:inherit;
-  text-decoration:none;
-}
-
-/* HEADER */
-
-.topbar{
-  height:34px;
-  background:#111318;
-  color:#fff;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:12px;
-  letter-spacing:.2px;
-}
-
-.header{
-  background:#fff;
-  border-bottom:1px solid var(--border);
-  position:sticky;
-  top:0;
-  z-index:100;
-}
-
-.header-main{
-  max-width:1450px;
-  margin:auto;
-  height:76px;
-  display:flex;
-  align-items:center;
-  gap:24px;
-  padding:0 22px;
-}
-
-.logo{
-  font-size:25px;
-  font-weight:900;
-  letter-spacing:-1px;
-  white-space:nowrap;
-}
-
-.logo span{
-  color:var(--blue);
-}
-
-.search{
-  flex:1;
-  max-width:700px;
-  position:relative;
-}
-
-.search input{
-  width:100%;
-  height:46px;
-  border:1px solid #dfe2e7;
-  border-radius:11px;
-  padding:0 48px 0 16px;
-  outline:none;
-  background:#f8f9fb;
-}
-
-.search input:focus{
-  border-color:#9db8ff;
-  background:#fff;
-}
-
-.search button{
-  position:absolute;
-  right:5px;
-  top:5px;
-  width:36px;
-  height:36px;
-  border-radius:8px;
-  background:#111318;
-  color:#fff;
-}
-
-.header-actions{
-  display:flex;
-  align-items:center;
-  gap:8px;
-}
-
-.icon-btn{
-  width:43px;
-  height:43px;
-  border-radius:10px;
-  background:#fff;
-  border:1px solid var(--border);
-  font-size:19px;
-  position:relative;
-}
-
-.icon-btn:hover{
-  background:#f3f4f6;
-}
-
-.badge{
-  position:absolute;
-  top:-5px;
-  right:-5px;
-  min-width:18px;
-  height:18px;
-  border-radius:50%;
-  background:var(--blue);
-  color:#fff;
-  font-size:10px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-weight:800;
-}
-
-/* NAV */
-
-.nav{
-  background:#fff;
-  border-bottom:1px solid var(--border);
-  overflow:auto;
-}
-
-.nav-inner{
-  max-width:1450px;
-  margin:auto;
-  display:flex;
-  gap:4px;
-  padding:0 22px;
-}
-
-.nav button{
-  background:none;
-  padding:15px 12px;
-  color:#555a63;
-  white-space:nowrap;
-  font-size:13px;
-}
-
-.nav button:hover,
-.nav button.active{
-  color:#111318;
-  font-weight:700;
-}
-
-/* MAIN */
-
-main{
-  max-width:1450px;
-  margin:auto;
-  padding:28px 22px 70px;
-}
-
-/* HERO */
-
-.hero{
-  min-height:330px;
-  background:#111318;
-  border-radius:24px;
-  overflow:hidden;
-  position:relative;
-  color:#fff;
-  display:flex;
-  align-items:center;
-  margin-bottom:28px;
-}
-
-.hero-content{
-  position:relative;
-  z-index:2;
-  padding:48px;
-  max-width:700px;
-}
-
-.hero small{
-  color:#aeb8ff;
-  font-weight:800;
-  text-transform:uppercase;
-  letter-spacing:1.2px;
-}
-
-.hero h1{
-  font-size:48px;
-  line-height:1.02;
-  margin:12px 0 15px;
-  letter-spacing:-2px;
-}
-
-.hero p{
-  color:#c9cbd1;
-  line-height:1.6;
-  max-width:560px;
-}
-
-.hero-actions{
-  display:flex;
-  gap:10px;
-  margin-top:25px;
-}
-
-.btn{
-  padding:12px 18px;
-  border-radius:10px;
-  font-weight:800;
-}
-
-.btn-primary{
-  background:#fff;
-  color:#111318;
-}
-
-.btn-dark{
-  background:#242730;
-  color:#fff;
-  border:1px solid #363b46;
-}
-
-.hero-products{
-  position:absolute;
-  right:30px;
-  bottom:0;
-  width:520px;
-  height:100%;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-}
-
-.hero-products img{
-  width:440px;
-  height:290px;
-  object-fit:contain;
-  filter:drop-shadow(0 30px 35px rgba(0,0,0,.4));
-}
-
-/* QUICK CATEGORIES */
-
-.quick-grid{
-  display:grid;
-  grid-template-columns:repeat(8,1fr);
-  gap:10px;
-  margin-bottom:35px;
-}
-
-.quick{
-  background:#fff;
-  border:1px solid var(--border);
-  border-radius:14px;
-  min-height:88px;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  gap:7px;
-  transition:.18s;
-}
-
-.quick:hover{
-  transform:translateY(-2px);
-  box-shadow:var(--shadow);
-}
-
-.quick-icon{
-  font-size:25px;
-}
-
-.quick span:last-child{
-  font-size:12px;
-  font-weight:700;
-}
-
-/* SECTION */
-
-.section-head{
-  display:flex;
-  align-items:end;
-  justify-content:space-between;
-  gap:15px;
-  margin:35px 0 18px;
-}
-
-.section-head h2{
-  font-size:25px;
-  letter-spacing:-.8px;
-}
-
-.section-head p{
-  color:var(--muted);
-  font-size:13px;
-  margin-top:4px;
-}
-
-.controls{
-  display:flex;
-  gap:8px;
-}
-
-.controls select{
-  height:40px;
-  border:1px solid var(--border);
-  border-radius:9px;
-  padding:0 12px;
-  background:#fff;
-}
-
-/* PRODUCTS */
-
-.products{
-  display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:15px;
-}
-
-.product{
-  background:#fff;
-  border:1px solid var(--border);
-  border-radius:16px;
-  overflow:hidden;
-  transition:.18s;
-  position:relative;
-}
-
-.product:hover{
-  transform:translateY(-3px);
-  box-shadow:0 15px 35px rgba(15,23,42,.09);
-}
-
-.product-img{
-  height:245px;
-  padding:18px;
-  background:#fafafa;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  position:relative;
-}
-
-.product-img img{
-  width:100%;
-  height:100%;
-  object-fit:contain;
-}
-
-.favorite{
-  position:absolute;
-  top:12px;
-  right:12px;
-  width:35px;
-  height:35px;
-  border-radius:50%;
-  background:#fff;
-  border:1px solid var(--border);
-  z-index:2;
-}
-
-.favorite.active{
-  color:#dc2626;
-}
-
-.product-body{
-  padding:17px;
-}
-
-.product-brand{
-  color:#777c85;
-  font-size:11px;
-  font-weight:800;
-  text-transform:uppercase;
-  margin-bottom:5px;
-}
-
-.product-name{
-  font-weight:800;
-  line-height:1.3;
-  min-height:43px;
-}
-
-.rating{
-  display:flex;
-  gap:5px;
-  margin:9px 0;
-  font-size:12px;
-}
-
-.stars{
-  color:#f59e0b;
-}
-
-.reviews{
-  color:#858991;
-}
-
-.product-bottom{
-  display:flex;
-  align-items:end;
-  justify-content:space-between;
-  gap:10px;
-}
-
-.price{
-  font-size:21px;
-  font-weight:900;
-}
-
-.old-price{
-  font-size:12px;
-  color:#999;
-  text-decoration:line-through;
-  margin-bottom:2px;
-}
-
-.stock{
-  font-size:11px;
-  font-weight:800;
-  color:var(--green);
-  margin-top:4px;
-}
-
-.stock.low{
-  color:#d97706;
-}
-
-.stock.out{
-  color:var(--red);
-}
-
-.add{
-  width:40px;
-  height:40px;
-  border-radius:10px;
-  background:#111318;
-  color:#fff;
-  font-size:18px;
-}
-
-.add:hover{
-  background:var(--blue);
-}
-
-/* PROMO */
-
-.promo{
-  margin-top:35px;
-  border-radius:20px;
-  background:#fff;
-  border:1px solid var(--border);
-  padding:26px;
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:25px;
-}
-
-.promo-card{
-  min-height:220px;
-  border-radius:16px;
-  background:#f5f6f8;
-  overflow:hidden;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  padding:25px;
-}
-
-.promo-card.dark{
-  background:#15171d;
-  color:#fff;
-}
-
-.promo-card img{
-  width:210px;
-  height:170px;
-  object-fit:contain;
-}
-
-.promo-card h3{
-  font-size:24px;
-  margin:7px 0;
-}
-
-.promo-card p{
-  color:#737780;
-  font-size:13px;
-  max-width:230px;
-  line-height:1.5;
-}
-
-.dark p{
-  color:#bbbfc8;
-}
-
-/* TRUST */
-
-.trust{
-  display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:12px;
-  margin-top:35px;
-}
-
-.trust-card{
-  background:#fff;
-  border:1px solid var(--border);
-  border-radius:15px;
-  padding:22px;
-}
-
-.trust-card b{
-  display:block;
-  margin-bottom:6px;
-}
-
-.trust-card span{
-  color:var(--muted);
-  font-size:12px;
-}
-
-/* PAGINATION */
-
-.pagination{
-  display:flex;
-  justify-content:center;
-  gap:6px;
-  margin-top:25px;
-}
-
-.page{
-  width:38px;
-  height:38px;
-  border:1px solid var(--border);
-  background:#fff;
-  border-radius:9px;
-}
-
-.page.active{
-  background:#111318;
-  color:#fff;
-}
-
-/* DRAWER */
-
-.overlay{
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,.42);
-  z-index:200;
-  display:none;
-}
-
-.overlay.show{
-  display:block;
-}
-
-.drawer{
-  position:fixed;
-  right:0;
-  top:0;
-  bottom:0;
-  width:min(470px,100%);
-  background:#fff;
-  z-index:210;
-  transform:translateX(100%);
-  transition:.25s;
-  display:flex;
-  flex-direction:column;
-}
-
-.drawer.show{
-  transform:translateX(0);
-}
-
-.drawer-head{
-  height:70px;
-  padding:0 20px;
-  border-bottom:1px solid var(--border);
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-}
-
-.drawer-head h3{
-  font-size:20px;
-}
-
-.close{
-  width:38px;
-  height:38px;
-  border-radius:9px;
-  background:#f3f4f6;
-}
-
-.drawer-body{
-  flex:1;
-  overflow:auto;
-  padding:18px;
-}
-
-.cart-item{
-  display:flex;
-  gap:13px;
-  border-bottom:1px solid var(--border);
-  padding:13px 0;
-}
-
-.cart-item img{
-  width:80px;
-  height:80px;
-  object-fit:contain;
-  background:#f7f7f7;
-  border-radius:10px;
-}
-
-.cart-info{
-  flex:1;
-}
-
-.cart-info b{
-  display:block;
-  font-size:13px;
-  line-height:1.3;
-}
-
-.qty{
-  display:flex;
-  align-items:center;
-  gap:8px;
-  margin-top:8px;
-}
-
-.qty button{
-  width:25px;
-  height:25px;
-  border-radius:6px;
-  background:#f1f2f4;
-}
-
-.cart-price{
-  font-weight:900;
-}
-
-.drawer-foot{
-  padding:18px;
-  border-top:1px solid var(--border);
-}
-
-.total-line{
-  display:flex;
-  justify-content:space-between;
-  font-weight:900;
-  margin-bottom:14px;
-}
-
-.checkout{
-  width:100%;
-  height:48px;
-  border-radius:10px;
-  background:#111318;
-  color:#fff;
-  font-weight:900;
-}
-
-/* MODAL */
-
-.modal-wrap{
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,.45);
-  z-index:300;
-  display:none;
-  align-items:center;
-  justify-content:center;
-  padding:20px;
-}
-
-.modal-wrap.show{
-  display:flex;
-}
-
-.modal{
-  width:min(900px,100%);
-  max-height:90vh;
-  overflow:auto;
-  background:#fff;
-  border-radius:20px;
-  box-shadow:0 25px 70px rgba(0,0,0,.22);
-}
-
-.modal-head{
-  padding:18px 22px;
-  border-bottom:1px solid var(--border);
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-}
-
-.modal-content{
-  padding:25px;
-}
-
-.detail{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:30px;
-}
-
-.detail-image{
-  height:420px;
-  background:#f7f7f8;
-  border-radius:16px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-}
-
-.detail-image img{
-  width:100%;
-  height:100%;
-  object-fit:contain;
-}
-
-.detail h2{
-  font-size:29px;
-  margin:8px 0 15px;
-}
-
-.detail-desc{
-  color:#676c75;
-  line-height:1.65;
-  font-size:14px;
-}
-
-.detail-price{
-  font-size:31px;
-  font-weight:900;
-  margin:20px 0;
-}
-
-.detail-add{
-  width:100%;
-  height:50px;
-  border-radius:11px;
-  background:#111318;
-  color:#fff;
-  font-weight:900;
-}
-
-/* ACCOUNT */
-
-.form{
-  display:grid;
-  gap:12px;
-}
-
-.form input{
-  height:46px;
-  border:1px solid var(--border);
-  border-radius:9px;
-  padding:0 13px;
-  outline:none;
-}
-
-.form input:focus{
-  border-color:#9db8ff;
-}
-
-.account-actions{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:10px;
-  margin-top:15px;
-}
-
-.account-btn{
-  min-height:45px;
-  background:#f2f3f5;
-  border-radius:10px;
-  font-weight:800;
-}
-
-.account-btn.primary{
-  background:#111318;
-  color:#fff;
-}
-
-.orders{
-  margin-top:22px;
-  display:grid;
-  gap:10px;
-}
-
-.order{
-  border:1px solid var(--border);
-  border-radius:12px;
-  padding:15px;
-}
-
-.order-top{
-  display:flex;
-  justify-content:space-between;
-  font-weight:800;
-}
-
-.status{
-  color:var(--green);
-  font-size:12px;
-  margin-top:7px;
-}
-
-/* EMPTY */
-
-.empty{
-  text-align:center;
-  padding:60px 20px;
-  color:#777;
-}
-
-.empty-icon{
-  font-size:45px;
-  margin-bottom:10px;
-}
-
-/* TOAST */
-
-.toast{
-  position:fixed;
-  bottom:25px;
-  left:50%;
-  transform:translate(-50%,30px);
-  opacity:0;
-  background:#111318;
-  color:#fff;
-  padding:13px 18px;
-  border-radius:10px;
-  z-index:500;
-  font-size:13px;
-  pointer-events:none;
-  transition:.25s;
-}
-
-.toast.show{
-  opacity:1;
-  transform:translate(-50%,0);
-}
-
-/* FOOTER */
-
-footer{
-  background:#111318;
-  color:#fff;
-  margin-top:40px;
-}
-
-.footer-inner{
-  max-width:1450px;
-  margin:auto;
-  padding:45px 22px;
-  display:grid;
-  grid-template-columns:2fr 1fr 1fr 1fr;
-  gap:30px;
-}
-
-.footer-logo{
-  font-size:25px;
-  font-weight:900;
-}
-
-.footer-logo span{
-  color:#5c83ff;
-}
-
-footer p,
-footer li{
-  color:#a9adb5;
-  font-size:13px;
-  line-height:1.8;
-}
-
-footer ul{
-  list-style:none;
-}
-
-/* RESPONSIVE */
-
-@media(max-width:1100px){
-  .products{
-    grid-template-columns:repeat(3,1fr);
-  }
-
-  .quick-grid{
-    grid-template-columns:repeat(4,1fr);
-  }
-
-  .hero-products{
-    opacity:.35;
-  }
-
-  .trust{
-    grid-template-columns:repeat(2,1fr);
-  }
-}
-
-@media(max-width:800px){
-  .header-main{
-    height:auto;
-    padding:13px;
-    flex-wrap:wrap;
-  }
-
-  .search{
-    order:3;
-    max-width:none;
-    flex-basis:100%;
-  }
-
-  .hero{
-    min-height:430px;
-  }
-
-  .hero-content{
-    padding:30px;
-  }
-
-  .hero h1{
-    font-size:37px;
-  }
-
-  .hero-products{
-    width:100%;
-    right:-100px;
-    bottom:-30px;
-  }
-
-  .products{
-    grid-template-columns:repeat(2,1fr);
-  }
-
-  .promo{
-    grid-template-columns:1fr;
-  }
-
-  .detail{
-    grid-template-columns:1fr;
-  }
-
-  .detail-image{
-    height:300px;
-  }
-
-  .footer-inner{
-    grid-template-columns:1fr 1fr;
-  }
-}
-
-@media(max-width:520px){
-  main{
-    padding:18px 12px 50px;
-  }
-
-  .products{
-    grid-template-columns:1fr;
-  }
-
-  .quick-grid{
-    grid-template-columns:repeat(2,1fr);
-  }
-
-  .trust{
-    grid-template-columns:1fr;
-  }
-
-  .section-head{
-    align-items:flex-start;
-    flex-direction:column;
-  }
-
-  .footer-inner{
-    grid-template-columns:1fr;
-  }
-
-  .product-img{
-    height:280px;
-  }
-}
-</style>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>NovaShop • Marketplace</title>
+<link rel="stylesheet" href="style.css">
 </head>
-
 <body>
 
-<div class="topbar">
-  Livraison offerte dès 50 € • Paiement sécurisé • Retours sous 30 jours
-</div>
-
 <header class="header">
+  <div class="top">🚚 Livraison • Marketplace NovaShop</div>
 
-  <div class="header-main">
-
-    <div class="logo">
-      Nova<span>Shop</span>
-    </div>
+  <div class="head">
+    <a class="logo" href="index.html">NOVA<span>SHOP</span></a>
 
     <div class="search">
-      <input
-        id="searchInput"
-        type="search"
-        placeholder="Rechercher un produit, une marque..."
-        autocomplete="off"
-      >
-      <button id="searchBtn">⌕</button>
+      <input id="search" placeholder="Rechercher un produit, une marque...">
+      <button onclick="searchProducts()">🔎</button>
     </div>
 
-    <div class="header-actions">
-
-      <button class="icon-btn" id="favoriteBtn" title="Favoris">
-        ♡
-        <span class="badge" id="favoriteCount">0</span>
-      </button>
-
-      <button class="icon-btn" id="accountBtn" title="Compte">
-        ♙
-      </button>
-
-      <button class="icon-btn" id="cartBtn" title="Panier">
-        🛒
-        <span class="badge" id="cartCount">0</span>
-      </button>
-
-    </div>
-
+    <nav>
+      <button onclick="openAccount()">👤 Compte</button>
+      <button onclick="location.href='dashboard.html'">🏢 Dashboard</button>
+      <button onclick="openCart()">🛒 <b id="cartCount">0</b></button>
+    </nav>
   </div>
 
-  <nav class="nav">
-    <div class="nav-inner">
-
-      <button class="active" data-category="Tous">Tous</button>
-      <button data-category="PC">PC</button>
-      <button data-category="Cartes graphiques">Cartes graphiques</button>
-      <button data-category="Processeurs">Processeurs</button>
-      <button data-category="Cartes mères">Cartes mères</button>
-      <button data-category="RAM">RAM</button>
-      <button data-category="SSD">SSD</button>
-      <button data-category="Boîtiers">Boîtiers</button>
-      <button data-category="Alimentations">Alimentations</button>
-      <button data-category="Refroidissement">Refroidissement</button>
-      <button data-category="Écrans">Écrans</button>
-      <button data-category="Claviers">Claviers</button>
-      <button data-category="Souris">Souris</button>
-      <button data-category="Casques">Casques</button>
-      <button data-category="Micros">Micros</button>
-      <button data-category="Manettes">Manettes</button>
-
-    </div>
-  </nav>
-
+  <div class="categories">
+    <button onclick="filterCat('Tous')">Tous</button>
+    <button onclick="filterCat('PC')">PC</button>
+    <button onclick="filterCat('Carte graphique')">Cartes graphiques</button>
+    <button onclick="filterCat('Processeur')">Processeurs</button>
+    <button onclick="filterCat('RAM')">RAM</button>
+    <button onclick="filterCat('SSD')">SSD</button>
+    <button onclick="filterCat('Boîtier')">Boîtiers</button>
+    <button onclick="filterCat('Alimentation')">Alimentations</button>
+    <button onclick="filterCat('Refroidissement')">Refroidissement</button>
+    <button onclick="filterCat('Écran')">Écrans</button>
+    <button onclick="filterCat('Clavier')">Claviers</button>
+    <button onclick="filterCat('Souris')">Souris</button>
+    <button onclick="filterCat('Micro')">Micros</button>
+    <button onclick="filterCat('Manette')">Manettes</button>
+  </div>
 </header>
 
 <main>
 
-  <section class="hero">
-
-    <div class="hero-content">
-
-      <small>NovaShop • Gaming & informatique</small>
-
-      <h1>
-        Le matériel qui mérite une place sur ton bureau.
-      </h1>
-
-      <p>
-        PC, composants, écrans et périphériques gaming sélectionnés
-        avec des marques connues et des fiches produits claires.
-      </p>
-
-      <div class="hero-actions">
-        <button class="btn btn-primary" onclick="scrollToProducts()">
-          Voir les produits
-        </button>
-
-        <button class="btn btn-dark" onclick="filterCategory('Cartes graphiques')">
-          Cartes graphiques
-        </button>
-      </div>
-
-    </div>
-
-    <div class="hero-products">
-
-      <img
-        src="https://cdn.idealo.com/folder/Product/204581/7/204581794/s4_produktbild_gross/amd-ryzen-5-9600x-boxed.jpg"
-        alt="AMD Ryzen 5 9600X"
-      >
-
-    </div>
-
-  </section>
-
-  <section class="quick-grid">
-
-    <button class="quick" onclick="filterCategory('PC')">
-      <span class="quick-icon">🖥️</span>
-      <span>PC</span>
+<section class="hero">
+  <div>
+    <small>NOVASHOP MARKETPLACE</small>
+    <h1>Le matériel gaming,<br><span>simplement.</span></h1>
+    <p>PC, composants et périphériques gaming dans une interface marketplace moderne.</p>
+    <button class="primary" onclick="document.getElementById('products').scrollIntoView({behavior:'smooth'})">
+      Découvrir les produits
     </button>
+  </div>
 
-    <button class="quick" onclick="filterCategory('Cartes graphiques')">
-      <span class="quick-icon">🎮</span>
-      <span>GPU</span>
-    </button>
+  <img src="https://cdn.idealo.com/folder/Product/204581/7/204581794/s4_produktbild_gross/amd-ryzen-5-9600x-boxed.jpg">
+</section>
 
-    <button class="quick" onclick="filterCategory('Processeurs')">
-      <span class="quick-icon">🧠</span>
-      <span>CPU</span>
-    </button>
+<section class="bar">
+  <div><b id="productTotal">0</b><small> produits</small></div>
+  <select id="sort" onchange="renderProducts()">
+    <option value="default">Pertinence</option>
+    <option value="low">Prix croissant</option>
+    <option value="high">Prix décroissant</option>
+    <option value="name">Nom A-Z</option>
+  </select>
+</section>
 
-    <button class="quick" onclick="filterCategory('RAM')">
-      <span class="quick-icon">⚡</span>
-      <span>RAM</span>
-    </button>
-
-    <button class="quick" onclick="filterCategory('SSD')">
-      <span class="quick-icon">💾</span>
-      <span>SSD</span>
-    </button>
-
-    <button class="quick" onclick="filterCategory('Écrans')">
-      <span class="quick-icon">🖥️</span>
-      <span>Écrans</span>
-    </button>
-
-    <button class="quick" onclick="filterCategory('Claviers')">
-      <span class="quick-icon">⌨️</span>
-      <span>Claviers</span>
-    </button>
-
-    <button class="quick" onclick="filterCategory('Souris')">
-      <span class="quick-icon">🖱️</span>
-      <span>Souris</span>
-    </button>
-
-  </section>
-
-  <section id="productsSection">
-
-    <div class="section-head">
-
-      <div>
-        <h2 id="sectionTitle">Tous les produits</h2>
-        <p id="productCountText">Produits disponibles</p>
-      </div>
-
-      <div class="controls">
-
-        <select id="sortSelect">
-          <option value="default">Pertinence</option>
-          <option value="priceAsc">Prix croissant</option>
-          <option value="priceDesc">Prix décroissant</option>
-          <option value="rating">Meilleures notes</option>
-          <option value="name">Nom A-Z</option>
-        </select>
-
-      </div>
-
-    </div>
-
-    <div class="products" id="productGrid"></div>
-
-    <div class="pagination" id="pagination"></div>
-
-  </section>
-
-  <section class="promo">
-
-    <div class="promo-card">
-
-      <div>
-        <span>SSD NVMe</span>
-        <h3>Samsung 990 PRO</h3>
-        <p>
-          Des performances élevées pour les jeux,
-          logiciels et gros fichiers.
-        </p>
-      </div>
-
-      <img
-        src="https://images.samsung.com/is/image/samsung/p6pim/fr/mz-v9p2t0bw/gallery/fr-990-pro-nvme-ssd-mz-v9p2t0bw-538116939?$650_519_PNG$"
-        alt="Samsung 990 PRO 2TB"
-      >
-
-    </div>
-
-    <div class="promo-card dark">
-
-      <div>
-        <span>Refroidissement</span>
-        <h3>Liquid Freezer III</h3>
-        <p>
-          Un refroidissement liquide pensé pour les configurations
-          gaming performantes.
-        </p>
-      </div>
-
-      <img
-        src="https://www.arctic.de/media/17/9c/4f/1712927838/liquid-freezer-III-360-black-gallery-1.png"
-        alt="ARCTIC Liquid Freezer III 360"
-      >
-
-    </div>
-
-  </section>
-
-  <section class="trust">
-
-    <div class="trust-card">
-      <b>🚚 Livraison suivie</b>
-      <span>Suivi de commande directement depuis ton compte.</span>
-    </div>
-
-    <div class="trust-card">
-      <b>🔒 Paiement sécurisé</b>
-      <span>Une interface pensée pour une boutique moderne.</span>
-    </div>
-
-    <div class="trust-card">
-      <b>↩️ Retours</b>
-      <span>Informations de commande accessibles facilement.</span>
-    </div>
-
-    <div class="trust-card">
-      <b>⭐ Avis produits</b>
-      <span>Consulte et ajoute tes avis depuis les fiches produits.</span>
-    </div>
-
-  </section>
+<section id="products" class="products"></section>
 
 </main>
 
-<footer>
-
-  <div class="footer-inner">
-
-    <div>
-      <div class="footer-logo">
-        Nova<span>Shop</span>
-      </div>
-
-      <p style="margin-top:12px">
-        Boutique gaming et informatique.
-        Une interface simple, claire et pensée pour trouver
-        rapidement son matériel.
-      </p>
-    </div>
-
-    <div>
-      <b>Produits</b>
-      <ul>
-        <li>PC gaming</li>
-        <li>Cartes graphiques</li>
-        <li>Processeurs</li>
-        <li>SSD</li>
-      </ul>
-    </div>
-
-    <div>
-      <b>Service</b>
-      <ul>
-        <li>Mon compte</li>
-        <li>Mes commandes</li>
-        <li>Favoris</li>
-        <li>Panier</li>
-      </ul>
-    </div>
-
-    <div>
-      <b>NovaShop</b>
-      <ul>
-        <li>À propos</li>
-        <li>Livraison</li>
-        <li>Retours</li>
-        <li>Contact</li>
-      </ul>
-    </div>
-
+<div id="cartDrawer" class="drawer">
+  <div class="drawerHead">
+    <h2>Votre panier</h2>
+    <button onclick="closeCart()">✕</button>
   </div>
-
-</footer>
-
-<!-- OVERLAY -->
-
-<div class="overlay" id="overlay"></div>
-
-<!-- CART -->
-
-<aside class="drawer" id="cartDrawer">
-
-  <div class="drawer-head">
-    <h3>Mon panier</h3>
-    <button class="close" onclick="closeDrawers()">✕</button>
+  <div id="cartItems"></div>
+  <div class="cartBottom">
+    <strong>Total <span id="cartTotal">0,00 €</span></strong>
+    <button class="primary full" onclick="checkout()">Passer la commande</button>
   </div>
-
-  <div class="drawer-body" id="cartItems"></div>
-
-  <div class="drawer-foot">
-
-    <div class="total-line">
-      <span>Total</span>
-      <span id="cartTotal">0,00 €</span>
-    </div>
-
-    <button class="checkout" onclick="createOrder()">
-      Valider la commande
-    </button>
-
-  </div>
-
-</aside>
-
-<!-- FAVORITES -->
-
-<aside class="drawer" id="favoriteDrawer">
-
-  <div class="drawer-head">
-    <h3>Mes favoris</h3>
-    <button class="close" onclick="closeDrawers()">✕</button>
-  </div>
-
-  <div class="drawer-body" id="favoriteItems"></div>
-
-</aside>
-
-<!-- PRODUCT MODAL -->
-
-<div class="modal-wrap" id="productModal">
-
-  <div class="modal">
-
-    <div class="modal-head">
-      <b>Fiche produit</b>
-      <button class="close" onclick="closeModal('productModal')">✕</button>
-    </div>
-
-    <div class="modal-content" id="productDetail"></div>
-
-  </div>
-
 </div>
 
-<!-- ACCOUNT MODAL -->
+<div id="overlay" onclick="closeAll()"></div>
 
-<div class="modal-wrap" id="accountModal">
-
-  <div class="modal">
-
-    <div class="modal-head">
-      <b>Mon compte</b>
-      <button class="close" onclick="closeModal('accountModal')">✕</button>
-    </div>
-
-    <div class="modal-content">
-
-      <div id="accountContent"></div>
-
-    </div>
-
-  </div>
-
+<div id="accountModal" class="modal">
+  <button class="close" onclick="closeAccount()">✕</button>
+  <h2>Votre compte</h2>
+  <input id="clientName" placeholder="Nom">
+  <input id="clientEmail" placeholder="Email">
+  <button class="primary full" onclick="saveAccount()">Enregistrer</button>
+  <button class="secondary full" onclick="location.href='dashboard.html'">Voir mes commandes</button>
 </div>
 
-<!-- TOAST -->
+<script src="script.js"></script>
+</body>
+</html>*{box-sizing:border-box}
+:root{
+  --bg:#f5f6f8;
+  --card:#fff;
+  --text:#15171a;
+  --muted:#6d727a;
+  --line:#e4e6e9;
+  --blue:#175cff;
+  --dark:#111317;
+}
+body{
+  margin:0;
+  font-family:Inter,Arial,sans-serif;
+  background:var(--bg);
+  color:var(--text)
+}
+button,input,select{font:inherit}
+button{cursor:pointer;border:0}
+.top{
+  background:#111317;
+  color:#fff;
+  text-align:center;
+  padding:8px;
+  font-size:13px
+}
+.header{
+  background:#fff;
+  border-bottom:1px solid var(--line);
+  position:sticky;
+  top:0;
+  z-index:20
+}
+.head{
+  height:76px;
+  max-width:1400px;
+  margin:auto;
+  display:flex;
+  align-items:center;
+  gap:28px;
+  padding:0 24px
+}
+.logo{
+  text-decoration:none;
+  color:#111;
+  font-size:23px;
+  font-weight:900;
+  letter-spacing:-1px;
+  white-space:nowrap
+}
+.logo span{color:var(--blue)}
+.search{
+  flex:1;
+  display:flex;
+  background:#f2f3f5;
+  border-radius:9px;
+  overflow:hidden;
+  border:1px solid transparent
+}
+.search:focus-within{border-color:#b8c8ff;background:#fff}
+.search input{
+  flex:1;
+  border:0;
+  outline:0;
+  background:transparent;
+  padding:14px 16px
+}
+.search button{
+  width:55px;
+  background:transparent
+}
+.head nav{
+  display:flex;
+  gap:7px
+}
+.head nav button{
+  background:#fff;
+  padding:10px;
+  border-radius:8px
+}
+.head nav button:hover{background:#f1f3f5}
+.categories{
+  max-width:1400px;
+  margin:auto;
+  padding:0 24px 12px;
+  display:flex;
+  gap:8px;
+  overflow:auto
+}
+.categories button{
+  white-space:nowrap;
+  padding:8px 12px;
+  border:1px solid var(--line);
+  background:#fff;
+  border-radius:20px;
+  font-size:13px
+}
+.categories button:hover{border-color:#9cb3ff;color:var(--blue)}
 
-<div class="toast" id="toast"></div>
+main{max-width:1400px;margin:auto;padding:28px 24px}
 
-<script>
+.hero{
+  min-height:360px;
+  background:#fff;
+  border-radius:18px;
+  border:1px solid var(--line);
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:50px 70px;
+  overflow:hidden
+}
+.hero small{font-weight:800;color:var(--blue)}
+.hero h1{
+  font-size:52px;
+  line-height:1;
+  letter-spacing:-3px;
+  margin:15px 0
+}
+.hero h1 span{color:var(--blue)}
+.hero p{max-width:520px;color:var(--muted);line-height:1.6}
+.hero img{
+  width:330px;
+  height:250px;
+  object-fit:contain
+}
+.primary{
+  background:var(--blue);
+  color:#fff;
+  padding:13px 19px;
+  border-radius:8px;
+  font-weight:700
+}
+.primary:hover{filter:brightness(.92)}
+.secondary{
+  background:#eef1f5;
+  color:#111;
+  padding:13px 19px;
+  border-radius:8px;
+  font-weight:700
+}
+.full{width:100%}
 
-/* =========================================================
-   NOVASHOP
-   ========================================================= */
-
-const PRODUCTS = [
-
-/* PC */
-
-{
- id:"pc-001",
- category:"PC",
- brand:"NovaShop",
- name:"NovaShop Gaming Ryzen 5 RTX",
- price:699.99,
- rating:4.8,
- reviews:124,
- stock:7,
- image:"https://images.unsplash.com/photo-1587202372775-e229f172b9d7?auto=format&fit=crop&w=900&q=85"
-},
-
-{
- id:"pc-002",
- category:"PC",
- brand:"NovaShop",
- name:"Gaming PC RGB Edition",
- price:649.99,
- rating:4.7,
- reviews:91,
- stock:5,
- image:"https://images.unsplash.com/photo-1593640495253-23196b27a87f?auto=format&fit=crop&w=900&q=85"
-},
-
-/* GPU */
-
-{
- id:"gpu-001",
- category:"Cartes graphiques",
- brand:"AMD",
- name:"Radeon RX 7600",
- price:279.99,
- rating:4.7,
- reviews:211,
- stock:9,
- image:"https://images.unsplash.com/photo-1591488320449-011701bb6704?auto=format&fit=crop&w=900&q=85"
-},
-
-{
- id:"gpu-002",
- category:"Cartes graphiques",
- brand:"AMD",
- name:"Radeon RX 7700 XT",
- price:449.99,
- rating:4.8,
- reviews:174,
- stock:6,
- image:"https://images.unsplash.com/photo-1592664474505-51c549ad15c5?auto=format&fit=crop&w=900&q=85"
-},
-
-/* CPU */
-
-{
- id:"cpu-001",
- category:"Processeurs",
- brand:"AMD",
- name:"Ryzen 5 9600X",
- price:249.99,
- rating:4.9,
- reviews:342,
- stock:12,
- image:"https://cdn.idealo.com/folder/Product/204581/7/204581794/s4_produktbild_gross/amd-ryzen-5-9600x-boxed.jpg"
-},
-
-{
- id:"cpu-002",
- category:"Processeurs",
- brand:"AMD",
- name:"Ryzen 7 7700",
- price:289.99,
- rating:4.8,
- reviews:287,
- stock:8,
- image:"https://images.unsplash.com/photo-1591799264318-7e6ef8ddb7ea?auto=format&fit=crop&w=900&q=85"
-},
-
-{
- id:"cpu-003",
- category:"Processeurs",
- brand:"AMD",
- name:"Ryzen 7 7800X3D",
- price:379.99,
- rating:4.9,
- reviews:517,
- stock:4,
- image:"https://images.unsplash.com/photo-1555617981-dac3880eac6e?auto=format&fit=crop&w=900&q=85"
-},
-
-/* MOTHERBOARDS */
-
-{
- id:"mb-001",
- category:"Cartes mères",
- brand:"ASUS",
- name:"ROG STRIX B650-A Gaming WiFi",
- price:229.99,
- rating:4.8,
- reviews:132,
- stock:6,
- image:"https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=900&q=85"
-},
-
-{
- id:"mb-002",
- category:"Cartes mères",
- brand:"MSI",
- name:"MAG B650 Tomahawk WiFi",
- price:199.99,
- rating:4.8,
- reviews:248,
- stock:7,
- image:"https://images.unsplash.com/photo-1562976540-1502c2145186?auto=format&fit=crop&w=900&q=85"
-},
-
-/* RAM */
-
-{
- id:"ram-001",
- category:"RAM",
- brand:"Corsair",
- name:"Vengeance RGB 32GB DDR5 6000",
- price:119.99,
- rating:4.8,
- reviews:421,
- stock:18,
- image:"https://cdn.idealo.com/folder/Product/212257/2/212257224/s4_produktbild_gross/corsair-vengeance-rgb-kit-32go-ddr5-6000-cl38-gris-cmh32gx5m2d6000z38.jpg"
-},
-
-{
- id:"ram-002",
- category:"RAM",
- brand:"Kingston",
- name:"Fury Beast RGB 32GB DDR5 5600",
- price:104.99,
- rating:4.7,
- reviews:293,
- stock:14,
- image:"https://cdn.idealo.com/folder/Product/202133/2/202133232/s4_produktbild_gross/kingston-fury-beast-rgb-32-go-kit-ddr5-5600-cl36-kf556c36bbeak2-32.jpg"
-},
-
-/* SSD */
-
-{
- id:"ssd-001",
- category:"SSD",
- brand:"Samsung",
- name:"990 PRO 1TB NVMe",
- price:89.99,
- rating:4.9,
- reviews:734,
- stock:21,
- image:"https://images.samsung.com/is/image/samsung/p6pim/fr/mz-v9p1t0bw/gallery/fr-990-pro-nvme-ssd-mz-v9p1t0bw-538116922?$650_519_PNG$"
-},
-
-{
- id:"ssd-002",
- category:"SSD",
- brand:"Samsung",
- name:"990 PRO 2TB NVMe",
- price:159.99,
- rating:4.9,
- reviews:612,
- stock:16,
- image:"https://images.samsung.com/is/image/samsung/p6pim/fr/mz-v9p2t0bw/gallery/fr-990-pro-nvme-ssd-mz-v9p2t0bw-538116939?$650_519_PNG$"
-},
-
-/* CASE */
-
-{
- id:"case-001",
- category:"Boîtiers",
- brand:"Corsair",
- name:"5000D Airflow White",
- price:149.99,
- rating:4.8,
- reviews:365,
- stock:9,
- image:"https://assets.corsair.com/image/upload/c_pad,q_auto,h_1024,w_1024/products/Cases/CC-9011210-WW/Gallery/5000D_AF_WHITE_01.webp"
-},
-
-{
- id:"case-002",
- category:"Boîtiers",
- brand:"NZXT",
- name:"H5 Flow",
- price:89.99,
- rating:4.7,
- reviews:291,
- stock:11,
- image:"https://images.unsplash.com/photo-1587202372616-b43abea06c2a?auto=format&fit=crop&w=900&q=85"
-},
-
-/* PSU */
-
-{
- id:"psu-001",
- category:"Alimentations",
- brand:"Corsair",
- name:"RM850x 850W",
- price:139.99,
- rating:4.9,
- reviews:302,
- stock:10,
- image:"https://assets.corsair.com/image/upload/c_pad,q_auto,h_1024,w_1024/products/PSUs/CP-9020270-NA/Gallery/RM850x_01.webp"
-},
-
-/* COOLING */
-
-{
- id:"cool-001",
- category:"Refroidissement",
- brand:"ARCTIC",
- name:"Liquid Freezer III 360",
- price:109.99,
- rating:4.8,
- reviews:267,
- stock:12,
- image:"https://www.arctic.de/media/17/9c/4f/1712927838/liquid-freezer-III-360-black-gallery-1.png"
-},
-
-/* SCREENS */
-
-{
- id:"screen-001",
- category:"Écrans",
- brand:"Samsung",
- name:"Odyssey OLED G6 27\"",
- price:599.99,
- rating:4.9,
- reviews:184,
- stock:5,
- image:"https://images.samsung.com/is/image/samsung/p6pim/fr/ls27dg602suxen/gallery/fr-odyssey-oled-g6-g60sd-ls27dg602suxen-541415717?$650_519_PNG$"
-},
-
-/* KEYBOARDS */
-
-{
- id:"key-001",
- category:"Claviers",
- brand:"Logitech",
- name:"G PRO X TKL Wireless",
- price:189.99,
- rating:4.8,
- reviews:356,
- stock:8,
- image:"https://resource.logitech.com/w_800,c_limit,q_auto,f_auto,dpr_auto/d_transparent.gif/content/dam/logitech/en/products/keyboards/pro-x-tkl-wireless/gallery/pro-x-tkl-wireless-black-gallery-1.png"
-},
-
-/* MOUSE */
-
-{
- id:"mouse-001",
- category:"Souris",
- brand:"Logitech",
- name:"G PRO X SUPERLIGHT 2",
- price:129.99,
- rating:4.9,
- reviews:824,
- stock:13,
- image:"https://resource.logitech.com/w_800,c_limit,q_auto,f_auto,dpr_auto/d_transparent.gif/content/dam/logitech/en/products/mice/pro-x2-superlight-wireless-mouse/gallery/pro-x2-superlight-black-gallery-1.png"
-},
-
-/* MIC */
-
-{
- id:"mic-001",
- category:"Micros",
- brand:"Elgato",
- name:"Wave:3",
- price:129.99,
- rating:4.8,
- reviews:471,
- stock:9,
- image:"https://help.elgato.com/hc/article_attachments/360093559172/Wave_3.png"
-},
-
-/* CONTROLLER */
-
-{
- id:"controller-001",
- category:"Manettes",
- brand:"Sony",
- name:"DualSense PS5",
- price:69.99,
- rating:4.8,
- reviews:1290,
- stock:24,
- image:"https://gmedia.playstation.com/is/image/SIEPDC/dualsense-ps5-controller-product-thumbnail-01-en-14sep21?$1600px$"
-},
-
-/* MORE REAL BRAND STYLE PRODUCTS */
-
-{
- id:"mouse-002",
- category:"Souris",
- brand:"Razer",
- name:"DeathAdder V3",
- price:79.99,
- rating:4.7,
- reviews:523,
- stock:15,
- image:"https://images.unsplash.com/photo-1527814050087-3793815479db?auto=format&fit=crop&w=900&q=85"
-},
-
-{
- id:"key-002",
- category:"Claviers",
- brand:"Razer",
- name:"BlackWidow V3",
- price:99.99,
- rating:4.6,
- reviews:381,
- stock:8,
- image:"https://images.unsplash.com/photo-1587829741301-dc798b83add3?auto=format&fit=crop&w=900&q=85"
-},
-
-{
- id:"head-001",
- category:"Casques",
- brand:"Logitech",
- name:"G PRO X Gaming Headset",
- price:99.99,
- rating:4.7,
- reviews:642,
- stock:10,
- image:"https://images.unsplash.com/photo-1599669454699-248893623440?auto=format&fit=crop&w=900&q=85"
-},
-
-{
- id:"head-002",
- category:"Casques",
- brand:"HyperX",
- name:"Cloud III",
- price:79.99,
- rating:4.8,
- reviews:718,
- stock:12,
- image:"https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=900&q=85"
-},
-
-{
- id:"webcam-001",
- category:"Webcams",
- brand:"Logitech",
- name:"C920 HD Pro",
- price:69.99,
- rating:4.7,
- reviews:541,
- stock:11,
- image:"https://images.unsplash.com/photo-1587825140708-dfaf72ae4b04?auto=format&fit=crop&w=900&q=85"
-},
-
-{
- id:"setup-001",
- category:"Setup",
- brand:"Elgato",
- name:"Stream Deck Mini",
- price:69.99,
- rating:4.8,
- reviews:321,
- stock:7,
- image:"https://images.unsplash.com/photo-1593305841991-05c297ba4575?auto=format&fit=crop&w=900&q=85"
-},
-
-{
- id:"setup-002",
- category:"Setup",
- brand:"Logitech",
- name:"LIGHTSPEED Wireless Setup",
- price:199.99,
- rating:4.6,
- reviews:164,
- stock:6,
- image:"https://images.unsplash.com/photo-1547394765-185e1e68f34e?auto=format&fit=crop&w=900&q=85"
-},
-
-{
- id:"cable-001",
- category:"Accessoires",
- brand:"UGREEN",
- name:"USB-C Cable 100W",
- price:14.99,
- rating:4.7,
- reviews:902,
- stock:30,
- image:"https://images.unsplash.com/photo-1625842268584-8f3296236761?auto=format&fit=crop&w=900&q=85"
+.bar{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin:30px 0 18px
+}
+.bar small{color:var(--muted)}
+.bar select{
+  background:#fff;
+  border:1px solid var(--line);
+  padding:10px;
+  border-radius:8px
 }
 
-];
-
-
-/* =========================================================
-   STATE
-   ========================================================= */
-
-let cart = JSON.parse(localStorage.getItem("novashop_cart") || "[]");
-let favorites = JSON.parse(localStorage.getItem("novashop_favorites") || "[]");
-
-let currentCategory = "Tous";
-let currentPage = 1;
-let searchValue = "";
-const perPage = 12;
-
-
-/* =========================================================
-   HELPERS
-   ========================================================= */
-
-function money(value){
-  return value.toLocaleString("fr-FR",{
-    style:"currency",
-    currency:"EUR"
-  });
+.products{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:18px
+}
+.product{
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:13px;
+  overflow:hidden;
+  transition:.18s
+}
+.product:hover{
+  transform:translateY(-3px);
+  box-shadow:0 8px 25px #0000000c
+}
+.productImg{
+  height:230px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:#fff;
+  padding:20px
+}
+.productImg img{
+  width:100%;
+  height:100%;
+  object-fit:contain
+}
+.productInfo{padding:16px}
+.productCat{
+  color:var(--muted);
+  font-size:12px
+}
+.product h3{
+  font-size:15px;
+  min-height:42px;
+  margin:8px 0
+}
+.price{
+  font-size:21px;
+  font-weight:900;
+  margin:12px 0
+}
+.stock{color:#15803d;font-size:12px}
+.productActions{
+  display:flex;
+  gap:7px;
+  margin-top:14px
+}
+.productActions button:first-child{flex:1}
+.buy{
+  background:#111317;
+  color:#fff;
+  border-radius:7px;
+  padding:11px;
+  font-weight:700
+}
+.fav{
+  width:43px;
+  background:#f1f2f4;
+  border-radius:7px
 }
 
-function save(){
-  localStorage.setItem("novashop_cart",JSON.stringify(cart));
-  localStorage.setItem("novashop_favorites",JSON.stringify(favorites));
+.drawer{
+  position:fixed;
+  z-index:50;
+  top:0;
+  right:-430px;
+  width:430px;
+  max-width:100%;
+  height:100vh;
+  background:#fff;
+  transition:.25s;
+  box-shadow:-10px 0 30px #0002;
+  display:flex;
+  flex-direction:column
 }
-
-function toast(message){
-  const el=document.getElementById("toast");
-  el.textContent=message;
-  el.classList.add("show");
-
-  clearTimeout(window.toastTimer);
-
-  window.toastTimer=setTimeout(()=>{
-    el.classList.remove("show");
-  },2200);
+.drawer.open{right:0}
+.drawerHead{
+  padding:20px;
+  border-bottom:1px solid var(--line);
+  display:flex;
+  justify-content:space-between
 }
-
-
-/* =========================================================
-   FILTER
-   ========================================================= */
-
-function filterCategory(category){
-
-  currentCategory=category;
-  currentPage=1;
-
-  document.querySelectorAll(".nav button").forEach(btn=>{
-    btn.classList.toggle(
-      "active",
-      btn.dataset.category===category
-    );
-  });
-
-  document.getElementById("sectionTitle").textContent=
-    category==="Tous"
-      ? "Tous les produits"
-      : category;
-
-  renderProducts();
-
-  scrollToProducts();
+.drawerHead button,.close{
+  background:#f0f1f3;
+  width:35px;
+  height:35px;
+  border-radius:50%
 }
-
-
-function scrollToProducts(){
-  document.getElementById("productsSection")
-    .scrollIntoView({
-      behavior:"smooth",
-      block:"start"
-    });
+#cartItems{
+  flex:1;
+  overflow:auto;
+  padding:18px
 }
-
-
-/* =========================================================
-   PRODUCTS
-   ========================================================= */
-
-function getProducts(){
-
-  let list=[...PRODUCTS];
-
-  if(currentCategory!=="Tous"){
-    list=list.filter(p=>p.category===currentCategory);
-  }
-
-  if(searchValue.trim()){
-    const q=searchValue.toLowerCase();
-
-    list=list.filter(p=>
-      p.name.toLowerCase().includes(q) ||
-      p.brand.toLowerCase().includes(q) ||
-      p.category.toLowerCase().includes(q)
-    );
-  }
-
-  const sort=document.getElementById("sortSelect").value;
-
-  if(sort==="priceAsc"){
-    list.sort((a,b)=>a.price-b.price);
-  }
-
-  if(sort==="priceDesc"){
-    list.sort((a,b)=>b.price-a.price);
-  }
-
-  if(sort==="rating"){
-    list.sort((a,b)=>b.rating-a.rating);
-  }
-
-  if(sort==="name"){
-    list.sort((a,b)=>a.name.localeCompare(b.name));
-  }
-
-  return list;
+.cartRow{
+  display:flex;
+  gap:12px;
+  border-bottom:1px solid var(--line);
+  padding:14px 0
 }
-
-
-function renderProducts(){
-
-  const grid=document.getElementById("productGrid");
-  const pagination=document.getElementById("pagination");
-
-  const products=getProducts();
-
-  document.getElementById("productCountText").textContent=
-    `${products.length} produit${products.length>1?"s":""}`;
-
-  if(!products.length){
-
-    grid.innerHTML=`
-      <div class="empty" style="grid-column:1/-1">
-        <div class="empty-icon">🔎</div>
-        <h3>Aucun produit trouvé</h3>
-        <p>Essaie une autre recherche ou une autre catégorie.</p>
-      </div>
-    `;
-
-    pagination.innerHTML="";
-    return;
-  }
-
-  const totalPages=Math.ceil(products.length/perPage);
-
-  if(currentPage>totalPages){
-    currentPage=totalPages;
-  }
-
-  const start=(currentPage-1)*perPage;
-  const visible=products.slice(start,start+perPage);
-
-  grid.innerHTML=visible.map(productCard).join("");
-
-  pagination.innerHTML="";
-
-  for(let i=1;i<=totalPages;i++){
-
-    const button=document.createElement("button");
-
-    button.className="page"+(i===currentPage?" active":"");
-    button.textContent=i;
-
-    button.onclick=()=>{
-      currentPage=i;
-      renderProducts();
-      scrollToProducts();
-    };
-
-    pagination.appendChild(button);
-  }
+.cartRow img{
+  width:70px;
+  height:70px;
+  object-fit:contain
 }
+.cartRow h4{margin:0 0 8px}
+.cartBottom{
+  border-top:1px solid var(--line);
+  padding:20px;
+  display:grid;
+  gap:15px
+}
+.cartBottom strong{
+  display:flex;
+  justify-content:space-between
+}
+#overlay{
+  display:none;
+  position:fixed;
+  inset:0;
+  background:#0008;
+  z-index:40
+}
+#overlay.show{display:block}
 
+.modal{
+  display:none;
+  position:fixed;
+  z-index:60;
+  top:50%;
+  left:50%;
+  transform:translate(-50%,-50%);
+  background:#fff;
+  width:420px;
+  max-width:calc(100% - 30px);
+  padding:28px;
+  border-radius:15px;
+  box-shadow:0 20px 60px #0004
+}
+.modal.show{display:block}
+.modal .close{position:absolute;right:15px;top:15px}
+.modal input{
+  width:100%;
+  padding:13px;
+  margin:7px 0;
+  border:1px solid var(--line);
+  border-radius:8px
+}
+.modal .primary{margin-top:10px}
 
-function productCard(p){
+@media(max-width:1000px){
+  .products{grid-template-columns:repeat(3,1fr)}
+  .hero{padding:35px}
+  .hero h1{font-size:42px}
+}
+@media(max-width:720px){
+  .head{height:auto;padding:14px;flex-wrap:wrap}
+  .search{order:3;flex-basis:100%}
+  .head nav{margin-left:auto}
+  main{padding:18px 12px}
+  .hero{padding:25px;min-height:0}
+  .hero img{display:none}
+  .hero h1{font-size:38px}
+  .products{grid-template-columns:repeat(2,1fr);gap:10px}
+  .productImg{height:170px}
+}
+@media(max-width:450px){
+  .products{grid-template-columns:1fr}
+}<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>NovaShop • Commande</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
 
-  const isFavorite=favorites.includes(p.id);
+<header class="header">
+  <div class="head">
+    <a class="logo" href="index.html">NOVA<span>SHOP</span></a>
+    <strong>Finalisation de la commande</strong>
+  </div>
+</header>
 
-  let stockText="En stock";
-  let stockClass="";
+<main>
+  <div class="checkout">
+    <section class="checkoutBox">
+      <h1>Adresse de livraison</h1>
+      <p class="muted">Tous les champs marqués d'un * sont obligatoires.</p>
 
-  if(p.stock<=3){
-    stockText=`Plus que ${p.stock}`;
-    stockClass="low";
-  }
-
-  if(p.stock===0){
-    stockText="Rupture";
-    stockClass="out";
-  }
-
-  return `
-
-  <article class="product">
-
-    <button
-      class="favorite ${isFavorite?"active":""}"
-      onclick="toggleFavorite('${p.id}')"
-      aria-label="Ajouter aux favoris"
-    >
-      ${isFavorite?"♥":"♡"}
-    </button>
-
-    <div
-      class="product-img"
-      onclick="openProduct('${p.id}')"
-      style="cursor:pointer"
-    >
-
-      <img
-        src="${p.image}"
-        alt="${escapeHTML(p.name)}"
-        loading="lazy"
-        onerror="this.src='https://placehold.co/700x500/f7f7f7/222?text=Produit'"
-      >
-
-    </div>
-
-    <div class="product-body">
-
-      <div class="product-brand">
-        ${escapeHTML(p.brand)}
+      <div class="formGrid">
+        <input id="firstName" required placeholder="Prénom *">
+        <input id="lastName" required placeholder="Nom *">
       </div>
 
-      <div
-        class="product-name"
-        onclick="openProduct('${p.id}')"
-        style="cursor:pointer"
-      >
-        ${escapeHTML(p.name)}
+      <input id="address" required placeholder="Adresse complète *">
+      <input id="address2" placeholder="Complément d'adresse">
+
+      <div class="formGrid">
+        <input id="zip" required placeholder="Code postal *">
+        <input id="city" required placeholder="Ville *">
       </div>
 
-      <div class="rating">
-        <span class="stars">
-          ★★★★★
+      <select id="country" required>
+        <option value="">Pays *</option>
+        <option value="France">France</option>
+        <option value="Belgique">Belgique</option>
+        <option value="Luxembourg">Luxembourg</option>
+      </select>
+
+      <input id="phone" required placeholder="Téléphone *">
+
+      <h2>Livraison</h2>
+
+      <label class="delivery">
+        <input type="radio" name="delivery" value="standard" checked>
+        <span>
+          <b>Livraison standard</b><br>
+          Livraison à l'adresse indiquée
         </span>
-
-        <span class="reviews">
-          ${p.rating} (${p.reviews})
-        </span>
-      </div>
-
-      <div class="product-bottom">
-
-        <div>
-          <div class="price">${money(p.price)}</div>
-          <div class="stock ${stockClass}">
-            ${stockText}
-          </div>
-        </div>
-
-        <button
-          class="add"
-          onclick="addToCart('${p.id}')"
-          ${p.stock===0?"disabled":""}
-        >
-          +
-        </button>
-
-      </div>
-
-    </div>
-
-  </article>
-
-  `;
-}
-
-
-/* =========================================================
-   ESCAPE
-   ========================================================= */
-
-function escapeHTML(value){
-
-  return String(value)
-    .replace(/&/g,"&amp;")
-    .replace(/</g,"&lt;")
-    .replace(/>/g,"&gt;")
-    .replace(/"/g,"&quot;")
-    .replace(/'/g,"&#039;");
-
-}
-
-
-/* =========================================================
-   CART
-   ========================================================= */
-
-function addToCart(id){
-
-  const product=PRODUCTS.find(p=>p.id===id);
-
-  if(!product) return;
-
-  const existing=cart.find(item=>item.id===id);
-
-  const quantity=existing ? existing.quantity : 0;
-
-  if(quantity>=product.stock){
-    toast("Stock maximum atteint");
-    return;
-  }
-
-  if(existing){
-    existing.quantity++;
-  }else{
-    cart.push({
-      id,
-      quantity:1
-    });
-  }
-
-  save();
-  renderCart();
-  updateCounts();
-
-  toast("Produit ajouté au panier 🛒");
-}
-
-
-function removeFromCart(id){
-
-  cart=cart.filter(item=>item.id!==id);
-
-  save();
-  renderCart();
-  updateCounts();
-
-}
-
-
-function changeQuantity(id,delta){
-
-  const item=cart.find(i=>i.id===id);
-  const product=PRODUCTS.find(p=>p.id===id);
-
-  if(!item || !product) return;
-
-  item.quantity+=delta;
-
-  if(item.quantity<=0){
-    removeFromCart(id);
-    return;
-  }
-
-  if(item.quantity>product.stock){
-    item.quantity=product.stock;
-    toast("Stock maximum atteint");
-  }
-
-  save();
-  renderCart();
-  updateCounts();
-}
-
-
-function renderCart(){
-
-  const container=document.getElementById("cartItems");
-
-  if(!cart.length){
-
-    container.innerHTML=`
-      <div class="empty">
-        <div class="empty-icon">🛒</div>
-        <h3>Ton panier est vide</h3>
-        <p>Ajoute un produit pour commencer.</p>
-      </div>
-    `;
-
-    document.getElementById("cartTotal").textContent="0,00 €";
-    return;
-  }
-
-  let total=0;
-
-  container.innerHTML=cart.map(item=>{
-
-    const p=PRODUCTS.find(product=>product.id===item.id);
-
-    if(!p) return "";
-
-    total+=p.price*item.quantity;
-
-    return `
-
-      <div class="cart-item">
-
-        <img
-          src="${p.image}"
-          alt="${escapeHTML(p.name)}"
-          onerror="this.src='https://placehold.co/200x200/f7f7f7/222?text=Produit'"
-        >
-
-        <div class="cart-info">
-
-          <b>${escapeHTML(p.name)}</b>
-
-          <div class="cart-price">
-            ${money(p.price)}
-          </div>
-
-          <div class="qty">
-
-            <button onclick="changeQuantity('${p.id}',-1)">
-              −
-            </button>
-
-            <span>${item.quantity}</span>
-
-            <button onclick="changeQuantity('${p.id}',1)">
-              +
-            </button>
-
-            <button
-              onclick="removeFromCart('${p.id}')"
-              style="margin-left:auto"
-            >
-              🗑
-            </button>
-
-          </div>
-
-        </div>
-
-      </div>
-
-    `;
-
-  }).join("");
-
-  document.getElementById("cartTotal").textContent=money(total);
-}
-
-
-/* =========================================================
-   FAVORITES
-   ========================================================= */
-
-function toggleFavorite(id){
-
-  if(favorites.includes(id)){
-    favorites=favorites.filter(x=>x!==id);
-    toast("Retiré des favoris");
-  }else{
-    favorites.push(id);
-    toast("Ajouté aux favoris ❤️");
-  }
-
-  save();
-  updateCounts();
-  renderProducts();
-  renderFavorites();
-}
-
-
-function renderFavorites(){
-
-  const container=document.getElementById("favoriteItems");
-
-  const products=PRODUCTS.filter(p=>favorites.includes(p.id));
-
-  if(!products.length){
-
-    container.innerHTML=`
-      <div class="empty">
-        <div class="empty-icon">♡</div>
-        <h3>Aucun favori</h3>
-        <p>Ajoute des produits avec le cœur.</p>
-      </div>
-    `;
-
-    return;
-  }
-
-  container.innerHTML=products.map(p=>`
-
-    <div class="cart-item">
-
-      <img
-        src="${p.image}"
-        alt="${escapeHTML(p.name)}"
-      >
-
-      <div class="cart-info">
-
-        <b>${escapeHTML(p.name)}</b>
-
-        <div class="cart-price">
-          ${money(p.price)}
-        </div>
-
-        <button
-          class="account-btn"
-          style="margin-top:8px;padding:6px 10px"
-          onclick="addToCart('${p.id}')"
-        >
-          Ajouter au panier
-        </button>
-
-      </div>
-
-    </div>
-
-  `).join("");
-}
-
-
-/* =========================================================
-   COUNTS
-   ========================================================= */
-
-function updateCounts(){
-
-  const cartCount=cart.reduce(
-    (sum,item)=>sum+item.quantity,
-    0
-  );
-
-  document.getElementById("cartCount").textContent=cartCount;
-
-  document.getElementById("favoriteCount").textContent=
-    favorites.length;
-}
-
-
-/* =========================================================
-   PRODUCT DETAIL
-   ========================================================= */
-
-function openProduct(id){
-
-  const p=PRODUCTS.find(product=>product.id===id);
-
-  if(!p) return;
-
-  document.getElementById("productDetail").innerHTML=`
-
-    <div class="detail">
-
-      <div class="detail-image">
-
-        <img
-          src="${p.image}"
-          alt="${escapeHTML(p.name)}"
-          onerror="this.src='https://placehold.co/700x500/f7f7f7/222?text=Produit'"
-        >
-
-      </div>
-
-      <div>
-
-        <div class="product-brand">
-          ${escapeHTML(p.brand)}
-        </div>
-
-        <h2>
-          ${escapeHTML(p.name)}
-        </h2>
-
-        <div class="rating">
-          <span class="stars">★★★★★</span>
-          <span>${p.rating} / 5 • ${p.reviews} avis</span>
-        </div>
-
-        <p class="detail-desc">
-          Produit disponible chez NovaShop.
-          Consulte les caractéristiques du modèle et ajoute-le
-          directement à ton panier.
-        </p>
-
-        <div class="detail-price">
-          ${money(p.price)}
-        </div>
-
-        <p class="stock ${p.stock<=3?"low":""}">
-          ${p.stock>0
-            ? `${p.stock} exemplaire${p.stock>1?"s":""} disponible${p.stock>1?"s":""}`
-            : "Rupture de stock"
-          }
-        </p>
-
-        <button
-          class="detail-add"
-          onclick="addToCart('${p.id}');closeModal('productModal')"
-          ${p.stock===0?"disabled":""}
-        >
-          Ajouter au panier
-        </button>
-
-      </div>
-
-    </div>
-
-  `;
-
-  document.getElementById("productModal")
-    .classList.add("show");
-}
-
-
-/* =========================================================
-   DRAWERS
-   ========================================================= */
-
-function openDrawer(type){
-
-  closeDrawers();
-
-  document.getElementById("overlay")
-    .classList.add("show");
-
-  if(type==="cart"){
-    document.getElementById("cartDrawer")
-      .classList.add("show");
-    renderCart();
-  }
-
-  if(type==="favorites"){
-    document.getElementById("favoriteDrawer")
-      .classList.add("show");
-    renderFavorites();
-  }
-}
-
-
-function closeDrawers(){
-
-  document.getElementById("overlay")
-    .classList.remove("show");
-
-  document.getElementById("cartDrawer")
-    .classList.remove("show");
-
-  document.getElementById("favoriteDrawer")
-    .classList.remove("show");
-}
-
-
-/* =========================================================
-   MODALS
-   ========================================================= */
-
-function closeModal(id){
-
-  document.getElementById(id)
-    .classList.remove("show");
-
-}
-
-
-function openAccount(){
-
-  renderAccount();
-
-  document.getElementById("accountModal")
-    .classList.add("show");
-
-}
-
-
-/* =========================================================
-   ACCOUNT
-   ========================================================= */
-
-function renderAccount(){
-
-  const city=localStorage.getItem("novashop_city") || "";
-
-  const orders=JSON.parse(
-    localStorage.getItem("novashop_orders") || "[]"
-  );
-
-  document.getElementById("accountContent").innerHTML=`
-
-    <h2 style="margin-bottom:8px">
-      Bienvenue sur NovaShop
-    </h2>
-
-    <p style="color:#777;margin-bottom:20px">
-      Gère tes informations et tes commandes.
-    </p>
-
-    <div class="form">
-
-      <label>
-        Ville de livraison
+        <strong>Gratuite</strong>
       </label>
 
-      <input
-        id="cityInput"
-        value="${escapeHTML(city)}"
-        placeholder="Ex : Lille"
-      >
+      <h2>Validation</h2>
 
-      <button
-        class="account-btn primary"
-        onclick="saveCity()"
-      >
-        Enregistrer la ville
+      <p>
+        Aucun paiement réel n'est effectué dans cette version gratuite.
+        La commande sera enregistrée dans NovaShop.
+      </p>
+
+      <button class="primary full" onclick="placeOrder()">
+        Confirmer la commande
       </button>
+    </section>
 
-    </div>
+    <aside class="checkoutBox">
+      <h2>Votre commande</h2>
+      <div id="summary"></div>
+      <hr>
+      <h2 id="total"></h2>
+    </aside>
+  </div>
+</main>
 
-    <div class="account-actions">
+<script>
+const PRODUCTS = [
+  ["cpu9600x","AMD Ryzen 5 9600X",249.99],
+  ["ramcorsair32","Corsair Vengeance RGB 32 Go DDR5 6000",119.99],
+  ["ramkingston32","Kingston Fury Beast RGB 32 Go DDR5 5600",104.99],
+  ["ssd9901","Samsung 990 PRO 1 To",89.99],
+  ["ssd9902","Samsung 990 PRO 2 To",159.99],
+  ["psurm850","Corsair RM850x",139.99],
+  ["case5000d","Corsair 5000D Airflow White",149.99],
+  ["lf360","ARCTIC Liquid Freezer III 360",109.99],
+  ["odysseyg6","Samsung Odyssey OLED G6 27 pouces",599.99],
+  ["proxtkl","Logitech G PRO X TKL Wireless",189.99],
+  ["superlight2","Logitech G PRO X SUPERLIGHT 2",129.99],
+  ["wave3","Elgato Wave:3",129.99],
+  ["dualsense","Sony DualSense PS5",69.99]
+];
 
-      <button
-        class="account-btn"
-        onclick="showOrders()"
-      >
-        📦 Mes commandes
-      </button>
+const cart=JSON.parse(localStorage.getItem("nova_cart")||"[]");
 
-      <button
-        class="account-btn"
-        onclick="openDashboard()"
-      >
-        📊 Dashboard
-      </button>
-
-    </div>
-
-    <div id="ordersArea"></div>
-
-    <div style="margin-top:25px">
-
-      <button
-        class="account-btn"
-        style="width:100%;color:#dc2626"
-        onclick="deleteAllData()"
-      >
-        Supprimer toutes mes données locales
-      </button>
-
-    </div>
-
-  `;
+function money(n){
+  return n.toLocaleString("fr-FR",{style:"currency",currency:"EUR"});
 }
 
+function summary(){
+  let total=0;
 
-function saveCity(){
+  document.getElementById("summary").innerHTML=cart.map(row=>{
+    const p=PRODUCTS.find(x=>x[0]===row.id);
+    if(!p)return"";
 
-  const value=
-    document.getElementById("cityInput")
-      .value.trim();
+    total+=p[2]*row.qty;
 
-  localStorage.setItem(
-    "novashop_city",
-    value
-  );
+    return `
+      <div style="display:flex;justify-content:space-between;margin:12px 0">
+        <span>${p[1]} × ${row.qty}</span>
+        <b>${money(p[2]*row.qty)}</b>
+      </div>
+    `;
+  }).join("");
 
-  toast("Ville enregistrée ✓");
+  document.getElementById("total").textContent="Total : "+money(total);
 }
 
+function placeOrder(){
+  const fields=[
+    "firstName","lastName","address",
+    "zip","city","country","phone"
+  ];
 
-/* =========================================================
-   ORDERS
-   ========================================================= */
+  for(const id of fields){
+    const el=document.getElementById(id);
 
-function createOrder(){
+    if(!el.value.trim()){
+      alert("Merci de remplir tous les champs obligatoires.");
+      el.focus();
+      return;
+    }
+  }
 
   if(!cart.length){
-    toast("Ton panier est vide");
+    alert("Votre panier est vide.");
     return;
   }
 
-  const city=
-    localStorage.getItem("novashop_city");
+  const orders=JSON.parse(localStorage.getItem("nova_orders")||"[]");
 
-  if(!city){
-    closeDrawers();
-    openAccount();
-    toast("Ajoute ta ville de livraison");
-    return;
-  }
-
-  const orders=JSON.parse(
-    localStorage.getItem("novashop_orders") || "[]"
+  const account=JSON.parse(
+    localStorage.getItem("nova_account")||"{}"
   );
 
   let total=0;
 
-  const items=cart.map(item=>{
-
-    const p=PRODUCTS.find(x=>x.id===item.id);
-
-    if(!p) return null;
-
-    total+=p.price*item.quantity;
+  const items=cart.map(row=>{
+    const p=PRODUCTS.find(x=>x[0]===row.id);
+    total+=p[2]*row.qty;
 
     return {
-      id:p.id,
-      name:p.name,
-      quantity:item.quantity,
-      price:p.price,
-      image:p.image
+      id:p[0],
+      name:p[1],
+      price:p[2],
+      qty:row.qty
     };
-
-  }).filter(Boolean);
+  });
 
   const order={
     id:"NS-"+Date.now(),
     date:new Date().toLocaleString("fr-FR"),
-    city,
+    status:"Commande reçue",
+    warehouseCity:"Entrepôt",
+    customer:{
+      name:document.getElementById("firstName").value+" "+
+           document.getElementById("lastName").value,
+      email:account.email||"",
+      phone:document.getElementById("phone").value,
+      address:document.getElementById("address").value,
+      address2:document.getElementById("address2").value,
+      zip:document.getElementById("zip").value,
+      city:document.getElementById("city").value,
+      country:document.getElementById("country").value
+    },
     items,
-    total,
-    status:"Commande reçue"
+    total
   };
 
-  orders.unshift(order);
+  orders.push(order);
 
-  localStorage.setItem(
-    "novashop_orders",
-    JSON.stringify(orders)
-  );
+  localStorage.setItem("nova_orders",JSON.stringify(orders));
+  localStorage.setItem("nova_last_order",JSON.stringify(order));
+  localStorage.removeItem("nova_cart");
 
-  cart=[];
-
-  save();
-  renderCart();
-  updateCounts();
-  closeDrawers();
-
-  toast("Commande créée ✓");
+  alert("Commande enregistrée ! Numéro : "+order.id);
+  location.href="dashboard.html";
 }
 
-
-function showOrders(){
-
-  const orders=JSON.parse(
-    localStorage.getItem("novashop_orders") || "[]"
-  );
-
-  const area=document.getElementById("ordersArea");
-
-  if(!orders.length){
-
-    area.innerHTML=`
-      <div class="empty" style="padding:35px 10px">
-        <div class="empty-icon">📦</div>
-        <h3>Aucune commande</h3>
-      </div>
-    `;
-
-    return;
-  }
-
-  area.innerHTML=`
-
-    <div class="orders">
-
-      ${orders.map(order=>`
-
-        <div class="order">
-
-          <div class="order-top">
-
-            <span>${escapeHTML(order.id)}</span>
-
-            <span>${money(order.total)}</span>
-
-          </div>
-
-          <div style="font-size:12px;color:#777;margin-top:6px">
-            ${escapeHTML(order.date)}
-          </div>
-
-          <div style="font-size:12px;margin-top:5px">
-            Livraison : ${escapeHTML(order.city)}
-          </div>
-
-          <div class="status">
-            ● ${escapeHTML(order.status)}
-          </div>
-
-        </div>
-
-      `).join("")}
-
-    </div>
-
-  `;
-}
-
-
-/* =========================================================
-   DASHBOARD
-   ========================================================= */
-
-function openDashboard(){
-
-  const orders=JSON.parse(
-    localStorage.getItem("novashop_orders") || "[]"
-  );
-
-  const revenue=orders.reduce(
-    (sum,o)=>sum+o.total,
-    0
-  );
-
-  const wrap=document.createElement("div");
-
-  wrap.className="modal-wrap show";
-
-  wrap.innerHTML=`
-
-    <div class="modal">
-
-      <div class="modal-head">
-
-        <b>Dashboard NovaShop</b>
-
-        <button
-          class="close"
-          onclick="this.closest('.modal-wrap').remove()"
-        >
-          ✕
-        </button>
-
-      </div>
-
-      <div class="modal-content">
-
-        <div class="trust">
-
-          <div class="trust-card">
-            <b>${PRODUCTS.length}</b>
-            <span>Produits</span>
-          </div>
-
-          <div class="trust-card">
-            <b>${orders.length}</b>
-            <span>Commandes</span>
-          </div>
-
-          <div class="trust-card">
-            <b>${favorites.length}</b>
-            <span>Favoris</span>
-          </div>
-
-          <div class="trust-card">
-            <b>${money(revenue)}</b>
-            <span>Total commandes</span>
-          </div>
-
-        </div>
-
-        <div style="margin-top:25px">
-
-          <h3>Commandes récentes</h3>
-
-          <div class="orders">
-
-            ${
-              orders.length
-              ? orders.slice(0,10).map(o=>`
-
-                <div class="order">
-
-                  <div class="order-top">
-                    <span>${escapeHTML(o.id)}</span>
-                    <span>${money(o.total)}</span>
-                  </div>
-
-                  <div class="status">
-                    ${escapeHTML(o.status)}
-                  </div>
-
-                </div>
-
-              `).join("")
-              : `<div class="empty">Aucune commande.</div>`
-            }
-
-          </div>
-
-        </div>
-
-      </div>
-
-    </div>
-
-  `;
-
-  document.body.appendChild(wrap);
-}
-
-
-/* =========================================================
-   DELETE DATA
-   ========================================================= */
-
-function deleteAllData(){
-
-  const confirmDelete=
-    confirm(
-      "Supprimer toutes les données locales NovaShop ?"
-    );
-
-  if(!confirmDelete) return;
-
-  [
-    "novashop_cart",
-    "novashop_favorites",
-    "novashop_city",
-    "novashop_orders",
-    "novashop_reviews",
-    "novashop_profile"
-  ].forEach(key=>{
-    localStorage.removeItem(key);
-  });
-
-  cart=[];
-  favorites=[];
-
-  updateCounts();
-  renderCart();
-  renderFavorites();
-  renderProducts();
-  renderAccount();
-
-  toast("Données locales supprimées");
-}
-
-
-/* =========================================================
-   EVENTS
-   ========================================================= */
-
-document.querySelectorAll(".nav button")
-  .forEach(button=>{
-
-    button.addEventListener("click",()=>{
-
-      filterCategory(
-        button.dataset.category
-      );
-
-    });
-
-  });
-
-
-document.getElementById("cartBtn")
-  .addEventListener("click",()=>{
-    openDrawer("cart");
-  });
-
-
-document.getElementById("favoriteBtn")
-  .addEventListener("click",()=>{
-    openDrawer("favorites");
-  });
-
-
-document.getElementById("accountBtn")
-  .addEventListener("click",()=>{
-    openAccount();
-  });
-
-
-document.getElementById("overlay")
-  .addEventListener("click",()=>{
-    closeDrawers();
-  });
-
-
-document.getElementById("sortSelect")
-  .addEventListener("change",()=>{
-    currentPage=1;
-    renderProducts();
-  });
-
-
-document.getElementById("searchInput")
-  .addEventListener("input",e=>{
-
-    searchValue=e.target.value;
-
-    currentPage=1;
-
-    renderProducts();
-
-  });
-
-
-document.getElementById("searchBtn")
-  .addEventListener("click",()=>{
-
-    currentPage=1;
-
-    renderProducts();
-
-    scrollToProducts();
-
-  });
-
-
-document.getElementById("productModal")
-  .addEventListener("click",e=>{
-
-    if(e.target.id==="productModal"){
-      closeModal("productModal");
-    }
-
-  });
-
-
-document.getElementById("accountModal")
-  .addEventListener("click",e=>{
-
-    if(e.target.id==="accountModal"){
-      closeModal("accountModal");
-    }
-
-  });
-
-
-/* =========================================================
-   START
-   ========================================================= */
-
-renderProducts();
-renderCart();
-renderFavorites();
-updateCounts();
-
+summary();
 </script>
 
+</body>
+</html><!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>NovaShop • Dashboard</title>
+<link rel="stylesheet" href="style.css">
+<style>
+.dashboard{
+  display:grid;
+  grid-template-columns:240px 1fr;
+  min-height:calc(100vh - 90px)
+}
+.side{
+  background:#111317;
+  color:white;
+  padding:25px 15px
+}
+.side h2{padding:0 12px}
+.side button{
+  width:100%;
+  text-align:left;
+  background:transparent;
+  color:#bbb;
+  padding:13px;
+  border-radius:7px;
+  margin:3px 0
+}
+.side button:hover,.side button.active{
+  background:#25282e;
+  color:#fff
+}
+.dash{
+  padding:30px;
+  max-width:1300px;
+  width:100%
+}
+.cards{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:15px
+}
+.stat{
+  background:#fff;
+  border:1px solid #e4e6e9;
+  border-radius:12px;
+  padding:20px
+}
+.stat b{
+  display:block;
+  font-size:28px;
+  margin-top:8px
+}
+.panel{
+  background:#fff;
+  border:1px solid #e4e6e9;
+  border-radius:12px;
+  padding:20px;
+  margin-top:20px;
+  overflow:auto
+}
+.order{
+  border:1px solid #e4e6e9;
+  border-radius:10px;
+  padding:18px;
+  margin:12px 0
+}
+.orderTop{
+  display:flex;
+  justify-content:space-between;
+  gap:15px
+}
+.status{
+  display:inline-block;
+  padding:6px 10px;
+  background:#eef2ff;
+  color:#1743c7;
+  border-radius:20px;
+  font-size:12px;
+  font-weight:700
+}
+.danger{
+  background:#dc2626;
+  color:#fff;
+  padding:12px 16px;
+  border-radius:7px
+}
+@media(max-width:800px){
+  .dashboard{grid-template-columns:1fr}
+  .side{display:none}
+  .dash{padding:18px 12px}
+  .cards{grid-template-columns:repeat(2,1fr)}
+}
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="head">
+    <a class="logo" href="index.html">NOVA<span>SHOP</span></a>
+    <strong>Dashboard</strong>
+    <a style="margin-left:auto" href="index.html">← Marketplace</a>
+  </div>
+</header>
+
+<div class="dashboard">
+
+<aside class="side">
+  <h2>NovaShop</h2>
+  <button class="active">📦 Commandes</button>
+  <button onclick="showProducts()">🛒 Produits</button>
+  <button onclick="showWarehouse()">🏢 Entrepôt</button>
+  <button onclick="showAccount()">👤 Compte</button>
+</aside>
+
+<section class="dash">
+
+<h1>Dashboard</h1>
+<p class="muted">Gestion des commandes NovaShop</p>
+
+<div class="cards">
+  <div class="stat">Commandes<b id="orderCount">0</b></div>
+  <div class="stat">En préparation<b id="prepCount">0</b></div>
+  <div class="stat">Expédiées<b id="shipCount">0</b></div>
+  <div class="stat">Chiffre commandes<b id="revenue">0 €</b></div>
+</div>
+
+<div id="content"></div>
+
+</section>
+</div>
+
+<script src="dashboard.js"></script>
 </body>
 </html>
