@@ -53,15 +53,646 @@ const FALLBACK_IMAGE =
 
 
 /* =========================================================
+   ANIMATIONS NOVASHOP
+========================================================= */
+
+const novaAnimationStyle = document.createElement("style");
+
+novaAnimationStyle.textContent = `
+
+/* =========================
+   PRODUCT CARD
+========================= */
+
+.product-card {
+  position: relative;
+  overflow: hidden;
+  transform: translateZ(0);
+  transition:
+    transform .35s cubic-bezier(.2,.8,.2,1),
+    box-shadow .35s ease,
+    border-color .35s ease;
+}
+
+.product-card::before {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  background:
+    linear-gradient(
+      120deg,
+      transparent 20%,
+      rgba(74,144,255,.18),
+      transparent 80%
+    );
+  transform: translateX(-120%);
+  transition: transform .7s ease;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.product-card:hover::before {
+  transform: translateX(120%);
+}
+
+.product-card:hover {
+  transform:
+    translateY(-9px)
+    scale(1.015);
+  box-shadow:
+    0 18px 55px rgba(0,0,0,.38),
+    0 0 35px rgba(40,120,255,.13);
+}
+
+.product-card > * {
+  position: relative;
+  z-index: 1;
+}
+
+.product-card.nova-added {
+  animation:
+    novaCardAdd .65s cubic-bezier(.2,.9,.2,1);
+}
+
+@keyframes novaCardAdd {
+  0% {
+    transform: scale(1);
+  }
+
+  25% {
+    transform:
+      scale(1.045)
+      rotate(-.5deg);
+  }
+
+  55% {
+    transform:
+      scale(.985)
+      rotate(.3deg);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+
+/* =========================
+   IMAGE
+========================= */
+
+.product-image {
+  transition:
+    transform .6s cubic-bezier(.2,.8,.2,1),
+    filter .4s ease;
+}
+
+.product-card:hover .product-image {
+  transform:
+    scale(1.075)
+    rotate(-1deg);
+  filter:
+    brightness(1.08)
+    saturate(1.08);
+}
+
+
+/* =========================
+   BUTTON ADD CART
+========================= */
+
+[data-add-cart] {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  transition:
+    transform .18s ease,
+    box-shadow .25s ease,
+    background .25s ease;
+}
+
+[data-add-cart]::before {
+  content: "";
+  position: absolute;
+  width: 25px;
+  height: 180px;
+  left: -70px;
+  top: -60px;
+  transform: rotate(25deg);
+  background:
+    linear-gradient(
+      90deg,
+      transparent,
+      rgba(255,255,255,.7),
+      transparent
+    );
+  transition: left .5s ease;
+  z-index: -1;
+}
+
+[data-add-cart]:hover::before {
+  left: 140%;
+}
+
+[data-add-cart]:active {
+  transform: scale(.82);
+}
+
+[data-add-cart].clicked {
+  animation:
+    novaButtonPop .5s cubic-bezier(.2,.9,.2,1);
+}
+
+@keyframes novaButtonPop {
+
+  0% {
+    transform: scale(1);
+  }
+
+  30% {
+    transform: scale(.72);
+  }
+
+  55% {
+    transform: scale(1.16);
+  }
+
+  75% {
+    transform: scale(.94);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+
+}
+
+
+/* =========================
+   CART ICON
+========================= */
+
+#cartBtn,
+#bottomCartBtn {
+  position: relative;
+  transform-origin: center;
+}
+
+.nova-cart-shake {
+  animation:
+    novaCartShake .65s
+    cubic-bezier(.36,.07,.19,.97);
+}
+
+@keyframes novaCartShake {
+
+  0% {
+    transform: translateX(0) rotate(0);
+  }
+
+  15% {
+    transform: translateX(-5px) rotate(-8deg);
+  }
+
+  30% {
+    transform: translateX(5px) rotate(8deg);
+  }
+
+  45% {
+    transform: translateX(-4px) rotate(-6deg);
+  }
+
+  60% {
+    transform: translateX(4px) rotate(5deg);
+  }
+
+  75% {
+    transform: translateX(-2px) rotate(-3deg);
+  }
+
+  100% {
+    transform: translateX(0) rotate(0);
+  }
+
+}
+
+.nova-cart-glow {
+  animation:
+    novaCartGlow 1s ease;
+}
+
+@keyframes novaCartGlow {
+
+  0% {
+    filter:
+      drop-shadow(0 0 0 rgba(70,150,255,0));
+  }
+
+  35% {
+    filter:
+      drop-shadow(0 0 18px rgba(70,150,255,.95));
+  }
+
+  100% {
+    filter:
+      drop-shadow(0 0 0 rgba(70,150,255,0));
+  }
+
+}
+
+
+/* =========================
+   CART COUNT
+========================= */
+
+#cartCount {
+  transition:
+    transform .25s ease,
+    filter .25s ease;
+}
+
+.nova-count-pop {
+  animation:
+    novaCountPop .5s cubic-bezier(.2,.9,.2,1);
+}
+
+@keyframes novaCountPop {
+
+  0% {
+    transform: scale(1);
+  }
+
+  35% {
+    transform: scale(1.65);
+    filter:
+      drop-shadow(0 0 10px rgba(80,150,255,.9));
+  }
+
+  70% {
+    transform: scale(.85);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+
+}
+
+
+/* =========================
+   FLYING PRODUCT
+========================= */
+
+.nova-flying-product {
+  position: fixed;
+  width: 70px;
+  height: 70px;
+  object-fit: contain;
+  border-radius: 16px;
+  z-index: 999999;
+  pointer-events: none;
+
+  box-shadow:
+    0 10px 40px rgba(0,0,0,.5),
+    0 0 35px rgba(60,140,255,.65);
+
+  border:
+    1px solid rgba(255,255,255,.22);
+
+  background:
+    rgba(10,17,30,.92);
+
+  will-change:
+    transform,
+    opacity;
+}
+
+
+/* =========================
+   PARTICLES
+========================= */
+
+.nova-particle {
+  position: fixed;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 1000000;
+
+  background:
+    radial-gradient(
+      circle,
+      #fff,
+      #4da3ff 45%,
+      transparent 75%
+    );
+
+  box-shadow:
+    0 0 14px rgba(70,150,255,.95);
+}
+
+.nova-ring {
+  position: fixed;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 999998;
+
+  border:
+    2px solid rgba(80,160,255,.8);
+
+  transform:
+    translate(-50%,-50%)
+    scale(.2);
+
+  animation:
+    novaRing .65s ease-out forwards;
+}
+
+@keyframes novaRing {
+
+  0% {
+    opacity: 1;
+    transform:
+      translate(-50%,-50%)
+      scale(.2);
+  }
+
+  100% {
+    opacity: 0;
+    transform:
+      translate(-50%,-50%)
+      scale(5);
+  }
+
+}
+
+
+/* =========================
+   TOAST
+========================= */
+
+#toast {
+  transform:
+    translateY(25px)
+    scale(.92);
+
+  opacity: 0;
+
+  transition:
+    opacity .3s ease,
+    transform .4s cubic-bezier(.2,.9,.2,1);
+}
+
+#toast.show {
+  opacity: 1;
+
+  transform:
+    translateY(0)
+    scale(1);
+
+  box-shadow:
+    0 15px 50px rgba(0,0,0,.4),
+    0 0 35px rgba(50,130,255,.15);
+}
+
+
+/* =========================
+   MODALS
+========================= */
+
+.modal {
+  transition:
+    opacity .25s ease;
+}
+
+.modal.open {
+  animation:
+    novaModalBackground .3s ease;
+}
+
+.modal.open > * {
+  animation:
+    novaModalOpen .5s
+    cubic-bezier(.16,1,.3,1);
+}
+
+@keyframes novaModalBackground {
+
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+
+}
+
+@keyframes novaModalOpen {
+
+  0% {
+    opacity: 0;
+    transform:
+      translateY(35px)
+      scale(.88)
+      rotateX(8deg);
+  }
+
+  60% {
+    opacity: 1;
+    transform:
+      translateY(-5px)
+      scale(1.015)
+      rotateX(0);
+  }
+
+  100% {
+    opacity: 1;
+    transform:
+      translateY(0)
+      scale(1)
+      rotateX(0);
+  }
+
+}
+
+
+/* =========================
+   CART ITEMS
+========================= */
+
+.cart-item {
+  animation:
+    novaCartItemIn .5s
+    cubic-bezier(.2,.9,.2,1)
+    both;
+
+  transition:
+    transform .25s ease,
+    background .25s ease;
+}
+
+.cart-item:hover {
+  transform:
+    translateX(5px);
+
+  background:
+    rgba(50,100,180,.08);
+}
+
+@keyframes novaCartItemIn {
+
+  0% {
+    opacity: 0;
+    transform:
+      translateX(-30px)
+      scale(.94);
+  }
+
+  100% {
+    opacity: 1;
+    transform:
+      translateX(0)
+      scale(1);
+  }
+
+}
+
+
+/* =========================
+   CART TOTAL
+========================= */
+
+.cart-total {
+  animation:
+    novaTotalIn .55s
+    cubic-bezier(.2,.9,.2,1);
+}
+
+@keyframes novaTotalIn {
+
+  0% {
+    opacity: 0;
+    transform:
+      translateY(15px)
+      scale(.96);
+  }
+
+  100% {
+    opacity: 1;
+    transform:
+      translateY(0)
+      scale(1);
+  }
+
+}
+
+
+/* =========================
+   RIPPLE
+========================= */
+
+.nova-ripple {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+
+  width: 10px;
+  height: 10px;
+
+  background:
+    rgba(255,255,255,.5);
+
+  transform:
+    translate(-50%,-50%)
+    scale(0);
+
+  animation:
+    novaRipple .65s ease-out;
+}
+
+@keyframes novaRipple {
+
+  to {
+    transform:
+      translate(-50%,-50%)
+      scale(16);
+
+    opacity: 0;
+  }
+
+}
+
+
+/* =========================
+   SCREEN FLASH
+========================= */
+
+.nova-screen-flash {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 999997;
+
+  background:
+    radial-gradient(
+      circle at center,
+      rgba(70,150,255,.12),
+      transparent 45%
+    );
+
+  animation:
+    novaFlash .45s ease-out forwards;
+}
+
+@keyframes novaFlash {
+
+  0% {
+    opacity: 0;
+  }
+
+  25% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+  }
+
+}
+
+
+/* =========================
+   REDUCED MOTION
+========================= */
+
+@media (prefers-reduced-motion: reduce) {
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+  }
+
+}
+
+`;
+
+document.head.appendChild(
+  novaAnimationStyle
+);
+
+
+/* =========================================================
    PRODUITS
-   AUCUNE LIMITE DE PRODUITS
 ========================================================= */
 
 const products = [
-
-  /* =======================================================
-     ANCIENS PRODUITS
-  ======================================================= */
 
   {
     id: "p1",
@@ -207,11 +838,6 @@ const products = [
     image: "https://m.media-amazon.com/images/I/71TYAcZ4J8L._AC_SL1200_.jpg"
   },
 
-
-  /* =======================================================
-     ÉCRANS GAMING
-  ======================================================= */
-
   {
     id: "p19",
     name: "KOORUI Ecran PC Gamer 27 Pouces 200Hz IPS QHD HDR400 1ms HDMI 2.0/DP1.4",
@@ -227,11 +853,6 @@ const products = [
     price: 65.99,
     image: "https://media.ldlc.com/r1600/ld/products/00/06/34/20/LD0006342033.jpg"
   },
-
-
-  /* =======================================================
-     CHAISES GAMING
-  ======================================================= */
 
   {
     id: "p21",
@@ -257,11 +878,6 @@ const products = [
     image: "https://thumb.pccomponentes.com/w-530-530/articles/1118/11186247/167-silla-gaming-gtplayer-ergonomica-con-reposapies-y-soporte-lumbar-4d.jpg"
   },
 
-
-  /* =======================================================
-     BUREAUX GAMING
-  ======================================================= */
-
   {
     id: "p24",
     name: "Desk Lite - Height-Adjustable Desk",
@@ -285,11 +901,6 @@ const products = [
     price: 44.99,
     image: "https://cdn.manomano.com/pim-media/images/medium/74eca1cb1cefa063c8f600ee293ae6ee826794f8.jpg"
   },
-
-
-  /* =======================================================
-     CASQUES
-  ======================================================= */
 
   {
     id: "p27",
@@ -315,11 +926,6 @@ const products = [
     image: "https://thumbs.static-thomann.de/thumb/padthumb600x600/pics/bdb/_10/106865/18443258_800.jpg"
   },
 
-
-  /* =======================================================
-     CLAVIERS
-  ======================================================= */
-
   {
     id: "p30",
     name: "Logitech PRO X TKL Rapid Noir, filaire AZERTY, sans pavé numérique",
@@ -344,11 +950,6 @@ const products = [
     image: "https://m.media-amazon.com/images/I/6144lt2l5JL._AC_SL1200_.jpg"
   },
 
-
-  /* =======================================================
-     SOURIS
-  ======================================================= */
-
   {
     id: "p33",
     name: "ATTACK SHARK R11 Ultra, fibre de carbone, 8000Hz, 49g, 42000 DPI, black forged",
@@ -356,11 +957,6 @@ const products = [
     price: 26.99,
     image: "https://m.media-amazon.com/images/I/71bMz15SqcL._AC_SL1500_.jpg"
   },
-
-
-  /* =======================================================
-     MICROPHONES
-  ======================================================= */
 
   {
     id: "p34",
@@ -386,11 +982,6 @@ const products = [
     image: "https://media.ldlc.com/r1600/ld/products/00/06/13/25/LD0006132588.jpg"
   },
 
-
-  /* =======================================================
-     ÉCLAIRAGE LED / RGB
-  ======================================================= */
-
   {
     id: "p37",
     name: "Stairville LED Pixel Rail 40 RGB MKII",
@@ -414,11 +1005,6 @@ const products = [
     price: 91.10,
     image: "https://www.discount-autosport.com/wp-content/webp-express/webp-images/uploads/2025/02/lampe-hexagone-plafond-led-4m80-contour-bleu-.jpg.webp"
   },
-
-
-  /* =======================================================
-     WEBCAMS
-  ======================================================= */
 
   {
     id: "p40",
@@ -444,11 +1030,6 @@ const products = [
     image: "https://www.digit-photo.com/images/produits/INSTA360LINK2C01/1.jpg?v=d2e89aca097c819fe092262cbf426b587e3800d5"
   },
 
-
-  /* =======================================================
-     TAPIS XXL
-  ======================================================= */
-
   {
     id: "p43",
     name: "Grand tapis de souris étendu pour bureau S Vague",
@@ -473,11 +1054,6 @@ const products = [
     image: "https://content.pearl.fr/media/cache/default/article_ultralarge_high_nocrop/shared/images/articles/T/TG3/tapis-de-souris-gaming-xxl-900-x-400-mm-bords-cousus-modele-sakura-ref_TG3905_2.jpg"
   },
 
-
-  /* =======================================================
-     MANETTES
-  ======================================================= */
-
   {
     id: "p46",
     name: "Microsoft Xbox One Wireless Controller v3",
@@ -493,11 +1069,6 @@ const products = [
     price: 112.90,
     image: "https://media.nacongaming.com/media/catalog/product/x/b/xbxrevolutionxu_01_1.webp?width=1082&height=926&store=nacon_fr&image-type=image"
   },
-
-
-  /* =======================================================
-     ENCEINTES
-  ======================================================= */
 
   {
     id: "p48",
@@ -523,11 +1094,8 @@ const products = [
 ========================================================= */
 
 let currentUser = null;
-
 let authMode = "login";
-
 let selectedCategory = "Tous";
-
 let searchValue = "";
 
 let cart =
@@ -623,18 +1191,14 @@ function stars(value) {
 function showToast(message) {
 
   const toast =
-    document.getElementById(
-      "toast"
-    );
+    document.getElementById("toast");
 
   if (!toast) return;
 
   toast.textContent =
     message;
 
-  toast.classList.add(
-    "show"
-  );
+  toast.classList.add("show");
 
   clearTimeout(
     window.__novaToastTimer
@@ -659,9 +1223,7 @@ function openModal(id) {
 
   document
     .getElementById(id)
-    ?.classList.add(
-      "open"
-    );
+    ?.classList.add("open");
 
 }
 
@@ -670,26 +1232,21 @@ function closeModal(id) {
 
   document
     .getElementById(id)
-    ?.classList.remove(
-      "open"
-    );
+    ?.classList.remove("open");
 
 }
 
 
 /* =========================================================
-   IMAGES
+   IMAGE
 ========================================================= */
 
-function handleImageError(
-  img
-) {
+function handleImageError(img) {
 
   if (!img) return;
 
   if (
-    img.dataset.fallbackUsed ===
-    "1"
+    img.dataset.fallbackUsed === "1"
   ) {
 
     img.src =
@@ -699,8 +1256,7 @@ function handleImageError(
 
   }
 
-  img.dataset.fallbackUsed =
-    "1";
+  img.dataset.fallbackUsed = "1";
 
   img.src =
     FALLBACK_IMAGE;
@@ -709,11 +1265,299 @@ function handleImageError(
 
 
 /* =========================================================
-   AVIS
+   EFFET ROND
+========================================================= */
+
+function createRing(x, y) {
+
+  const ring =
+    document.createElement("div");
+
+  ring.className =
+    "nova-ring";
+
+  ring.style.left =
+    `${x}px`;
+
+  ring.style.top =
+    `${y}px`;
+
+  document.body.appendChild(
+    ring
+  );
+
+  setTimeout(
+    () => ring.remove(),
+    700
+  );
+
+}
+
+
+/* =========================================================
+   PARTICULES
+========================================================= */
+
+function createParticles(
+  x,
+  y,
+  amount = 14
+) {
+
+  for (
+    let i = 0;
+    i < amount;
+    i++
+  ) {
+
+    const particle =
+      document.createElement(
+        "div"
+      );
+
+    particle.className =
+      "nova-particle";
+
+    particle.style.left =
+      `${x}px`;
+
+    particle.style.top =
+      `${y}px`;
+
+    document.body.appendChild(
+      particle
+    );
+
+
+    const angle =
+      Math.random() *
+      Math.PI *
+      2;
+
+    const distance =
+      randomInt(
+        45,
+        120
+      );
+
+    const dx =
+      Math.cos(angle) *
+      distance;
+
+    const dy =
+      Math.sin(angle) *
+      distance;
+
+
+    particle.animate(
+      [
+        {
+          transform:
+            "translate(-50%,-50%) scale(1)",
+          opacity: 1
+        },
+
+        {
+          transform:
+            `translate(
+              calc(-50% + ${dx}px),
+              calc(-50% + ${dy}px)
+            ) scale(.2)`,
+          opacity: 0
+        }
+      ],
+      {
+        duration:
+          randomInt(
+            450,
+            800
+          ),
+        easing:
+          "cubic-bezier(.2,.8,.2,1)"
+      }
+    );
+
+
+    setTimeout(
+      () =>
+        particle.remove(),
+      850
+    );
+
+  }
+
+}
+
+
+/* =========================================================
+   PRODUIT QUI VOLE VERS PANIER
+========================================================= */
+
+function flyProductToCart(
+  product,
+  sourceElement
+) {
+
+  if (!sourceElement) return;
+
+
+  const img =
+    sourceElement
+      .closest(".product-card")
+      ?.querySelector(
+        ".product-image"
+      );
+
+
+  if (!img) return;
+
+
+  const cartButton =
+    document.getElementById(
+      "cartBtn"
+    ) ||
+    document.getElementById(
+      "bottomCartBtn"
+    );
+
+
+  if (!cartButton) return;
+
+
+  const start =
+    img.getBoundingClientRect();
+
+
+  const end =
+    cartButton.getBoundingClientRect();
+
+
+  const clone =
+    document.createElement(
+      "img"
+    );
+
+
+  clone.className =
+    "nova-flying-product";
+
+
+  clone.src =
+    product.image ||
+    FALLBACK_IMAGE;
+
+
+  clone.style.left =
+    `${start.left + start.width / 2 - 35}px`;
+
+  clone.style.top =
+    `${start.top + start.height / 2 - 35}px`;
+
+
+  document.body.appendChild(
+    clone
+  );
+
+
+  const targetX =
+    end.left +
+    end.width / 2 -
+    (
+      start.left +
+      start.width / 2
+    );
+
+
+  const targetY =
+    end.top +
+    end.height / 2 -
+    (
+      start.top +
+      start.height / 2
+    );
+
+
+  const rotation =
+    randomInt(
+      180,
+      540
+    );
+
+
+  const animation =
+    clone.animate(
+      [
+        {
+          transform:
+            "translate(0,0) scale(1) rotate(0deg)",
+          opacity: 1
+        },
+
+        {
+          transform:
+            `translate(
+              ${targetX * .35}px,
+              ${targetY * .15 - 100}px
+            )
+            scale(1.18)
+            rotate(${rotation / 2}deg)`,
+          opacity: 1
+        },
+
+        {
+          transform:
+            `translate(
+              ${targetX}px,
+              ${targetY}px
+            )
+            scale(.18)
+            rotate(${rotation}deg)`,
+          opacity: .15
+        }
+      ],
+      {
+        duration: 750,
+        easing:
+          "cubic-bezier(.2,.8,.2,1)"
+      }
+    );
+
+
+  animation.finished
+    .then(
+      () => {
+
+        clone.remove();
+
+        createParticles(
+          end.left +
+          end.width / 2,
+          end.top +
+          end.height / 2,
+          12
+        );
+
+        createRing(
+          end.left +
+          end.width / 2,
+          end.top +
+          end.height / 2
+        );
+
+      }
+    )
+    .catch(
+      () => clone.remove()
+    );
+
+}
+
+
+/* =========================================================
+   REVIEWS
 ========================================================= */
 
 const firstNames = [
-
   "Lucas",
   "Hugo",
   "Nathan",
@@ -734,12 +1578,10 @@ const firstNames = [
   "Sacha",
   "Liam",
   "Raphaël"
-
 ];
 
 
 const lastNames = [
-
   "Martin",
   "Bernard",
   "Dubois",
@@ -758,65 +1600,46 @@ const lastNames = [
   "David",
   "Bertrand",
   "Roux"
-
 ];
 
 
 const reviewTexts = {
 
   5: [
-
     "Excellent produit, fonctionne parfaitement.",
     "Très bonne qualité et livraison rapide.",
     "Je suis très satisfait du produit.",
     "Produit conforme à la description.",
     "Très bon achat.",
     "Rien à redire, tout fonctionne parfaitement."
-
   ],
 
   4: [
-
     "Très bon produit dans l'ensemble.",
     "Bonne qualité, je recommande.",
     "Produit efficace et conforme.",
     "Très satisfait malgré quelques petits détails."
-
   ],
 
   3: [
-
     "Produit correct.",
     "Ça fonctionne mais peut être amélioré.",
     "Qualité correcte pour le prix."
-
   ],
 
   2: [
-
     "Quelques problèmes mais le produit fonctionne.",
     "Pas totalement convaincu.",
     "Qualité moyenne."
-
   ],
 
   1: [
-
     "Produit qui ne correspond pas totalement à mes attentes.",
     "Quelques problèmes rencontrés."
-
   ]
 
 };
 
-
-/*
-   Le nombre d'avis est généré une seule fois par produit
-   puis conservé dans localStorage.
-
-   Plage :
-   134 à 1781 avis
-*/
 
 function getSavedReviewCounts() {
 
@@ -861,11 +1684,14 @@ function getReviewCount(
 
 
   if (
-    typeof counts[product.id] !==
-    "number"
+    typeof counts[
+      product.id
+    ] !== "number"
   ) {
 
-    counts[product.id] =
+    counts[
+      product.id
+    ] =
       randomInt(
         134,
         1781
@@ -909,31 +1735,20 @@ function generateReviews(
     let rating;
 
 
-    if (roll < 0.72) {
-
+    if (roll < .72)
       rating = 5;
 
-    }
-    else if (roll < 0.90) {
-
+    else if (roll < .90)
       rating = 4;
 
-    }
-    else if (roll < 0.97) {
-
+    else if (roll < .97)
       rating = 3;
 
-    }
-    else if (roll < 0.99) {
-
+    else if (roll < .99)
       rating = 2;
 
-    }
-    else {
-
+    else
       rating = 1;
-
-    }
 
 
     const first =
@@ -954,14 +1769,6 @@ function generateReviews(
       );
 
 
-    const date =
-      new Date(
-        Date.now() -
-        daysAgo *
-        86400000
-      );
-
-
     reviews.push({
 
       id:
@@ -977,7 +1784,12 @@ function generateReviews(
           reviewTexts[rating]
         ),
 
-      date
+      date:
+        new Date(
+          Date.now() -
+          daysAgo *
+          86400000
+        )
 
     });
 
@@ -1057,16 +1869,13 @@ function getReviewStats(
 function renderCategories() {
 
   const categories = [
-
     "Tous",
-
     ...new Set(
       products.map(
         product =>
           product.category
       )
     )
-
   ];
 
 
@@ -1425,11 +2234,13 @@ function renderProducts() {
 
         button.addEventListener(
           "click",
-          () => {
+          event => {
 
             addToCart(
               button.dataset
-                .addCart
+                .addCart,
+              button,
+              event
             );
 
           }
@@ -1442,7 +2253,231 @@ function renderProducts() {
 
 
 /* =========================================================
-   AVIS PRODUIT
+   AJOUT PANIER AVEC GROSSE ANIMATION
+========================================================= */
+
+function addToCart(
+  productId,
+  button,
+  event
+) {
+
+  const product =
+    products.find(
+      p =>
+        p.id ===
+        productId
+    );
+
+
+  if (!product) return;
+
+
+  if (
+    product.price === null ||
+    product.price === undefined
+  ) {
+
+    showToast(
+      "Prix non renseigné pour ce produit."
+    );
+
+    return;
+
+  }
+
+
+  const existing =
+    cart.find(
+      item =>
+        item.productId ===
+        productId
+    );
+
+
+  if (existing) {
+
+    existing.quantity++;
+
+  }
+  else {
+
+    cart.push({
+
+      productId,
+
+      quantity: 1
+
+    });
+
+  }
+
+
+  saveCart();
+
+
+  /* =========================
+     BOUTON
+  ========================= */
+
+  if (button) {
+
+    button.classList.remove(
+      "clicked"
+    );
+
+    void button.offsetWidth;
+
+    button.classList.add(
+      "clicked"
+    );
+
+  }
+
+
+  /* =========================
+     CARTE
+  ========================= */
+
+  const card =
+    button?.closest(
+      ".product-card"
+    );
+
+
+  if (card) {
+
+    card.classList.remove(
+      "nova-added"
+    );
+
+    void card.offsetWidth;
+
+    card.classList.add(
+      "nova-added"
+    );
+
+  }
+
+
+  /* =========================
+     POSITION PARTICULES
+  ========================= */
+
+  const rect =
+    button?.getBoundingClientRect();
+
+
+  if (rect) {
+
+    const x =
+      rect.left +
+      rect.width / 2;
+
+    const y =
+      rect.top +
+      rect.height / 2;
+
+
+    createParticles(
+      x,
+      y,
+      18
+    );
+
+    createRing(
+      x,
+      y
+    );
+
+  }
+
+
+  /* =========================
+     PRODUIT VERS PANIER
+  ========================= */
+
+  flyProductToCart(
+    product,
+    button
+  );
+
+
+  /* =========================
+     FLASH
+  ========================= */
+
+  const flash =
+    document.createElement(
+      "div"
+    );
+
+  flash.className =
+    "nova-screen-flash";
+
+  document.body.appendChild(
+    flash
+  );
+
+  setTimeout(
+    () =>
+      flash.remove(),
+    500
+  );
+
+
+  /* =========================
+     PANIER
+  ========================= */
+
+  setTimeout(
+    () => {
+
+      const cartButtons = [
+        document.getElementById(
+          "cartBtn"
+        ),
+        document.getElementById(
+          "bottomCartBtn"
+        )
+      ].filter(Boolean);
+
+
+      cartButtons.forEach(
+        cartButton => {
+
+          cartButton.classList.remove(
+            "nova-cart-shake",
+            "nova-cart-glow"
+          );
+
+          void cartButton.offsetWidth;
+
+          cartButton.classList.add(
+            "nova-cart-shake",
+            "nova-cart-glow"
+          );
+
+        }
+      );
+
+
+      updateCartCount();
+
+    },
+    420
+  );
+
+
+  showToast(
+    `🛒 ${product.name} ajouté au panier !`
+  );
+
+}
+
+
+/* =========================================================
+   REVIEWS MODAL
 ========================================================= */
 
 function showReviews(
@@ -1484,18 +2519,12 @@ function showReviews(
     );
 
 
-  if (!title || !content) return;
+  if (!title || !content)
+    return;
 
 
   title.textContent =
     `💬 Avis • ${product.name}`;
-
-
-  const firstReviews =
-    reviews.slice(
-      0,
-      80
-    );
 
 
   content.innerHTML = `
@@ -1553,7 +2582,8 @@ function showReviews(
     </div>
 
 
-    ${firstReviews
+    ${reviews
+      .slice(0, 80)
       .map(
         review => `
 
@@ -1566,11 +2596,9 @@ function showReviews(
             >
 
               <strong>
-
                 ${escapeHtml(
                   review.name
                 )}
-
               </strong>
 
 
@@ -1625,8 +2653,7 @@ function showReviews(
 
       ${Math.max(
         0,
-        reviews.length -
-        80
+        reviews.length - 80
       ).toLocaleString(
         "fr-FR"
       )}
@@ -1661,89 +2688,62 @@ function saveCart() {
 }
 
 
-function addToCart(
-  productId
-) {
-
-  const product =
-    products.find(
-      p =>
-        p.id ===
-        productId
-    );
-
-
-  if (!product) return;
-
-
-  if (
-    product.price === null ||
-    product.price === undefined
-  ) {
-
-    showToast(
-      "Prix non renseigné pour ce produit."
-    );
-
-    return;
-
-  }
-
-
-  const existing =
-    cart.find(
-      item =>
-        item.productId ===
-        productId
-    );
-
-
-  if (existing) {
-
-    existing.quantity++;
-
-  }
-  else {
-
-    cart.push({
-
-      productId,
-
-      quantity: 1
-
-    });
-
-  }
-
-
-  saveCart();
-
-  updateCartCount();
-
-  showToast(
-    "Produit ajouté au panier 🛒"
-  );
-
-}
-
-
 function removeFromCart(
   productId
 ) {
 
-  cart =
-    cart.filter(
-      item =>
-        item.productId !==
-        productId
+  const element =
+    document.querySelector(
+      `[data-cart-item="${productId}"]`
     );
 
 
-  saveCart();
+  if (element) {
 
-  updateCartCount();
+    element.animate(
+      [
+        {
+          opacity: 1,
+          transform:
+            "translateX(0) scale(1)"
+        },
 
-  renderCart();
+        {
+          opacity: 0,
+          transform:
+            "translateX(80px) scale(.8)"
+        }
+      ],
+      {
+        duration: 280,
+        easing:
+          "ease-in"
+      }
+    );
+
+  }
+
+
+  setTimeout(
+    () => {
+
+      cart =
+        cart.filter(
+          item =>
+            item.productId !==
+            productId
+        );
+
+
+      saveCart();
+
+      updateCartCount();
+
+      renderCart();
+
+    },
+    element ? 250 : 0
+  );
 
 }
 
@@ -1769,8 +2769,7 @@ function changeQuantity(
 
 
   if (
-    item.quantity <=
-    0
+    item.quantity <= 0
   ) {
 
     removeFromCart(
@@ -1793,13 +2792,14 @@ function changeQuantity(
 
 function updateCartCount() {
 
-  const element =
+  const elements = [
     document.getElementById(
       "cartCount"
-    );
-
-
-  if (!element) return;
+    ),
+    document.getElementById(
+      "bottomCartCount"
+    )
+  ].filter(Boolean);
 
 
   const count =
@@ -1814,8 +2814,24 @@ function updateCartCount() {
     );
 
 
-  element.textContent =
-    count;
+  elements.forEach(
+    element => {
+
+      element.textContent =
+        count;
+
+      element.classList.remove(
+        "nova-count-pop"
+      );
+
+      void element.offsetWidth;
+
+      element.classList.add(
+        "nova-count-pop"
+      );
+
+    }
+  );
 
 }
 
@@ -1853,6 +2869,10 @@ function getCartTotal() {
 }
 
 
+/* =========================================================
+   RENDER CART
+========================================================= */
+
 function renderCart() {
 
   const container =
@@ -1868,9 +2888,37 @@ function renderCart() {
 
     container.innerHTML = `
 
-      <div class="empty">
+      <div
+        class="empty"
+        style="
+          animation:novaCartItemIn .45s ease;
+        "
+      >
 
-        Ton panier est vide.
+        🛒
+
+        <div
+          style="
+            font-size:20px;
+            font-weight:800;
+            margin-top:10px;
+          "
+        >
+
+          Ton panier est vide
+
+        </div>
+
+        <div
+          style="
+            color:#71809a;
+            margin-top:5px;
+          "
+        >
+
+          Ajoute des produits pour commencer.
+
+        </div>
 
       </div>
 
@@ -1885,7 +2933,7 @@ function renderCart() {
 
     ${cart
       .map(
-        item => {
+        (item, index) => {
 
           const product =
             products.find(
@@ -1903,6 +2951,10 @@ function renderCart() {
 
             <div
               class="cart-item"
+              data-cart-item="${product.id}"
+              style="
+                animation-delay:${index * 70}ms;
+              "
             >
 
               <img
@@ -1954,7 +3006,9 @@ function renderCart() {
               </button>
 
 
-              <strong>
+              <strong
+                class="cart-quantity"
+              >
                 ${item.quantity}
               </strong>
 
@@ -1987,10 +3041,15 @@ function renderCart() {
       class="cart-total"
     >
 
-      Total :
-      ${money(
-        getCartTotal()
-      )}
+      <span>
+        Total
+      </span>
+
+      <strong>
+        ${money(
+          getCartTotal()
+        )}
+      </strong>
 
     </div>
 
@@ -2000,7 +3059,10 @@ function renderCart() {
       id="checkoutBtn"
       style="
         width:100%;
-        margin-top:15px
+        margin-top:15px;
+        min-height:50px;
+        font-size:15px;
+        font-weight:900;
       "
     >
 
@@ -2044,8 +3106,7 @@ function renderCart() {
           () => {
 
             changeQuantity(
-              button.dataset
-                .minus,
+              button.dataset.minus,
               -1
             );
 
@@ -2066,8 +3127,7 @@ function renderCart() {
           () => {
 
             changeQuantity(
-              button.dataset
-                .plus,
+              button.dataset.plus,
               1
             );
 
@@ -2088,8 +3148,7 @@ function renderCart() {
           () => {
 
             removeFromCart(
-              button.dataset
-                .remove
+              button.dataset.remove
             );
 
           };
@@ -2558,12 +3617,9 @@ document
               credential.user.uid
             ),
             {
-
               email,
-
               createdAt:
                 serverTimestamp()
-
             }
           );
 
@@ -2615,7 +3671,7 @@ document
 
 
 /* =========================================================
-   COMMANDES
+   CHECKOUT
 ========================================================= */
 
 document
@@ -2835,7 +3891,7 @@ document
 
 
 /* =========================================================
-   COMMANDES UTILISATEUR
+   COMMANDES
 ========================================================= */
 
 async function loadOrders() {
@@ -2968,6 +4024,9 @@ async function loadOrders() {
 
               <div
                 class="order"
+                style="
+                  animation:novaCartItemIn .45s ease both;
+                "
               >
 
                 <strong>
@@ -3227,21 +4286,51 @@ document
   );
 
 
+function openCartWithAnimation() {
+
+  const cartButtons = [
+    document.getElementById(
+      "cartBtn"
+    ),
+    document.getElementById(
+      "bottomCartBtn"
+    )
+  ].filter(Boolean);
+
+
+  cartButtons.forEach(
+    button => {
+
+      button.classList.remove(
+        "nova-cart-shake"
+      );
+
+      void button.offsetWidth;
+
+      button.classList.add(
+        "nova-cart-shake"
+      );
+
+    }
+  );
+
+
+  renderCart();
+
+  openModal(
+    "cartModal"
+  );
+
+}
+
+
 document
   .getElementById(
     "cartBtn"
   )
   ?.addEventListener(
     "click",
-    () => {
-
-      openModal(
-        "cartModal"
-      );
-
-      renderCart();
-
-    }
+    openCartWithAnimation
   );
 
 
@@ -3251,15 +4340,7 @@ document
   )
   ?.addEventListener(
     "click",
-    () => {
-
-      openModal(
-        "cartModal"
-      );
-
-      renderCart();
-
-    }
+    openCartWithAnimation
   );
 
 
@@ -3350,6 +4431,73 @@ document
 
 
 /* =========================================================
+   RIPPLE SUR BOUTONS
+========================================================= */
+
+document.addEventListener(
+  "click",
+  event => {
+
+    const button =
+      event.target.closest(
+        ".btn"
+      );
+
+
+    if (!button)
+      return;
+
+
+    const rect =
+      button.getBoundingClientRect();
+
+
+    const ripple =
+      document.createElement(
+        "span"
+      );
+
+
+    ripple.className =
+      "nova-ripple";
+
+
+    ripple.style.left =
+      `${event.clientX - rect.left}px`;
+
+    ripple.style.top =
+      `${event.clientY - rect.top}px`;
+
+
+    if (
+      getComputedStyle(
+        button
+      ).position ===
+      "static"
+    ) {
+
+      button.style.position =
+        "relative";
+
+    }
+
+
+    button.appendChild(
+      ripple
+    );
+
+
+    setTimeout(
+      () =>
+        ripple.remove(),
+      700
+    );
+
+  }
+);
+
+
+/* =========================================================
    AUTH STATE
 ========================================================= */
 
@@ -3367,7 +4515,7 @@ onAuthStateChanged(
 
 
 /* =========================================================
-   INITIALISATION
+   INIT
 ========================================================= */
 
 renderCategories();
@@ -3384,8 +4532,8 @@ renderAccount();
 ========================================================= */
 
 console.log(
-  "%c NovaShop chargé 🛒 ",
-  "font-weight:bold;font-size:16px"
+  "%c NovaShop Premium UI ✨ ",
+  "font-weight:bold;font-size:18px;color:#4da3ff"
 );
 
 console.log(
@@ -3394,13 +4542,13 @@ console.log(
 );
 
 console.log(
-  "Avis : 134 à 1781 par produit"
+  "Animations panier : ACTIVÉES"
 );
 
 console.log(
-  "Limite produits par catégorie : AUCUNE"
+  "Produits illimités : ACTIVÉS"
 );
 
 console.log(
-  "Système Questions : SUPPRIMÉ"
+  "Questions : SUPPRIMÉ"
 );
