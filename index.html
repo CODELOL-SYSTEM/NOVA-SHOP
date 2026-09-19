@@ -7020,2450 +7020,5976 @@ window.openOrders=function(){
 /* =========================================================
    PARTIE 5 JS
 ========================================================= */
+/* =========================================================
+   PARTIE 5 JS
+   COMMANDES + AVIS + FIREBASE + PROFIL + HISTORIQUE
+========================================================= */
+
+<script type="module">
+
+/* =========================================================
+   FIREBASE
+========================================================= */
+
+import {
+  getApp,
+  getApps
+} from "https://www.gstatic.com/firebasejs/12.2.1/firebase-app.js";
+
+import {
+  getAuth,
+  onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/12.2.1/firebase-auth.js";
+
+import {
+  getFirestore,
+  collection,
+  addDoc,
+  getDocs,
+  query,
+  where,
+  orderBy,
+  serverTimestamp
+} from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
 
 
 /* =========================================================
-   FAVORIS BADGE
+   INITIALISATION FIREBASE
 ========================================================= */
 
-function updateFavoriteBadge(){
+let novaApp = null;
+let novaAuth = null;
+let novaDb = null;
 
-    let badge=
-        document.getElementById(
-            "favoriteBadge"
-        );
+try {
+
+  if(getApps().length){
+    novaApp = getApp();
+  }
+
+  if(novaApp){
+
+    novaAuth = getAuth(novaApp);
+    novaDb = getFirestore(novaApp);
+
+    window.novaFirebaseApp = novaApp;
+    window.novaFirebaseAuth = novaAuth;
+    window.novaFirebaseDb = novaDb;
+
+  }
+
+}catch(error){
+
+  console.warn(
+    "Firebase NovaShop non disponible :",
+    error
+  );
+
+}
 
 
-    if(!badge){
+/* =========================================================
+   UTILITAIRES
+========================================================= */
 
-        const favoriteButton=
-            document.querySelector(
-                '[onclick="showFavorites()"]'
-            );
+function novaEscape(value){
 
+  return String(value ?? "")
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
 
-        if(favoriteButton){
-
-            favoriteButton.style.position=
-                "relative";
-
-
-            badge=
-                document.createElement("span");
+}
 
 
-            badge.id="favoriteBadge";
+function novaMoney(value){
 
-            badge.className=
-                "favorite-count-badge";
+  const number = Number(value) || 0;
 
-
-            favoriteButton.appendChild(badge);
-
-        }
-
+  return number.toLocaleString(
+    "fr-FR",
+    {
+      style:"currency",
+      currency:"EUR"
     }
+  );
+
+}
 
 
-    if(!badge){
-        return;
-    }
+function novaDate(value){
 
+  try{
 
-    if(favorites.length>0){
+    let date;
 
-        badge.textContent=
-            favorites.length;
+    if(
+      value &&
+      typeof value.toDate === "function"
+    ){
 
-        badge.classList.add("active");
+      date = value.toDate();
 
     }else{
 
-        badge.classList.remove("active");
+      date = new Date(value);
 
     }
+
+    if(isNaN(date.getTime())){
+
+      return "Date inconnue";
+
+    }
+
+    return date.toLocaleDateString(
+      "fr-FR",
+      {
+        day:"2-digit",
+        month:"2-digit",
+        year:"numeric"
+      }
+    );
+
+  }catch{
+
+    return "Date inconnue";
+
+  }
 
 }
 
 
 /* =========================================================
-   FAVORIS
+   COMMANDES LOCALSTORAGE
 ========================================================= */
 
-window.showFavorites=function(){
+if(!Array.isArray(window.orders)){
 
-    renderFavorites();
+  try{
 
+    window.orders =
+      JSON.parse(
+        localStorage.getItem("novaOrders") || "[]"
+      );
 
-    document
-        .getElementById("favoritesOverlay")
-        .classList.add("active");
+  }catch{
 
+    window.orders = [];
 
-    document.body.style.overflow="hidden";
+  }
 
-};
-
-
-window.closeFavorites=function(){
-
-    document
-        .getElementById("favoritesOverlay")
-        .classList.remove("active");
+}
 
 
-    document.body.style.overflow="";
+window.saveOrders = function(){
 
-};
+  try{
 
+    localStorage.setItem(
+      "novaOrders",
+      JSON.stringify(window.orders)
+    );
 
-window.closeFavoritesOutside=function(event){
+  }catch(error){
 
-    if(event.target.id==="favoritesOverlay"){
+    console.warn(
+      "Impossible de sauvegarder les commandes",
+      error
+    );
 
-        closeFavorites();
-
-    }
+  }
 
 };
 
 
 /* =========================================================
-   RENDU FAVORIS
+   TOTAL PANIER
 ========================================================= */
 
-function renderFavorites(){
+window.getNovaCartTotal = function(){
 
-    const grid=
-        document.getElementById(
-            "favoriteGrid"
-        );
+  if(!Array.isArray(window.cart)){
 
+    return 0;
 
-    const count=
-        document.getElementById(
-            "favoriteCountText"
-        );
+  }
 
+  let total = 0;
 
-    const favoriteProducts=
-        favorites
-        .map(id=>
-            products.find(
-                p=>p.id===id
-            )
-        )
-        .filter(Boolean);
+  window.cart.forEach(item => {
 
+    const product =
+      window.products?.find(
+        p => Number(p.id) === Number(item.id)
+      );
 
-    count.textContent=
-        `${favoriteProducts.length} produit${
-            favoriteProducts.length>1
-            ?"s":""
-        }`;
+    if(!product){
 
-
-    grid.innerHTML="";
-
-
-    if(favoriteProducts.length===0){
-
-        grid.innerHTML=`
-
-            <div class="favorite-empty">
-
-                <div class="favorite-empty-icon">
-                    ❤️
-                </div>
-
-                <h3>
-                    Aucun favori
-                </h3>
-
-                <p style="margin-top:6px;font-size:10px;">
-                    Ajoute des produits avec le bouton cœur.
-                </p>
-
-            </div>
-
-        `;
-
-        return;
+      return;
 
     }
 
+    const quantity =
+      Math.max(
+        1,
+        Number(item.quantity) || 1
+      );
 
-    favoriteProducts.forEach(product=>{
+    total +=
+      Number(product.price || 0) *
+      quantity;
 
-        const card=
-            document.createElement("div");
+  });
 
+  return total;
 
-        card.className=
-            "favorite-mini-card";
-
-
-        card.innerHTML=`
-
-            <img
-                src="${escapeHTML(product.image)}"
-                alt="${escapeHTML(product.name)}"
-                onerror="this.src='https://placehold.co/600x600/111827/ffffff?text=NovaShop'"
-            >
-
-            <div class="favorite-mini-info">
-
-                <div class="favorite-mini-name">
-                    ${escapeHTML(product.name)}
-                </div>
-
-                <div class="favorite-mini-price">
-                    GRATUIT
-                </div>
-
-                <div class="favorite-mini-actions">
-
-                    <button
-                        class="favorite-view"
-                        onclick="openProduct(${product.id});"
-                    >
-                        Voir
-                    </button>
-
-                    <button
-                        class="favorite-remove"
-                        onclick="removeFavoriteFromPage(${product.id})"
-                    >
-                        Retirer
-                    </button>
-
-                </div>
-
-            </div>
-
-        `;
+};
 
 
-        grid.appendChild(card);
+/* =========================================================
+   NOMBRE ARTICLES
+========================================================= */
+
+window.getNovaCartCount = function(){
+
+  if(!Array.isArray(window.cart)){
+
+    return 0;
+
+  }
+
+  return window.cart.reduce(
+    (total,item) =>
+      total +
+      Math.max(
+        1,
+        Number(item.quantity) || 1
+      ),
+    0
+  );
+
+};
+
+
+/* =========================================================
+   SYNCHRONISATION PANIER
+========================================================= */
+
+window.refreshNovaCartUI = function(){
+
+  const total =
+    window.getNovaCartTotal();
+
+  const count =
+    window.getNovaCartCount();
+
+
+  document
+    .querySelectorAll(
+      ".cart-total strong," +
+      ".cart-summary-total strong," +
+      "#cartTotal," +
+      "#cartSummaryTotal"
+    )
+    .forEach(element => {
+
+      element.textContent =
+        novaMoney(total);
 
     });
 
-}
 
+  document
+    .querySelectorAll(
+      ".cart-count," +
+      "#cartCount"
+    )
+    .forEach(element => {
 
-window.removeFavoriteFromPage=function(id){
+      element.textContent =
+        count;
 
-    favorites=
-        favorites.filter(
-            favoriteId=>favoriteId!==id
-        );
-
-
-    saveFavorites();
-
-    updateCounters();
-
-    updateFavoriteBadge();
-
-    renderFavorites();
-
-    renderProducts();
-
-    showToast(
-        "Retiré des favoris ❤️"
-    );
-
-};
-
-
-window.clearAllFavorites=function(){
-
-    if(favorites.length===0){
-
-        showToast(
-            "Aucun favori à retirer."
-        );
-
-        return;
-    }
-
-
-    favorites=[];
-
-    saveFavorites();
-
-    updateCounters();
-
-    updateFavoriteBadge();
-
-    renderFavorites();
-
-    renderProducts();
-
-
-    showToast(
-        "Tous les favoris ont été retirés."
-    );
+    });
 
 };
 
 
 /* =========================================================
-   SYSTÈME D'AVIS
+   CRÉATION ID COMMANDE
 ========================================================= */
 
-let novaReviews=
-    JSON.parse(
-        localStorage.getItem(
-            "novaReviews"
-        ) || "{}"
-    );
+function createOrderNumber(){
 
+  const now =
+    Date.now()
+      .toString(36)
+      .toUpperCase();
 
-function saveReviews(){
+  const random =
+    Math.random()
+      .toString(36)
+      .substring(2,7)
+      .toUpperCase();
 
-    localStorage.setItem(
-        "novaReviews",
-        JSON.stringify(novaReviews)
-    );
+  return `NOVA-${now}-${random}`;
 
 }
+
+
+/* =========================================================
+   RÉCUPÉRATION PRODUITS PANIER
+========================================================= */
+
+window.getNovaCartProducts = function(){
+
+  if(!Array.isArray(window.cart)){
+
+    return [];
+
+  }
+
+  return window.cart
+    .map(item => {
+
+      const product =
+        window.products?.find(
+          p => Number(p.id) === Number(item.id)
+        );
+
+      if(!product){
+
+        return null;
+
+      }
+
+      const quantity =
+        Math.max(
+          1,
+          Number(item.quantity) || 1
+        );
+
+      return {
+
+        id:product.id,
+
+        name:product.name,
+
+        price:Number(product.price || 0),
+
+        quantity,
+
+        image:product.image || "",
+
+        category:product.category || "",
+
+        subtotal:
+          Number(product.price || 0) *
+          quantity
+
+      };
+
+    })
+    .filter(Boolean);
+
+};
+
+
+/* =========================================================
+   RÉCUPÉRATION INFORMATIONS CLIENT
+========================================================= */
+
+window.getCheckoutData = function(){
+
+  const findValue = (...selectors) => {
+
+    for(const selector of selectors){
+
+      const element =
+        document.querySelector(selector);
+
+      if(element){
+
+        return element.value?.trim() || "";
+
+      }
+
+    }
+
+    return "";
+
+  };
+
+
+  return {
+
+    firstName:findValue(
+      "#checkoutFirstName",
+      "#firstName",
+      '[name="firstName"]'
+    ),
+
+    lastName:findValue(
+      "#checkoutLastName",
+      "#lastName",
+      '[name="lastName"]'
+    ),
+
+    email:findValue(
+      "#checkoutEmail",
+      "#email",
+      '[name="email"]'
+    ),
+
+    phone:findValue(
+      "#checkoutPhone",
+      "#phone",
+      '[name="phone"]'
+    ),
+
+    address:findValue(
+      "#checkoutAddress",
+      "#address",
+      '[name="address"]'
+    ),
+
+    city:findValue(
+      "#checkoutCity",
+      "#city",
+      '[name="city"]'
+    ),
+
+    postalCode:findValue(
+      "#checkoutPostalCode",
+      "#postalCode",
+      "#zip",
+      '[name="postalCode"]'
+    ),
+
+    country:findValue(
+      "#checkoutCountry",
+      "#country",
+      '[name="country"]'
+    ) || "France",
+
+    note:findValue(
+      "#checkoutNote",
+      "#note",
+      '[name="note"]'
+    )
+
+  };
+
+};
+
+
+/* =========================================================
+   VALIDATION COMMANDE
+========================================================= */
+
+window.validateCheckout = function(data){
+
+  const required = [
+
+    ["Prénom",data.firstName],
+
+    ["Nom",data.lastName],
+
+    ["Email",data.email],
+
+    ["Adresse",data.address],
+
+    ["Ville",data.city],
+
+    ["Code postal",data.postalCode],
+
+    ["Pays",data.country]
+
+  ];
+
+
+  for(const [name,value] of required){
+
+    if(!value){
+
+      if(typeof window.showToast === "function"){
+
+        window.showToast(
+          `${name} obligatoire ❗`
+        );
+
+      }else{
+
+        alert(
+          `${name} obligatoire`
+        );
+
+      }
+
+      return false;
+
+    }
+
+  }
+
+
+  if(
+    !data.email.includes("@") ||
+    !data.email.includes(".")
+  ){
+
+    if(typeof window.showToast === "function"){
+
+      window.showToast(
+        "Adresse email invalide ❗"
+      );
+
+    }
+
+    return false;
+
+  }
+
+
+  if(
+    data.postalCode.length < 4
+  ){
+
+    if(typeof window.showToast === "function"){
+
+      window.showToast(
+        "Code postal invalide ❗"
+      );
+
+    }
+
+    return false;
+
+  }
+
+
+  return true;
+
+};
+
+
+/* =========================================================
+   PRÉREMPLIR CHECKOUT
+========================================================= */
+
+window.prefillCheckoutUser = function(){
+
+  const user =
+    window.novaFirebaseUser;
+
+  if(!user){
+
+    return;
+
+  }
+
+
+  const email =
+    user.email || "";
+
+
+  const emailInput =
+    document.querySelector(
+      "#checkoutEmail"
+    );
+
+  if(
+    emailInput &&
+    !emailInput.value
+  ){
+
+    emailInput.value =
+      email;
+
+  }
+
+
+  if(user.displayName){
+
+    const parts =
+      user.displayName
+        .trim()
+        .split(/\s+/);
+
+    const first =
+      document.querySelector(
+        "#checkoutFirstName"
+      );
+
+    const last =
+      document.querySelector(
+        "#checkoutLastName"
+      );
+
+
+    if(
+      first &&
+      !first.value
+    ){
+
+      first.value =
+        parts.shift() || "";
+
+    }
+
+
+    if(
+      last &&
+      !last.value
+    ){
+
+      last.value =
+        parts.join(" ");
+
+    }
+
+  }
+
+};
+
+
+/* =========================================================
+   RENDU RÉSUMÉ CHECKOUT
+========================================================= */
+
+window.renderCheckoutSummary = function(){
+
+  const container =
+    document.querySelector(
+      "#checkoutSummaryItems"
+    );
+
+  if(!container){
+
+    return;
+
+  }
+
+
+  const products =
+    window.getNovaCartProducts();
+
+
+  if(!products.length){
+
+    container.innerHTML = `
+      <div class="empty-checkout">
+        🛒 Ton panier est vide.
+      </div>
+    `;
+
+    return;
+
+  }
+
+
+  let html = "";
+
+
+  products.forEach(product => {
+
+    html += `
+
+      <div class="checkout-product">
+
+        <img
+          src="${novaEscape(product.image)}"
+          alt=""
+          onerror="this.style.display='none'"
+        >
+
+        <div class="checkout-product-info">
+
+          <strong>
+            ${novaEscape(product.name)}
+          </strong>
+
+          <span>
+            Quantité : ${product.quantity}
+          </span>
+
+        </div>
+
+        <b>
+          ${novaMoney(product.subtotal)}
+        </b>
+
+      </div>
+
+    `;
+
+  });
+
+
+  container.innerHTML =
+    html;
+
+
+  const total =
+    window.getNovaCartTotal();
+
+
+  document
+    .querySelectorAll(
+      "#checkoutTotal," +
+      ".checkout-total strong," +
+      "#checkoutSummaryTotal"
+    )
+    .forEach(element => {
+
+      element.textContent =
+        novaMoney(total);
+
+    });
+
+};
+
+
+/* =========================================================
+   OUVERTURE CHECKOUT
+========================================================= */
+
+window.startCheckout = function(){
+
+  const products =
+    window.getNovaCartProducts();
+
+
+  if(!products.length){
+
+    if(typeof window.showToast === "function"){
+
+      window.showToast(
+        "Ton panier est vide 🛒"
+      );
+
+    }else{
+
+      alert(
+        "Ton panier est vide."
+      );
+
+    }
+
+    return;
+
+  }
+
+
+  window.prefillCheckoutUser();
+
+  window.renderCheckoutSummary();
+
+
+  const overlay =
+    document.querySelector(
+      "#checkoutOverlay"
+    );
+
+
+  if(overlay){
+
+    overlay.classList.add(
+      "active"
+    );
+
+    document.body.classList.add(
+      "modal-open"
+    );
+
+  }
+
+};
+
+
+/* =========================================================
+   FERMETURE CHECKOUT
+========================================================= */
+
+window.closeCheckout = function(){
+
+  const overlay =
+    document.querySelector(
+      "#checkoutOverlay"
+    );
+
+
+  if(overlay){
+
+    overlay.classList.remove(
+      "active"
+    );
+
+  }
+
+
+  document.body.classList.remove(
+    "modal-open"
+  );
+
+};
+
+
+/* =========================================================
+   CRÉATION COMMANDE
+========================================================= */
+
+window.confirmOrder = async function(){
+
+  const button =
+    document.querySelector(
+      "#confirmOrderButton"
+    );
+
+
+  const data =
+    window.getCheckoutData();
+
+
+  if(
+    !window.validateCheckout(data)
+  ){
+
+    return;
+
+  }
+
+
+  const cartProducts =
+    window.getNovaCartProducts();
+
+
+  if(!cartProducts.length){
+
+    if(typeof window.showToast === "function"){
+
+      window.showToast(
+        "Le panier est vide 🛒"
+      );
+
+    }
+
+    return;
+
+  }
+
+
+  const total =
+    window.getNovaCartTotal();
+
+
+  const orderNumber =
+    createOrderNumber();
+
+
+  const currentUser =
+    window.novaFirebaseUser ||
+    null;
+
+
+  const order = {
+
+    id:orderNumber,
+
+    orderNumber,
+
+    userId:
+      currentUser?.uid || null,
+
+    customer:{
+
+      firstName:data.firstName,
+
+      lastName:data.lastName,
+
+      email:data.email,
+
+      phone:data.phone
+
+    },
+
+    shipping:{
+
+      address:data.address,
+
+      city:data.city,
+
+      postalCode:data.postalCode,
+
+      country:data.country,
+
+      note:data.note
+
+    },
+
+    items:cartProducts,
+
+    total,
+
+    currency:"EUR",
+
+    status:"Confirmée",
+
+    createdAt:
+      new Date().toISOString()
+
+  };
+
+
+  if(button){
+
+    button.disabled =
+      true;
+
+    button.dataset.oldText =
+      button.textContent;
+
+    button.textContent =
+      "Création de la commande...";
+
+  }
+
+
+  try{
+
+    /*
+       LOCALSTORAGE
+    */
+
+    window.orders.unshift(
+      order
+    );
+
+
+    window.saveOrders();
+
+
+    /*
+       FIRESTORE
+    */
+
+    if(
+      currentUser &&
+      window.novaFirebaseDb
+    ){
+
+      try{
+
+        await addDoc(
+          collection(
+            window.novaFirebaseDb,
+            "orders"
+          ),
+          {
+
+            ...order,
+
+            createdAt:
+              serverTimestamp()
+
+          }
+        );
+
+      }catch(firebaseError){
+
+        console.warn(
+          "Erreur Firestore :",
+          firebaseError
+        );
+
+      }
+
+    }
+
+
+    /*
+       VIDER PANIER
+    */
+
+    window.cart = [];
+
+    try{
+
+      localStorage.setItem(
+        "novaCart",
+        JSON.stringify([])
+      );
+
+    }catch{}
+
+
+    window.refreshNovaCartUI();
+
+
+    /*
+       FERMER CHECKOUT
+    */
+
+    window.closeCheckout();
+
+
+    /*
+       AFFICHER SUCCÈS
+    */
+
+    const success =
+      document.querySelector(
+        "#orderSuccess"
+      );
+
+
+    if(success){
+
+      success.classList.add(
+        "active"
+      );
+
+    }
+
+
+    const numberElement =
+      document.querySelector(
+        "#successOrderNumber"
+      );
+
+
+    if(numberElement){
+
+      numberElement.textContent =
+        orderNumber;
+
+    }
+
+
+    /*
+       FERMER PANIER SI OUVERT
+    */
+
+    document
+      .querySelectorAll(
+        "#cartOverlay.active"
+      )
+      .forEach(element => {
+
+        element.classList.remove(
+          "active"
+        );
+
+      });
+
+
+    if(typeof window.showToast === "function"){
+
+      window.showToast(
+        "Commande confirmée 🎉"
+      );
+
+    }
+
+
+    /*
+       RAFRAÎCHIR HISTORIQUE
+    */
+
+    if(
+      typeof window.renderOrders ===
+      "function"
+    ){
+
+      window.renderOrders();
+
+    }
+
+  }catch(error){
+
+    console.error(
+      error
+    );
+
+
+    if(typeof window.showToast === "function"){
+
+      window.showToast(
+        "Erreur pendant la commande ❌"
+      );
+
+    }
+
+  }finally{
+
+    if(button){
+
+      button.disabled =
+        false;
+
+      button.textContent =
+        button.dataset.oldText ||
+        "Confirmer la commande";
+
+    }
+
+  }
+
+};
+
+
+/* =========================================================
+   SUCCÈS COMMANDE
+========================================================= */
+
+window.closeOrderSuccess = function(){
+
+  const success =
+    document.querySelector(
+      "#orderSuccess"
+    );
+
+
+  if(success){
+
+    success.classList.remove(
+      "active"
+    );
+
+  }
+
+};
+
+
+window.openOrdersAfterSuccess = function(){
+
+  window.closeOrderSuccess();
+
+
+  if(
+    typeof window.openOrders ===
+    "function"
+  ){
+
+    window.openOrders();
+
+  }
+
+};
+
+
+/* =========================================================
+   HISTORIQUE COMMANDES
+========================================================= */
+
+window.renderOrders = async function(){
+
+  const container =
+    document.querySelector(
+      "#ordersList"
+    );
+
+
+  if(!container){
+
+    return;
+
+  }
+
+
+  let localOrders =
+    Array.isArray(window.orders)
+      ? [...window.orders]
+      : [];
+
+
+  const user =
+    window.novaFirebaseUser;
+
+
+  /*
+     FIRESTORE
+  */
+
+  if(
+    user &&
+    window.novaFirebaseDb
+  ){
+
+    try{
+
+      const ordersQuery =
+        query(
+          collection(
+            window.novaFirebaseDb,
+            "orders"
+          ),
+          where(
+            "userId",
+            "==",
+            user.uid
+          )
+        );
+
+
+      const snapshot =
+        await getDocs(
+          ordersQuery
+        );
+
+
+      const firebaseOrders =
+        snapshot.docs.map(
+          doc => {
+
+            const data =
+              doc.data();
+
+            return {
+
+              ...data,
+
+              firestoreId:
+                doc.id
+
+            };
+
+          }
+        );
+
+
+      const merged =
+        [
+          ...firebaseOrders,
+          ...localOrders
+        ];
+
+
+      const map =
+        new Map();
+
+
+      merged.forEach(order => {
+
+        const key =
+          order.orderNumber ||
+          order.id ||
+          order.firestoreId;
+
+
+        if(key){
+
+          map.set(
+            key,
+            order
+          );
+
+        }
+
+      });
+
+
+      localOrders =
+        [...map.values()];
+
+    }catch(error){
+
+      console.warn(
+        "Impossible de charger les commandes Firebase",
+        error
+      );
+
+    }
+
+  }
+
+
+  localOrders.sort(
+    (a,b) =>
+      new Date(
+        b.createdAt || 0
+      ) -
+      new Date(
+        a.createdAt || 0
+      )
+  );
+
+
+  if(!localOrders.length){
+
+    container.innerHTML = `
+
+      <div class="orders-empty">
+
+        <div class="orders-empty-icon">
+          📦
+        </div>
+
+        <h3>
+          Aucune commande
+        </h3>
+
+        <p>
+          Tes commandes apparaîtront ici.
+        </p>
+
+      </div>
+
+    `;
+
+    return;
+
+  }
+
+
+  let html = "";
+
+
+  localOrders.forEach(order => {
+
+    const items =
+      Array.isArray(order.items)
+        ? order.items
+        : [];
+
+
+    let itemsHTML = "";
+
+
+    items.forEach(item => {
+
+      itemsHTML += `
+
+        <div class="order-item">
+
+          <img
+            src="${novaEscape(item.image || "")}"
+            alt=""
+            onerror="this.style.display='none'"
+          >
+
+          <div>
+
+            <strong>
+              ${novaEscape(item.name)}
+            </strong>
+
+            <span>
+              ×${item.quantity}
+            </span>
+
+          </div>
+
+          <b>
+            ${novaMoney(item.subtotal)}
+          </b>
+
+        </div>
+
+      `;
+
+    });
+
+
+    html += `
+
+      <article class="order-card">
+
+        <div class="order-card-header">
+
+          <div>
+
+            <strong>
+              ${novaEscape(
+                order.orderNumber ||
+                order.id ||
+                "Commande"
+              )}
+            </strong>
+
+            <span>
+              ${novaDate(
+                order.createdAt
+              )}
+            </span>
+
+          </div>
+
+          <span class="order-status">
+            ${novaEscape(
+              order.status ||
+              "Confirmée"
+            )}
+          </span>
+
+        </div>
+
+
+        <div class="order-items">
+
+          ${itemsHTML}
+
+        </div>
+
+
+        <div class="order-card-footer">
+
+          <span>
+            ${items.length}
+            article${items.length > 1 ? "s" : ""}
+          </span>
+
+          <strong>
+            ${novaMoney(
+              Number(order.total || 0)
+            )}
+          </strong>
+
+        </div>
+
+      </article>
+
+    `;
+
+  });
+
+
+  container.innerHTML =
+    html;
+
+};
+
+
+/* =========================================================
+   OUVRIR COMMANDES
+========================================================= */
+
+window.openOrders = async function(){
+
+  const overlay =
+    document.querySelector(
+      "#ordersOverlay"
+    );
+
+
+  if(!overlay){
+
+    return;
+
+  }
+
+
+  overlay.classList.add(
+    "active"
+  );
+
+
+  document.body.classList.add(
+    "modal-open"
+  );
+
+
+  await window.renderOrders();
+
+};
+
+
+window.closeOrders = function(){
+
+  const overlay =
+    document.querySelector(
+      "#ordersOverlay"
+    );
+
+
+  if(overlay){
+
+    overlay.classList.remove(
+      "active"
+    );
+
+  }
+
+
+  document.body.classList.remove(
+    "modal-open"
+  );
+
+};
+
+
+/* =========================================================
+   AVIS PRODUITS
+========================================================= */
+
+window.novaReviews =
+  JSON.parse(
+    localStorage.getItem(
+      "novaReviews"
+    ) || "{}"
+  );
+
+
+window.saveNovaReviews = function(){
+
+  try{
+
+    localStorage.setItem(
+      "novaReviews",
+      JSON.stringify(
+        window.novaReviews
+      )
+    );
+
+  }catch(error){
+
+    console.warn(
+      "Erreur sauvegarde avis",
+      error
+    );
+
+  }
+
+};
 
 
 /* =========================================================
    RÉCUPÉRER AVIS
 ========================================================= */
 
-function getProductReviews(id){
-
-    return novaReviews[id] || [];
-
-}
-
-
-/* =========================================================
-   MOYENNE
-========================================================= */
-
-function getProductRating(id){
-
-    const reviews=
-        getProductReviews(id);
-
-
-    if(reviews.length===0){
-
-        return {
-            average:0,
-            count:0
-        };
-
-    }
-
-
-    const total=
-        reviews.reduce(
-            (sum,review)=>
-                sum+review.rating,
-            0
-        );
-
-
-    return {
-
-        average:
-            total/reviews.length,
-
-        count:
-            reviews.length
-
-    };
-
-}
-
-
-/* =========================================================
-   STARS
-========================================================= */
-
-function createStars(rating){
-
-    const rounded=
-        Math.round(rating);
-
-
-    let result="";
-
-
-    for(let i=1;i<=5;i++){
-
-        result+=
-            i<=rounded
-            ? "★"
-            : "☆";
-
-    }
-
-
-    return result;
-
-}
-
-
-/* =========================================================
-   AJOUT AVIS
-========================================================= */
-
-window.submitProductReview=function(
-    productId
+window.getProductReviews = function(
+  productId
 ){
 
-    const ratingElement=
-        document.querySelector(
-            `input[name="reviewRating-${productId}"]:checked`
-        );
+  const id =
+    String(productId);
 
 
-    const textElement=
-        document.getElementById(
-            `reviewText-${productId}`
-        );
+  if(
+    !Array.isArray(
+      window.novaReviews[id]
+    )
+  ){
+
+    window.novaReviews[id] = [];
+
+  }
 
 
-    if(!ratingElement){
-
-        showToast(
-            "Choisis une note ⭐",
-            "error"
-        );
-
-        return;
-    }
-
-
-    const text=
-        textElement
-        ?.value
-        .trim() || "";
-
-
-    if(text.length<3){
-
-        showToast(
-            "Écris un petit avis.",
-            "error"
-        );
-
-        return;
-
-    }
-
-
-    if(!novaReviews[productId]){
-
-        novaReviews[productId]=[];
-
-    }
-
-
-    const user=
-        window.novaFirebaseUser;
-
-
-    novaReviews[productId].unshift({
-
-        id:
-            Date.now(),
-
-        rating:
-            Number(
-                ratingElement.value
-            ),
-
-        text,
-
-        author:
-            user?.displayName ||
-            user?.email ||
-            "Client NovaShop",
-
-        date:
-            new Date().toISOString()
-
-    });
-
-
-    saveReviews();
-
-
-    showToast(
-        "Avis ajouté ⭐"
-    );
-
-
-    const product=
-        products.find(
-            p=>p.id===productId
-        );
-
-
-    if(product){
-
-        openProduct(productId);
-
-    }
+  return window.novaReviews[id];
 
 };
 
 
 /* =========================================================
-   INJECTER LES AVIS DANS LA FICHE PRODUIT
+   AJOUTER AVIS
 ========================================================= */
 
-function buildReviewSection(productId){
+window.submitProductReview = async function(
+  productId
+){
 
-    const reviews=
-        getProductReviews(productId);
-
-
-    const rating=
-        getProductRating(productId);
-
-
-    const reviewsHTML=
-        reviews.length
-        ? reviews.map(review=>`
-
-            <div class="review-card">
-
-                <div class="review-top">
-
-                    <div>
-
-                        <div class="review-author">
-                            ${escapeHTML(review.author)}
-                        </div>
-
-                        <div class="review-stars">
-                            ${createStars(review.rating)}
-                        </div>
-
-                    </div>
-
-                    <div class="review-date">
-                        ${new Date(
-                            review.date
-                        ).toLocaleDateString("fr-FR")}
-                    </div>
-
-                </div>
-
-                <div class="review-text">
-                    ${escapeHTML(review.text)}
-                </div>
-
-            </div>
-
-        `).join("")
-        : `
-            <div class="no-reviews">
-                Aucun avis pour le moment.
-            </div>
-        `;
+  const ratingInput =
+    document.querySelector(
+      "#reviewRating"
+    );
 
 
-    return `
-
-        <div class="review-box">
-
-            <h3>
-                ⭐ Avis clients
-            </h3>
-
-            ${
-                rating.count
-                ? `
-                    <div class="product-rating-big">
-
-                        <span class="stars">
-                            ${createStars(rating.average)}
-                        </span>
-
-                        <span class="product-rating-number">
-                            ${rating.average.toFixed(1)}/5
-                            ·
-                            ${rating.count} avis
-                        </span>
-
-                    </div>
-                `
-                : ""
-            }
+  const textInput =
+    document.querySelector(
+      "#reviewText"
+    );
 
 
-            <div style="margin-top:14px;">
-
-                <div
-                    style="
-                        color:#8996aa;
-                        font-size:10px;
-                        margin-bottom:8px;
-                    "
-                >
-                    Ta note
-                </div>
+  const rating =
+    Number(
+      ratingInput?.value || 0
+    );
 
 
-                <div class="rating-selector">
-
-                    ${[1,2,3,4,5].map(number=>`
-
-                        <label>
-
-                            <input
-                                type="radio"
-                                name="reviewRating-${productId}"
-                                value="${number}"
-                                style="display:none;"
-                            >
-
-                            <span
-                                class="rating-star"
-                                onclick="
-                                    selectReviewRating(
-                                        ${productId},
-                                        ${number}
-                                    )
-                                "
-                            >
-                                ★
-                            </span>
-
-                        </label>
-
-                    `).join("")}
-
-                </div>
+  const text =
+    textInput?.value?.trim() || "";
 
 
-                <textarea
-                    class="review-input"
-                    id="reviewText-${productId}"
-                    maxlength="500"
-                    placeholder="Écris ton avis..."
-                ></textarea>
+  if(
+    rating < 1 ||
+    rating > 5
+  ){
+
+    if(typeof window.showToast === "function"){
+
+      window.showToast(
+        "Choisis une note entre 1 et 5 ⭐"
+      );
+
+    }
+
+    return;
+
+  }
 
 
-                <button
-                    class="review-submit"
-                    onclick="submitProductReview(${productId})"
-                >
-                    Publier mon avis
-                </button>
+  if(text.length < 3){
 
-            </div>
+    if(typeof window.showToast === "function"){
 
+      window.showToast(
+        "Écris un petit avis ✍️"
+      );
 
-            <div class="reviews-list">
+    }
 
-                ${reviewsHTML}
+    return;
 
-            </div>
-
-        </div>
-
-    `;
-
-}
+  }
 
 
-/* =========================================================
-   SÉLECTION ÉTOILES
-========================================================= */
+  const user =
+    window.novaFirebaseUser;
 
-window.selectReviewRating=function(
+
+  const review = {
+
+    id:
+      "review_" +
+      Date.now(),
+
     productId,
-    rating
-){
 
-    const radios=
-        document.querySelectorAll(
-            `input[name="reviewRating-${productId}"]`
-        );
+    rating,
 
+    text,
 
-    const stars=
-        document.querySelectorAll(
-            ".rating-star"
-        );
+    author:
+      user?.displayName ||
+      user?.email ||
+      "Client NovaShop",
 
+    userId:
+      user?.uid ||
+      null,
 
-    radios.forEach(radio=>{
+    createdAt:
+      new Date().toISOString()
 
-        radio.checked=
-            Number(radio.value)===rating;
-
-    });
+  };
 
 
-    const labels=
-        document.querySelectorAll(
-            `input[name="reviewRating-${productId}"]`
-        );
+  const key =
+    String(productId);
 
 
-    labels.forEach(radio=>{
+  if(
+    !Array.isArray(
+      window.novaReviews[key]
+    )
+  ){
 
-        const star=
-            radio.parentElement
-            .querySelector(".rating-star");
+    window.novaReviews[key] = [];
+
+  }
 
 
-        if(
-            Number(radio.value)<=rating
-        ){
+  window.novaReviews[key].unshift(
+    review
+  );
 
-            star.classList.add("active");
 
-        }else{
+  window.saveNovaReviews();
 
-            star.classList.remove("active");
+
+  /*
+     FIRESTORE
+  */
+
+  if(
+    user &&
+    window.novaFirebaseDb
+  ){
+
+    try{
+
+      await addDoc(
+        collection(
+          window.novaFirebaseDb,
+          "reviews"
+        ),
+        {
+
+          ...review,
+
+          createdAt:
+            serverTimestamp()
 
         }
+      );
 
-    });
+    }catch(error){
 
-};
-
-
-/* =========================================================
-   PATCH OPEN PRODUCT
-========================================================= */
-
-const novaOriginalOpenProduct=
-    window.openProduct;
-
-
-window.openProduct=function(id){
-
-    const product=
-        products.find(
-            p=>p.id===id
-        );
-
-
-    if(!product){
-
-        showToast(
-            "Produit introuvable.",
-            "error"
-        );
-
-        return;
+      console.warn(
+        "Erreur Firebase avis",
+        error
+      );
 
     }
 
-
-    novaOriginalOpenProduct(id);
-
-
-    setTimeout(()=>{
-
-        const productModal=
-            document.getElementById(
-                "productModalContent"
-            );
+  }
 
 
-        if(!productModal){
-            return;
-        }
+  if(ratingInput){
+
+    ratingInput.value =
+      "5";
+
+  }
 
 
-        let reviewContainer=
-            document.getElementById(
-                "novaReviewInjection"
-            );
+  if(textInput){
+
+    textInput.value =
+      "";
+
+  }
 
 
-        if(!reviewContainer){
+  if(
+    typeof window.showToast ===
+    "function"
+  ){
 
-            reviewContainer=
-                document.createElement("div");
-
-            reviewContainer.id=
-                "novaReviewInjection";
-
-            productModal.appendChild(
-                reviewContainer
-            );
-
-        }
-
-
-        reviewContainer.innerHTML=
-            buildReviewSection(id);
-
-
-    },20);
-
-};
-
-
-/* =========================================================
-   COMMANDES AVANCÉES
-========================================================= */
-
-function orderMatchesSearch(
-    order,
-    search
-){
-
-    if(!search){
-        return true;
-    }
-
-
-    const text=
-        [
-            order.id,
-            order.status,
-            ...order.items.map(
-                item=>item.name
-            )
-        ]
-        .join(" ")
-        .toLowerCase();
-
-
-    return text.includes(
-        search.toLowerCase()
+    window.showToast(
+      "Avis publié ⭐"
     );
 
-}
+  }
 
 
-function renderAdvancedOrders(){
+  if(
+    typeof window.renderProductReviews ===
+    "function"
+  ){
 
-    const body=
-        document.getElementById(
-            "ordersBody"
-        );
+    window.renderProductReviews(
+      productId
+    );
+
+  }
+
+};
 
 
-    if(!body){
-        return;
-    }
+/* =========================================================
+   RENDU AVIS
+========================================================= */
+
+window.renderProductReviews = function(
+  productId
+){
+
+  const container =
+    document.querySelector(
+      "#productReviewsList"
+    );
 
 
-    body.innerHTML=`
+  if(!container){
 
-        <div class="orders-toolbar">
+    return;
 
-            <input
-                class="orders-search"
-                id="ordersSearchInput"
-                placeholder="Rechercher une commande..."
-                oninput="filterOrdersAdvanced()"
-            >
+  }
 
-            <select
-                class="orders-filter"
-                id="ordersStatusFilter"
-                onchange="filterOrdersAdvanced()"
-            >
 
-                <option value="all">
-                    Tous les statuts
-                </option>
+  const reviews =
+    window.getProductReviews(
+      productId
+    );
 
-                <option value="confirmée">
-                    Confirmées
-                </option>
 
-            </select>
+  if(!reviews.length){
 
-        </div>
+    container.innerHTML = `
 
-        <div id="advancedOrdersList"></div>
+      <div class="reviews-empty">
+
+        ⭐ Aucun avis pour le moment.
+
+        <br>
+
+        Sois le premier à donner ton avis !
+
+      </div>
 
     `;
 
+    return;
 
-    filterOrdersAdvanced();
-
-}
+  }
 
 
-window.filterOrdersAdvanced=function(){
+  let html = "";
 
-    const search=
-        document
-        .getElementById(
-            "ordersSearchInput"
+
+  reviews.forEach(review => {
+
+    const stars =
+      "★".repeat(
+        Math.max(
+          0,
+          Math.min(
+            5,
+            Number(review.rating) || 0
+          )
         )
-        ?.value
-        .trim()
-        .toLowerCase() || "";
+      );
 
 
-    const status=
-        document
-        .getElementById(
-            "ordersStatusFilter"
+    const emptyStars =
+      "☆".repeat(
+        5 -
+        Math.max(
+          0,
+          Math.min(
+            5,
+            Number(review.rating) || 0
+          )
         )
-        ?.value || "all";
+      );
 
 
-    const list=
-        document.getElementById(
-            "advancedOrdersList"
-        );
+    html += `
+
+      <div class="review-card">
+
+        <div class="review-top">
+
+          <strong>
+            ${novaEscape(
+              review.author
+            )}
+          </strong>
+
+          <span>
+            ${novaEscape(
+              novaDate(
+                review.createdAt
+              )
+            )}
+          </span>
+
+        </div>
 
 
-    if(!list){
-        return;
-    }
+        <div class="review-stars">
+
+          ${stars}
+
+          <span>
+            ${emptyStars}
+          </span>
+
+        </div>
 
 
-    const filtered=
-        orders.filter(order=>{
+        <p>
+          ${novaEscape(
+            review.text
+          )}
+        </p>
 
-            const searchOK=
-                orderMatchesSearch(
-                    order,
-                    search
-                );
+      </div>
 
+    `;
 
-            const statusOK=
-                status==="all" ||
-                order.status===status;
+  });
 
 
-            return searchOK && statusOK;
+  container.innerHTML =
+    html;
+
+};
+
+
+/* =========================================================
+   MOYENNE AVIS
+========================================================= */
+
+window.getProductAverageRating = function(
+  productId
+){
+
+  const reviews =
+    window.getProductReviews(
+      productId
+    );
+
+
+  if(!reviews.length){
+
+    return 0;
+
+  }
+
+
+  const total =
+    reviews.reduce(
+      (sum,review) =>
+        sum +
+        Number(
+          review.rating || 0
+        ),
+      0
+    );
+
+
+  return total /
+    reviews.length;
+
+};
+
+
+/* =========================================================
+   COMPTE UTILISATEUR FIREBASE
+========================================================= */
+
+if(novaAuth){
+
+  onAuthStateChanged(
+    novaAuth,
+    user => {
+
+      window.novaFirebaseUser =
+        user || null;
+
+
+      /*
+         Met à jour les éléments
+         du profil
+      */
+
+      document
+        .querySelectorAll(
+          "[data-user-email]"
+        )
+        .forEach(element => {
+
+          element.textContent =
+            user?.email ||
+            "";
 
         });
 
 
-    if(filtered.length===0){
+      document
+        .querySelectorAll(
+          "[data-user-name]"
+        )
+        .forEach(element => {
 
-        list.innerHTML=`
+          element.textContent =
+            user?.displayName ||
+            user?.email ||
+            "Compte";
 
-            <div class="orders-empty">
+        });
 
-                <div class="orders-empty-icon">
-                    🔎
-                </div>
 
-                <h3>
-                    Aucune commande trouvée
-                </h3>
+      /*
+         Si le compte est ouvert
+      */
 
-            </div>
+      if(
+        typeof window.showLoggedAccount ===
+        "function" &&
+        user
+      ){
 
-        `;
+        try{
 
-        return;
+          window.showLoggedAccount(
+            user
+          );
 
-    }
+        }catch(error){
 
-
-    filtered.forEach(order=>{
-
-        list.appendChild(
-            createAdvancedOrderCard(order)
-        );
-
-    });
-
-};
-
-
-/* =========================================================
-   CARTE COMMANDE
-========================================================= */
-
-function createAdvancedOrderCard(order){
-
-    const card=
-        document.createElement("div");
-
-
-    card.className="order-card";
-
-
-    const date=
-        new Date(
-            order.createdAt
-        );
-
-
-    const dateText=
-        date.toLocaleDateString(
-            "fr-FR",
-            {
-                day:"2-digit",
-                month:"long",
-                year:"numeric"
-            }
-        );
-
-
-    const productsHTML=
-        order.items.map(item=>`
-
-            <div class="order-detail-row">
-
-                <img
-                    src="${escapeHTML(item.image)}"
-                    alt=""
-                    onerror="
-                        this.src=
-                        'https://placehold.co/200x200/111827/ffffff?text=Nova'
-                    "
-                >
-
-                <div class="order-detail-info">
-
-                    <div class="order-detail-name">
-                        ${escapeHTML(item.name)}
-                    </div>
-
-                    <div class="order-detail-quantity">
-                        Quantité : ${item.quantity}
-                    </div>
-
-                </div>
-
-                <div class="order-detail-price">
-                    GRATUIT
-                </div>
-
-            </div>
-
-        `).join("");
-
-
-    card.innerHTML=`
-
-        <div class="order-card-top">
-
-            <div>
-
-                <div class="order-id">
-                    ${escapeHTML(order.id)}
-                </div>
-
-                <div class="order-date">
-                    ${dateText}
-                </div>
-
-            </div>
-
-            <div class="order-status">
-                ${escapeHTML(order.status)}
-            </div>
-
-        </div>
-
-
-        <div class="order-bottom">
-
-            <span>
-                ${order.items.reduce(
-                    (sum,item)=>
-                        sum+item.quantity,
-                    0
-                )}
-                article(s)
-            </span>
-
-            <strong>
-                0,00 €
-            </strong>
-
-        </div>
-
-
-        <button
-            class="order-expand"
-            onclick="toggleOrderDetails(this)"
-        >
-            Voir les détails
-        </button>
-
-
-        <div class="order-details">
-
-            ${productsHTML}
-
-        </div>
-
-    `;
-
-
-    return card;
-
-}
-
-
-/* =========================================================
-   DÉTAILS COMMANDE
-========================================================= */
-
-window.toggleOrderDetails=function(button){
-
-    const details=
-        button.nextElementSibling;
-
-
-    if(!details){
-        return;
-    }
-
-
-    details.classList.toggle(
-        "active"
-    );
-
-
-    button.textContent=
-        details.classList.contains("active")
-        ? "Masquer les détails"
-        : "Voir les détails";
-
-};
-
-
-/* =========================================================
-   REMPLACE LE RENDU ORDERS SIMPLE
-========================================================= */
-
-const novaOriginalOpenOrders=
-    window.openOrders;
-
-
-window.openOrders=function(){
-
-    if(
-        typeof closeAccount==="function"
-    ){
-
-        closeAccount();
-
-    }
-
-
-    document
-        .getElementById("ordersOverlay")
-        .classList.add("active");
-
-
-    document.body.style.overflow="hidden";
-
-
-    renderAdvancedOrders();
-
-};
-
-
-/* =========================================================
-   UPDATE GLOBAL
-========================================================= */
-
-function novaUpdateEverything(){
-
-    updateCounters();
-
-    updateFavoriteBadge();
-
-    renderProducts();
-
-}
-
-
-novaUpdateEverything();
-
-
-/* =========================================================
-   PATCH ADD / REMOVE FAVORIS
-========================================================= */
-
-const novaOriginalToggleFavorite=
-    window.toggleFavorite;
-
-
-if(novaOriginalToggleFavorite){
-
-    window.toggleFavorite=function(id){
-
-        novaOriginalToggleFavorite(id);
-
-        updateFavoriteBadge();
-
-    };
-
-}
-
-
-/* =========================================================
-   FERMETURE ESC
-========================================================= */
-
-document.addEventListener(
-    "keydown",
-    event=>{
-
-        if(event.key==="Escape"){
-
-            closeFavorites();
+          console.warn(error);
 
         }
 
+      }
+
     }
+  );
+
+}
+
+
+/* =========================================================
+   FERMETURE AVEC ESC
+========================================================= */
+
+document.addEventListener(
+  "keydown",
+  event => {
+
+    if(event.key !== "Escape"){
+
+      return;
+
+    }
+
+
+    window.closeCheckout?.();
+
+    window.closeOrders?.();
+
+    window.closeOrderSuccess?.();
+
+  }
 );
 
 
 /* =========================================================
-   FINAL INITIALISATION
+   CLIC HORS MODALES
 ========================================================= */
 
-setTimeout(()=>{
+document.addEventListener(
+  "click",
+  event => {
 
-    updateFavoriteBadge();
+    const targets = [
 
-},100);
+      "#checkoutOverlay",
 
-</script><style>
+      "#ordersOverlay",
+
+      "#orderSuccess"
+
+    ];
+
+
+    targets.forEach(selector => {
+
+      const overlay =
+        document.querySelector(
+          selector
+        );
+
+
+      if(
+        overlay &&
+        event.target === overlay
+      ){
+
+        overlay.classList.remove(
+          "active"
+        );
+
+      }
+
+    });
+
+  }
+);
+
 
 /* =========================================================
-   NOVASHOP PARTIE 6
-   FINAL POLISH + 160 PRODUITS
+   INITIALISATION
 ========================================================= */
 
-.final-catalog-bar{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    gap:12px;
-    margin:0 0 16px;
-    padding:13px 15px;
-    border:1px solid var(--border);
-    border-radius:14px;
-    background:rgba(255,255,255,.025);
+setTimeout(() => {
+
+  window.refreshNovaCartUI();
+
+  window.renderOrders?.();
+
+},500);
+
+
+console.log(
+  "NovaShop Partie 5 JS chargée ✅"
+);
+
+</script>
+
+
+/* =========================================================
+   PARTIE 5 HTML
+   COMMANDES + CHECKOUT + AVIS
+========================================================= */
+
+<style>
+
+.modal-open{
+  overflow:hidden;
 }
 
-.final-catalog-info{
-    color:#7c899d;
-    font-size:10px;
-}
 
-.final-catalog-info strong{
-    color:#dce3ed;
-}
+/* =========================================================
+   CHECKOUT
+========================================================= */
 
-.final-category-scroll{
-    display:flex;
-    gap:7px;
-    overflow-x:auto;
-    scrollbar-width:none;
-    padding-bottom:3px;
-}
+#checkoutOverlay,
+#ordersOverlay,
+#orderSuccess{
 
-.final-category-scroll::-webkit-scrollbar{
-    display:none;
-}
+  position:fixed;
 
-.final-cat-btn{
-    flex:none;
-    height:34px;
-    padding:0 12px;
-    border-radius:9px;
-    border:1px solid var(--border);
-    background:rgba(255,255,255,.035);
-    color:#8996a9;
-    font-size:9px;
-    font-weight:900;
-    cursor:pointer;
-    transition:.18s;
-}
+  inset:0;
 
-.final-cat-btn:hover{
-    transform:translateY(-1px);
-    color:white;
-    border-color:rgba(109,93,252,.45);
-}
+  z-index:99999;
 
-.final-cat-btn.active{
-    color:white;
-    border-color:rgba(109,93,252,.6);
-    background:rgba(109,93,252,.14);
-}
+  display:none;
 
-.product-free{
-    color:#65e39a !important;
-}
+  align-items:center;
 
-.product-image-wrap{
-    position:relative;
-}
+  justify-content:center;
 
-.product-free-label{
-    position:absolute;
-    top:8px;
-    left:8px;
-    z-index:2;
-    padding:5px 7px;
-    border-radius:7px;
-    background:rgba(20,30,25,.88);
-    border:1px solid rgba(101,227,154,.22);
-    color:#6ee6a0;
-    font-size:8px;
-    font-weight:900;
-    backdrop-filter:blur(8px);
-}
+  padding:20px;
 
-.final-footer{
-    margin-top:60px;
-    padding:35px 25px 25px;
-    border-top:1px solid var(--border);
-    background:#080e18;
-}
+  background:
+    rgba(0,0,0,.78);
 
-.final-footer-grid{
-    display:grid;
-    grid-template-columns:1.5fr 1fr 1fr 1fr;
-    gap:30px;
-    max-width:1200px;
-    margin:auto;
-}
-
-.final-footer-brand{
-    color:white;
-    font-size:17px;
-    font-weight:1000;
-}
-
-.final-footer-brand span{
-    color:#7d70ff;
-}
-
-.final-footer-description{
-    max-width:280px;
-    margin-top:9px;
-    color:#68758a;
-    font-size:10px;
-    line-height:1.7;
-}
-
-.final-footer-column h4{
-    color:#dce3ed;
-    font-size:10px;
-    margin-bottom:11px;
-}
-
-.final-footer-column button{
-    display:block;
-    padding:4px 0;
-    background:none;
-    color:#68758a;
-    font-size:9px;
-    text-align:left;
-    transition:.15s;
-}
-
-.final-footer-column button:hover{
-    color:white;
-}
-
-.final-footer-bottom{
-    max-width:1200px;
-    margin:28px auto 0;
-    padding-top:16px;
-    border-top:1px solid rgba(255,255,255,.05);
-    display:flex;
-    justify-content:space-between;
-    gap:15px;
-    color:#536075;
-    font-size:8px;
-}
-
-.catalog-loading{
-    grid-column:1/-1;
-    padding:60px 20px;
-    text-align:center;
-    color:#718097;
-}
-
-.catalog-loading-spinner{
-    width:35px;
-    height:35px;
-    margin:0 auto 12px;
-    border:3px solid rgba(255,255,255,.08);
-    border-top-color:#7569ff;
-    border-radius:50%;
-    animation:catalogSpin .8s linear infinite;
-}
-
-@keyframes catalogSpin{
-    to{
-        transform:rotate(360deg);
-    }
-}
-
-.final-back-top{
-    position:fixed;
-    right:20px;
-    bottom:20px;
-    z-index:50;
-    width:42px;
-    height:42px;
-    border-radius:13px;
-    background:rgba(12,20,34,.9);
-    border:1px solid var(--border);
-    color:white;
-    backdrop-filter:blur(12px);
-    box-shadow:0 12px 35px rgba(0,0,0,.35);
-    opacity:0;
-    pointer-events:none;
-    transform:translateY(10px);
-    transition:.2s;
-}
-
-.final-back-top.visible{
-    opacity:1;
-    pointer-events:auto;
-    transform:translateY(0);
-}
-
-@media(max-width:850px){
-
-    .final-footer-grid{
-        grid-template-columns:1fr 1fr;
-    }
+  backdrop-filter:
+    blur(12px);
 
 }
 
-@media(max-width:600px){
 
-    .final-catalog-bar{
-        align-items:flex-start;
-        flex-direction:column;
-    }
+#checkoutOverlay.active,
+#ordersOverlay.active,
+#orderSuccess.active{
 
-    .final-footer-grid{
-        grid-template-columns:1fr 1fr;
-        gap:22px;
-    }
-
-    .final-footer-bottom{
-        flex-direction:column;
-    }
+  display:flex;
 
 }
 
-@media(max-width:430px){
 
-    .final-footer-grid{
-        grid-template-columns:1fr;
-    }
+.checkout-modal,
+.orders-modal,
+.success-modal{
+
+  width:min(
+    1050px,
+    100%
+  );
+
+  max-height:
+    calc(100vh - 40px);
+
+  overflow:auto;
+
+  background:
+    #11151c;
+
+  border:
+    1px solid #293241;
+
+  border-radius:
+    24px;
+
+  box-shadow:
+    0 30px 100px
+    rgba(0,0,0,.55);
+
+}
+
+
+.checkout-header,
+.orders-header{
+
+  display:flex;
+
+  justify-content:space-between;
+
+  align-items:center;
+
+  padding:22px 25px;
+
+  border-bottom:
+    1px solid #252d39;
+
+}
+
+
+.checkout-header h2,
+.orders-header h2{
+
+  margin:0;
+
+  color:#fff;
+
+}
+
+
+.close-modal-btn{
+
+  width:42px;
+
+  height:42px;
+
+  border:0;
+
+  border-radius:12px;
+
+  background:#202733;
+
+  color:#fff;
+
+  font-size:20px;
+
+  cursor:pointer;
+
+}
+
+
+.close-modal-btn:hover{
+
+  background:#303a49;
+
+}
+
+
+.checkout-content{
+
+  display:grid;
+
+  grid-template-columns:
+    1.15fr .85fr;
+
+  gap:24px;
+
+  padding:24px;
+
+}
+
+
+.checkout-form{
+
+  display:grid;
+
+  gap:14px;
+
+}
+
+
+.checkout-row{
+
+  display:grid;
+
+  grid-template-columns:
+    1fr 1fr;
+
+  gap:12px;
+
+}
+
+
+.checkout-field{
+
+  display:grid;
+
+  gap:7px;
+
+}
+
+
+.checkout-field label{
+
+  color:#b8c0cc;
+
+  font-size:13px;
+
+  font-weight:700;
+
+}
+
+
+.checkout-field input,
+.checkout-field textarea,
+.checkout-field select{
+
+  width:100%;
+
+  box-sizing:border-box;
+
+  padding:13px 14px;
+
+  border:
+    1px solid #303948;
+
+  border-radius:12px;
+
+  background:#181e27;
+
+  color:#fff;
+
+  outline:none;
+
+}
+
+
+.checkout-field textarea{
+
+  min-height:90px;
+
+  resize:vertical;
+
+}
+
+
+.checkout-field input:focus,
+.checkout-field textarea:focus,
+.checkout-field select:focus{
+
+  border-color:
+    #6c8cff;
+
+  box-shadow:
+    0 0 0 3px
+    rgba(108,140,255,.12);
+
+}
+
+
+.checkout-summary{
+
+  background:
+    #171d26;
+
+  border:
+    1px solid #293241;
+
+  border-radius:18px;
+
+  padding:18px;
+
+  height:max-content;
+
+}
+
+
+.checkout-summary h3{
+
+  margin-top:0;
+
+  color:#fff;
+
+}
+
+
+.checkout-product{
+
+  display:grid;
+
+  grid-template-columns:
+    58px 1fr auto;
+
+  gap:10px;
+
+  align-items:center;
+
+  padding:10px 0;
+
+  border-bottom:
+    1px solid #252d38;
+
+}
+
+
+.checkout-product img{
+
+  width:58px;
+
+  height:58px;
+
+  object-fit:cover;
+
+  border-radius:10px;
+
+  background:#0c1015;
+
+}
+
+
+.checkout-product-info{
+
+  display:grid;
+
+  gap:4px;
+
+}
+
+
+.checkout-product-info strong{
+
+  color:#fff;
+
+  font-size:13px;
+
+}
+
+
+.checkout-product-info span{
+
+  color:#8e99a8;
+
+  font-size:12px;
+
+}
+
+
+.checkout-product b{
+
+  color:#fff;
+
+  white-space:nowrap;
+
+}
+
+
+.checkout-total-line{
+
+  display:flex;
+
+  justify-content:space-between;
+
+  align-items:center;
+
+  padding-top:18px;
+
+  margin-top:10px;
+
+  border-top:
+    1px solid #303846;
+
+  color:#fff;
+
+}
+
+
+.checkout-total-line strong{
+
+  font-size:22px;
+
+}
+
+
+.checkout-submit{
+
+  width:100%;
+
+  border:0;
+
+  padding:15px;
+
+  margin-top:18px;
+
+  border-radius:13px;
+
+  background:
+    linear-gradient(
+      135deg,
+      #5877ff,
+      #8c5cff
+    );
+
+  color:#fff;
+
+  font-size:15px;
+
+  font-weight:800;
+
+  cursor:pointer;
+
+}
+
+
+.checkout-submit:hover{
+
+  filter:
+    brightness(1.1);
+
+}
+
+
+.checkout-submit:disabled{
+
+  opacity:.6;
+
+  cursor:wait;
+
+}
+
+
+/* =========================================================
+   COMMANDES
+========================================================= */
+
+.orders-modal{
+
+  width:min(
+    900px,
+    100%
+  );
+
+}
+
+
+.orders-body{
+
+  padding:24px;
+
+}
+
+
+#ordersList{
+
+  display:grid;
+
+  gap:16px;
+
+}
+
+
+.order-card{
+
+  border:
+    1px solid #2b3441;
+
+  background:
+    #171d26;
+
+  border-radius:17px;
+
+  overflow:hidden;
+
+}
+
+
+.order-card-header{
+
+  display:flex;
+
+  justify-content:space-between;
+
+  gap:15px;
+
+  padding:17px;
+
+  border-bottom:
+    1px solid #29313d;
+
+}
+
+
+.order-card-header > div{
+
+  display:grid;
+
+  gap:5px;
+
+}
+
+
+.order-card-header strong{
+
+  color:#fff;
+
+}
+
+
+.order-card-header span{
+
+  color:#8994a4;
+
+  font-size:12px;
+
+}
+
+
+.order-status{
+
+  align-self:
+    flex-start;
+
+  padding:7px 10px;
+
+  border-radius:999px;
+
+  background:
+    rgba(65,211,137,.12);
+
+  color:#59dd9a !important;
+
+  font-weight:800;
+
+}
+
+
+.order-items{
+
+  padding:6px 17px;
+
+}
+
+
+.order-item{
+
+  display:grid;
+
+  grid-template-columns:
+    52px 1fr auto;
+
+  align-items:center;
+
+  gap:11px;
+
+  padding:10px 0;
+
+  border-bottom:
+    1px solid #242c37;
+
+}
+
+
+.order-item:last-child{
+
+  border-bottom:0;
+
+}
+
+
+.order-item img{
+
+  width:52px;
+
+  height:52px;
+
+  border-radius:9px;
+
+  object-fit:cover;
+
+}
+
+
+.order-item div{
+
+  display:flex;
+
+  flex-direction:column;
+
+  gap:4px;
+
+}
+
+
+.order-item strong{
+
+  color:#fff;
+
+  font-size:13px;
+
+}
+
+
+.order-item span{
+
+  color:#8994a4;
+
+  font-size:12px;
+
+}
+
+
+.order-item b{
+
+  color:#fff;
+
+}
+
+
+.order-card-footer{
+
+  display:flex;
+
+  justify-content:space-between;
+
+  padding:15px 17px;
+
+  border-top:
+    1px solid #29313d;
+
+}
+
+
+.order-card-footer span{
+
+  color:#8e99a8;
+
+}
+
+
+.order-card-footer strong{
+
+  color:#fff;
+
+  font-size:18px;
+
+}
+
+
+.orders-empty{
+
+  text-align:center;
+
+  padding:60px 20px;
+
+  color:#8d98a7;
+
+}
+
+
+.orders-empty-icon{
+
+  font-size:55px;
+
+  margin-bottom:10px;
+
+}
+
+
+.orders-empty h3{
+
+  color:#fff;
+
+  margin:0 0 8px;
+
+}
+
+
+/* =========================================================
+   SUCCÈS
+========================================================= */
+
+.success-modal{
+
+  width:min(
+    500px,
+    100%
+  );
+
+  padding:38px 28px;
+
+  text-align:center;
+
+}
+
+
+.success-icon{
+
+  width:82px;
+
+  height:82px;
+
+  margin:
+    0 auto 18px;
+
+  display:flex;
+
+  align-items:center;
+
+  justify-content:center;
+
+  border-radius:50%;
+
+  background:
+    rgba(66,214,139,.13);
+
+  font-size:42px;
+
+}
+
+
+.success-modal h2{
+
+  color:#fff;
+
+  margin:0 0 10px;
+
+}
+
+
+.success-modal p{
+
+  color:#9ba5b3;
+
+  line-height:1.6;
+
+}
+
+
+.success-number{
+
+  display:inline-block;
+
+  padding:11px 15px;
+
+  margin:10px 0 18px;
+
+  border-radius:10px;
+
+  background:#1b222d;
+
+  color:#fff;
+
+  font-family:
+    monospace;
+
+  font-weight:800;
+
+}
+
+
+.success-actions{
+
+  display:grid;
+
+  gap:10px;
+
+}
+
+
+.success-actions button{
+
+  padding:13px;
+
+  border:0;
+
+  border-radius:12px;
+
+  cursor:pointer;
+
+  font-weight:800;
+
+}
+
+
+.success-primary{
+
+  background:
+    linear-gradient(
+      135deg,
+      #5877ff,
+      #8c5cff
+    );
+
+  color:#fff;
+
+}
+
+
+.success-secondary{
+
+  background:#252e3a;
+
+  color:#fff;
+
+}
+
+
+/* =========================================================
+   AVIS
+========================================================= */
+
+.reviews-section{
+
+  margin-top:25px;
+
+  padding-top:22px;
+
+  border-top:
+    1px solid #2a3340;
+
+}
+
+
+.reviews-section h3{
+
+  color:#fff;
+
+}
+
+
+.review-form{
+
+  display:grid;
+
+  gap:10px;
+
+  margin-bottom:18px;
+
+}
+
+
+.review-form select,
+.review-form textarea{
+
+  padding:12px;
+
+  border:
+    1px solid #303947;
+
+  background:#171d25;
+
+  color:#fff;
+
+  border-radius:11px;
+
+  outline:none;
+
+}
+
+
+.review-form textarea{
+
+  min-height:90px;
+
+  resize:vertical;
+
+}
+
+
+.review-form button{
+
+  border:0;
+
+  padding:12px;
+
+  border-radius:11px;
+
+  background:#637dff;
+
+  color:#fff;
+
+  font-weight:800;
+
+  cursor:pointer;
+
+}
+
+
+#productReviewsList{
+
+  display:grid;
+
+  gap:10px;
+
+}
+
+
+.review-card{
+
+  padding:14px;
+
+  border:
+    1px solid #2b3441;
+
+  background:#171d25;
+
+  border-radius:13px;
+
+}
+
+
+.review-top{
+
+  display:flex;
+
+  justify-content:space-between;
+
+  gap:10px;
+
+}
+
+
+.review-top strong{
+
+  color:#fff;
+
+}
+
+
+.review-top span{
+
+  color:#7f8a9a;
+
+  font-size:12px;
+
+}
+
+
+.review-stars{
+
+  margin-top:7px;
+
+  color:#ffc84a;
+
+  letter-spacing:2px;
+
+}
+
+
+.review-stars span{
+
+  color:#4c5665;
+
+}
+
+
+.review-card p{
+
+  color:#c1c8d2;
+
+  line-height:1.55;
+
+  margin-bottom:0;
+
+}
+
+
+.reviews-empty{
+
+  padding:25px;
+
+  border-radius:13px;
+
+  background:#171d25;
+
+  color:#8c97a6;
+
+  text-align:center;
+
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media(max-width:800px){
+
+  .checkout-content{
+
+    grid-template-columns:1fr;
+
+  }
+
+}
+
+
+@media(max-width:560px){
+
+  #checkoutOverlay,
+  #ordersOverlay,
+  #orderSuccess{
+
+    padding:8px;
+
+  }
+
+
+  .checkout-header,
+  .orders-header{
+
+    padding:17px;
+
+  }
+
+
+  .checkout-content,
+  .orders-body{
+
+    padding:15px;
+
+  }
+
+
+  .checkout-row{
+
+    grid-template-columns:1fr;
+
+  }
+
+
+  .order-card-header{
+
+    flex-direction:column;
+
+  }
 
 }
 
 </style>
 
 
-<!-- =========================================================
-     CATALOG FINAL
-========================================================= -->
+<!-- =======================================================
+     CHECKOUT
+======================================================= -->
 
 <div
-    class="final-catalog-bar"
-    id="finalCatalogBar"
+  id="checkoutOverlay"
+  class="nova-overlay"
 >
 
-    <div class="final-catalog-info">
-        <strong id="finalProductCount">160</strong>
-        produits disponibles · tous gratuits
+  <div class="checkout-modal">
+
+    <div class="checkout-header">
+
+      <h2>
+        🛒 Finaliser la commande
+      </h2>
+
+      <button
+        class="close-modal-btn"
+        onclick="closeCheckout()"
+      >
+        ✕
+      </button>
+
     </div>
 
-    <div
-        class="final-catalog-info"
-        id="finalCategoryInfo"
-    >
-        Tous les produits
+
+    <div class="checkout-content">
+
+
+      <form
+        id="checkoutFormArea"
+        class="checkout-form"
+        onsubmit="event.preventDefault(); confirmOrder();"
+      >
+
+        <div class="checkout-row">
+
+          <div class="checkout-field">
+
+            <label>
+              Prénom *
+            </label>
+
+            <input
+              id="checkoutFirstName"
+              type="text"
+              autocomplete="given-name"
+              required
+            >
+
+          </div>
+
+
+          <div class="checkout-field">
+
+            <label>
+              Nom *
+            </label>
+
+            <input
+              id="checkoutLastName"
+              type="text"
+              autocomplete="family-name"
+              required
+            >
+
+          </div>
+
+        </div>
+
+
+        <div class="checkout-field">
+
+          <label>
+            Email *
+          </label>
+
+          <input
+            id="checkoutEmail"
+            type="email"
+            autocomplete="email"
+            required
+          >
+
+        </div>
+
+
+        <div class="checkout-field">
+
+          <label>
+            Téléphone
+          </label>
+
+          <input
+            id="checkoutPhone"
+            type="tel"
+            autocomplete="tel"
+          >
+
+        </div>
+
+
+        <div class="checkout-field">
+
+          <label>
+            Adresse *
+          </label>
+
+          <input
+            id="checkoutAddress"
+            type="text"
+            autocomplete="street-address"
+            required
+          >
+
+        </div>
+
+
+        <div class="checkout-row">
+
+          <div class="checkout-field">
+
+            <label>
+              Ville *
+            </label>
+
+            <input
+              id="checkoutCity"
+              type="text"
+              autocomplete="address-level2"
+              required
+            >
+
+          </div>
+
+
+          <div class="checkout-field">
+
+            <label>
+              Code postal *
+            </label>
+
+            <input
+              id="checkoutPostalCode"
+              type="text"
+              autocomplete="postal-code"
+              required
+            >
+
+          </div>
+
+        </div>
+
+
+        <div class="checkout-field">
+
+          <label>
+            Pays *
+          </label>
+
+          <select
+            id="checkoutCountry"
+          >
+
+            <option value="France">
+              France
+            </option>
+
+            <option value="Belgique">
+              Belgique
+            </option>
+
+            <option value="Luxembourg">
+              Luxembourg
+            </option>
+
+            <option value="Suisse">
+              Suisse
+            </option>
+
+            <option value="Espagne">
+              Espagne
+            </option>
+
+            <option value="Italie">
+              Italie
+            </option>
+
+          </select>
+
+        </div>
+
+
+        <div class="checkout-field">
+
+          <label>
+            Note de commande
+          </label>
+
+          <textarea
+            id="checkoutNote"
+            placeholder="Une précision pour la commande..."
+          ></textarea>
+
+        </div>
+
+
+        <button
+          id="confirmOrderButton"
+          class="checkout-submit"
+          type="submit"
+        >
+          Confirmer la commande
+        </button>
+
+      </form>
+
+
+      <aside class="checkout-summary">
+
+        <h3>
+          Résumé
+        </h3>
+
+
+        <div
+          id="checkoutSummaryItems"
+        ></div>
+
+
+        <div class="checkout-total-line">
+
+          <span>
+            Total
+          </span>
+
+          <strong
+            id="checkoutTotal"
+          >
+            0,00 €
+          </strong>
+
+        </div>
+
+      </aside>
+
     </div>
+
+  </div>
 
 </div>
 
 
+<!-- =======================================================
+     HISTORIQUE COMMANDES
+======================================================= -->
+
 <div
-    class="final-category-scroll"
-    id="finalCategoryScroll"
-></div>
-
-
-<!-- =========================================================
-     FOOTER
-========================================================= -->
-
-<footer class="final-footer">
-
-    <div class="final-footer-grid">
-
-        <div>
-
-            <div class="final-footer-brand">
-                Nova<span>Shop</span>
-            </div>
-
-            <div class="final-footer-description">
-                Une boutique moderne avec recherche,
-                favoris, panier, comptes, commandes,
-                avis et catalogue complet.
-            </div>
-
-        </div>
-
-
-        <div class="final-footer-column">
-
-            <h4>
-                BOUTIQUE
-            </h4>
-
-            <button onclick="setFinalCategory('Tous')">
-                Tous les produits
-            </button>
-
-            <button onclick="setFinalCategory('Tech')">
-                Tech
-            </button>
-
-            <button onclick="setFinalCategory('Gaming')">
-                Gaming
-            </button>
-
-            <button onclick="setFinalCategory('Audio')">
-                Audio
-            </button>
-
-            <button onclick="setFinalCategory('Maison')">
-                Maison
-            </button>
-
-        </div>
-
-
-        <div class="final-footer-column">
-
-            <h4>
-                NOVASHOP
-            </h4>
-
-            <button onclick="showFavorites()">
-                ❤️ Favoris
-            </button>
-
-            <button onclick="openCart()">
-                🛒 Panier
-            </button>
-
-            <button onclick="openAccount()">
-                👤 Mon compte
-            </button>
-
-            <button onclick="openOrders()">
-                📦 Commandes
-            </button>
-
-        </div>
-
-
-        <div class="final-footer-column">
-
-            <h4>
-                INFORMATIONS
-            </h4>
-
-            <button onclick="showToast('Tous les produits sont gratuits actuellement 🎁')">
-                Produits gratuits
-            </button>
-
-            <button onclick="showToast('Les avis sont enregistrés sur cet appareil ⭐')">
-                Avis clients
-            </button>
-
-            <button onclick="showToast('NovaShop fonctionne aussi sur mobile 📱')">
-                Version mobile
-            </button>
-
-            <button onclick="scrollToTop()">
-                Retour en haut ↑
-            </button>
-
-        </div>
-
-    </div>
-
-
-    <div class="final-footer-bottom">
-
-        <span>
-            © 2026 NovaShop
-        </span>
-
-        <span>
-            Catalogue : 160 produits
-        </span>
-
-        <span>
-            0,00 € · Paiement non activé
-        </span>
-
-    </div>
-
-</footer>
-
-
-<button
-    class="final-back-top"
-    id="finalBackTop"
-    onclick="scrollToTop()"
+  id="ordersOverlay"
+  class="nova-overlay"
 >
-    ↑
-</button>
+
+  <div class="orders-modal">
+
+    <div class="orders-header">
+
+      <h2>
+        📦 Mes commandes
+      </h2>
+
+      <button
+        class="close-modal-btn"
+        onclick="closeOrders()"
+      >
+        ✕
+      </button>
+
+    </div>
+
+
+    <div class="orders-body">
+
+      <div id="ordersList">
+
+        <div class="orders-empty">
+
+          Chargement...
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+<!-- =======================================================
+     SUCCÈS
+======================================================= -->
+
+<div
+  id="orderSuccess"
+  class="nova-overlay"
+>
+
+  <div class="success-modal">
+
+    <div class="success-icon">
+      ✓
+    </div>
+
+
+    <h2>
+      Commande confirmée 🎉
+    </h2>
+
+
+    <p>
+      Ta commande a bien été enregistrée.
+    </p>
+
+
+    <div
+      class="success-number"
+      id="successOrderNumber"
+    >
+      NOVA-000000
+    </div>
+
+
+    <div class="success-actions">
+
+      <button
+        class="success-primary"
+        onclick="openOrdersAfterSuccess()"
+      >
+        📦 Voir mes commandes
+      </button>
+
+
+      <button
+        class="success-secondary"
+        onclick="closeOrderSuccess()"
+      >
+        Continuer mes achats
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+/* =========================================================
+   PARTIE 5 FIN
+========================================================= *//* =========================================================
+   PARTIE 5 - 2/2
+   AVIS + FIREBASE + SYNCHRO + STYLE FINAL
+========================================================= */
+
+<style>
+
+/* =========================================================
+   FICHE AVIS
+========================================================= */
+
+.product-review-zone{
+
+  margin-top:25px;
+
+  padding-top:22px;
+
+  border-top:1px solid #2a3340;
+
+}
+
+.product-review-zone h3{
+
+  color:#fff;
+
+  margin:0 0 15px;
+
+  font-size:19px;
+
+}
+
+.review-create-box{
+
+  display:grid;
+
+  gap:12px;
+
+  padding:16px;
+
+  background:#151b23;
+
+  border:1px solid #293341;
+
+  border-radius:15px;
+
+  margin-bottom:18px;
+
+}
+
+.review-create-box label{
+
+  color:#aeb7c5;
+
+  font-size:13px;
+
+  font-weight:700;
+
+}
+
+.review-create-box select{
+
+  width:100%;
+
+  padding:12px;
+
+  border:1px solid #303a48;
+
+  border-radius:10px;
+
+  background:#1b222c;
+
+  color:#fff;
+
+}
+
+.review-create-box textarea{
+
+  width:100%;
+
+  min-height:100px;
+
+  box-sizing:border-box;
+
+  resize:vertical;
+
+  padding:12px;
+
+  border:1px solid #303a48;
+
+  border-radius:10px;
+
+  background:#1b222c;
+
+  color:#fff;
+
+  font-family:inherit;
+
+  outline:none;
+
+}
+
+.review-create-box textarea:focus{
+
+  border-color:#6b82ff;
+
+}
+
+.review-create-box button{
+
+  border:0;
+
+  border-radius:11px;
+
+  padding:13px;
+
+  background:linear-gradient(
+    135deg,
+    #5d7cff,
+    #8d5cff
+  );
+
+  color:#fff;
+
+  font-weight:800;
+
+  cursor:pointer;
+
+}
+
+.review-create-box button:hover{
+
+  filter:brightness(1.1);
+
+}
+
+
+/* =========================================================
+   NOTE ÉTOILES
+========================================================= */
+
+.review-rating-big{
+
+  display:flex;
+
+  align-items:center;
+
+  gap:8px;
+
+  margin-bottom:15px;
+
+}
+
+.review-rating-number{
+
+  color:#fff;
+
+  font-size:27px;
+
+  font-weight:900;
+
+}
+
+.review-rating-stars{
+
+  color:#ffc94f;
+
+  font-size:20px;
+
+  letter-spacing:2px;
+
+}
+
+
+/* =========================================================
+   CARTES AVIS
+========================================================= */
+
+.nova-review{
+
+  padding:15px;
+
+  background:#151b23;
+
+  border:1px solid #293341;
+
+  border-radius:14px;
+
+  margin-bottom:10px;
+
+}
+
+.nova-review-head{
+
+  display:flex;
+
+  justify-content:space-between;
+
+  align-items:flex-start;
+
+  gap:15px;
+
+}
+
+.nova-review-user{
+
+  display:flex;
+
+  align-items:center;
+
+  gap:10px;
+
+}
+
+.nova-review-avatar{
+
+  width:38px;
+
+  height:38px;
+
+  border-radius:50%;
+
+  display:flex;
+
+  align-items:center;
+
+  justify-content:center;
+
+  background:#263149;
+
+  color:#fff;
+
+  font-weight:900;
+
+}
+
+.nova-review-user strong{
+
+  display:block;
+
+  color:#fff;
+
+}
+
+.nova-review-user span{
+
+  display:block;
+
+  margin-top:2px;
+
+  color:#778394;
+
+  font-size:11px;
+
+}
+
+.nova-review-stars{
+
+  color:#ffc94f;
+
+  white-space:nowrap;
+
+}
+
+.nova-review-text{
+
+  color:#c4cbd5;
+
+  line-height:1.55;
+
+  margin:12px 0 0;
+
+}
+
+
+/* =========================================================
+   PROFIL RAPIDE
+========================================================= */
+
+.nova-account-summary{
+
+  display:grid;
+
+  grid-template-columns:
+    repeat(3,1fr);
+
+  gap:12px;
+
+  margin-top:20px;
+
+}
+
+.nova-account-stat{
+
+  padding:15px;
+
+  background:#161c24;
+
+  border:1px solid #293340;
+
+  border-radius:14px;
+
+  text-align:center;
+
+}
+
+.nova-account-stat strong{
+
+  display:block;
+
+  color:#fff;
+
+  font-size:22px;
+
+}
+
+.nova-account-stat span{
+
+  color:#7f8a99;
+
+  font-size:12px;
+
+}
+
+
+/* =========================================================
+   BOUTONS HISTORIQUE
+========================================================= */
+
+.order-action-row{
+
+  display:flex;
+
+  flex-wrap:wrap;
+
+  gap:9px;
+
+  padding:0 17px 16px;
+
+}
+
+.order-action-row button{
+
+  border:0;
+
+  border-radius:9px;
+
+  padding:9px 12px;
+
+  background:#252e3a;
+
+  color:#fff;
+
+  cursor:pointer;
+
+  font-size:12px;
+
+  font-weight:700;
+
+}
+
+.order-action-row button:hover{
+
+  background:#344052;
+
+}
+
+
+/* =========================================================
+   BADGES
+========================================================= */
+
+.nova-badge-success{
+
+  display:inline-flex;
+
+  align-items:center;
+
+  gap:5px;
+
+  padding:6px 9px;
+
+  border-radius:999px;
+
+  background:rgba(64,210,137,.12);
+
+  color:#5de09b;
+
+  font-size:11px;
+
+  font-weight:800;
+
+}
+
+.nova-badge-pending{
+
+  display:inline-flex;
+
+  align-items:center;
+
+  gap:5px;
+
+  padding:6px 9px;
+
+  border-radius:999px;
+
+  background:rgba(255,190,70,.12);
+
+  color:#ffc65b;
+
+  font-size:11px;
+
+  font-weight:800;
+
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media(max-width:650px){
+
+  .nova-account-summary{
+
+    grid-template-columns:1fr;
+
+  }
+
+  .nova-review-head{
+
+    flex-direction:column;
+
+  }
+
+}
+
+
+/* =========================================================
+   ANIMATION
+========================================================= */
+
+@keyframes novaFadeIn{
+
+  from{
+
+    opacity:0;
+
+    transform:translateY(8px);
+
+  }
+
+  to{
+
+    opacity:1;
+
+    transform:translateY(0);
+
+  }
+
+}
+
+.nova-review,
+.order-card{
+
+  animation:
+    novaFadeIn .22s ease both;
+
+}
+
+</style>
 
 
 <script>
 
 /* =========================================================
-   PARTIE 6 JS
+   COMPATIBILITÉ AVEC LES PARTIES PRÉCÉDENTES
 ========================================================= */
 
+(function(){
 
-/* =========================================================
-   160 PRODUITS
-========================================================= */
+  "use strict";
 
-const finalProductTemplates=[
 
-    ["Tech","Smartphone Nova X","smartphone phone"],
-    ["Tech","Tablette Nova Tab","tablet technology"],
-    ["Tech","Mini ordinateur portable","laptop computer"],
-    ["Tech","Écran UltraView 27","computer monitor"],
-    ["Tech","Webcam Full HD","webcam"],
-    ["Tech","Clavier Bluetooth","bluetooth keyboard"],
-    ["Tech","Souris sans fil","wireless mouse"],
-    ["Tech","Hub USB-C","usb hub"],
-    ["Tech","Chargeur rapide","phone charger"],
-    ["Tech","Support téléphone","phone stand"],
+  /* -------------------------------------------------------
+     RÉCUPÉRATION PANIER
+  ------------------------------------------------------- */
 
-    ["Gaming","Casque Gaming RGB","gaming headset"],
-    ["Gaming","Manette Wireless","game controller"],
-    ["Gaming","Clavier mécanique RGB","gaming keyboard"],
-    ["Gaming","Souris Gaming","gaming mouse"],
-    ["Gaming","Tapis Gaming XL","gaming mousepad"],
-    ["Gaming","Support casque","headset stand"],
-    ["Gaming","Micro Gaming","gaming microphone"],
-    ["Gaming","Webcam Stream","streaming webcam"],
-    ["Gaming","Lampe Gaming","gaming setup"],
-    ["Gaming","Manette PC","pc controller"],
-
-    ["Audio","Écouteurs Bluetooth","wireless earbuds"],
-    ["Audio","Casque Bluetooth","bluetooth headphones"],
-    ["Audio","Enceinte portable","portable speaker"],
-    ["Audio","Mini enceinte","small speaker"],
-    ["Audio","Barre de son","soundbar"],
-    ["Audio","Microphone USB","usb microphone"],
-    ["Audio","Casque studio","studio headphones"],
-    ["Audio","Écouteurs sport","sport earbuds"],
-    ["Audio","Enceinte RGB","rgb speaker"],
-    ["Audio","Adaptateur audio","audio adapter"],
-
-    ["Maison","Lampe de bureau","desk lamp"],
-    ["Maison","Lampe LED","led lamp"],
-    ["Maison","Horloge numérique","digital clock"],
-    ["Maison","Organisateur bureau","desk organizer"],
-    ["Maison","Mini ventilateur","desk fan"],
-    ["Maison","Diffuseur d'ambiance","home diffuser"],
-    ["Maison","Miroir LED","led mirror"],
-    ["Maison","Boîte de rangement","storage box"],
-    ["Maison","Veilleuse","night lamp"],
-    ["Maison","Support tablette","tablet stand"],
-
-    ["Mode","Sweat Nova","hoodie fashion"],
-    ["Mode","T-shirt Nova","tshirt fashion"],
-    ["Mode","Casquette Nova","cap fashion"],
-    ["Mode","Sac à dos","backpack"],
-    ["Mode","Sac bandoulière","shoulder bag"],
-    ["Mode","Bonnet","beanie"],
-    ["Mode","Ceinture","belt"],
-    ["Mode","Portefeuille","wallet"],
-    ["Mode","Lunettes","fashion glasses"],
-    ["Mode","Chaussettes","socks"],
-
-    ["Accessoires","Porte-clés","keychain"],
-    ["Accessoires","Support téléphone voiture","car phone holder"],
-    ["Accessoires","Câble USB-C","usb cable"],
-    ["Accessoires","Batterie externe","power bank"],
-    ["Accessoires","Adaptateur universel","travel adapter"],
-    ["Accessoires","Station de charge","charging station"],
-    ["Accessoires","Organisateur câbles","cable organizer"],
-    ["Accessoires","Pochette tech","tech pouch"],
-    ["Accessoires","Étui téléphone","phone case"],
-    ["Accessoires","Support bureau","desk stand"],
-
-    ["Sport","Gourde sport","sports water bottle"],
-    ["Sport","Sac de sport","sports bag"],
-    ["Sport","Ballon football","football"],
-    ["Sport","Ballon basket","basketball"],
-    ["Sport","Corde à sauter","jump rope"],
-    ["Sport","Serviette sport","sports towel"],
-    ["Sport","Bandeau sport","sports headband"],
-    ["Sport","Gants fitness","fitness gloves"],
-    ["Sport","Tapis sport","fitness mat"],
-    ["Sport","Montre sport","sports smartwatch"],
-
-    ["Beauté","Miroir compact","beauty mirror"],
-    ["Beauté","Brosse cheveux","hair brush"],
-    ["Beauté","Trousse beauté","beauty bag"],
-    ["Beauté","Organisateur maquillage","makeup organizer"],
-    ["Beauté","Pinceau beauté","makeup brush"],
-    ["Beauté","Peigne","hair comb"],
-    ["Beauté","Bandeau cheveux","hair band"],
-    ["Beauté","Pochette cosmétique","cosmetic pouch"],
-    ["Beauté","Miroir de poche","pocket mirror"],
-    ["Beauté","Boîte accessoires","beauty accessories"],
-
-    ["Bureau","Carnet premium","notebook"],
-    ["Bureau","Stylo métallique","metal pen"],
-    ["Bureau","Pot à crayons","pencil holder"],
-    ["Bureau","Lampe lecture","reading lamp"],
-    ["Bureau","Support ordinateur","laptop stand"],
-    ["Bureau","Tapis bureau","desk mat"],
-    ["Bureau","Calendrier bureau","desk calendar"],
-    ["Bureau","Agrafeuse","stapler"],
-    ["Bureau","Bloc-notes","notepad"],
-    ["Bureau","Organisateur documents","document organizer"],
-
-    ["Photo","Trépied compact","camera tripod"],
-    ["Photo","Ring light","ring light"],
-    ["Photo","Sac appareil photo","camera bag"],
-    ["Photo","Support caméra","camera mount"],
-    ["Photo","Mini trépied","mini tripod"],
-    ["Photo","Éclairage studio","studio light"],
-    ["Photo","Télécommande caméra","camera remote"],
-    ["Photo","Pince téléphone","phone clamp"],
-    ["Photo","Fond photo","photo backdrop"],
-    ["Photo","Kit créateur","creator kit"],
-
-    ["Auto","Support GPS","car gps holder"],
-    ["Auto","Chargeur voiture","car charger"],
-    ["Auto","Organisateur voiture","car organizer"],
-    ["Auto","Lampe voiture","car light"],
-    ["Auto","Support téléphone","car phone holder"],
-    ["Auto","Nettoyage intérieur","car cleaning"],
-    ["Auto","Porte-gobelet","car cup holder"],
-    ["Auto","Câble voiture","car cable"],
-    ["Auto","Compresseur mini","mini air compressor"],
-    ["Auto","Housse siège","car seat cover"],
-
-    ["Animaux","Jouet chien","dog toy"],
-    ["Animaux","Jouet chat","cat toy"],
-    ["Animaux","Gamelle","pet bowl"],
-    ["Animaux","Collier","pet collar"],
-    ["Animaux","Laisse","dog leash"],
-    ["Animaux","Balle pour chien","dog ball"],
-    ["Animaux","Tapis animaux","pet mat"],
-    ["Animaux","Brosse animaux","pet brush"],
-    ["Animaux","Pochette promenade","pet walking bag"],
-    ["Animaux","Distributeur croquettes","pet feeder"],
-
-    ["Cuisine","Mug moderne","coffee mug"],
-    ["Cuisine","Gourde cuisine","water bottle"],
-    ["Cuisine","Boîte repas","lunch box"],
-    ["Cuisine","Balance cuisine","kitchen scale"],
-    ["Cuisine","Minuteur cuisine","kitchen timer"],
-    ["Cuisine","Organisateur cuisine","kitchen organizer"],
-    ["Cuisine","Planche cuisine","cutting board"],
-    ["Cuisine","Bouteille verre","glass bottle"],
-    ["Cuisine","Boîte rangement","food storage"],
-    ["Cuisine","Ustensile cuisine","kitchen utensil"],
-
-    ["Voyage","Valise cabine","travel suitcase"],
-    ["Voyage","Sac voyage","travel bag"],
-    ["Voyage","Oreiller voyage","travel pillow"],
-    ["Voyage","Pochette passeport","passport holder"],
-    ["Voyage","Étiquette bagage","luggage tag"],
-    ["Voyage","Adaptateur voyage","travel adapter"],
-    ["Voyage","Organisateur valise","packing organizer"],
-    ["Voyage","Sac chaussures","travel shoe bag"],
-    ["Voyage","Pochette voyage","travel pouch"],
-    ["Voyage","Gourde voyage","travel bottle"],
-
-    ["Jouets","Puzzle","puzzle toy"],
-    ["Jouets","Voiture miniature","toy car"],
-    ["Jouets","Jeu de construction","building blocks"],
-    ["Jouets","Balle rebondissante","bouncy ball"],
-    ["Jouets","Jeu de cartes","card game"],
-    ["Jouets","Figurine","toy figure"],
-    ["Jouets","Cube puzzle","puzzle cube"],
-    ["Jouets","Jeu créatif","creative toy"],
-    ["Jouets","Cerf-volant","kite"],
-    ["Jouets","Jeu extérieur","outdoor toy"]
-
-];
-
-
-/* =========================================================
-   GÉNÉRATION DES PRODUITS
-========================================================= */
-
-function createFinalImage(
-    query,
-    id
-){
-
-    return `https://loremflickr.com/640/480/${encodeURIComponent(
-        query
-    )}?lock=${id}`;
-
-}
-
-
-function addFinalProducts(){
-
-    const existingIds=
-        new Set(
-            products.map(
-                product=>product.id
-            )
-        );
-
-
-    let nextId=
-        Math.max(
-            ...products.map(
-                product=>product.id
-            )
-        )+1;
-
-
-    for(
-        let i=0;
-        i<finalProductTemplates.length &&
-        products.length<160;
-        i++
-    ){
-
-        const template=
-            finalProductTemplates[i];
-
-
-        if(existingIds.has(nextId)){
-
-            nextId++;
-
-        }
-
-
-        const category=
-            template[0];
-
-
-        const name=
-            template[1];
-
-
-        const imageQuery=
-            template[2];
-
-
-        const product={
-
-            id:nextId,
-
-            name,
-
-            category,
-
-            price:0,
-
-            oldPrice:
-                Math.floor(
-                    15+
-                    Math.random()*185
-                ),
-
-            image:
-                createFinalImage(
-                    imageQuery,
-                    nextId
-                ),
-
-            rating:
-                Number(
-                    (
-                        3.8+
-                        Math.random()*1.2
-                    ).toFixed(1)
-                ),
-
-            reviews:
-                Math.floor(
-                    5+
-                    Math.random()*480
-                ),
-
-            badge:
-                Math.random()>.78
-                ? "NOUVEAU"
-                : (
-                    Math.random()>.65
-                    ? "POPULAIRE"
-                    : ""
-                )
-
-        };
-
-
-        products.push(product);
-
-        existingIds.add(nextId);
-
-        nextId++;
-
-    }
-
-
-    /*
-       Si jamais le catalogue contient encore
-       moins de 160 produits, on complète
-       automatiquement.
-    */
-
-    const genericNames=[
-
-        "Produit Nova",
-        "Produit Premium",
-        "Produit Essential",
-        "Produit Smart",
-        "Produit Compact",
-        "Produit Plus",
-        "Produit Ultra",
-        "Produit Mini",
-        "Produit Pro",
-        "Produit Classic"
-
-    ];
-
-
-    const genericQueries=[
-
-        "technology product",
-        "modern gadget",
-        "home product",
-        "gaming accessory",
-        "desk accessory",
-        "fashion accessory"
-
-    ];
-
-
-    while(products.length<160){
-
-        const id=
-            nextId++;
-
-
-        const category=
-            [
-                "Tech",
-                "Gaming",
-                "Maison",
-                "Accessoires"
-            ][
-                id%4
-            ];
-
-
-        const name=
-            `${genericNames[id%genericNames.length]} ${id}`;
-
-
-        products.push({
-
-            id,
-
-            name,
-
-            category,
-
-            price:0,
-
-            oldPrice:
-                20+
-                Math.floor(
-                    Math.random()*180
-                ),
-
-            image:
-                createFinalImage(
-                    genericQueries[
-                        id%
-                        genericQueries.length
-                    ],
-                    id
-                ),
-
-            rating:
-                Number(
-                    (
-                        4+
-                        Math.random()
-                    ).toFixed(1)
-                ),
-
-            reviews:
-                10+
-                Math.floor(
-                    Math.random()*300
-                ),
-
-            badge:""
-
-        });
-
-    }
-
-}
-
-
-addFinalProducts();
-
-
-/* =========================================================
-   CATÉGORIES
-========================================================= */
-
-function getFinalCategories(){
-
-    const set=
-        new Set(
-            products.map(
-                product=>product.category
-            )
-        );
-
-
-    return [
-        "Tous",
-        ...Array.from(set)
-    ];
-
-}
-
-
-function renderFinalCategories(){
-
-    const container=
-        document.getElementById(
-            "finalCategoryScroll"
-        );
-
-
-    if(!container){
-        return;
-    }
-
-
-    container.innerHTML="";
-
-
-    getFinalCategories().forEach(category=>{
-
-        const button=
-            document.createElement("button");
-
-
-        button.className=
-            "final-cat-btn";
-
-
-        if(
-            currentCategory===category ||
-            (
-                category==="Tous" &&
-                currentCategory==="Tous"
-            )
-        ){
-
-            button.classList.add(
-                "active"
-            );
-
-        }
-
-
-        button.textContent=
-            category==="Tous"
-            ? "🛍️ Tous"
-            : category;
-
-
-        button.onclick=()=>{
-
-            setFinalCategory(
-                category
-            );
-
-        };
-
-
-        container.appendChild(button);
-
-    });
-
-}
-
-
-window.setFinalCategory=function(category){
-
-    currentCategory=
-        category;
-
-
-    currentSearch=
-        "";
-
-
-    const searchInput=
-        document.getElementById(
-            "searchInput"
-        );
-
-
-    if(searchInput){
-
-        searchInput.value="";
-
-    }
-
-
-    renderFinalCategories();
-
-    renderProducts();
-
-
-    const info=
-        document.getElementById(
-            "finalCategoryInfo"
-        );
-
-
-    if(info){
-
-        info.textContent=
-            category==="Tous"
-            ? "Tous les produits"
-            : category;
-
-    }
-
-
-    scrollToShopFinal();
-
-};
-
-
-/* =========================================================
-   SCROLL SHOP
-========================================================= */
-
-function scrollToShopFinal(){
-
-    const shop=
-        document.getElementById(
-            "shop"
-        );
-
-
-    if(shop){
-
-        shop.scrollIntoView({
-            behavior:"smooth",
-            block:"start"
-        });
-
-    }
-
-}
-
-
-/* =========================================================
-   PATCH RENDER PRODUCTS
-========================================================= */
-
-const novaRenderProductsFinal=
-    window.renderProducts ||
-    renderProducts;
-
-
-window.renderProducts=function(){
-
-    novaRenderProductsFinal();
-
-
-    const count=
-        document.getElementById(
-            "finalProductCount"
-        );
-
-
-    if(count){
-
-        const filtered=
-            typeof getFilteredProducts==="function"
-            ? getFilteredProducts()
-            : products;
-
-
-        count.textContent=
-            filtered.length;
-
-    }
-
-
-    renderFinalCategories();
-
-};
-
-
-/* =========================================================
-   PATCH ADD TO CART
-========================================================= */
-
-const novaAddToCartFinal=
-    window.addToCart;
-
-
-if(novaAddToCartFinal){
-
-    window.addToCart=function(id){
-
-        novaAddToCartFinal(id);
-
-        updateFavoriteBadge();
-
-    };
-
-}
-
-
-/* =========================================================
-   PATCH FAVORITES
-========================================================= */
-
-updateFavoriteBadge();
-
-
-/* =========================================================
-   RECHERCHE RAPIDE
-========================================================= */
-
-const finalSearch=
-    document.getElementById(
-        "searchInput"
-    );
-
-
-if(finalSearch){
-
-    finalSearch.addEventListener(
-        "input",
-        ()=>{
-
-            currentSearch=
-                finalSearch.value
-                .trim()
-                .toLowerCase();
-
-
-            renderProducts();
-
-        }
-    );
-
-}
-
-
-/* =========================================================
-   COMPTEUR PANIER
-========================================================= */
-
-function finalRefreshCounters(){
-
-    if(
-        typeof updateCounters==="function"
-    ){
-
-        updateCounters();
-
-    }
-
-
-    updateFavoriteBadge();
-
-}
-
-
-finalRefreshCounters();
-
-
-/* =========================================================
-   BACK TO TOP
-========================================================= */
-
-const backTop=
-    document.getElementById(
-        "finalBackTop"
-    );
-
-
-window.addEventListener(
-    "scroll",
-    ()=>{
-
-        if(
-            window.scrollY>500
-        ){
-
-            backTop?.classList.add(
-                "visible"
-            );
-
-        }else{
-
-            backTop?.classList.remove(
-                "visible"
-            );
-
-        }
-
-    },
-    {
-        passive:true
-    }
-);
-
-
-/* =========================================================
-   SCROLL TOP
-========================================================= */
-
-window.scrollToTop=function(){
-
-    window.scrollTo({
-
-        top:0,
-
-        behavior:"smooth"
-
-    });
-
-};
-
-
-/* =========================================================
-   SAUVEGARDE AUTOMATIQUE
-========================================================= */
-
-function novaAutoSave(){
+  if(!Array.isArray(window.cart)){
 
     try{
 
-        localStorage.setItem(
-            "novaCatalogVersion",
-            "6.0"
+      window.cart =
+        JSON.parse(
+          localStorage.getItem(
+            "novaCart"
+          ) || "[]"
         );
 
-        localStorage.setItem(
-            "novaLastVisit",
-            new Date().toISOString()
+    }catch{
+
+      window.cart=[];
+
+    }
+
+  }
+
+
+  /* -------------------------------------------------------
+     RÉCUPÉRATION FAVORIS
+  ------------------------------------------------------- */
+
+  if(!Array.isArray(window.favorites)){
+
+    try{
+
+      window.favorites =
+        JSON.parse(
+          localStorage.getItem(
+            "novaFavorites"
+          ) || "[]"
         );
+
+    }catch{
+
+      window.favorites=[];
+
+    }
+
+  }
+
+
+  /* -------------------------------------------------------
+     ORDERS
+  ------------------------------------------------------- */
+
+  if(!Array.isArray(window.orders)){
+
+    try{
+
+      window.orders =
+        JSON.parse(
+          localStorage.getItem(
+            "novaOrders"
+          ) || "[]"
+        );
+
+    }catch{
+
+      window.orders=[];
+
+    }
+
+  }
+
+
+  /* -------------------------------------------------------
+     SAUVEGARDE PANIER
+  ------------------------------------------------------- */
+
+  window.saveNovaCart=function(){
+
+    try{
+
+      localStorage.setItem(
+        "novaCart",
+        JSON.stringify(
+          window.cart
+        )
+      );
 
     }catch(error){
 
-        console.warn(
-            "Autosave indisponible",
-            error
-        );
+      console.warn(error);
 
     }
+
+  };
+
+
+  /* -------------------------------------------------------
+     TOTAL PANIER ROBUSTE
+  ------------------------------------------------------- */
+
+  window.novaCalculateTotal=function(){
+
+    let total=0;
+
+
+    if(!Array.isArray(window.cart)){
+
+      return 0;
+
+    }
+
+
+    window.cart.forEach(item=>{
+
+      const product =
+        Array.isArray(window.products)
+          ? window.products.find(
+              p =>
+                String(p.id) ===
+                String(item.id)
+            )
+          : null;
+
+
+      if(!product){
+
+        return;
+
+      }
+
+
+      const quantity =
+        Math.max(
+          1,
+          Number(
+            item.quantity
+          ) || 1
+        );
+
+
+      total +=
+        Number(
+          product.price
+        ) *
+        quantity;
+
+    });
+
+
+    return total;
+
+  };
+
+
+  /* -------------------------------------------------------
+     COMPTEUR PANIER
+  ------------------------------------------------------- */
+
+  window.novaUpdateCartCount=function(){
+
+    const count =
+      Array.isArray(window.cart)
+        ? window.cart.reduce(
+            (sum,item)=>
+              sum +
+              Math.max(
+                1,
+                Number(
+                  item.quantity
+                ) || 1
+              ),
+            0
+          )
+        : 0;
+
+
+    document
+      .querySelectorAll(
+        ".cart-count,#cartCount"
+      )
+      .forEach(el=>{
+
+        el.textContent=
+          count;
+
+      });
+
+  };
+
+
+  /* -------------------------------------------------------
+     PRIX PANIER
+  ------------------------------------------------------- */
+
+  window.novaUpdateCartPrices=function(){
+
+    const total =
+      window.novaCalculateTotal();
+
+
+    const formatted =
+      total.toLocaleString(
+        "fr-FR",
+        {
+          style:"currency",
+          currency:"EUR"
+        }
+      );
+
+
+    document
+      .querySelectorAll(
+        ".cart-total strong,"+
+        ".cart-summary-total strong,"+
+        "#cartTotal,"+
+        "#cartSummaryTotal"
+      )
+      .forEach(el=>{
+
+        el.textContent=
+          formatted;
+
+      });
+
+
+    document
+      .querySelectorAll(
+        "#checkoutTotal,"+
+        "#checkoutSummaryTotal"
+      )
+      .forEach(el=>{
+
+        el.textContent=
+          formatted;
+
+      });
+
+  };
+
+
+  /* -------------------------------------------------------
+     FAVORIS
+  ------------------------------------------------------- */
+
+  window.novaUpdateFavorites=function(){
+
+    try{
+
+      localStorage.setItem(
+        "novaFavorites",
+        JSON.stringify(
+          window.favorites
+        )
+      );
+
+    }catch{}
+
+    document
+      .querySelectorAll(
+        ".favorite-count,#favoriteCount"
+      )
+      .forEach(el=>{
+
+        el.textContent=
+          window.favorites.length;
+
+      });
+
+  };
+
+
+  /* -------------------------------------------------------
+     TOAST
+  ------------------------------------------------------- */
+
+  window.novaToast=function(message){
+
+    if(
+      typeof window.showToast ===
+      "function"
+    ){
+
+      window.showToast(
+        message
+      );
+
+      return;
+
+    }
+
+
+    let toast =
+      document.querySelector(
+        "#novaFallbackToast"
+      );
+
+
+    if(!toast){
+
+      toast =
+        document.createElement(
+          "div"
+        );
+
+      toast.id=
+        "novaFallbackToast";
+
+
+      Object.assign(
+        toast.style,
+        {
+
+          position:"fixed",
+
+          right:"20px",
+
+          bottom:"20px",
+
+          zIndex:"100000",
+
+          padding:"14px 18px",
+
+          background:"#202733",
+
+          color:"#fff",
+
+          borderRadius:"12px",
+
+          boxShadow:
+            "0 10px 30px rgba(0,0,0,.4)",
+
+          fontWeight:"700"
+
+        }
+
+      );
+
+
+      document.body.appendChild(
+        toast
+      );
+
+    }
+
+
+    toast.textContent=
+      message;
+
+
+    clearTimeout(
+      window.__novaToastTimer
+    );
+
+
+    window.__novaToastTimer=
+      setTimeout(
+        ()=>toast.remove(),
+        2500
+      );
+
+  };
+
+
+  /* =======================================================
+     AFFICHER LES AVIS DANS UNE FICHE PRODUIT
+  ======================================================= */
+
+  window.novaRenderReviews=function(
+    productId,
+    container
+  ){
+
+    if(!container){
+
+      return;
+
+    }
+
+
+    const reviews =
+      Array.isArray(
+        window.novaReviews?.[
+          String(productId)
+        ]
+      )
+        ? window.novaReviews[
+            String(productId)
+          ]
+        : [];
+
+
+    if(!reviews.length){
+
+      container.innerHTML=`
+
+        <div class="reviews-empty">
+
+          ⭐ Aucun avis pour ce produit.
+
+          <br>
+
+          Sois le premier à laisser une note !
+
+        </div>
+
+      `;
+
+      return;
+
+    }
+
+
+    let total=0;
+
+
+    reviews.forEach(
+      review=>{
+        total +=
+          Number(
+            review.rating
+          ) || 0;
+      }
+    );
+
+
+    const average =
+      (
+        total /
+        reviews.length
+      ).toFixed(1);
+
+
+    let stars="";
+
+
+    for(
+      let i=1;
+      i<=5;
+      i++
+    ){
+
+      stars +=
+        i <= Math.round(
+          Number(average)
+        )
+          ? "★"
+          : "☆";
+
+    }
+
+
+    let html=`
+
+      <div class="review-rating-big">
+
+        <span
+          class="review-rating-number"
+        >
+          ${average}
+        </span>
+
+        <span
+          class="review-rating-stars"
+        >
+          ${stars}
+        </span>
+
+        <span
+          style="
+            color:#7f8a99;
+            font-size:12px;
+          "
+        >
+          (${reviews.length} avis)
+        </span>
+
+      </div>
+
+    `;
+
+
+    reviews.forEach(
+      review=>{
+
+        let reviewStars="";
+
+
+        for(
+          let i=1;
+          i<=5;
+          i++
+        ){
+
+          reviewStars +=
+            i <=
+            Number(
+              review.rating
+            )
+              ? "★"
+              : "☆";
+
+        }
+
+
+        const initials =
+          String(
+            review.author ||
+            "C"
+          )
+            .trim()
+            .charAt(0)
+            .toUpperCase();
+
+
+        html += `
+
+          <div class="nova-review">
+
+            <div
+              class="nova-review-head"
+            >
+
+              <div
+                class="nova-review-user"
+              >
+
+                <div
+                  class="nova-review-avatar"
+                >
+                  ${initials}
+                </div>
+
+                <div>
+
+                  <strong>
+                    ${String(
+                      review.author ||
+                      "Client"
+                    )
+                      .replaceAll(
+                        "<",
+                        "&lt;"
+                      )}
+                  </strong>
+
+                  <span>
+                    ${window.novaFormatDate
+                      ? window.novaFormatDate(
+                          review.createdAt
+                        )
+                      : ""}
+                  </span>
+
+                </div>
+
+              </div>
+
+
+              <div
+                class="nova-review-stars"
+              >
+                ${reviewStars}
+              </div>
+
+            </div>
+
+
+            <p
+              class="nova-review-text"
+            >
+              ${String(
+                review.text ||
+                ""
+              )
+                .replaceAll(
+                  "&",
+                  "&amp;"
+                )
+                .replaceAll(
+                  "<",
+                  "&lt;"
+                )
+                .replaceAll(
+                  ">",
+                  "&gt;"
+                )}
+            </p>
+
+          </div>
+
+        `;
+
+      }
+    );
+
+
+    container.innerHTML=
+      html;
+
+  };
+
+
+  /* =======================================================
+     DATE
+  ======================================================= */
+
+  window.novaFormatDate=function(
+    dateValue
+  ){
+
+    try{
+
+      let date;
+
+
+      if(
+        dateValue &&
+        typeof dateValue.toDate ===
+        "function"
+      ){
+
+        date=
+          dateValue.toDate();
+
+      }else{
+
+        date=
+          new Date(
+            dateValue
+          );
+
+      }
+
+
+      if(
+        isNaN(
+          date.getTime()
+        )
+      ){
+
+        return "";
+
+      }
+
+
+      return date.toLocaleDateString(
+        "fr-FR",
+        {
+          day:"2-digit",
+          month:"2-digit",
+          year:"numeric"
+        }
+      );
+
+    }catch{
+
+      return "";
+
+    }
+
+  };
+
+
+  /* =======================================================
+     RÉPARATION UI
+  ======================================================= */
+
+  function refresh(){
+
+    window.novaUpdateCartCount();
+
+    window.novaUpdateCartPrices();
+
+    window.novaUpdateFavorites();
+
+  }
+
+
+  document.addEventListener(
+    "DOMContentLoaded",
+    refresh
+  );
+
+
+  setTimeout(
+    refresh,
+    800
+  );
+
+
+  setTimeout(
+    refresh,
+    1800
+  );
+
+
+  /* =======================================================
+     ÉCOUTE LOCALSTORAGE
+  ======================================================= */
+
+  window.addEventListener(
+    "storage",
+    event=>{
+
+      if(
+        event.key ===
+        "novaCart"
+      ){
+
+        try{
+
+          window.cart=
+            JSON.parse(
+              event.newValue ||
+              "[]"
+            );
+
+        }catch{
+
+          window.cart=[];
+
+        }
+
+        refresh();
+
+      }
+
+
+      if(
+        event.key ===
+        "novaFavorites"
+      ){
+
+        try{
+
+          window.favorites=
+            JSON.parse(
+              event.newValue ||
+              "[]"
+            );
+
+        }catch{
+
+          window.favorites=[];
+
+        }
+
+        refresh();
+
+      }
+
+    }
+  );
+
+
+  console.log(
+    "NovaShop Partie 5/2 chargée ✅"
+  );
+
+})();
+
+</script>
+
+
+<!-- =======================================================
+     FIN PARTIE 5
+======================================================= -->/* =========================================================
+   PARTIE 5 - 2/2
+   AVIS + FIREBASE + SYNCHRO + STYLE FINAL
+========================================================= */
+
+<style>
+
+/* =========================================================
+   FICHE AVIS
+========================================================= */
+
+.product-review-zone{
+
+  margin-top:25px;
+
+  padding-top:22px;
+
+  border-top:1px solid #2a3340;
+
+}
+
+.product-review-zone h3{
+
+  color:#fff;
+
+  margin:0 0 15px;
+
+  font-size:19px;
+
+}
+
+.review-create-box{
+
+  display:grid;
+
+  gap:12px;
+
+  padding:16px;
+
+  background:#151b23;
+
+  border:1px solid #293341;
+
+  border-radius:15px;
+
+  margin-bottom:18px;
+
+}
+
+.review-create-box label{
+
+  color:#aeb7c5;
+
+  font-size:13px;
+
+  font-weight:700;
+
+}
+
+.review-create-box select{
+
+  width:100%;
+
+  padding:12px;
+
+  border:1px solid #303a48;
+
+  border-radius:10px;
+
+  background:#1b222c;
+
+  color:#fff;
+
+}
+
+.review-create-box textarea{
+
+  width:100%;
+
+  min-height:100px;
+
+  box-sizing:border-box;
+
+  resize:vertical;
+
+  padding:12px;
+
+  border:1px solid #303a48;
+
+  border-radius:10px;
+
+  background:#1b222c;
+
+  color:#fff;
+
+  font-family:inherit;
+
+  outline:none;
+
+}
+
+.review-create-box textarea:focus{
+
+  border-color:#6b82ff;
+
+}
+
+.review-create-box button{
+
+  border:0;
+
+  border-radius:11px;
+
+  padding:13px;
+
+  background:linear-gradient(
+    135deg,
+    #5d7cff,
+    #8d5cff
+  );
+
+  color:#fff;
+
+  font-weight:800;
+
+  cursor:pointer;
+
+}
+
+.review-create-box button:hover{
+
+  filter:brightness(1.1);
 
 }
 
 
-novaAutoSave();
+/* =========================================================
+   NOTE ÉTOILES
+========================================================= */
+
+.review-rating-big{
+
+  display:flex;
+
+  align-items:center;
+
+  gap:8px;
+
+  margin-bottom:15px;
+
+}
+
+.review-rating-number{
+
+  color:#fff;
+
+  font-size:27px;
+
+  font-weight:900;
+
+}
+
+.review-rating-stars{
+
+  color:#ffc94f;
+
+  font-size:20px;
+
+  letter-spacing:2px;
+
+}
 
 
 /* =========================================================
-   IMAGE FALLBACK GLOBAL
+   CARTES AVIS
 ========================================================= */
 
-document.addEventListener(
-    "error",
-    event=>{
+.nova-review{
 
-        const element=
-            event.target;
+  padding:15px;
+
+  background:#151b23;
+
+  border:1px solid #293341;
+
+  border-radius:14px;
+
+  margin-bottom:10px;
+
+}
+
+.nova-review-head{
+
+  display:flex;
+
+  justify-content:space-between;
+
+  align-items:flex-start;
+
+  gap:15px;
+
+}
+
+.nova-review-user{
+
+  display:flex;
+
+  align-items:center;
+
+  gap:10px;
+
+}
+
+.nova-review-avatar{
+
+  width:38px;
+
+  height:38px;
+
+  border-radius:50%;
+
+  display:flex;
+
+  align-items:center;
+
+  justify-content:center;
+
+  background:#263149;
+
+  color:#fff;
+
+  font-weight:900;
+
+}
+
+.nova-review-user strong{
+
+  display:block;
+
+  color:#fff;
+
+}
+
+.nova-review-user span{
+
+  display:block;
+
+  margin-top:2px;
+
+  color:#778394;
+
+  font-size:11px;
+
+}
+
+.nova-review-stars{
+
+  color:#ffc94f;
+
+  white-space:nowrap;
+
+}
+
+.nova-review-text{
+
+  color:#c4cbd5;
+
+  line-height:1.55;
+
+  margin:12px 0 0;
+
+}
 
 
-        if(
-            element &&
-            element.tagName==="IMG" &&
-            !element.dataset.fallback
-        ){
+/* =========================================================
+   PROFIL RAPIDE
+========================================================= */
 
-            element.dataset.fallback="1";
+.nova-account-summary{
 
-            element.src=
-                "https://placehold.co/640x480/111827/ffffff?text=NovaShop";
+  display:grid;
+
+  grid-template-columns:
+    repeat(3,1fr);
+
+  gap:12px;
+
+  margin-top:20px;
+
+}
+
+.nova-account-stat{
+
+  padding:15px;
+
+  background:#161c24;
+
+  border:1px solid #293340;
+
+  border-radius:14px;
+
+  text-align:center;
+
+}
+
+.nova-account-stat strong{
+
+  display:block;
+
+  color:#fff;
+
+  font-size:22px;
+
+}
+
+.nova-account-stat span{
+
+  color:#7f8a99;
+
+  font-size:12px;
+
+}
+
+
+/* =========================================================
+   BOUTONS HISTORIQUE
+========================================================= */
+
+.order-action-row{
+
+  display:flex;
+
+  flex-wrap:wrap;
+
+  gap:9px;
+
+  padding:0 17px 16px;
+
+}
+
+.order-action-row button{
+
+  border:0;
+
+  border-radius:9px;
+
+  padding:9px 12px;
+
+  background:#252e3a;
+
+  color:#fff;
+
+  cursor:pointer;
+
+  font-size:12px;
+
+  font-weight:700;
+
+}
+
+.order-action-row button:hover{
+
+  background:#344052;
+
+}
+
+
+/* =========================================================
+   BADGES
+========================================================= */
+
+.nova-badge-success{
+
+  display:inline-flex;
+
+  align-items:center;
+
+  gap:5px;
+
+  padding:6px 9px;
+
+  border-radius:999px;
+
+  background:rgba(64,210,137,.12);
+
+  color:#5de09b;
+
+  font-size:11px;
+
+  font-weight:800;
+
+}
+
+.nova-badge-pending{
+
+  display:inline-flex;
+
+  align-items:center;
+
+  gap:5px;
+
+  padding:6px 9px;
+
+  border-radius:999px;
+
+  background:rgba(255,190,70,.12);
+
+  color:#ffc65b;
+
+  font-size:11px;
+
+  font-weight:800;
+
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media(max-width:650px){
+
+  .nova-account-summary{
+
+    grid-template-columns:1fr;
+
+  }
+
+  .nova-review-head{
+
+    flex-direction:column;
+
+  }
+
+}
+
+
+/* =========================================================
+   ANIMATION
+========================================================= */
+
+@keyframes novaFadeIn{
+
+  from{
+
+    opacity:0;
+
+    transform:translateY(8px);
+
+  }
+
+  to{
+
+    opacity:1;
+
+    transform:translateY(0);
+
+  }
+
+}
+
+.nova-review,
+.order-card{
+
+  animation:
+    novaFadeIn .22s ease both;
+
+}
+
+</style>
+
+
+<script>
+
+/* =========================================================
+   COMPATIBILITÉ AVEC LES PARTIES PRÉCÉDENTES
+========================================================= */
+
+(function(){
+
+  "use strict";
+
+
+  /* -------------------------------------------------------
+     RÉCUPÉRATION PANIER
+  ------------------------------------------------------- */
+
+  if(!Array.isArray(window.cart)){
+
+    try{
+
+      window.cart =
+        JSON.parse(
+          localStorage.getItem(
+            "novaCart"
+          ) || "[]"
+        );
+
+    }catch{
+
+      window.cart=[];
+
+    }
+
+  }
+
+
+  /* -------------------------------------------------------
+     RÉCUPÉRATION FAVORIS
+  ------------------------------------------------------- */
+
+  if(!Array.isArray(window.favorites)){
+
+    try{
+
+      window.favorites =
+        JSON.parse(
+          localStorage.getItem(
+            "novaFavorites"
+          ) || "[]"
+        );
+
+    }catch{
+
+      window.favorites=[];
+
+    }
+
+  }
+
+
+  /* -------------------------------------------------------
+     ORDERS
+  ------------------------------------------------------- */
+
+  if(!Array.isArray(window.orders)){
+
+    try{
+
+      window.orders =
+        JSON.parse(
+          localStorage.getItem(
+            "novaOrders"
+          ) || "[]"
+        );
+
+    }catch{
+
+      window.orders=[];
+
+    }
+
+  }
+
+
+  /* -------------------------------------------------------
+     SAUVEGARDE PANIER
+  ------------------------------------------------------- */
+
+  window.saveNovaCart=function(){
+
+    try{
+
+      localStorage.setItem(
+        "novaCart",
+        JSON.stringify(
+          window.cart
+        )
+      );
+
+    }catch(error){
+
+      console.warn(error);
+
+    }
+
+  };
+
+
+  /* -------------------------------------------------------
+     TOTAL PANIER ROBUSTE
+  ------------------------------------------------------- */
+
+  window.novaCalculateTotal=function(){
+
+    let total=0;
+
+
+    if(!Array.isArray(window.cart)){
+
+      return 0;
+
+    }
+
+
+    window.cart.forEach(item=>{
+
+      const product =
+        Array.isArray(window.products)
+          ? window.products.find(
+              p =>
+                String(p.id) ===
+                String(item.id)
+            )
+          : null;
+
+
+      if(!product){
+
+        return;
+
+      }
+
+
+      const quantity =
+        Math.max(
+          1,
+          Number(
+            item.quantity
+          ) || 1
+        );
+
+
+      total +=
+        Number(
+          product.price
+        ) *
+        quantity;
+
+    });
+
+
+    return total;
+
+  };
+
+
+  /* -------------------------------------------------------
+     COMPTEUR PANIER
+  ------------------------------------------------------- */
+
+  window.novaUpdateCartCount=function(){
+
+    const count =
+      Array.isArray(window.cart)
+        ? window.cart.reduce(
+            (sum,item)=>
+              sum +
+              Math.max(
+                1,
+                Number(
+                  item.quantity
+                ) || 1
+              ),
+            0
+          )
+        : 0;
+
+
+    document
+      .querySelectorAll(
+        ".cart-count,#cartCount"
+      )
+      .forEach(el=>{
+
+        el.textContent=
+          count;
+
+      });
+
+  };
+
+
+  /* -------------------------------------------------------
+     PRIX PANIER
+  ------------------------------------------------------- */
+
+  window.novaUpdateCartPrices=function(){
+
+    const total =
+      window.novaCalculateTotal();
+
+
+    const formatted =
+      total.toLocaleString(
+        "fr-FR",
+        {
+          style:"currency",
+          currency:"EUR"
+        }
+      );
+
+
+    document
+      .querySelectorAll(
+        ".cart-total strong,"+
+        ".cart-summary-total strong,"+
+        "#cartTotal,"+
+        "#cartSummaryTotal"
+      )
+      .forEach(el=>{
+
+        el.textContent=
+          formatted;
+
+      });
+
+
+    document
+      .querySelectorAll(
+        "#checkoutTotal,"+
+        "#checkoutSummaryTotal"
+      )
+      .forEach(el=>{
+
+        el.textContent=
+          formatted;
+
+      });
+
+  };
+
+
+  /* -------------------------------------------------------
+     FAVORIS
+  ------------------------------------------------------- */
+
+  window.novaUpdateFavorites=function(){
+
+    try{
+
+      localStorage.setItem(
+        "novaFavorites",
+        JSON.stringify(
+          window.favorites
+        )
+      );
+
+    }catch{}
+
+    document
+      .querySelectorAll(
+        ".favorite-count,#favoriteCount"
+      )
+      .forEach(el=>{
+
+        el.textContent=
+          window.favorites.length;
+
+      });
+
+  };
+
+
+  /* -------------------------------------------------------
+     TOAST
+  ------------------------------------------------------- */
+
+  window.novaToast=function(message){
+
+    if(
+      typeof window.showToast ===
+      "function"
+    ){
+
+      window.showToast(
+        message
+      );
+
+      return;
+
+    }
+
+
+    let toast =
+      document.querySelector(
+        "#novaFallbackToast"
+      );
+
+
+    if(!toast){
+
+      toast =
+        document.createElement(
+          "div"
+        );
+
+      toast.id=
+        "novaFallbackToast";
+
+
+      Object.assign(
+        toast.style,
+        {
+
+          position:"fixed",
+
+          right:"20px",
+
+          bottom:"20px",
+
+          zIndex:"100000",
+
+          padding:"14px 18px",
+
+          background:"#202733",
+
+          color:"#fff",
+
+          borderRadius:"12px",
+
+          boxShadow:
+            "0 10px 30px rgba(0,0,0,.4)",
+
+          fontWeight:"700"
 
         }
 
-    },
-    true
-);
+      );
 
 
-/* =========================================================
-   FINAL INIT
-========================================================= */
+      document.body.appendChild(
+        toast
+      );
 
-setTimeout(()=>{
-
-    renderFinalCategories();
-
-    renderProducts();
-
-    updateCounters();
-
-    updateFavoriteBadge();
-
-},150);
+    }
 
 
-/* =========================================================
-   MESSAGE FINAL DEV
-========================================================= */
+    toast.textContent=
+      message;
 
-console.log(
-    "NovaShop chargé :",
-    products.length,
-    "produits."
-);
+
+    clearTimeout(
+      window.__novaToastTimer
+    );
+
+
+    window.__novaToastTimer=
+      setTimeout(
+        ()=>toast.remove(),
+        2500
+      );
+
+  };
+
+
+  /* =======================================================
+     AFFICHER LES AVIS DANS UNE FICHE PRODUIT
+  ======================================================= */
+
+  window.novaRenderReviews=function(
+    productId,
+    container
+  ){
+
+    if(!container){
+
+      return;
+
+    }
+
+
+    const reviews =
+      Array.isArray(
+        window.novaReviews?.[
+          String(productId)
+        ]
+      )
+        ? window.novaReviews[
+            String(productId)
+          ]
+        : [];
+
+
+    if(!reviews.length){
+
+      container.innerHTML=`
+
+        <div class="reviews-empty">
+
+          ⭐ Aucun avis pour ce produit.
+
+          <br>
+
+          Sois le premier à laisser une note !
+
+        </div>
+
+      `;
+
+      return;
+
+    }
+
+
+    let total=0;
+
+
+    reviews.forEach(
+      review=>{
+        total +=
+          Number(
+            review.rating
+          ) || 0;
+      }
+    );
+
+
+    const average =
+      (
+        total /
+        reviews.length
+      ).toFixed(1);
+
+
+    let stars="";
+
+
+    for(
+      let i=1;
+      i<=5;
+      i++
+    ){
+
+      stars +=
+        i <= Math.round(
+          Number(average)
+        )
+          ? "★"
+          : "☆";
+
+    }
+
+
+    let html=`
+
+      <div class="review-rating-big">
+
+        <span
+          class="review-rating-number"
+        >
+          ${average}
+        </span>
+
+        <span
+          class="review-rating-stars"
+        >
+          ${stars}
+        </span>
+
+        <span
+          style="
+            color:#7f8a99;
+            font-size:12px;
+          "
+        >
+          (${reviews.length} avis)
+        </span>
+
+      </div>
+
+    `;
+
+
+    reviews.forEach(
+      review=>{
+
+        let reviewStars="";
+
+
+        for(
+          let i=1;
+          i<=5;
+          i++
+        ){
+
+          reviewStars +=
+            i <=
+            Number(
+              review.rating
+            )
+              ? "★"
+              : "☆";
+
+        }
+
+
+        const initials =
+          String(
+            review.author ||
+            "C"
+          )
+            .trim()
+            .charAt(0)
+            .toUpperCase();
+
+
+        html += `
+
+          <div class="nova-review">
+
+            <div
+              class="nova-review-head"
+            >
+
+              <div
+                class="nova-review-user"
+              >
+
+                <div
+                  class="nova-review-avatar"
+                >
+                  ${initials}
+                </div>
+
+                <div>
+
+                  <strong>
+                    ${String(
+                      review.author ||
+                      "Client"
+                    )
+                      .replaceAll(
+                        "<",
+                        "&lt;"
+                      )}
+                  </strong>
+
+                  <span>
+                    ${window.novaFormatDate
+                      ? window.novaFormatDate(
+                          review.createdAt
+                        )
+                      : ""}
+                  </span>
+
+                </div>
+
+              </div>
+
+
+              <div
+                class="nova-review-stars"
+              >
+                ${reviewStars}
+              </div>
+
+            </div>
+
+
+            <p
+              class="nova-review-text"
+            >
+              ${String(
+                review.text ||
+                ""
+              )
+                .replaceAll(
+                  "&",
+                  "&amp;"
+                )
+                .replaceAll(
+                  "<",
+                  "&lt;"
+                )
+                .replaceAll(
+                  ">",
+                  "&gt;"
+                )}
+            </p>
+
+          </div>
+
+        `;
+
+      }
+    );
+
+
+    container.innerHTML=
+      html;
+
+  };
+
+
+  /* =======================================================
+     DATE
+  ======================================================= */
+
+  window.novaFormatDate=function(
+    dateValue
+  ){
+
+    try{
+
+      let date;
+
+
+      if(
+        dateValue &&
+        typeof dateValue.toDate ===
+        "function"
+      ){
+
+        date=
+          dateValue.toDate();
+
+      }else{
+
+        date=
+          new Date(
+            dateValue
+          );
+
+      }
+
+
+      if(
+        isNaN(
+          date.getTime()
+        )
+      ){
+
+        return "";
+
+      }
+
+
+      return date.toLocaleDateString(
+        "fr-FR",
+        {
+          day:"2-digit",
+          month:"2-digit",
+          year:"numeric"
+        }
+      );
+
+    }catch{
+
+      return "";
+
+    }
+
+  };
+
+
+  /* =======================================================
+     RÉPARATION UI
+  ======================================================= */
+
+  function refresh(){
+
+    window.novaUpdateCartCount();
+
+    window.novaUpdateCartPrices();
+
+    window.novaUpdateFavorites();
+
+  }
+
+
+  document.addEventListener(
+    "DOMContentLoaded",
+    refresh
+  );
+
+
+  setTimeout(
+    refresh,
+    800
+  );
+
+
+  setTimeout(
+    refresh,
+    1800
+  );
+
+
+  /* =======================================================
+     ÉCOUTE LOCALSTORAGE
+  ======================================================= */
+
+  window.addEventListener(
+    "storage",
+    event=>{
+
+      if(
+        event.key ===
+        "novaCart"
+      ){
+
+        try{
+
+          window.cart=
+            JSON.parse(
+              event.newValue ||
+              "[]"
+            );
+
+        }catch{
+
+          window.cart=[];
+
+        }
+
+        refresh();
+
+      }
+
+
+      if(
+        event.key ===
+        "novaFavorites"
+      ){
+
+        try{
+
+          window.favorites=
+            JSON.parse(
+              event.newValue ||
+              "[]"
+            );
+
+        }catch{
+
+          window.favorites=[];
+
+        }
+
+        refresh();
+
+      }
+
+    }
+  );
+
+
+  console.log(
+    "NovaShop Partie 5/2 chargée ✅"
+  );
+
+})();
 
 </script>
+
+
+<!-- =======================================================
+     FIN PARTIE 5
+======================================================= -->
