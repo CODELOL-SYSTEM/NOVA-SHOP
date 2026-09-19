@@ -1,4 +1,6 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
+import {
+  initializeApp
+} from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
 
 import {
   getAuth,
@@ -11,17 +13,14 @@ import {
 import {
   getFirestore,
   collection,
-  addDoc,
-  getDocs,
   doc,
-  getDoc,
-  setDoc,
+  addDoc,
   updateDoc,
   deleteDoc,
+  getDoc,
+  onSnapshot,
   query,
   where,
-  orderBy,
-  onSnapshot,
   serverTimestamp
 } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
 
@@ -41,18 +40,15 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
-
 const auth = getAuth(app);
-
 const db = getFirestore(app);
 
 
 /* =========================================================
-   CONFIG
+   ADMIN
 ========================================================= */
 
 const ADMIN_EMAIL = "pc2alex.les@gmail.com";
-
 const ADMIN_CODE = "NOVA-ADMIN-2026";
 
 
@@ -62,147 +58,130 @@ const ADMIN_CODE = "NOVA-ADMIN-2026";
 
 const products = [
   {
-    id:"p1",
-    name:"Gigabyte B650 AORUS Elite AX",
-    category:"Composants",
-    price:189.99,
-    image:"https://m.media-amazon.com/images/I/81JFKzNyl+L._AC_SL1500_.jpg"
+    id: "iphone",
+    name: "iPhone",
+    category: "Téléphones",
+    price: 899.99,
+    image: "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=900&q=85"
   },
-
   {
-    id:"p2",
-    name:"PC Gamer AMD Ryzen 7 7800X3D | RX 9070 XT | 32 Go DDR5",
-    category:"PC Gamer",
-    price:2237.65,
-    image:"https://www.memorypc.fr/thumbnail/53/79/73/1786604635/019f8f1c2c6972a8a3ea1ee9516a0652_1784812416_800x800.png"
+    id: "samsung",
+    name: "Samsung Galaxy",
+    category: "Téléphones",
+    price: 749.99,
+    image: "https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?auto=format&fit=crop&w=900&q=85"
   },
-
   {
-    id:"p3",
-    name:"HyperX Cloud II",
-    category:"Casques",
-    price:49.99,
-    image:"https://cdn.shopify.com/s/files/1/0551/0548/6979/files/hyperx_cloud_ii_red_1_main_64x64.jpg?v=1764129756"
+    id: "macbook",
+    name: "MacBook",
+    category: "Ordinateurs",
+    price: 1299.99,
+    image: "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?auto=format&fit=crop&w=900&q=85"
   },
-
   {
-    id:"p4",
-    name:"TECORS Clavier Gamer Mécanique 60% AZERTY",
-    category:"Claviers",
-    price:30,
-    image:"https://m.media-amazon.com/images/I/71-lhAU97VL._AC_SL1500_.jpg"
+    id: "gaming-pc",
+    name: "PC Gaming RGB",
+    category: "Ordinateurs",
+    price: 1499.99,
+    image: "https://images.unsplash.com/photo-1587202372775-e229f172b9d7?auto=format&fit=crop&w=900&q=85"
   },
-
   {
-    id:"p5",
-    name:"Clavier Magnétique 65% Celshading Noir",
-    category:"Claviers",
-    price:120.90,
-    image:"https://tryhard-gear.com/cdn/shop/files/TestCelshadingnoirV2.webp?v=1762273866&width=832"
+    id: "ps5",
+    name: "PlayStation 5",
+    category: "Gaming",
+    price: 549.99,
+    image: "https://images.unsplash.com/photo-1606813907291-d86efa9b94db?auto=format&fit=crop&w=900&q=85"
   },
-
   {
-    id:"p6",
-    name:"Ajazz AJ199 MAX Carbon Fiber Wireless Gaming Mouse",
-    category:"Souris",
-    price:49.99,
-    image:"https://ae-pic-a1.aliexpress-media.com/kf/S1e981b53ccfe4e1391cd5b5deb4fce87o.png_960x960.png_.avif"
+    id: "xbox",
+    name: "Xbox Series X",
+    category: "Gaming",
+    price: 499.99,
+    image: "https://images.unsplash.com/photo-1621259182978-fbf93132d53d?auto=format&fit=crop&w=900&q=85"
   },
-
   {
-    id:"p7",
-    name:"Logitech G PRO X2 Superstrike Blanc et Noir",
-    category:"Souris",
-    price:150.99,
-    image:"https://static.fnac-static.com/multimedia/Images/FR/MDM/7a/34/bc/29111418/1540-1.jpg"
+    id: "headset",
+    name: "Casque Gaming",
+    category: "Gaming",
+    price: 89.99,
+    image: "https://images.unsplash.com/photo-1599669454699-248893623440?auto=format&fit=crop&w=900&q=85"
   },
-
   {
-    id:"p8",
-    name:"Samsung 990 PRO 1TB",
-    category:"Stockage",
-    price:249.99,
-    image:"https://content.pearl.fr/media/cache/default/article_ultralarge_high_nocrop/shared/images/articles/M/MW1/disque-dur-interne-ssd-990-pro-pcie-nvme-m-2-2280-1-to-ref_MW1148_2.jpg"
+    id: "keyboard",
+    name: "Clavier Gaming",
+    category: "Gaming",
+    price: 69.99,
+    image: "https://images.unsplash.com/photo-1587829741301-dc798b83add3?auto=format&fit=crop&w=900&q=85"
   },
-
   {
-    id:"p9",
-    name:"Samsung 990 PRO 2TB",
-    category:"Stockage",
-    price:199.93,
-    image:"https://pc.comparer.fr/500x500/310191422.webp"
+    id: "mouse",
+    name: "Souris Gaming",
+    category: "Gaming",
+    price: 49.99,
+    image: "https://images.unsplash.com/photo-1527814050087-3793815479db?auto=format&fit=crop&w=900&q=85"
   },
-
   {
-    id:"p10",
-    name:"CORSAIR RM1000x EU",
-    category:"Alimentations",
-    price:159.90,
-    image:"https://assets.corsair.com/image/upload/c_pad,q_85,h_608,w_608,f_auto/products/Power-Supply-Units/base-rmx-2024-config/gallery/black/1000/RM1000x_2024_01.webp"
+    id: "monitor",
+    name: "Écran Gaming 180 Hz",
+    category: "Gaming",
+    price: 229.99,
+    image: "https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?auto=format&fit=crop&w=900&q=85"
   },
-
   {
-    id:"p11",
-    name:"CORSAIR RM850x EU",
-    category:"Alimentations",
-    price:134.90,
-    image:"https://assets.corsair.com/image/upload/c_pad,q_85,h_608,w_608,f_auto/products/Power-Supply-Units/base-rmx-2024-config/gallery/black/850/RM850x_2024_01.webp"
+    id: "airpods",
+    name: "Écouteurs Bluetooth",
+    category: "Audio",
+    price: 149.99,
+    image: "https://images.unsplash.com/photo-1600294037681-c80b4cb5b434?auto=format&fit=crop&w=900&q=85"
   },
-
   {
-    id:"p12",
-    name:"Corsair Frame 5000D RS ARGB Noir",
-    category:"Boîtiers",
-    price:159.90,
-    image:"https://media.ldlc.com/r1600/ld/products/00/06/26/05/LD0006260502.jpg"
+    id: "speaker",
+    name: "Enceinte Bluetooth",
+    category: "Audio",
+    price: 79.99,
+    image: "https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?auto=format&fit=crop&w=900&q=85"
   },
-
   {
-    id:"p13",
-    name:"ARCTIC Liquid Freezer III Pro 360 A-RGB Black",
-    category:"Refroidissement",
-    price:129.90,
-    image:"https://cdn.idealo.com/folder/Product/206182/0/206182034/s4_produktbild_gross/arctic-liquid-freezer-iii-pro-360-a-rgb-black.jpg"
+    id: "camera",
+    name: "Appareil Photo",
+    category: "Photo",
+    price: 699.99,
+    image: "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&w=900&q=85"
   },
-
   {
-    id:"p14",
-    name:"Samsung 27 QD-OLED Odyssey G6",
-    category:"Écrans",
-    price:399.95,
-    image:"https://media.ldlc.com/r705/ld/products/00/06/32/99/LD0006329977.jpg"
+    id: "watch",
+    name: "Smartwatch",
+    category: "Accessoires",
+    price: 199.99,
+    image: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=900&q=85"
   },
-
   {
-    id:"p15",
-    name:"ELGATO Wave Mic Arm Pro",
-    category:"Streaming",
-    price:229.90,
-    image:"https://www.digit-photo.com/images/produits/ELGATO10AAT9901/1.jpg"
+    id: "tablet",
+    name: "Tablette",
+    category: "Tablettes",
+    price: 399.99,
+    image: "https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?auto=format&fit=crop&w=900&q=85"
   },
-
   {
-    id:"p16",
-    name:"Sony DualSense Cosmic Red PS5/PC",
-    category:"Manettes",
-    price:74.90,
-    image:"https://media.carrefour.fr/media/referential/media/cc07d7de4b9e4bea8c063e8f9bb46d94/p_200x200/0711719023005_0.jpg"
+    id: "tv",
+    name: "TV 4K",
+    category: "TV",
+    price: 799.99,
+    image: "https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?auto=format&fit=crop&w=900&q=85"
   },
-
   {
-    id:"p17",
-    name:"ASUS TUF Gaming B650-PLUS",
-    category:"Composants",
-    price:179.90,
-    image:"https://media.materiel.net/r550/products/MN0005986139.jpg"
+    id: "router",
+    name: "Routeur Wi-Fi",
+    category: "Réseau",
+    price: 119.99,
+    image: "https://images.unsplash.com/photo-1606904825846-647eb07f5be2?auto=format&fit=crop&w=900&q=85"
   },
-
   {
-    id:"p18",
-    name:"MSI MAG B650 Tomahawk WiFi",
-    category:"Composants",
-    price:189.90,
-    image:"https://m.media-amazon.com/images/I/71TYAcZ4J8L._AC_SL1200_.jpg"
+    id: "ssd",
+    name: "SSD 2 To",
+    category: "Informatique",
+    price: 159.99,
+    image: "https://images.unsplash.com/photo-1597872200969-2b65d56bd16b?auto=format&fit=crop&w=900&q=85"
   }
 ];
 
@@ -212,19 +191,16 @@ const products = [
 ========================================================= */
 
 let currentUser = null;
-
 let authMode = "login";
 
 let selectedCategory = "Tous";
-
 let searchValue = "";
 
-let cart = JSON.parse(localStorage.getItem("novaCart") || "[]");
+let cart = [];
 
 let reviewsCache = {};
 
 let questionsUnsubscribe = null;
-
 let adminQuestionsUnsubscribe = null;
 
 
@@ -232,149 +208,240 @@ let adminQuestionsUnsubscribe = null;
    UTILITAIRES
 ========================================================= */
 
-function randomInt(min,max){
-  return Math.floor(Math.random()*(max-min+1))+min;
+function randomInt(min, max) {
+  return Math.floor(
+    Math.random() * (max - min + 1)
+  ) + min;
 }
 
-function randomItem(array){
-  return array[Math.floor(Math.random()*array.length)];
+function randomItem(array) {
+  return array[
+    Math.floor(Math.random() * array.length)
+  ];
 }
 
-function money(value){
-  return Number(value).toLocaleString("fr-FR",{
-    style:"currency",
-    currency:"EUR"
-  });
+function money(value) {
+  return new Intl.NumberFormat("fr-FR", {
+    style: "currency",
+    currency: "EUR"
+  }).format(value);
 }
 
-function escapeHtml(value){
-  return String(value)
-    .replaceAll("&","&amp;")
-    .replaceAll("<","&lt;")
-    .replaceAll(">","&gt;")
-    .replaceAll('"',"&quot;")
-    .replaceAll("'","&#039;");
+function escapeHtml(value) {
+
+  return String(value ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
 }
 
-function stars(value){
-  const rounded=Math.round(value);
+function stars(rating) {
 
-  return "★".repeat(rounded)+"☆".repeat(5-rounded);
+  const rounded = Math.round(rating);
+
+  return "★".repeat(rounded) +
+         "☆".repeat(5 - rounded);
 }
 
-function showToast(message){
-  const toast=document.getElementById("toast");
+function showToast(message) {
 
-  toast.textContent=message;
-  toast.classList.add("show");
+  const old = document.querySelector(".novashop-toast");
 
-  setTimeout(()=>{
-    toast.classList.remove("show");
-  },3000);
+  if (old) old.remove();
+
+  const toast = document.createElement("div");
+
+  toast.className = "novashop-toast";
+
+  toast.textContent = message;
+
+  document.body.appendChild(toast);
+
+  setTimeout(() => {
+    toast.remove();
+  }, 3000);
 }
 
-function openModal(id){
-  document.getElementById(id)?.classList.add("open");
+function openModal(id) {
+
+  const modal = document.getElementById(id);
+
+  if (modal) {
+    modal.classList.add("open");
+  }
 }
 
-function closeModal(id){
-  document.getElementById(id)?.classList.remove("open");
+function closeModal(id) {
+
+  const modal = document.getElementById(id);
+
+  if (modal) {
+    modal.classList.remove("open");
+  }
 }
 
 
 /* =========================================================
-   AVIS GÉNÉRÉS
+   AVIS
 ========================================================= */
 
-const firstNames=[
-  "Lucas","Hugo","Nathan","Tom","Enzo","Louis","Arthur",
-  "Alex","Léo","Maxime","Théo","Mathis","Ethan","Noah",
-  "Gabriel","Jules","Adam","Sacha","Liam","Raphaël"
+const firstNames = [
+  "Lucas",
+  "Emma",
+  "Louis",
+  "Jade",
+  "Gabriel",
+  "Léa",
+  "Hugo",
+  "Chloé",
+  "Nathan",
+  "Manon",
+  "Tom",
+  "Camille",
+  "Noah",
+  "Sarah",
+  "Enzo",
+  "Inès",
+  "Arthur",
+  "Zoé",
+  "Mathis",
+  "Lola",
+  "Ethan",
+  "Mia",
+  "Théo",
+  "Alice"
 ];
 
-const lastNames=[
-  "Martin","Bernard","Dubois","Thomas","Robert","Richard",
-  "Petit","Durand","Leroy","Moreau","Simon","Laurent",
-  "Lefebvre","Michel","Garcia","David","Bertrand","Roux"
+const lastNames = [
+  "Martin",
+  "Bernard",
+  "Thomas",
+  "Robert",
+  "Richard",
+  "Petit",
+  "Durand",
+  "Leroy",
+  "Moreau",
+  "Simon",
+  "Laurent",
+  "Michel",
+  "Garcia",
+  "David",
+  "Bertrand",
+  "Roux",
+  "Vincent",
+  "Fournier",
+  "Girard",
+  "Bonnet"
 ];
 
-const reviewTexts={
-  5:[
-    "Excellent produit, fonctionne parfaitement.",
-    "Très bonne qualité et livraison rapide.",
-    "Je suis très satisfait du produit.",
+const reviewTexts = {
+
+  5: [
+    "Excellent produit, je recommande.",
+    "Très bonne qualité.",
+    "Livraison rapide et produit parfait.",
+    "Super achat.",
+    "Très satisfait de mon achat.",
     "Produit conforme à la description.",
-    "Très bon achat.",
-    "Rien à redire, tout fonctionne parfaitement."
+    "Rien à redire.",
+    "Très bon rapport qualité prix.",
+    "Je suis vraiment satisfait.",
+    "Fonctionne parfaitement."
   ],
 
-  4:[
-    "Très bon produit dans l'ensemble.",
-    "Bonne qualité, je recommande.",
-    "Produit efficace et conforme.",
-    "Très satisfait malgré quelques petits détails."
+  4: [
+    "Très bon produit.",
+    "Bonne qualité dans l'ensemble.",
+    "Je recommande.",
+    "Produit conforme.",
+    "Très satisfait.",
+    "Bon achat.",
+    "Livraison correcte.",
+    "Bonne expérience."
   ],
 
-  3:[
+  3: [
     "Produit correct.",
-    "Ça fonctionne mais peut être amélioré.",
-    "Qualité correcte pour le prix."
+    "Ça fonctionne correctement.",
+    "Qualité moyenne mais satisfaisante.",
+    "Pas mal.",
+    "Produit convenable."
   ],
 
-  2:[
-    "Quelques problèmes mais le produit fonctionne.",
-    "Pas totalement convaincu.",
-    "Qualité moyenne."
+  2: [
+    "Moyen.",
+    "Je m'attendais à mieux.",
+    "Quelques défauts.",
+    "Correct sans plus."
   ],
 
-  1:[
-    "Produit qui ne correspond pas totalement à mes attentes.",
-    "Quelques problèmes rencontrés."
+  1: [
+    "Déçu de mon achat.",
+    "Pas vraiment satisfait.",
+    "Qualité décevante."
   ]
 };
 
-function generateReviews(product){
 
-  const reviews=[];
+function generateReviews(product) {
 
-  const reviewCount=randomInt(850,950);
+  const reviews = [];
 
-  for(let i=0;i<reviewCount;i++){
+  const reviewCount = randomInt(850, 950);
 
-    const roll=Math.random();
+  for (let i = 0; i < reviewCount; i++) {
+
+    const roll = Math.random();
 
     let rating;
 
-    if(roll<0.72){
-      rating=5;
-    }
-    else if(roll<0.90){
-      rating=4;
-    }
-    else if(roll<0.97){
-      rating=3;
-    }
-    else if(roll<0.99){
-      rating=2;
-    }
-    else{
-      rating=1;
+    if (roll < 0.72) {
+
+      rating = 5;
+
+    } else if (roll < 0.90) {
+
+      rating = 4;
+
+    } else if (roll < 0.97) {
+
+      rating = 3;
+
+    } else if (roll < 0.99) {
+
+      rating = 2;
+
+    } else {
+
+      rating = 1;
     }
 
-    const first=randomItem(firstNames);
-    const last=randomItem(lastNames);
+    const first = randomItem(firstNames);
+    const last = randomItem(lastNames);
 
-    const daysAgo=randomInt(0,720);
+    const daysAgo = randomInt(0, 720);
 
-    const date=new Date(
-      Date.now()-daysAgo*86400000
+    const date = new Date(
+      Date.now() -
+      daysAgo * 86400000
     );
 
     reviews.push({
-      id:`${product.id}-review-${i+1}`,
-      name:`${first} ${last.charAt(0)}.`,
+
+      id:
+        `${product.id}-review-${i + 1}`,
+
+      name:
+        `${first} ${last.charAt(0)}.`,
+
       rating,
-      text:randomItem(reviewTexts[rating]),
+
+      text:
+        randomItem(reviewTexts[rating]),
+
       date
     });
   }
@@ -382,65 +449,91 @@ function generateReviews(product){
   return reviews;
 }
 
-function getReviews(product){
 
-  if(!reviewsCache[product.id]){
-    reviewsCache[product.id]=generateReviews(product);
+function getReviews(product) {
+
+  if (!reviewsCache[product.id]) {
+
+    reviewsCache[product.id] =
+      generateReviews(product);
   }
 
   return reviewsCache[product.id];
 }
 
-function getReviewStats(product){
 
-  const reviews=getReviews(product);
+function getReviewStats(product) {
 
-  const average=
-    reviews.reduce((sum,r)=>sum+r.rating,0)/reviews.length;
+  const reviews = getReviews(product);
+
+  let total = 0;
+
+  for (const review of reviews) {
+    total += review.rating;
+  }
 
   return {
-    count:reviews.length,
-    average
+
+    count: reviews.length,
+
+    average:
+      reviews.length
+        ? total / reviews.length
+        : 0
   };
 }
 
 
 /* =========================================================
-   CATÉGORIES
+   CATEGORIES
 ========================================================= */
 
-function renderCategories(){
+function renderCategories() {
 
-  const categories=[
+  const container =
+    document.getElementById("categories");
+
+  if (!container) return;
+
+  const categories = [
     "Tous",
-    ...new Set(products.map(p=>p.category))
+    ...new Set(
+      products.map(product => product.category)
+    )
   ];
 
-  const container=document.getElementById("categories");
+  container.innerHTML =
+    categories.map(category => {
 
-  container.innerHTML=categories.map(category=>`
+      const active =
+        category === selectedCategory
+          ? "active"
+          : "";
 
-    <button
-      class="category-btn ${category===selectedCategory?"active":""}"
-      data-category="${escapeHtml(category)}"
-    >
-      ${escapeHtml(category)}
-    </button>
+      return `
+        <button
+          class="category-btn ${active}"
+          data-category="${escapeHtml(category)}"
+        >
+          ${escapeHtml(category)}
+        </button>
+      `;
 
-  `).join("");
+    }).join("");
 
-  container.querySelectorAll("[data-category]").forEach(button=>{
+  container
+    .querySelectorAll("[data-category]")
+    .forEach(button => {
 
-    button.addEventListener("click",()=>{
+      button.addEventListener("click", () => {
 
-      selectedCategory=button.dataset.category;
+        selectedCategory =
+          button.dataset.category;
 
-      renderCategories();
-      renderProducts();
-
+        renderCategories();
+        renderProducts();
+      });
     });
-
-  });
 }
 
 
@@ -448,27 +541,40 @@ function renderCategories(){
    PRODUITS
 ========================================================= */
 
-function renderProducts(){
+function renderProducts() {
 
-  const container=document.getElementById("products");
+  const container =
+    document.getElementById("productsGrid");
 
-  const filtered=products.filter(product=>{
+  if (!container) return;
 
-    const categoryOK=
-      selectedCategory==="Tous" ||
-      product.category===selectedCategory;
+  const filtered =
+    products.filter(product => {
 
-    const searchOK=
-      product.name
-        .toLowerCase()
-        .includes(searchValue.toLowerCase());
+      const categoryOk =
+        selectedCategory === "Tous" ||
+        product.category === selectedCategory;
 
-    return categoryOK && searchOK;
-  });
+      const search =
+        searchValue
+          .trim()
+          .toLowerCase();
 
-  if(!filtered.length){
+      const searchOk =
+        !search ||
+        product.name
+          .toLowerCase()
+          .includes(search) ||
+        product.category
+          .toLowerCase()
+          .includes(search);
 
-    container.innerHTML=`
+      return categoryOk && searchOk;
+    });
+
+  if (!filtered.length) {
+
+    container.innerHTML = `
       <div class="empty">
         Aucun produit trouvé.
       </div>
@@ -477,192 +583,211 @@ function renderProducts(){
     return;
   }
 
-  container.innerHTML=filtered.map(product=>{
+  container.innerHTML =
+    filtered.map(product => {
 
-    const stats=getReviewStats(product);
+      const stats =
+        getReviewStats(product);
 
-    return`
+      return `
+        <article class="product-card">
 
-      <article class="product-card">
+          <img
+            class="product-image"
+            src="${product.image}"
+            alt="${escapeHtml(product.name)}"
+            loading="lazy"
+          >
 
-        <img
-          class="product-image"
-          src="${product.image}"
-          alt="${escapeHtml(product.name)}"
-          loading="lazy"
-        >
+          <div class="product-info">
 
-        <div class="product-info">
+            <div class="product-category">
+              ${escapeHtml(product.category)}
+            </div>
 
-          <div class="product-category">
-            ${escapeHtml(product.category)}
-          </div>
+            <div class="product-name">
+              ${escapeHtml(product.name)}
+            </div>
 
-          <div class="product-name">
-            ${escapeHtml(product.name)}
-          </div>
-
-          <div style="
-            display:flex;
-            align-items:center;
-            gap:7px;
-            flex-wrap:wrap;
-            margin-top:10px;
-          ">
-
-            <span class="stars">
-              ${stars(stats.average)}
-            </span>
-
-            <strong>
-              ${stats.average.toFixed(1)}/5
-            </strong>
-
-            <span style="color:#9ba8bd;font-size:12px">
-              (${stats.count} avis)
-            </span>
-
-          </div>
-
-          <div style="
-            color:#71809a;
-            font-size:11px;
-            margin-top:3px;
-          ">
-            ${stats.count.toLocaleString("fr-FR")} avis
-          </div>
-
-          <div class="price">
-            ${money(product.price)}
-          </div>
-
-          <div class="product-buttons">
-
-            <button
-              class="btn"
-              data-view-reviews="${product.id}"
+            <div
+              style="
+                display:flex;
+                align-items:center;
+                gap:7px;
+                flex-wrap:wrap;
+                margin-top:10px;
+              "
             >
-              💬 Voir les avis
-            </button>
 
-            <button
-              class="btn primary"
-              data-add-cart="${product.id}"
+              <span class="stars">
+                ${stars(stats.average)}
+              </span>
+
+              <strong>
+                ${stats.average.toFixed(1)}/5
+              </strong>
+
+              <span
+                style="
+                  color:#9ba8bd;
+                  font-size:12px;
+                "
+              >
+                (${stats.count.toLocaleString("fr-FR")} avis)
+              </span>
+
+            </div>
+
+            <div
+              style="
+                color:#71809a;
+                font-size:11px;
+                margin-top:3px;
+              "
             >
-              🛒
-            </button>
+              ${stats.count.toLocaleString("fr-FR")} avis
+            </div>
+
+            <div class="price">
+              ${money(product.price)}
+            </div>
+
+            <div class="product-buttons">
+
+              <button
+                class="btn"
+                data-view-reviews="${product.id}"
+              >
+                💬 Voir les avis
+              </button>
+
+              <button
+                class="btn primary"
+                data-add-cart="${product.id}"
+              >
+                🛒
+              </button>
+
+            </div>
 
           </div>
 
-        </div>
+        </article>
+      `;
 
-      </article>
-    `;
-  }).join("");
+    }).join("");
 
   container
     .querySelectorAll("[data-view-reviews]")
-    .forEach(button=>{
+    .forEach(button => {
 
-      button.addEventListener("click",()=>{
-        showReviews(button.dataset.viewReviews);
+      button.addEventListener("click", () => {
+
+        const product =
+          products.find(
+            p => p.id === button.dataset.viewReviews
+          );
+
+        if (product) {
+          openReviews(product);
+        }
       });
-
     });
 
   container
     .querySelectorAll("[data-add-cart]")
-    .forEach(button=>{
+    .forEach(button => {
 
-      button.addEventListener("click",()=>{
+      button.addEventListener("click", () => {
 
-        addToCart(button.dataset.addCart);
+        const product =
+          products.find(
+            p => p.id === button.dataset.addCart
+          );
 
+        if (product) {
+          addToCart(product);
+        }
       });
-
     });
 }
 
 
 /* =========================================================
-   REVIEWS
+   AVIS MODAL
 ========================================================= */
 
-function showReviews(productId){
+function openReviews(product) {
 
-  const product=products.find(p=>p.id===productId);
+  const container =
+    document.getElementById("reviewsContent");
 
-  if(!product)return;
+  if (!container) return;
 
-  const reviews=getReviews(product);
+  const reviews =
+    getReviews(product);
 
-  const stats=getReviewStats(product);
+  const stats =
+    getReviewStats(product);
 
-  document.getElementById("reviewsTitle").textContent=
-    `💬 Avis • ${product.name}`;
+  const shuffled =
+    [...reviews]
+      .sort(() => Math.random() - 0.5)
+      .slice(0, 25);
 
-  const firstReviews=reviews.slice(0,80);
+  container.innerHTML = `
 
-  document.getElementById("reviewsContent").innerHTML=`
+    <div class="reviews-header">
 
-    <div style="
-      background:#101925;
-      border:1px solid #25364b;
-      padding:15px;
-      border-radius:12px;
-      margin-bottom:15px;
-    ">
+      <h2>
+        Avis sur ${escapeHtml(product.name)}
+      </h2>
 
-      <div style="font-size:26px;font-weight:900">
+      <div class="review-big">
         ${stats.average.toFixed(1)}/5
       </div>
 
-      <div class="stars" style="font-size:22px">
+      <div class="stars">
         ${stars(stats.average)}
       </div>
 
-      <div style="color:#8b9ab0;margin-top:5px">
+      <div>
         ${stats.count.toLocaleString("fr-FR")} avis
       </div>
 
     </div>
 
-    ${firstReviews.map(review=>`
+    <div class="review-list">
 
-      <div class="review">
+      ${shuffled.map(review => `
 
-        <div class="review-top">
+        <div class="review-item">
 
-          <strong>
-            ${escapeHtml(review.name)}
-          </strong>
+          <div class="review-top">
 
-          <span class="stars">
-            ${"★".repeat(review.rating)}
-          </span>
+            <strong>
+              ${escapeHtml(review.name)}
+            </strong>
+
+            <span class="stars">
+              ${stars(review.rating)}
+            </span>
+
+          </div>
+
+          <div class="review-text">
+            ${escapeHtml(review.text)}
+          </div>
+
+          <div class="review-date">
+            ${review.date.toLocaleDateString("fr-FR")}
+          </div>
 
         </div>
 
-        <div class="review-date">
-          ${review.date.toLocaleDateString("fr-FR")}
-        </div>
+      `).join("")}
 
-        <div class="review-text">
-          ${escapeHtml(review.text)}
-        </div>
-
-      </div>
-
-    `).join("")}
-
-    <div style="
-      color:#71809a;
-      text-align:center;
-      padding:15px;
-    ">
-      ${Math.max(0,reviews.length-80)} autres avis
     </div>
-
   `;
 
   openModal("reviewsModal");
@@ -673,239 +798,277 @@ function showReviews(productId){
    PANIER
 ========================================================= */
 
-function saveCart(){
+function saveCart() {
+
   localStorage.setItem(
-    "novaCart",
+    "novashop_cart",
     JSON.stringify(cart)
   );
 }
 
-function addToCart(productId){
 
-  const existing=cart.find(
-    item=>item.productId===productId
-  );
+function loadCart() {
 
-  if(existing){
-    existing.quantity++;
+  try {
+
+    const saved =
+      localStorage.getItem("novashop_cart");
+
+    cart =
+      saved
+        ? JSON.parse(saved)
+        : [];
+
+  } catch {
+
+    cart = [];
   }
-  else{
+}
+
+
+function addToCart(product) {
+
+  const existing =
+    cart.find(
+      item => item.id === product.id
+    );
+
+  if (existing) {
+
+    existing.quantity++;
+
+  } else {
+
     cart.push({
-      productId,
-      quantity:1
+
+      id: product.id,
+
+      name: product.name,
+
+      price: product.price,
+
+      image: product.image,
+
+      quantity: 1
     });
   }
 
   saveCart();
+  renderCart();
 
-  updateCartCount();
-
-  showToast("Produit ajouté au panier 🛒");
+  showToast(
+    `${product.name} ajouté au panier 🛒`
+  );
 }
 
-function removeFromCart(productId){
 
-  cart=cart.filter(
-    item=>item.productId!==productId
-  );
+function removeFromCart(id) {
+
+  cart =
+    cart.filter(
+      item => item.id !== id
+    );
 
   saveCart();
-
-  updateCartCount();
-
   renderCart();
 }
 
-function changeQuantity(productId,amount){
 
-  const item=cart.find(
-    item=>item.productId===productId
-  );
+function changeQuantity(id, amount) {
 
-  if(!item)return;
+  const item =
+    cart.find(
+      product => product.id === id
+    );
 
-  item.quantity+=amount;
+  if (!item) return;
 
-  if(item.quantity<=0){
-    removeFromCart(productId);
+  item.quantity += amount;
+
+  if (item.quantity <= 0) {
+
+    removeFromCart(id);
+
     return;
   }
 
   saveCart();
-
-  updateCartCount();
-
   renderCart();
 }
 
-function updateCartCount(){
 
-  const count=cart.reduce(
-    (sum,item)=>sum+item.quantity,
-    0
-  );
+function renderCart() {
 
-  document.getElementById("cartCount").textContent=count;
-}
+  const container =
+    document.getElementById("cartContent");
 
-function getCartTotal(){
+  if (!container) return;
 
-  return cart.reduce((sum,item)=>{
+  if (!cart.length) {
 
-    const product=products.find(
-      p=>p.id===item.productId
-    );
-
-    return sum+(product?.price||0)*item.quantity;
-
-  },0);
-}
-
-function renderCart(){
-
-  const container=document.getElementById("cartContent");
-
-  if(!cart.length){
-
-    container.innerHTML=`
+    container.innerHTML = `
       <div class="empty">
-        Ton panier est vide.
+        🛒 Ton panier est vide.
       </div>
     `;
 
+    updateCartCount();
+
     return;
   }
 
-  container.innerHTML=`
+  let total = 0;
 
-    ${cart.map(item=>{
+  cart.forEach(item => {
 
-      const product=products.find(
-        p=>p.id===item.productId
-      );
+    total +=
+      item.price *
+      item.quantity;
+  });
 
-      if(!product)return "";
+  container.innerHTML = `
 
-      return`
+    <div class="cart-list">
+
+      ${cart.map(item => `
 
         <div class="cart-item">
 
-          <img src="${product.image}">
+          <img
+            src="${item.image}"
+            alt=""
+          >
 
           <div class="cart-item-info">
 
             <strong>
-              ${escapeHtml(product.name)}
+              ${escapeHtml(item.name)}
             </strong>
 
-            <div style="margin-top:5px;color:#8d9bb0">
-              ${money(product.price)}
+            <div>
+              ${money(item.price)}
+            </div>
+
+            <div class="quantity">
+
+              <button
+                data-minus="${item.id}"
+              >
+                −
+              </button>
+
+              <span>
+                ${item.quantity}
+              </span>
+
+              <button
+                data-plus="${item.id}"
+              >
+                +
+              </button>
+
             </div>
 
           </div>
 
           <button
-            class="btn"
-            data-minus="${product.id}"
+            class="delete-btn"
+            data-delete-cart="${item.id}"
           >
-            −
-          </button>
-
-          <strong>
-            ${item.quantity}
-          </strong>
-
-          <button
-            class="btn"
-            data-plus="${product.id}"
-          >
-            +
-          </button>
-
-          <button
-            class="btn danger"
-            data-remove="${product.id}"
-          >
-            ×
+            🗑️
           </button>
 
         </div>
 
-      `;
+      `).join("")}
 
-    }).join("")}
+    </div>
 
     <div class="cart-total">
-      Total : ${money(getCartTotal())}
+
+      <span>Total</span>
+
+      <strong>
+        ${money(total)}
+      </strong>
+
     </div>
 
     <button
-      class="btn primary"
-      id="checkoutBtn"
-      style="width:100%;margin-top:15px"
+      class="btn primary full"
+      id="checkoutButton"
     >
       💳 Passer la commande
     </button>
-
   `;
 
   container
     .querySelectorAll("[data-minus]")
-    .forEach(button=>{
+    .forEach(button => {
 
-      button.onclick=()=>{
+      button.addEventListener("click", () => {
+
         changeQuantity(
           button.dataset.minus,
           -1
         );
-      };
-
+      });
     });
 
   container
     .querySelectorAll("[data-plus]")
-    .forEach(button=>{
+    .forEach(button => {
 
-      button.onclick=()=>{
+      button.addEventListener("click", () => {
+
         changeQuantity(
           button.dataset.plus,
           1
         );
-      };
-
+      });
     });
 
   container
-    .querySelectorAll("[data-remove]")
-    .forEach(button=>{
+    .querySelectorAll("[data-delete-cart]")
+    .forEach(button => {
 
-      button.onclick=()=>{
+      button.addEventListener("click", () => {
+
         removeFromCart(
-          button.dataset.remove
+          button.dataset.deleteCart
         );
-      };
-
+      });
     });
 
+  const checkout =
+    document.getElementById("checkoutButton");
+
+  if (checkout) {
+
+    checkout.addEventListener(
+      "click",
+      openCheckout
+    );
+  }
+
+  updateCartCount();
+}
+
+
+function updateCartCount() {
+
+  const count =
+    cart.reduce(
+      (total, item) =>
+        total + item.quantity,
+      0
+    );
+
   document
-    .getElementById("checkoutBtn")
-    ?.addEventListener("click",()=>{
+    .querySelectorAll(".cart-count")
+    .forEach(element => {
 
-      if(!currentUser){
-
-        closeModal("cartModal");
-        openModal("authModal");
-
-        showToast(
-          "Connecte-toi pour commander."
-        );
-
-        return;
-      }
-
-      closeModal("cartModal");
-      openModal("checkoutModal");
-
+      element.textContent = count;
     });
 }
 
@@ -914,308 +1077,304 @@ function renderCart(){
    AUTH
 ========================================================= */
 
-function updateAuthUI(){
+async function handleAuth() {
 
-  const adminButton=document.getElementById("adminBtn");
-
-  if(currentUser?.email===ADMIN_EMAIL){
-
-    adminButton.style.display="block";
-
-  }
-  else{
-
-    adminButton.style.display="none";
-
-  }
-
-  renderAccount();
-}
-
-function renderAccount(){
-
-  const container=document.getElementById("accountContent");
-
-  if(!currentUser){
-
-    container.innerHTML=`
-
-      <div style="color:#8291a7;margin-bottom:15px">
-        Tu n'es pas connecté.
-      </div>
-
-      <button
-        class="btn primary"
-        id="accountLoginBtn"
-      >
-        Se connecter
-      </button>
-
-    `;
-
+  const email =
     document
-      .getElementById("accountLoginBtn")
-      ?.addEventListener("click",()=>{
+      .getElementById("authEmail")
+      ?.value
+      .trim();
 
-        closeModal("accountModal");
-        openModal("authModal");
+  const password =
+    document
+      .getElementById("authPassword")
+      ?.value;
 
-      });
+  const error =
+    document.getElementById("authError");
+
+  if (!email || !password) {
+
+    if (error) {
+      error.textContent =
+        "Remplis tous les champs.";
+    }
 
     return;
   }
 
-  container.innerHTML=`
+  try {
 
-    <div style="
-      background:#101925;
-      border:1px solid #25364b;
-      border-radius:12px;
-      padding:15px;
-    ">
+    if (authMode === "login") {
 
-      <div style="color:#8190a7;font-size:12px">
-        EMAIL
-      </div>
+      await signInWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
 
-      <strong>
-        ${escapeHtml(currentUser.email)}
-      </strong>
+      showToast("Connexion réussie ✅");
 
-    </div>
+    } else {
 
-    <button
-      class="btn danger"
-      id="logoutBtn"
-      style="width:100%;margin-top:15px"
-    >
-      Se déconnecter
-    </button>
+      if (password.length < 6) {
 
-  `;
+        if (error) {
+          error.textContent =
+            "Le mot de passe doit contenir au moins 6 caractères.";
+        }
 
-  document
-    .getElementById("logoutBtn")
-    ?.addEventListener("click",async()=>{
+        return;
+      }
 
-      await signOut(auth);
+      if (password.length > 30) {
 
-      closeModal("accountModal");
+        if (error) {
+          error.textContent =
+            "Le mot de passe doit contenir maximum 30 caractères.";
+        }
 
-      showToast("Déconnexion effectuée.");
+        return;
+      }
 
-    });
+      if (!/[a-z]/.test(password)) {
+
+        if (error) {
+          error.textContent =
+            "Il faut au moins une minuscule.";
+        }
+
+        return;
+      }
+
+      if (!/[A-Z]/.test(password)) {
+
+        if (error) {
+          error.textContent =
+            "Il faut au moins une majuscule.";
+        }
+
+        return;
+      }
+
+      if (!/[0-9]/.test(password)) {
+
+        if (error) {
+          error.textContent =
+            "Il faut au moins un chiffre.";
+        }
+
+        return;
+      }
+
+      await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+
+      showToast("Compte créé ✅");
+    }
+
+    closeModal("authModal");
+
+  } catch (err) {
+
+    console.error(err);
+
+    if (error) {
+
+      error.textContent =
+        getFirebaseError(err);
+    }
+  }
 }
 
-document
-  .getElementById("loginTab")
-  .addEventListener("click",()=>{
 
-    authMode="login";
+function getFirebaseError(error) {
 
-    document
-      .getElementById("loginTab")
-      .classList.add("active");
+  const code =
+    error?.code || "";
 
-    document
-      .getElementById("registerTab")
-      .classList.remove("active");
+  const errors = {
 
-    document
-      .getElementById("authSubmit")
-      .textContent="Se connecter";
+    "auth/invalid-credential":
+      "Email ou mot de passe incorrect.",
 
-  });
+    "auth/invalid-email":
+      "Adresse email invalide.",
 
-document
-  .getElementById("registerTab")
-  .addEventListener("click",()=>{
+    "auth/email-already-in-use":
+      "Cette adresse email est déjà utilisée.",
 
-    authMode="register";
+    "auth/weak-password":
+      "Mot de passe trop faible.",
 
-    document
-      .getElementById("registerTab")
-      .classList.add("active");
+    "auth/user-not-found":
+      "Utilisateur introuvable.",
 
-    document
-      .getElementById("loginTab")
-      .classList.remove("active");
+    "auth/wrong-password":
+      "Mot de passe incorrect.",
 
-    document
-      .getElementById("authSubmit")
-      .textContent="Créer le compte";
+    "auth/too-many-requests":
+      "Trop de tentatives. Réessaie plus tard."
+  };
 
-  });
+  return (
+    errors[code] ||
+    error?.message ||
+    "Une erreur est survenue."
+  );
+}
 
-document
-  .getElementById("authForm")
-  .addEventListener("submit",async event=>{
 
-    event.preventDefault();
+function switchAuthMode() {
 
-    const email=
-      document.getElementById("authEmail").value.trim();
+  authMode =
+    authMode === "login"
+      ? "register"
+      : "login";
 
-    const password=
-      document.getElementById("authPassword").value;
+  const title =
+    document.getElementById("authTitle");
 
-    try{
+  const button =
+    document.getElementById("authSubmit");
 
-      if(authMode==="register"){
+  const switchButton =
+    document.getElementById("authSwitch");
 
-        if(password.length<6){
-          throw new Error(
-            "Le mot de passe doit avoir au moins 6 caractères."
-          );
-        }
+  if (authMode === "login") {
 
-        if(password.length>30){
-          throw new Error(
-            "Le mot de passe doit avoir maximum 30 caractères."
-          );
-        }
+    if (title)
+      title.textContent = "Connexion";
 
-        if(!/[a-z]/.test(password)){
-          throw new Error(
-            "Il faut au moins une minuscule."
-          );
-        }
+    if (button)
+      button.textContent = "Se connecter";
 
-        if(!/[A-Z]/.test(password)){
-          throw new Error(
-            "Il faut au moins une majuscule."
-          );
-        }
+    if (switchButton)
+      switchButton.textContent =
+        "Créer un compte";
 
-        if(!/[0-9]/.test(password)){
-          throw new Error(
-            "Il faut au moins un chiffre."
-          );
-        }
+  } else {
 
-        const credential=
-          await createUserWithEmailAndPassword(
-            auth,
-            email,
-            password
-          );
+    if (title)
+      title.textContent = "Créer un compte";
 
-        await setDoc(
-          doc(db,"users",credential.user.uid),
-          {
-            email,
-            createdAt:serverTimestamp()
-          }
-        );
+    if (button)
+      button.textContent =
+        "Créer mon compte";
 
-        showToast("Compte créé avec succès.");
-
-      }
-      else{
-
-        await signInWithEmailAndPassword(
-          auth,
-          email,
-          password
-        );
-
-        showToast("Connexion réussie.");
-
-      }
-
-      closeModal("authModal");
-
-    }
-    catch(error){
-
-      document.getElementById("authInfo").textContent=
-        error.message;
-
-    }
-
-  });
+    if (switchButton)
+      switchButton.textContent =
+        "J'ai déjà un compte";
+  }
+}
 
 
 /* =========================================================
    QUESTIONS
 ========================================================= */
 
-async function sendQuestion(){
+async function sendQuestion() {
 
-  if(!currentUser){
-
-    closeModal("questionsModal");
-
-    openModal("authModal");
+  if (!currentUser) {
 
     showToast(
-      "Connecte-toi pour envoyer une question."
+      "Connecte-toi pour poser une question."
     );
 
     return;
   }
 
-  const input=document.getElementById("newQuestion");
+  const input =
+    document.getElementById("newQuestionText");
 
-  const text=input?.value.trim();
+  if (!input) return;
 
-  if(!text){
+  const text =
+    input.value.trim();
 
-    showToast("Écris une question.");
+  if (!text) {
+
+    showToast(
+      "Écris ta question."
+    );
 
     return;
   }
 
-  try{
+  try {
 
     await addDoc(
-      collection(db,"questions"),
+      collection(db, "questions"),
       {
-        userId:currentUser.uid,
-        userEmail:currentUser.email,
-        question:text,
-        status:"open",
-        createdAt:serverTimestamp(),
-        updatedAt:serverTimestamp()
+
+        userId:
+          currentUser.uid,
+
+        userEmail:
+          currentUser.email || "",
+
+        text,
+
+        status:
+          "open",
+
+        createdAt:
+          serverTimestamp(),
+
+        updatedAt:
+          serverTimestamp()
       }
     );
 
-    input.value="";
+    input.value = "";
 
-    showToast("Question envoyée 💬");
+    showToast(
+      "Question envoyée ✅"
+    );
 
     loadUserQuestions();
 
-  }
-  catch(error){
+  } catch (error) {
 
-    console.error(error);
+    console.error(
+      "ERREUR ENVOI QUESTION :",
+      error
+    );
 
     showToast(
       "Impossible d'envoyer la question."
     );
-
   }
 }
 
 
-async function sendAdminReply(questionId){
+async function sendAdminReply(
+  questionId
+) {
 
-  if(currentUser?.email!==ADMIN_EMAIL){
-
-    showToast("Accès administrateur requis.");
-
+  if (
+    !currentUser ||
+    currentUser.email !== ADMIN_EMAIL
+  ) {
     return;
   }
 
-  const input=
-    document.getElementById(`reply-${questionId}`);
+  const input =
+    document.getElementById(
+      `adminReply-${questionId}`
+    );
 
-  const text=input?.value.trim();
+  if (!input) return;
 
-  if(!text)return;
+  const text =
+    input.value.trim();
 
-  try{
+  if (!text) return;
+
+  try {
 
     await addDoc(
       collection(
@@ -1225,51 +1384,73 @@ async function sendAdminReply(questionId){
         "messages"
       ),
       {
-        senderId:currentUser.uid,
-        senderEmail:currentUser.email,
-        senderRole:"admin",
+
         text,
-        createdAt:serverTimestamp()
+
+        senderId:
+          currentUser.uid,
+
+        senderEmail:
+          currentUser.email,
+
+        senderRole:
+          "admin",
+
+        createdAt:
+          serverTimestamp()
       }
     );
 
     await updateDoc(
-      doc(db,"questions",questionId),
+      doc(db, "questions", questionId),
       {
-        updatedAt:serverTimestamp(),
-        status:"answered"
+        updatedAt:
+          serverTimestamp(),
+
+        status:
+          "answered"
       }
     );
 
-    input.value="";
-
-    showToast("Réponse envoyée.");
-
-  }
-  catch(error){
-
-    console.error(error);
+    input.value = "";
 
     showToast(
-      "Erreur pendant l'envoi de la réponse."
+      "Réponse envoyée ✅"
     );
 
+  } catch (error) {
+
+    console.error(
+      "ERREUR REPONSE ADMIN :",
+      error
+    );
+
+    showToast(
+      "Impossible d'envoyer la réponse."
+    );
   }
 }
 
 
-async function sendUserReply(questionId){
+async function sendUserReply(
+  questionId
+) {
 
-  if(!currentUser)return;
+  if (!currentUser) return;
 
-  const input=
-    document.getElementById(`user-reply-${questionId}`);
+  const input =
+    document.getElementById(
+      `userReply-${questionId}`
+    );
 
-  const text=input?.value.trim();
+  if (!input) return;
 
-  if(!text)return;
+  const text =
+    input.value.trim();
 
-  try{
+  if (!text) return;
+
+  try {
 
     await addDoc(
       collection(
@@ -1279,285 +1460,550 @@ async function sendUserReply(questionId){
         "messages"
       ),
       {
-        senderId:currentUser.uid,
-        senderEmail:currentUser.email,
-        senderRole:"user",
+
         text,
-        createdAt:serverTimestamp()
+
+        senderId:
+          currentUser.uid,
+
+        senderEmail:
+          currentUser.email,
+
+        senderRole:
+          "user",
+
+        createdAt:
+          serverTimestamp()
       }
     );
 
     await updateDoc(
-      doc(db,"questions",questionId),
+      doc(db, "questions", questionId),
       {
-        updatedAt:serverTimestamp()
+        updatedAt:
+          serverTimestamp(),
+
+        status:
+          "open"
       }
     );
 
-    input.value="";
+    input.value = "";
 
-  }
-  catch(error){
+  } catch (error) {
 
-    console.error(error);
+    console.error(
+      "ERREUR REPONSE UTILISATEUR :",
+      error
+    );
 
-    showToast("Erreur d'envoi.");
-
+    showToast(
+      "Impossible d'envoyer le message."
+    );
   }
 }
 
 
-async function loadQuestionMessages(
+/* =========================================================
+   MESSAGES
+========================================================= */
+
+function loadQuestionMessages(
   questionId,
-  containerId,
-  adminMode=false
-){
+  containerId
+) {
 
-  const messagesRef=collection(
-    db,
-    "questions",
-    questionId,
-    "messages"
-  );
+  const messagesRef =
+    collection(
+      db,
+      "questions",
+      questionId,
+      "messages"
+    );
 
-  const q=query(
-    messagesRef,
-    orderBy("createdAt","asc")
-  );
+  const unsubscribe =
+    onSnapshot(
+      messagesRef,
 
-  onSnapshot(q,snapshot=>{
+      snapshot => {
 
-    const container=
-      document.getElementById(containerId);
+        const messages =
+          [...snapshot.docs];
 
-    if(!container)return;
+        messages.sort(
+          (a, b) => {
 
-    if(snapshot.empty){
+            const dateA =
+              a.data()
+                .createdAt
+                ?.toMillis?.() || 0;
 
-      container.innerHTML=`
-        <div style="color:#71809a">
-          Aucun message pour le moment.
-        </div>
-      `;
+            const dateB =
+              b.data()
+                .createdAt
+                ?.toMillis?.() || 0;
 
-      return;
-    }
+            return dateA - dateB;
+          }
+        );
 
-    container.innerHTML=
-      snapshot.docs.map(messageDoc=>{
+        const container =
+          document.getElementById(
+            containerId
+          );
 
-        const data=messageDoc.data();
+        if (!container) return;
 
-        const isAdmin=
-          data.senderRole==="admin";
+        if (!messages.length) {
 
-        return`
-
-          <div class="message ${isAdmin?"admin":"user"}">
-
-            <div class="message-author">
-              ${isAdmin?"👑 NovaShop":"👤 "+escapeHtml(data.senderEmail||"Utilisateur")}
+          container.innerHTML = `
+            <div
+              style="
+                color:#71809a;
+                padding:8px 0;
+              "
+            >
+              Aucun message pour le moment.
             </div>
+          `;
 
-            ${escapeHtml(data.text)}
+          return;
+        }
 
-          </div>
+        container.innerHTML =
+          messages.map(
+            messageDoc => {
 
-        `;
+              const data =
+                messageDoc.data();
 
-      }).join("");
+              const isAdmin =
+                data.senderRole ===
+                "admin";
 
-    container.scrollTop=container.scrollHeight;
+              return `
+                <div
+                  class="
+                    message
+                    ${isAdmin
+                      ? "admin"
+                      : "user"}
+                  "
+                >
 
-  });
+                  <div class="message-author">
 
+                    ${
+                      isAdmin
+                        ? "👑 NovaShop"
+                        : "👤 " +
+                          escapeHtml(
+                            data.senderEmail ||
+                            "Utilisateur"
+                          )
+                    }
+
+                  </div>
+
+                  <div>
+                    ${escapeHtml(
+                      data.text || ""
+                    )}
+                  </div>
+
+                </div>
+              `;
+            }
+          ).join("");
+
+        container.scrollTop =
+          container.scrollHeight;
+      },
+
+      error => {
+
+        console.error(
+          "ERREUR MESSAGES :",
+          error
+        );
+
+        const container =
+          document.getElementById(
+            containerId
+          );
+
+        if (container) {
+
+          container.innerHTML = `
+            <div
+              style="
+                color:#ff7d7d;
+                padding:10px;
+              "
+            >
+              ❌ Impossible de charger les messages.
+              <br>
+              <small>
+                ${escapeHtml(
+                  error.message || ""
+                )}
+              </small>
+            </div>
+          `;
+        }
+      }
+    );
+
+  return unsubscribe;
 }
 
 
 /* =========================================================
    QUESTIONS UTILISATEUR
+   SANS ORDERBY = PAS BESOIN D'INDEX COMPOSITE
 ========================================================= */
 
-function loadUserQuestions(){
+async function loadUserQuestions() {
 
-  if(!currentUser){
+  const container =
+    document.getElementById(
+      "questionsContent"
+    );
 
-    document.getElementById("questionsContent").innerHTML=`
+  if (!container) return;
 
+  if (!currentUser) {
+
+    container.innerHTML = `
       <div class="empty">
         Connecte-toi pour accéder à tes discussions.
       </div>
-
     `;
 
     return;
   }
 
-  if(questionsUnsubscribe){
+  if (questionsUnsubscribe) {
+
     questionsUnsubscribe();
+
+    questionsUnsubscribe = null;
   }
 
-  const q=query(
-    collection(db,"questions"),
-    where("userId","==",currentUser.uid),
-    orderBy("createdAt","desc")
-  );
+  try {
 
-  questionsUnsubscribe=onSnapshot(
-    q,
-    snapshot=>{
+    const q =
+      query(
+        collection(db, "questions"),
+        where(
+          "userId",
+          "==",
+          currentUser.uid
+        )
+      );
 
-      renderUserQuestions(snapshot.docs);
+    questionsUnsubscribe =
+      onSnapshot(
 
-    },
-    error=>{
+        q,
 
-      console.error(error);
+        snapshot => {
 
-      document.getElementById("questionsContent").innerHTML=`
+          const docs =
+            [...snapshot.docs];
 
-        <div style="color:#ff7d7d">
-          Impossible de charger tes questions.
-        </div>
+          docs.sort(
+            (a, b) => {
 
-      `;
+              const dataA =
+                a.data();
 
-    }
-  );
+              const dataB =
+                b.data();
+
+              const dateA =
+                dataA.updatedAt
+                  ?.toMillis?.() ||
+                dataA.createdAt
+                  ?.toMillis?.() ||
+                0;
+
+              const dateB =
+                dataB.updatedAt
+                  ?.toMillis?.() ||
+                dataB.createdAt
+                  ?.toMillis?.() ||
+                0;
+
+              return dateB - dateA;
+            }
+          );
+
+          renderUserQuestions(
+            docs
+          );
+        },
+
+        error => {
+
+          console.error(
+            "ERREUR QUESTIONS :",
+            error
+          );
+
+          container.innerHTML = `
+            <div
+              style="
+                background:#32151a;
+                border:1px solid #71313b;
+                padding:18px;
+                border-radius:12px;
+                color:#ff9aa5;
+              "
+            >
+
+              ❌ Impossible de charger les questions.
+
+              <br><br>
+
+              <small>
+                ${escapeHtml(
+                  error.message ||
+                  "Erreur Firestore"
+                )}
+              </small>
+
+            </div>
+          `;
+        }
+      );
+
+  } catch (error) {
+
+    console.error(
+      "ERREUR QUESTIONS :",
+      error
+    );
+
+    container.innerHTML = `
+      <div style="color:#ff7d7d">
+
+        ❌ Impossible de charger les questions.
+
+        <br>
+
+        <small>
+          ${escapeHtml(
+            error.message || ""
+          )}
+        </small>
+
+      </div>
+    `;
+  }
 }
 
 
-function renderUserQuestions(docs){
+function renderUserQuestions(
+  docs
+) {
 
-  const container=
-    document.getElementById("questionsContent");
+  const container =
+    document.getElementById(
+      "questionsContent"
+    );
 
-  let html=`
+  if (!container) return;
 
-    <button
-      class="btn primary"
-      id="newQuestionBtn"
-      style="width:100%;margin-bottom:15px"
+  let html = `
+
+    <div
+      style="
+        display:flex;
+        justify-content:space-between;
+        align-items:center;
+        gap:10px;
+        margin-bottom:18px;
+        flex-wrap:wrap;
+      "
     >
-      ✏️ Poser une nouvelle question
-    </button>
+
+      <div>
+        <h3 style="margin:0">
+          Mes questions
+        </h3>
+
+        <div
+          style="
+            color:#71809a;
+            font-size:13px;
+            margin-top:4px;
+          "
+        >
+          Contacte NovaShop
+        </div>
+      </div>
+
+      <button
+        class="btn primary"
+        id="newQuestionButton"
+      >
+        ➕ Nouvelle question
+      </button>
+
+    </div>
+
+    <div id="newQuestionForm"></div>
 
   `;
 
-  if(!docs.length){
+  if (!docs.length) {
 
-    html+=`
-
+    html += `
       <div class="empty">
-        Tu n'as encore envoyé aucune question.
+        Tu n'as encore posé aucune question.
       </div>
-
     `;
 
-    container.innerHTML=html;
+  } else {
 
-    document
-      .getElementById("newQuestionBtn")
-      ?.addEventListener("click",showNewQuestionForm);
+    html += docs.map(
+      questionDoc => {
 
-    return;
+        const data =
+          questionDoc.data();
+
+        const questionId =
+          questionDoc.id;
+
+        const status =
+          data.status === "answered"
+            ? "Répondu"
+            : "En cours";
+
+        return `
+
+          <div class="question-card">
+
+            <div
+              style="
+                display:flex;
+                justify-content:space-between;
+                gap:10px;
+                align-items:flex-start;
+              "
+            >
+
+              <div>
+
+                <div
+                  style="
+                    font-size:12px;
+                    color:#71809a;
+                  "
+                >
+                  Ta question
+                </div>
+
+                <div
+                  style="
+                    margin-top:5px;
+                    font-weight:700;
+                  "
+                >
+                  ${escapeHtml(
+                    data.text || ""
+                  )}
+                </div>
+
+              </div>
+
+              <span
+                class="
+                  question-status
+                  ${
+                    data.status === "answered"
+                      ? "answered"
+                      : ""
+                  }
+                "
+              >
+                ${status}
+              </span>
+
+            </div>
+
+            <div
+              class="messages"
+              id="messages-user-${questionId}"
+            >
+              Chargement...
+            </div>
+
+            <div
+              class="reply-box"
+            >
+
+              <textarea
+                id="userReply-${questionId}"
+                placeholder="Écris un message..."
+              ></textarea>
+
+              <button
+                class="btn primary"
+                data-user-reply="${questionId}"
+              >
+                Envoyer
+              </button>
+
+            </div>
+
+          </div>
+
+        `;
+      }
+    ).join("");
   }
 
-  html+=docs.map(questionDoc=>{
+  container.innerHTML = html;
 
-    const question=questionDoc.data();
+  const newButton =
+    document.getElementById(
+      "newQuestionButton"
+    );
 
-    const id=questionDoc.id;
+  if (newButton) {
 
-    return`
-
-      <div class="admin-question">
-
-        <div class="question-head">
-
-          <div>
-            <span class="question-user">
-              Ta question
-            </span>
-          </div>
-
-          <div class="question-date">
-            ${question.status==="answered"
-              ?"✅ Répondue"
-              :"⏳ En attente"}
-          </div>
-
-        </div>
-
-        <div class="message user">
-          <div class="message-author">
-            👤 Toi
-          </div>
-
-          ${escapeHtml(question.question||"")}
-        </div>
-
-        <div
-          class="chat"
-          id="user-chat-${id}"
-        >
-          Chargement...
-        </div>
-
-        <div class="chat-input">
-
-          <textarea
-            id="user-reply-${id}"
-            placeholder="Écrire un message..."
-          ></textarea>
-
-          <button
-            class="btn primary"
-            data-user-reply="${id}"
-          >
-            Envoyer
-          </button>
-
-        </div>
-
-      </div>
-
-    `;
-
-  }).join("");
-
-  container.innerHTML=html;
-
-  document
-    .getElementById("newQuestionBtn")
-    ?.addEventListener(
+    newButton.addEventListener(
       "click",
       showNewQuestionForm
     );
+  }
 
   container
-    .querySelectorAll("[data-user-reply]")
-    .forEach(button=>{
+    .querySelectorAll(
+      "[data-user-reply]"
+    )
+    .forEach(button => {
 
-      button.onclick=()=>{
+      button.addEventListener(
+        "click",
+        () => {
 
-        sendUserReply(
-          button.dataset.userReply
-        );
-
-      };
-
+          sendUserReply(
+            button.dataset.userReply
+          );
+        }
+      );
     });
 
-  docs.forEach(questionDoc=>{
+  docs.forEach(questionDoc => {
 
     loadQuestionMessages(
       questionDoc.id,
-      `user-chat-${questionDoc.id}`
+      `messages-user-${questionDoc.id}`
     );
-
   });
-
 }
 
 
@@ -1565,331 +2011,416 @@ function renderUserQuestions(docs){
    NOUVELLE QUESTION
 ========================================================= */
 
-function showNewQuestionForm(){
+function showNewQuestionForm() {
 
-  const container=
-    document.getElementById("questionsContent");
+  const container =
+    document.getElementById(
+      "newQuestionForm"
+    );
 
-  container.innerHTML=`
+  if (!container) return;
 
-    <button
-      class="btn"
-      id="backQuestions"
-      style="width:100%;margin-bottom:15px"
+  container.innerHTML = `
+
+    <div
+      class="new-question"
     >
-      ← Retour aux discussions
-    </button>
-
-    <div class="modal-title">
-      ✏️ Nouvelle question
-    </div>
-
-    <form class="form" id="questionForm">
 
       <textarea
-        id="newQuestion"
-        placeholder="Écris ta question..."
-        maxlength="2000"
-        required
+        id="newQuestionText"
+        placeholder="Écris ta question à NovaShop..."
       ></textarea>
 
-      <button
-        class="btn primary"
-        type="submit"
+      <div
+        style="
+          display:flex;
+          gap:10px;
+          margin-top:10px;
+        "
       >
-        💬 Envoyer la question
-      </button>
-
-    </form>
-
-  `;
-
-  document
-    .getElementById("backQuestions")
-    .onclick=loadUserQuestions;
-
-  document
-    .getElementById("questionForm")
-    .onsubmit=event=>{
-
-      event.preventDefault();
-
-      sendQuestion();
-
-    };
-
-}
-
-
-/* =========================================================
-   ADMIN QUESTIONS
-========================================================= */
-
-function loadAdminQuestions(){
-
-  if(currentUser?.email!==ADMIN_EMAIL){
-
-    return;
-  }
-
-  if(adminQuestionsUnsubscribe){
-    adminQuestionsUnsubscribe();
-  }
-
-  const q=query(
-    collection(db,"questions"),
-    orderBy("updatedAt","desc")
-  );
-
-  adminQuestionsUnsubscribe=onSnapshot(
-    q,
-    snapshot=>{
-
-      renderAdminQuestions(snapshot.docs);
-
-      updateQuestionBadge(snapshot.docs);
-
-    },
-    error=>{
-
-      console.error(error);
-
-      document.getElementById("adminContent").innerHTML=`
-
-        <div style="color:#ff7d7d">
-          Impossible de charger les questions.
-        </div>
-
-      `;
-
-    }
-  );
-
-}
-
-
-function updateQuestionBadge(docs){
-
-  const badge=
-    document.getElementById("questionBadge");
-
-  const unanswered=docs.filter(
-    docItem=>{
-      const data=docItem.data();
-
-      return data.status!=="answered";
-    }
-  ).length;
-
-  if(unanswered>0){
-
-    badge.style.display="inline-block";
-
-    badge.textContent=unanswered;
-
-  }
-  else{
-
-    badge.style.display="none";
-
-  }
-}
-
-
-function renderAdminQuestions(docs){
-
-  const container=
-    document.getElementById("adminContent");
-
-  let html=`
-
-    <div class="admin-tools">
-
-      <button
-        class="btn"
-        id="refreshAdminQuestions"
-      >
-        🔄 Actualiser
-      </button>
-
-    </div>
-
-  `;
-
-  if(!docs.length){
-
-    html+=`
-
-      <div class="empty">
-        Aucune question reçue.
-      </div>
-
-    `;
-
-    container.innerHTML=html;
-
-    return;
-  }
-
-  html+=docs.map(questionDoc=>{
-
-    const question=questionDoc.data();
-
-    const id=questionDoc.id;
-
-    return`
-
-      <div class="admin-question">
-
-        <div class="question-head">
-
-          <div class="question-user">
-            👤 ${escapeHtml(question.userEmail||"Utilisateur")}
-          </div>
-
-          <div class="question-date">
-            ${question.status==="answered"
-              ?"✅ Répondue"
-              :"🟠 À traiter"}
-          </div>
-
-        </div>
-
-        <div class="message user">
-
-          <div class="message-author">
-            Question
-          </div>
-
-          ${escapeHtml(question.question||"")}
-
-        </div>
-
-        <div
-          class="chat"
-          id="admin-chat-${id}"
-        >
-          Chargement...
-        </div>
-
-        <div class="chat-input">
-
-          <textarea
-            id="reply-${id}"
-            placeholder="Répondre à cet utilisateur..."
-          ></textarea>
-
-          <button
-            class="btn primary"
-            data-admin-reply="${id}"
-          >
-            Répondre
-          </button>
-
-        </div>
 
         <button
-          class="btn danger"
-          data-delete-question="${id}"
-          style="width:100%;margin-top:8px"
+          class="btn primary"
+          id="sendQuestionButton"
         >
-          🗑️ Supprimer la discussion
+          📤 Envoyer
+        </button>
+
+        <button
+          class="btn"
+          id="cancelQuestionButton"
+        >
+          Annuler
         </button>
 
       </div>
 
-    `;
-
-  }).join("");
-
-  container.innerHTML=html;
+    </div>
+  `;
 
   document
-    .getElementById("refreshAdminQuestions")
+    .getElementById(
+      "sendQuestionButton"
+    )
     ?.addEventListener(
       "click",
-      loadAdminQuestions
+      sendQuestion
     );
 
-  container
-    .querySelectorAll("[data-admin-reply]")
-    .forEach(button=>{
+  document
+    .getElementById(
+      "cancelQuestionButton"
+    )
+    ?.addEventListener(
+      "click",
+      () => {
 
-      button.onclick=()=>{
-
-        sendAdminReply(
-          button.dataset.adminReply
-        );
-
-      };
-
-    });
-
-  container
-    .querySelectorAll("[data-delete-question]")
-    .forEach(button=>{
-
-      button.onclick=()=>{
-
-        deleteQuestion(
-          button.dataset.deleteQuestion
-        );
-
-      };
-
-    });
-
-  docs.forEach(questionDoc=>{
-
-    loadQuestionMessages(
-      questionDoc.id,
-      `admin-chat-${questionDoc.id}`,
-      true
+        container.innerHTML = "";
+      }
     );
-
-  });
-
 }
 
 
 /* =========================================================
-   SUPPRESSION QUESTION
+   QUESTIONS ADMIN
+   PAS DE ORDERBY
 ========================================================= */
 
-async function deleteQuestion(questionId){
+function loadAdminQuestions() {
 
-  if(currentUser?.email!==ADMIN_EMAIL){
+  const container =
+    document.getElementById(
+      "adminQuestionsContent"
+    );
 
-    showToast("Accès administrateur requis.");
+  if (!container) return;
+
+  if (!currentUser) {
+
+    container.innerHTML = `
+      <div class="empty">
+        Connexion requise.
+      </div>
+    `;
 
     return;
   }
 
-  if(!confirm(
-    "Supprimer définitivement cette discussion ?"
-  )){
+  if (
+    currentUser.email !== ADMIN_EMAIL
+  ) {
+
+    container.innerHTML = `
+      <div class="empty">
+        Accès administrateur requis.
+      </div>
+    `;
+
     return;
   }
 
-  try{
+  if (adminQuestionsUnsubscribe) {
+
+    adminQuestionsUnsubscribe();
+
+    adminQuestionsUnsubscribe = null;
+  }
+
+  adminQuestionsUnsubscribe =
+    onSnapshot(
+
+      collection(db, "questions"),
+
+      snapshot => {
+
+        const docs =
+          [...snapshot.docs];
+
+        docs.sort(
+          (a, b) => {
+
+            const dataA =
+              a.data();
+
+            const dataB =
+              b.data();
+
+            const dateA =
+              dataA.updatedAt
+                ?.toMillis?.() ||
+              dataA.createdAt
+                ?.toMillis?.() ||
+              0;
+
+            const dateB =
+              dataB.updatedAt
+                ?.toMillis?.() ||
+              dataB.createdAt
+                ?.toMillis?.() ||
+              0;
+
+            return dateB - dateA;
+          }
+        );
+
+        renderAdminQuestions(
+          docs
+        );
+      },
+
+      error => {
+
+        console.error(
+          "ERREUR ADMIN QUESTIONS :",
+          error
+        );
+
+        container.innerHTML = `
+          <div
+            style="
+              background:#32151a;
+              border:1px solid #71313b;
+              padding:18px;
+              border-radius:12px;
+              color:#ff9aa5;
+            "
+          >
+
+            ❌ Impossible de charger les questions.
+
+            <br><br>
+
+            <small>
+              ${escapeHtml(
+                error.message || ""
+              )}
+            </small>
+
+          </div>
+        `;
+      }
+    );
+}
+
+
+function renderAdminQuestions(
+  docs
+) {
+
+  const container =
+    document.getElementById(
+      "adminQuestionsContent"
+    );
+
+  if (!container) return;
+
+  if (!docs.length) {
+
+    container.innerHTML = `
+      <div class="empty">
+        📭 Aucune question.
+      </div>
+    `;
+
+    updateQuestionBadge(0);
+
+    return;
+  }
+
+  updateQuestionBadge(
+    docs.length
+  );
+
+  container.innerHTML =
+    docs.map(questionDoc => {
+
+      const data =
+        questionDoc.data();
+
+      const id =
+        questionDoc.id;
+
+      return `
+
+        <div
+          class="question-card admin-question"
+        >
+
+          <div
+            style="
+              display:flex;
+              justify-content:space-between;
+              gap:10px;
+            "
+          >
+
+            <div>
+
+              <div
+                style="
+                  color:#71809a;
+                  font-size:12px;
+                "
+              >
+                👤
+                ${escapeHtml(
+                  data.userEmail ||
+                  "Utilisateur"
+                )}
+              </div>
+
+              <div
+                style="
+                  font-weight:800;
+                  margin-top:6px;
+                "
+              >
+                ${escapeHtml(
+                  data.text || ""
+                )}
+              </div>
+
+            </div>
+
+            <button
+              class="delete-btn"
+              data-delete-question="${id}"
+            >
+              🗑️
+            </button>
+
+          </div>
+
+          <div
+            class="messages"
+            id="messages-admin-${id}"
+          >
+            Chargement...
+          </div>
+
+          <div
+            class="reply-box"
+          >
+
+            <textarea
+              id="adminReply-${id}"
+              placeholder="Répondre à cet utilisateur..."
+            ></textarea>
+
+            <button
+              class="btn primary"
+              data-admin-reply="${id}"
+            >
+              👑 Répondre
+            </button>
+
+          </div>
+
+        </div>
+
+      `;
+    }).join("");
+
+  container
+    .querySelectorAll(
+      "[data-admin-reply]"
+    )
+    .forEach(button => {
+
+      button.addEventListener(
+        "click",
+        () => {
+
+          sendAdminReply(
+            button.dataset.adminReply
+          );
+        }
+      );
+    });
+
+  container
+    .querySelectorAll(
+      "[data-delete-question]"
+    )
+    .forEach(button => {
+
+      button.addEventListener(
+        "click",
+        () => {
+
+          deleteQuestion(
+            button.dataset.deleteQuestion
+          );
+        }
+      );
+    });
+
+  docs.forEach(questionDoc => {
+
+    loadQuestionMessages(
+      questionDoc.id,
+      `messages-admin-${questionDoc.id}`
+    );
+  });
+}
+
+
+function updateQuestionBadge(
+  count
+) {
+
+  document
+    .querySelectorAll(
+      ".question-count"
+    )
+    .forEach(element => {
+
+      element.textContent =
+        count;
+
+      element.style.display =
+        count > 0
+          ? "inline-flex"
+          : "none";
+    });
+}
+
+
+async function deleteQuestion(
+  questionId
+) {
+
+  if (
+    !currentUser ||
+    currentUser.email !== ADMIN_EMAIL
+  ) {
+    return;
+  }
+
+  try {
 
     await deleteDoc(
-      doc(db,"questions",questionId)
+      doc(
+        db,
+        "questions",
+        questionId
+      )
     );
-
-    showToast("Discussion supprimée.");
-
-  }
-  catch(error){
-
-    console.error(error);
 
     showToast(
-      "Impossible de supprimer la discussion."
+      "Question supprimée 🗑️"
     );
 
-  }
+  } catch (error) {
 
+    console.error(
+      error
+    );
+
+    showToast(
+      "Impossible de supprimer la question."
+    );
+  }
 }
 
 
@@ -1897,437 +2428,690 @@ async function deleteQuestion(questionId){
    COMMANDES
 ========================================================= */
 
-document
-  .getElementById("checkoutForm")
-  .addEventListener("submit",async event=>{
+async function openCheckout() {
 
-    event.preventDefault();
+  if (!currentUser) {
 
-    if(!currentUser){
+    closeModal("cartModal");
 
-      showToast("Connecte-toi.");
+    openModal("authModal");
 
-      return;
-    }
+    showToast(
+      "Connecte-toi pour commander."
+    );
 
-    if(!cart.length){
+    return;
+  }
 
-      showToast("Ton panier est vide.");
+  if (!cart.length) {
 
-      return;
-    }
+    showToast(
+      "Ton panier est vide."
+    );
 
-    const name=
-      document.getElementById("checkoutName")
-      .value.trim();
+    return;
+  }
 
-    const address=
-      document.getElementById("checkoutAddress")
-      .value.trim();
+  openModal("checkoutModal");
+}
 
-    const city=
-      document.getElementById("checkoutCity")
-      .value.trim();
 
-    const postal=
-      document.getElementById("checkoutPostal")
-      .value.trim();
+async function createOrder() {
 
-    if(
-      name.length<2 ||
-      address.length<5 ||
-      city.length<2 ||
-      !/^\d{5}$/.test(postal)
-    ){
+  if (!currentUser) {
 
-      showToast(
-        "Adresse invalide."
-      );
+    showToast(
+      "Connecte-toi."
+    );
 
-      return;
-    }
+    return;
+  }
 
-    const orderItems=cart.map(item=>{
+  const address =
+    document
+      .getElementById("deliveryAddress")
+      ?.value
+      .trim();
 
-      const product=products.find(
-        p=>p.id===item.productId
-      );
+  if (!address) {
 
-      return{
-        productId:item.productId,
-        name:product?.name||"",
-        price:product?.price||0,
-        quantity:item.quantity,
-        image:product?.image||""
-      };
+    showToast(
+      "Adresse obligatoire."
+    );
 
-    });
+    return;
+  }
 
-    try{
+  let total = 0;
 
-      await addDoc(
-        collection(db,"orders"),
-        {
-          userId:currentUser.uid,
-          userEmail:currentUser.email,
-          customerName:name,
-          address,
-          city,
-          postalCode:postal,
-          items:orderItems,
-          total:getCartTotal(),
-          status:"Préparation",
-          currentLocation:"Entrepôt NovaShop",
-          destination:`${address}, ${postal} ${city}`,
-          deliveryDate:new Date(
-            Date.now()+5*86400000
-          ),
-          createdAt:serverTimestamp()
-        }
-      );
+  cart.forEach(item => {
 
-      cart=[];
-
-      saveCart();
-
-      updateCartCount();
-
-      closeModal("checkoutModal");
-
-      showToast(
-        "Commande créée avec succès 📦"
-      );
-
-    }
-    catch(error){
-
-      console.error(error);
-
-      showToast(
-        "Erreur pendant la création de la commande."
-      );
-
-    }
-
+    total +=
+      item.price *
+      item.quantity;
   });
 
+  try {
 
-async function loadOrders(){
+    const orderItems =
+      cart.map(item => ({
 
-  const container=
-    document.getElementById("ordersContent");
+        id: item.id,
 
-  if(!currentUser){
+        name: item.name,
 
-    container.innerHTML=`
+        price: item.price,
 
+        quantity: item.quantity
+      }));
+
+    await addDoc(
+      collection(db, "orders"),
+      {
+
+        userId:
+          currentUser.uid,
+
+        userEmail:
+          currentUser.email,
+
+        items:
+          orderItems,
+
+        total,
+
+        address,
+
+        status:
+          "Préparation",
+
+        currentLocation:
+          "Entrepôt NovaShop",
+
+        destination:
+          address,
+
+        deliveryDate:
+          new Date(
+            Date.now() +
+            3 * 86400000
+          ),
+
+        createdAt:
+          serverTimestamp()
+      }
+    );
+
+    cart = [];
+
+    saveCart();
+
+    renderCart();
+
+    closeModal("checkoutModal");
+
+    showToast(
+      "Commande créée ✅"
+    );
+
+  } catch (error) {
+
+    console.error(
+      "ERREUR COMMANDE :",
+      error
+    );
+
+    showToast(
+      "Impossible de créer la commande."
+    );
+  }
+}
+
+
+/* =========================================================
+   AFFICHAGE COMMANDES
+========================================================= */
+
+function loadOrders() {
+
+  const container =
+    document.getElementById(
+      "ordersContent"
+    );
+
+  if (!container) return;
+
+  if (!currentUser) {
+
+    container.innerHTML = `
       <div class="empty">
         Connecte-toi pour voir tes commandes.
       </div>
-
     `;
 
     return;
   }
 
-  try{
-
-    const q=query(
-      collection(db,"orders"),
-      where("userId","==",currentUser.uid),
-      orderBy("createdAt","desc")
+  const q =
+    query(
+      collection(db, "orders"),
+      where(
+        "userId",
+        "==",
+        currentUser.uid
+      )
     );
 
-    const snapshot=await getDocs(q);
+  onSnapshot(
 
-    if(snapshot.empty){
+    q,
 
-      container.innerHTML=`
+    snapshot => {
 
-        <div class="empty">
-          Aucune commande.
-        </div>
+      const orders =
+        [...snapshot.docs];
 
-      `;
+      orders.sort(
+        (a, b) => {
 
-      return;
-    }
+          const dateA =
+            a.data()
+              .createdAt
+              ?.toMillis?.() || 0;
 
-    container.innerHTML=
-      snapshot.docs.map(orderDoc=>{
+          const dateB =
+            b.data()
+              .createdAt
+              ?.toMillis?.() || 0;
 
-        const order=orderDoc.data();
-
-        let delivery="Date inconnue";
-
-        if(order.deliveryDate?.toDate){
-
-          delivery=
-            order.deliveryDate
-              .toDate()
-              .toLocaleDateString("fr-FR");
-
+          return dateB - dateA;
         }
+      );
 
-        return`
+      if (!orders.length) {
 
-          <div class="order">
-
-            <strong>
-              📦 Commande ${orderDoc.id.slice(0,8)}
-            </strong>
-
-            <div style="margin-top:8px">
-              Total :
-              <strong>${money(order.total||0)}</strong>
-            </div>
-
-            <div class="order-status">
-              ${escapeHtml(order.status||"En préparation")}
-            </div>
-
-            <div style="margin-top:8px;color:#93a1b5">
-              📍 Position :
-              ${escapeHtml(order.currentLocation||"")}
-            </div>
-
-            <div style="margin-top:5px;color:#93a1b5">
-              🎯 Destination :
-              ${escapeHtml(order.destination||"")}
-            </div>
-
-            <div style="margin-top:5px;color:#93a1b5">
-              🚚 Livraison prévue :
-              ${delivery}
-            </div>
-
+        container.innerHTML = `
+          <div class="empty">
+            📦 Tu n'as encore aucune commande.
           </div>
-
         `;
 
-      }).join("");
+        return;
+      }
 
-  }
-  catch(error){
+      container.innerHTML =
+        orders.map(orderDoc => {
 
-    console.error(error);
+          const order =
+            orderDoc.data();
 
-    container.innerHTML=`
+          return `
 
-      <div style="color:#ff7d7d">
-        Impossible de charger les commandes.
-      </div>
+            <div class="order-card">
 
-    `;
+              <div
+                style="
+                  display:flex;
+                  justify-content:space-between;
+                  gap:10px;
+                "
+              >
 
-  }
+                <strong>
+                  Commande #${escapeHtml(
+                    orderDoc.id.slice(0, 8)
+                  )}
+                </strong>
 
+                <span class="order-status">
+                  ${escapeHtml(
+                    order.status ||
+                    "En préparation"
+                  )}
+                </span>
+
+              </div>
+
+              <div class="order-info">
+
+                📍 Position :
+                ${escapeHtml(
+                  order.currentLocation ||
+                  "En préparation"
+                )}
+
+                <br>
+
+                🏠 Destination :
+                ${escapeHtml(
+                  order.destination ||
+                  order.address ||
+                  ""
+                )}
+
+              </div>
+
+              <div class="order-items">
+
+                ${
+                  (order.items || [])
+                    .map(item => `
+                      <div>
+                        ${escapeHtml(
+                          item.name
+                        )}
+                        ×${item.quantity}
+                      </div>
+                    `)
+                    .join("")
+                }
+
+              </div>
+
+              <div class="order-total">
+                Total :
+                ${money(
+                  Number(order.total || 0)
+                )}
+              </div>
+
+            </div>
+          `;
+        }).join("");
+    },
+
+    error => {
+
+      console.error(
+        "ERREUR COMMANDES :",
+        error
+      );
+
+      container.innerHTML = `
+        <div style="color:#ff7d7d">
+          ❌ Impossible de charger les commandes.
+        </div>
+      `;
+    }
+  );
 }
 
 
 /* =========================================================
-   ADMIN
+   ADMIN CODE
 ========================================================= */
 
-function openAdmin(){
+function openAdminAccess() {
 
-  if(currentUser?.email!==ADMIN_EMAIL){
+  if (!currentUser) {
+
+    openModal("authModal");
 
     showToast(
-      "Le dashboard est réservé à l'administrateur."
+      "Connecte-toi d'abord."
+    );
+
+    return;
+  }
+
+  if (
+    currentUser.email !== ADMIN_EMAIL
+  ) {
+
+    showToast(
+      "Accès administrateur refusé."
     );
 
     return;
   }
 
   openModal("adminCodeModal");
-
 }
 
 
-document
-  .getElementById("adminCodeForm")
-  .addEventListener("submit",event=>{
+function validateAdminCode() {
 
-    event.preventDefault();
+  const input =
+    document.getElementById(
+      "adminCodeInput"
+    );
 
-    const code=
-      document.getElementById("adminCode").value;
+  const error =
+    document.getElementById(
+      "adminCodeError"
+    );
 
-    if(code!==ADMIN_CODE){
+  if (!input) return;
 
-      showToast("Code incorrect.");
+  if (
+    input.value === ADMIN_CODE
+  ) {
 
-      return;
-    }
+    if (error)
+      error.textContent = "";
 
-    closeModal("adminCodeModal");
+    input.value = "";
 
-    openModal("adminModal");
+    closeModal(
+      "adminCodeModal"
+    );
+
+    openModal(
+      "adminModal"
+    );
 
     loadAdminQuestions();
 
-  });
+    showToast(
+      "Dashboard administrateur ouvert 👑"
+    );
 
+  } else {
 
-/* =========================================================
-   BOUTONS
-========================================================= */
+    if (error) {
 
-document
-  .getElementById("questionsBtn")
-  .addEventListener("click",()=>{
-
-    openModal("questionsModal");
-
-    loadUserQuestions();
-
-  });
-
-
-document
-  .getElementById("accountBtn")
-  .addEventListener("click",()=>{
-
-    openModal("accountModal");
-
-    renderAccount();
-
-  });
-
-
-document
-  .getElementById("bottomAccountBtn")
-  .addEventListener("click",()=>{
-
-    openModal("accountModal");
-
-    renderAccount();
-
-  });
-
-
-document
-  .getElementById("ordersBtn")
-  .addEventListener("click",()=>{
-
-    openModal("ordersModal");
-
-    loadOrders();
-
-  });
-
-
-document
-  .getElementById("cartBtn")
-  .addEventListener("click",()=>{
-
-    openModal("cartModal");
-
-    renderCart();
-
-  });
-
-
-document
-  .getElementById("bottomCartBtn")
-  .addEventListener("click",()=>{
-
-    openModal("cartModal");
-
-    renderCart();
-
-  });
-
-
-document
-  .getElementById("adminBtn")
-  .addEventListener("click",openAdmin);
+      error.textContent =
+        "Code administrateur incorrect.";
+    }
+  }
+}
 
 
 /* =========================================================
    RECHERCHE
 ========================================================= */
 
-document
-  .getElementById("searchInput")
-  .addEventListener("input",event=>{
+function setupSearch() {
 
-    searchValue=event.target.value;
+  const search =
+    document.getElementById(
+      "searchInput"
+    );
 
-    renderProducts();
+  if (!search) return;
 
-  });
+  search.addEventListener(
+    "input",
+    event => {
+
+      searchValue =
+        event.target.value;
+
+      renderProducts();
+    }
+  );
+}
 
 
 /* =========================================================
-   FERMETURE MODALES
+   BOUTONS
 ========================================================= */
 
-document
-  .querySelectorAll("[data-close]")
-  .forEach(button=>{
+function setupButtons() {
 
-    button.addEventListener("click",()=>{
+  document
+    .querySelectorAll(
+      "[data-open-auth]"
+    )
+    .forEach(button => {
 
-      closeModal(
-        button.dataset.close
+      button.addEventListener(
+        "click",
+        () => {
+
+          openModal(
+            "authModal"
+          );
+        }
+      );
+    });
+
+  document
+    .querySelectorAll(
+      "[data-open-cart]"
+    )
+    .forEach(button => {
+
+      button.addEventListener(
+        "click",
+        () => {
+
+          renderCart();
+
+          openModal(
+            "cartModal"
+          );
+        }
+      );
+    });
+
+  document
+    .querySelectorAll(
+      "[data-open-orders]"
+    )
+    .forEach(button => {
+
+      button.addEventListener(
+        "click",
+        () => {
+
+          loadOrders();
+
+          openModal(
+            "ordersModal"
+          );
+        }
+      );
+    });
+
+  document
+    .querySelectorAll(
+      "[data-open-questions]"
+    )
+    .forEach(button => {
+
+      button.addEventListener(
+        "click",
+        () => {
+
+          loadUserQuestions();
+
+          openModal(
+            "questionsModal"
+          );
+        }
+      );
+    });
+
+  document
+    .querySelectorAll(
+      "[data-open-admin]"
+    )
+    .forEach(button => {
+
+      button.addEventListener(
+        "click",
+        openAdminAccess
+      );
+    });
+
+  document
+    .querySelectorAll(
+      "[data-close-modal]"
+    )
+    .forEach(button => {
+
+      button.addEventListener(
+        "click",
+        () => {
+
+          closeModal(
+            button.dataset.closeModal
+          );
+        }
+      );
+    });
+
+  document
+    .getElementById(
+      "authSubmit"
+    )
+    ?.addEventListener(
+      "click",
+      handleAuth
+    );
+
+  document
+    .getElementById(
+      "authSwitch"
+    )
+    ?.addEventListener(
+      "click",
+      switchAuthMode
+    );
+
+  document
+    .getElementById(
+      "logoutButton"
+    )
+    ?.addEventListener(
+      "click",
+      async () => {
+
+        await signOut(auth);
+
+        closeModal(
+          "accountModal"
+        );
+
+        showToast(
+          "Déconnexion réussie."
+        );
+      }
+    );
+
+  document
+    .getElementById(
+      "adminCodeSubmit"
+    )
+    ?.addEventListener(
+      "click",
+      validateAdminCode
+    );
+
+  document
+    .getElementById(
+      "createOrderButton"
+    )
+    ?.addEventListener(
+      "click",
+      createOrder
+    );
+}
+
+
+/* =========================================================
+   ETAT UTILISATEUR
+========================================================= */
+
+onAuthStateChanged(
+  auth,
+  user => {
+
+    currentUser = user;
+
+    const accountText =
+      document.getElementById(
+        "accountText"
       );
 
-    });
+    const adminButton =
+      document.getElementById(
+        "adminButton"
+      );
 
-  });
+    if (user) {
 
-document
-  .querySelectorAll(".modal")
-  .forEach(modal=>{
+      if (accountText) {
 
-    modal.addEventListener("click",event=>{
-
-      if(event.target===modal){
-
-        modal.classList.remove("open");
-
+        accountText.textContent =
+          user.email;
       }
 
-    });
+      if (
+        adminButton &&
+        user.email === ADMIN_EMAIL
+      ) {
 
-  });
+        adminButton.style.display =
+          "inline-flex";
 
+      } else if (adminButton) {
 
-/* =========================================================
-   AUTH STATE
-========================================================= */
+        adminButton.style.display =
+          "none";
+      }
 
-onAuthStateChanged(auth,user=>{
+    } else {
 
-  currentUser=user;
+      if (accountText) {
 
-  updateAuthUI();
+        accountText.textContent =
+          "Compte";
+      }
 
-  if(user){
+      if (adminButton) {
 
-    loadUserQuestions();
-
-    if(user.email===ADMIN_EMAIL){
-
-      loadAdminQuestions();
-
+        adminButton.style.display =
+          "none";
+      }
     }
-
   }
-
-});
+);
 
 
 /* =========================================================
    INITIALISATION
 ========================================================= */
 
+loadCart();
+
 renderCategories();
 
 renderProducts();
 
-updateCartCount();
+renderCart();
 
-renderAccount();
+setupSearch();
+
+setupButtons();
+
+
+/* =========================================================
+   FERMETURE MODALES EN CLIQUANT DEHORS
+========================================================= */
+
+document
+  .querySelectorAll(".modal")
+  .forEach(modal => {
+
+    modal.addEventListener(
+      "click",
+      event => {
+
+        if (
+          event.target === modal
+        ) {
+
+          modal.classList.remove(
+            "open"
+          );
+        }
+      }
+    );
+  });
+
+
+console.log(
+  "NovaShop chargé correctement 🚀"
+);
