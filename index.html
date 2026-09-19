@@ -1,1311 +1,1285 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#0b0d10">
-  <title>NovaShop • Gaming & Informatique</title>
-
-  <style>
-    :root{
-      --bg:#0b0d10;
-      --panel:#11151b;
-      --panel-2:#161b22;
-      --panel-3:#1b2129;
-      --border:#272e38;
-      --text:#f4f7fb;
-      --muted:#98a2b3;
-      --accent:#ffffff;
-      --accent-dark:#0b0d10;
-      --danger:#ff5d67;
-      --success:#54d68a;
-      --shadow:0 18px 50px rgba(0,0,0,.35);
-      --radius:18px;
-    }
-
-    *{
-      box-sizing:border-box;
-      margin:0;
-      padding:0;
-    }
-
-    html{
-      scroll-behavior:smooth;
-    }
-
-    body{
-      font-family:Inter,Arial,Helvetica,sans-serif;
-      background:
-        radial-gradient(circle at 50% -15%,rgba(255,255,255,.06),transparent 38%),
-        var(--bg);
-      color:var(--text);
-      min-height:100vh;
-    }
-
-    body.locked{
-      overflow:hidden;
-    }
-
-    button,
-    input,
-    select{
-      font:inherit;
-    }
-
-    button{
-      border:0;
-      cursor:pointer;
-    }
-
-    a{
-      color:inherit;
-      text-decoration:none;
-    }
-
-    img{
-      display:block;
-      max-width:100%;
-    }
-
-    .container{
-      width:min(1400px,calc(100% - 32px));
-      margin:0 auto;
-    }
-
-    /* HEADER */
-
-    .header{
-      position:sticky;
-      top:0;
-      z-index:100;
-      backdrop-filter:blur(18px);
-      background:rgba(11,13,16,.88);
-      border-bottom:1px solid rgba(255,255,255,.07);
-    }
-
-    .header-main{
-      min-height:76px;
-      display:flex;
-      align-items:center;
-      gap:18px;
-    }
-
-    .logo{
-      display:flex;
-      align-items:center;
-      gap:11px;
-      min-width:max-content;
-      font-weight:900;
-      letter-spacing:-.5px;
-      font-size:20px;
-    }
-
-    .logo-mark{
-      width:36px;
-      height:36px;
-      border-radius:11px;
-      display:grid;
-      place-items:center;
-      background:#fff;
-      color:#090b0e;
-      font-size:18px;
-      font-weight:900;
-    }
-
-    .search-wrap{
-      flex:1;
-      position:relative;
-    }
-
-    .search-icon{
-      position:absolute;
-      left:15px;
-      top:50%;
-      transform:translateY(-50%);
-      color:#87909d;
-      pointer-events:none;
-    }
-
-    .search{
-      width:100%;
-      height:46px;
-      border:1px solid var(--border);
-      outline:none;
-      border-radius:13px;
-      padding:0 16px 0 44px;
-      color:var(--text);
-      background:#0f1318;
-      transition:.2s;
-    }
-
-    .search:focus{
-      border-color:#505965;
-      background:#12171d;
-    }
-
-    .header-actions{
-      display:flex;
-      align-items:center;
-      gap:8px;
-    }
-
-    .icon-btn{
-      width:46px;
-      height:46px;
-      border-radius:13px;
-      background:#12161c;
-      border:1px solid var(--border);
-      color:var(--text);
-      display:grid;
-      place-items:center;
-      position:relative;
-      transition:.18s;
-    }
-
-    .icon-btn:hover{
-      background:#1a2028;
-      border-color:#3a424d;
-      transform:translateY(-1px);
-    }
-
-    .count{
-      position:absolute;
-      top:-5px;
-      right:-5px;
-      min-width:19px;
-      height:19px;
-      padding:0 5px;
-      border-radius:999px;
-      background:#fff;
-      color:#090b0d;
-      font-size:11px;
-      line-height:19px;
-      font-weight:900;
-    }
-
-    .category-bar{
-      border-top:1px solid rgba(255,255,255,.05);
-      overflow:auto;
-      scrollbar-width:none;
-    }
-
-    .category-bar::-webkit-scrollbar{
-      display:none;
-    }
-
-    .category-inner{
-      display:flex;
-      gap:8px;
-      padding:12px 0;
-      min-width:max-content;
-    }
-
-    .category-btn{
-      padding:10px 14px;
-      border:1px solid var(--border);
-      border-radius:999px;
-      background:#10141a;
-      color:#c7ced8;
-      transition:.18s;
-      white-space:nowrap;
-    }
-
-    .category-btn:hover{
-      background:#181e26;
-    }
-
-    .category-btn.active{
-      background:#fff;
-      color:#0b0d10;
-      border-color:#fff;
-    }
-
-    /* HERO */
-
-    .hero{
-      padding:48px 0 24px;
-    }
-
-    .hero-card{
-      min-height:360px;
-      border:1px solid var(--border);
-      border-radius:28px;
-      background:
-        linear-gradient(135deg,rgba(255,255,255,.055),transparent 55%),
-        #11151a;
-      box-shadow:var(--shadow);
-      padding:52px;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:35px;
-      overflow:hidden;
-      position:relative;
-    }
-
-    .hero-card::after{
-      content:"";
-      width:390px;
-      height:390px;
-      border-radius:50%;
-      position:absolute;
-      right:-130px;
-      top:-150px;
-      background:rgba(255,255,255,.025);
-      pointer-events:none;
-    }
-
-    .hero-copy{
-      position:relative;
-      z-index:1;
-      max-width:710px;
-    }
-
-    .eyebrow{
-      display:inline-flex;
-      padding:8px 11px;
-      border-radius:999px;
-      border:1px solid #303843;
-      background:#151a20;
-      color:#bfc7d2;
-      font-size:12px;
-      font-weight:800;
-      text-transform:uppercase;
-      letter-spacing:.08em;
-      margin-bottom:17px;
-    }
-
-    .hero h1{
-      font-size:clamp(36px,5vw,65px);
-      line-height:.98;
-      letter-spacing:-2.7px;
-      max-width:800px;
-    }
-
-    .hero p{
-      color:var(--muted);
-      line-height:1.7;
-      margin-top:18px;
-      max-width:680px;
-    }
-
-    .hero-buttons{
-      display:flex;
-      gap:11px;
-      flex-wrap:wrap;
-      margin-top:26px;
-    }
-
-    .primary-btn,
-    .secondary-btn{
-      min-height:46px;
-      padding:0 18px;
-      border-radius:13px;
-      font-weight:800;
-      transition:.18s;
-    }
-
-    .primary-btn{
-      background:#fff;
-      color:#0b0d10;
-    }
-
-    .primary-btn:hover{
-      transform:translateY(-1px);
-      opacity:.92;
-    }
-
-    .secondary-btn{
-      background:#171c22;
-      border:1px solid #303741;
-      color:#f2f4f7;
-    }
-
-    .secondary-btn:hover{
-      background:#1e242c;
-    }
-
-    .hero-side{
-      width:300px;
-      flex:0 0 300px;
-      display:grid;
-      gap:12px;
-      position:relative;
-      z-index:1;
-    }
-
-    .hero-stat{
-      border:1px solid var(--border);
-      background:#151a20;
-      border-radius:16px;
-      padding:19px;
-    }
-
-    .hero-stat strong{
-      display:block;
-      font-size:28px;
-      letter-spacing:-1px;
-    }
-
-    .hero-stat span{
-      display:block;
-      color:var(--muted);
-      font-size:13px;
-      margin-top:6px;
-    }
-
-    /* SHOP */
-
-    .shop{
-      padding:28px 0 80px;
-    }
-
-    .section-head{
-      display:flex;
-      align-items:flex-end;
-      justify-content:space-between;
-      gap:18px;
-      margin-bottom:20px;
-    }
-
-    .section-title{
-      font-size:29px;
-      letter-spacing:-1px;
-    }
-
-    .section-subtitle{
-      color:var(--muted);
-      font-size:14px;
-      margin-top:5px;
-    }
-
-    .toolbar{
-      display:flex;
-      gap:9px;
-      align-items:center;
-      flex-wrap:wrap;
-    }
-
-    .select{
-      background:#11161c;
-      border:1px solid var(--border);
-      color:#eef1f5;
-      height:44px;
-      border-radius:12px;
-      padding:0 13px;
-      outline:none;
-    }
-
-    .products-grid{
-      display:grid;
-      grid-template-columns:repeat(4,minmax(0,1fr));
-      gap:15px;
-    }
-
-    .product-card{
-      background:#11161b;
-      border:1px solid var(--border);
-      border-radius:18px;
-      overflow:hidden;
-      transition:.2s;
-      min-width:0;
-    }
-
-    .product-card:hover{
-      transform:translateY(-3px);
-      border-color:#3a434f;
-      box-shadow:0 14px 35px rgba(0,0,0,.24);
-    }
-
-    .product-image-wrap{
-      height:235px;
-      background:#171c22;
-      position:relative;
-      display:grid;
-      place-items:center;
-      overflow:hidden;
-    }
-
-    .product-image{
-      width:100%;
-      height:100%;
-      object-fit:contain;
-      padding:24px;
-      transition:.25s;
-    }
-
-    .product-card:hover .product-image{
-      transform:scale(1.035);
-    }
-
-    .favorite-product{
-      position:absolute;
-      top:12px;
-      right:12px;
-      width:38px;
-      height:38px;
-      border-radius:12px;
-      border:1px solid #303841;
-      background:rgba(10,12,15,.88);
-      color:#fff;
-      display:grid;
-      place-items:center;
-      z-index:2;
-    }
-
-    .favorite-product.active{
-      background:#fff;
-      color:#0b0d10;
-    }
-
-    .brand-pill{
-      position:absolute;
-      top:12px;
-      left:12px;
-      background:rgba(10,12,15,.88);
-      border:1px solid #303841;
-      border-radius:999px;
-      padding:7px 9px;
-      font-size:11px;
-      color:#c7cfd8;
-      z-index:2;
-    }
-
-    .product-info{
-      padding:16px;
-    }
-
-    .product-category{
-      color:#87919f;
-      text-transform:uppercase;
-      font-size:10px;
-      letter-spacing:.08em;
-      font-weight:800;
-    }
-
-    .product-name{
-      margin-top:7px;
-      font-size:16px;
-      line-height:1.35;
-      min-height:43px;
-    }
-
-    .product-desc{
-      color:#8f99a6;
-      font-size:12px;
-      line-height:1.5;
-      margin-top:7px;
-      min-height:36px;
-    }
-
-    .product-bottom{
-      margin-top:15px;
-      display:flex;
-      align-items:end;
-      justify-content:space-between;
-      gap:8px;
-    }
-
-    .price{
-      font-size:21px;
-      font-weight:900;
-      letter-spacing:-.5px;
-      white-space:nowrap;
-    }
-
-    .add-btn{
-      width:43px;
-      height:43px;
-      border-radius:12px;
-      background:#fff;
-      color:#0b0d10;
-      font-size:20px;
-      font-weight:900;
-      transition:.18s;
-    }
-
-    .add-btn:hover{
-      transform:translateY(-1px);
-      opacity:.92;
-    }
-
-    .empty{
-      border:1px dashed #333b46;
-      border-radius:18px;
-      padding:55px 20px;
-      text-align:center;
-      color:#929dab;
-      grid-column:1/-1;
-    }
-
-    .pagination{
-      margin-top:22px;
-      display:flex;
-      justify-content:center;
-      gap:8px;
-      flex-wrap:wrap;
-    }
-
-    .page-btn{
-      min-width:42px;
-      height:42px;
-      border-radius:11px;
-      border:1px solid var(--border);
-      background:#11161b;
-      color:#dfe4ea;
-    }
-
-    .page-btn:hover{
-      background:#1a2028;
-    }
-
-    .page-btn.active{
-      background:#fff;
-      color:#0b0d10;
-      border-color:#fff;
-    }
-
-    /* OVERLAY + DRAWERS */
-
-    .overlay{
-      position:fixed;
-      inset:0;
-      background:rgba(0,0,0,.62);
-      backdrop-filter:blur(4px);
-      z-index:200;
-      display:none;
-    }
-
-    .overlay.visible{
-      display:block;
-    }
-
-    .drawer{
-      position:fixed;
-      top:0;
-      right:0;
-      width:min(430px,100%);
-      height:100dvh;
-      z-index:250;
-      background:#0f1318;
-      border-left:1px solid var(--border);
-      transform:translateX(105%);
-      transition:.25s;
-      display:flex;
-      flex-direction:column;
-    }
-
-    .drawer.open{
-      transform:translateX(0);
-    }
-
-    .drawer-head{
-      min-height:76px;
-      border-bottom:1px solid var(--border);
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      padding:0 20px;
-      gap:12px;
-    }
-
-    .drawer-title{
-      font-size:19px;
-      font-weight:900;
-    }
-
-    .close-btn{
-      width:40px;
-      height:40px;
-      border:1px solid var(--border);
-      background:#151a20;
-      color:#fff;
-      border-radius:12px;
-      font-size:18px;
-    }
-
-    .drawer-content{
-      flex:1;
-      overflow:auto;
-      padding:18px;
-    }
-
-    .cart-item{
-      display:grid;
-      grid-template-columns:72px 1fr auto;
-      gap:12px;
-      align-items:center;
-      padding:11px;
-      border:1px solid var(--border);
-      background:#12171d;
-      border-radius:14px;
-      margin-bottom:10px;
-    }
-
-    .cart-item img{
-      width:72px;
-      height:72px;
-      object-fit:contain;
-      background:#1a2027;
-      border-radius:11px;
-      padding:7px;
-    }
-
-    .cart-item-name{
-      font-size:13px;
-      font-weight:800;
-      line-height:1.35;
-    }
-
-    .cart-item-price{
-      color:#9ca6b3;
-      font-size:12px;
-      margin-top:5px;
-    }
-
-    .qty{
-      display:flex;
-      align-items:center;
-      gap:6px;
-      margin-top:7px;
-    }
-
-    .qty button{
-      width:28px;
-      height:28px;
-      border-radius:8px;
-      border:1px solid var(--border);
-      background:#171c23;
-      color:#fff;
-    }
-
-    .remove-btn{
-      color:#ff8b92;
-      margin-top:7px;
-      background:transparent;
-      padding:0;
-      font-size:11px;
-      font-weight:700;
-    }
-
-    .cart-total{
-      border-top:1px solid var(--border);
-      padding:16px 18px;
-      background:#10141a;
-    }
-
-    .total-line{
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      gap:10px;
-      margin-bottom:13px;
-    }
-
-    .total-line span{
-      color:#a1aab6;
-    }
-
-    .total-line strong{
-      font-size:24px;
-    }
-
-    .full-btn{
-      width:100%;
-    }
-
-    .empty-drawer{
-      min-height:250px;
-      display:grid;
-      place-items:center;
-      text-align:center;
-      color:#88929f;
-      line-height:1.7;
-    }
-
-    .favorite-item{
-      display:grid;
-      grid-template-columns:76px 1fr auto;
-      gap:12px;
-      align-items:center;
-      padding:11px;
-      background:#12171d;
-      border:1px solid var(--border);
-      border-radius:14px;
-      margin-bottom:10px;
-    }
-
-    .favorite-item img{
-      width:76px;
-      height:76px;
-      object-fit:contain;
-      background:#1a2027;
-      border-radius:11px;
-      padding:7px;
-    }
-
-    .favorite-item-name{
-      font-size:13px;
-      font-weight:800;
-    }
-
-    .favorite-item-price{
-      color:#9ca6b3;
-      font-size:12px;
-      margin-top:4px;
-    }
-
-    /* MODAL */
-
-    .modal-wrap{
-      position:fixed;
-      inset:0;
-      z-index:300;
-      display:none;
-      align-items:center;
-      justify-content:center;
-      padding:18px;
-    }
-
-    .modal-wrap.visible{
-      display:flex;
-    }
-
-    .modal{
-      width:min(980px,100%);
-      max-height:calc(100dvh - 36px);
-      overflow:auto;
-      background:#0f1318;
-      border:1px solid var(--border);
-      border-radius:22px;
-      box-shadow:0 28px 80px rgba(0,0,0,.55);
-    }
-
-    .modal-head{
-      min-height:67px;
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      padding:0 18px;
-      border-bottom:1px solid var(--border);
-    }
-
-    .modal-body{
-      padding:22px;
-    }
-
-    .product-detail{
-      display:grid;
-      grid-template-columns:1fr 1fr;
-      gap:26px;
-    }
-
-    .detail-image{
-      min-height:400px;
-      border-radius:18px;
-      background:#151a20;
-      display:grid;
-      place-items:center;
-    }
-
-    .detail-image img{
-      width:100%;
-      height:100%;
-      min-height:400px;
-      object-fit:contain;
-      padding:35px;
-    }
-
-    .detail-copy{
-      display:flex;
-      flex-direction:column;
-      justify-content:center;
-    }
-
-    .detail-brand{
-      color:#8d97a4;
-      font-size:12px;
-      font-weight:800;
-      text-transform:uppercase;
-      letter-spacing:.09em;
-    }
-
-    .detail-title{
-      font-size:37px;
-      line-height:1.05;
-      letter-spacing:-1.5px;
-      margin-top:8px;
-    }
-
-    .detail-description{
-      color:#a0aab7;
-      line-height:1.7;
-      margin-top:16px;
-    }
-
-    .detail-price{
-      font-size:32px;
-      font-weight:900;
-      margin-top:22px;
-    }
-
-    .detail-actions{
-      display:flex;
-      gap:10px;
-      margin-top:18px;
-      flex-wrap:wrap;
-    }
-
-    .detail-actions button{
-      min-height:46px;
-      padding:0 18px;
-      border-radius:12px;
-      font-weight:800;
-    }
-
-    /* ACCOUNT */
-
-    .account-grid{
-      display:grid;
-      gap:14px;
-    }
-
-    .account-card{
-      border:1px solid var(--border);
-      background:#12171d;
-      border-radius:16px;
-      padding:16px;
-    }
-
-    .account-card h3{
-      font-size:16px;
-      margin-bottom:9px;
-    }
-
-    .account-muted{
-      color:#8f99a6;
-      font-size:13px;
-      line-height:1.6;
-    }
-
-    .account-input{
-      width:100%;
-      margin-top:10px;
-      height:44px;
-      background:#0e1217;
-      color:#fff;
-      border:1px solid var(--border);
-      border-radius:11px;
-      padding:0 12px;
-      outline:none;
-    }
-
-    .account-actions{
-      display:flex;
-      gap:9px;
-      flex-wrap:wrap;
-      margin-top:11px;
-    }
-
-    .order-card{
-      border:1px solid var(--border);
-      border-radius:14px;
-      padding:13px;
-      margin-top:10px;
-      background:#10151a;
-    }
-
-    .order-row{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
-      font-size:12px;
-      margin-bottom:7px;
-    }
-
-    .order-status{
-      padding:6px 8px;
-      background:#172018;
-      color:#8eedae;
-      border-radius:8px;
-      font-weight:800;
-    }
-
-    .danger-btn{
-      border:1px solid #58292d;
-      background:#211315;
-      color:#ff9da3;
-      min-height:42px;
-      padding:0 13px;
-      border-radius:11px;
-      font-weight:800;
-    }
-
-    /* TOAST */
-
-    .toast{
-      position:fixed;
-      left:50%;
-      bottom:22px;
-      transform:translate(-50%,22px);
-      background:#fff;
-      color:#0b0d10;
-      padding:12px 16px;
-      border-radius:12px;
-      font-size:13px;
-      font-weight:800;
-      box-shadow:0 15px 45px rgba(0,0,0,.35);
-      z-index:500;
-      opacity:0;
-      pointer-events:none;
-      transition:.25s;
-    }
-
-    .toast.visible{
-      opacity:1;
-      transform:translate(-50%,0);
-    }
-
-    /* FOOTER */
-
-    .footer{
-      border-top:1px solid var(--border);
-      padding:30px 0;
-      color:#818b98;
-      font-size:12px;
-      text-align:center;
-    }
-
-    /* RESPONSIVE */
-
-    @media(max-width:1100px){
-      .products-grid{
-        grid-template-columns:repeat(3,minmax(0,1fr));
-      }
-
-      .hero-side{
-        display:none;
-      }
-    }
-
-    @media(max-width:800px){
-      .header-main{
-        flex-wrap:wrap;
-        padding:12px 0;
-      }
-
-      .search-wrap{
-        order:3;
-        flex-basis:100%;
-      }
-
-      .hero-card{
-        padding:32px 24px;
-      }
-
-      .products-grid{
-        grid-template-columns:repeat(2,minmax(0,1fr));
-      }
-
-      .product-detail{
-        grid-template-columns:1fr;
-      }
-
-      .detail-image,
-      .detail-image img{
-        min-height:300px;
-      }
-    }
-
-    @media(max-width:520px){
-      .container{
-        width:min(100% - 20px,1400px);
-      }
-
-      .logo{
-        font-size:17px;
-      }
-
-      .hero{
-        padding-top:25px;
-      }
-
-      .hero-card{
-        min-height:auto;
-        padding:26px 19px;
-        border-radius:21px;
-      }
-
-      .hero h1{
-        letter-spacing:-1.7px;
-      }
-
-      .products-grid{
-        grid-template-columns:1fr;
-      }
-
-      .product-image-wrap{
-        height:260px;
-      }
-
-      .section-head{
-        align-items:flex-start;
-        flex-direction:column;
-      }
-
-      .toolbar{
-        width:100%;
-      }
-
-      .select{
-        width:100%;
-      }
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>NovaShop</title>
+
+<style>
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+}
+
+:root{
+  --bg:#090b0e;
+  --surface:#101318;
+  --surface2:#151920;
+  --surface3:#1b2028;
+  --border:#292f38;
+  --text:#f5f7fa;
+  --muted:#8e98a6;
+  --white:#fff;
+  --green:#55d98a;
+  --red:#ff6973;
+}
+
+html{
+  scroll-behavior:smooth;
+}
+
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:Arial,Helvetica,sans-serif;
+  min-height:100vh;
+}
+
+button,
+input,
+select{
+  font:inherit;
+}
+
+button{
+  cursor:pointer;
+}
+
+img{
+  max-width:100%;
+  display:block;
+}
+
+a{
+  color:inherit;
+  text-decoration:none;
+}
+
+/* HEADER */
+
+.header{
+  position:sticky;
+  top:0;
+  z-index:100;
+  background:rgba(9,11,14,.94);
+  backdrop-filter:blur(18px);
+  border-bottom:1px solid var(--border);
+}
+
+.headerTop{
+  height:72px;
+  max-width:1450px;
+  margin:auto;
+  padding:0 22px;
+  display:flex;
+  align-items:center;
+  gap:22px;
+}
+
+.logo{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  font-size:20px;
+  font-weight:900;
+  white-space:nowrap;
+}
+
+.logoBox{
+  width:37px;
+  height:37px;
+  display:grid;
+  place-items:center;
+  background:white;
+  color:#090b0e;
+  border-radius:10px;
+  font-weight:900;
+}
+
+.searchBox{
+  flex:1;
+  max-width:720px;
+  position:relative;
+}
+
+.searchBox input{
+  width:100%;
+  height:44px;
+  padding:0 16px 0 43px;
+  background:#11151a;
+  color:white;
+  border:1px solid var(--border);
+  border-radius:12px;
+  outline:none;
+}
+
+.searchBox input:focus{
+  border-color:#59616c;
+}
+
+.searchIcon{
+  position:absolute;
+  left:15px;
+  top:50%;
+  transform:translateY(-50%);
+  color:#87919e;
+  pointer-events:none;
+}
+
+.headerButtons{
+  margin-left:auto;
+  display:flex;
+  gap:8px;
+}
+
+.headerBtn{
+  width:44px;
+  height:44px;
+  border:1px solid var(--border);
+  background:#11151a;
+  color:white;
+  border-radius:12px;
+  position:relative;
+  transition:.18s;
+}
+
+.headerBtn:hover{
+  background:#1a2027;
+}
+
+.counter{
+  position:absolute;
+  top:-6px;
+  right:-6px;
+  min-width:19px;
+  height:19px;
+  padding:0 5px;
+  display:grid;
+  place-items:center;
+  background:white;
+  color:#090b0e;
+  border-radius:20px;
+  font-size:10px;
+  font-weight:900;
+}
+
+/* CATEGORIES */
+
+.categories{
+  border-top:1px solid rgba(255,255,255,.03);
+  overflow:auto;
+}
+
+.categoriesInner{
+  max-width:1450px;
+  margin:auto;
+  padding:11px 22px;
+  display:flex;
+  gap:7px;
+  white-space:nowrap;
+}
+
+.category{
+  background:#11151a;
+  color:#aeb7c2;
+  border:1px solid var(--border);
+  padding:9px 13px;
+  border-radius:999px;
+  transition:.15s;
+}
+
+.category:hover{
+  background:#1a2027;
+  color:white;
+}
+
+.category.active{
+  background:white;
+  color:#090b0e;
+  border-color:white;
+}
+
+/* MAIN */
+
+.main{
+  max-width:1450px;
+  margin:auto;
+  padding:30px 22px 70px;
+}
+
+/* HERO */
+
+.hero{
+  min-height:370px;
+  border:1px solid var(--border);
+  border-radius:25px;
+  background:
+    radial-gradient(circle at 80% 20%,rgba(255,255,255,.06),transparent 30%),
+    linear-gradient(135deg,#151a20,#0f1216);
+  display:flex;
+  align-items:center;
+  padding:55px;
+  overflow:hidden;
+  position:relative;
+}
+
+.heroText{
+  max-width:760px;
+}
+
+.heroSmall{
+  display:inline-block;
+  border:1px solid #343b45;
+  background:#171c22;
+  color:#b8c1cc;
+  padding:7px 10px;
+  border-radius:999px;
+  font-size:11px;
+  font-weight:800;
+  text-transform:uppercase;
+  margin-bottom:17px;
+}
+
+.hero h1{
+  font-size:clamp(38px,5vw,70px);
+  line-height:.98;
+  letter-spacing:-3px;
+}
+
+.hero p{
+  color:var(--muted);
+  line-height:1.7;
+  max-width:650px;
+  margin-top:18px;
+}
+
+.heroButtons{
+  display:flex;
+  gap:10px;
+  margin-top:25px;
+  flex-wrap:wrap;
+}
+
+.btnPrimary,
+.btnSecondary{
+  min-height:45px;
+  padding:0 17px;
+  border-radius:11px;
+  font-weight:800;
+  border:1px solid transparent;
+}
+
+.btnPrimary{
+  background:white;
+  color:#090b0e;
+}
+
+.btnSecondary{
+  background:#171c22;
+  color:white;
+  border-color:#333a44;
+}
+
+.btnPrimary:hover,
+.btnSecondary:hover{
+  transform:translateY(-1px);
+}
+
+/* SHOP HEADER */
+
+.shopHeader{
+  margin-top:45px;
+  display:flex;
+  justify-content:space-between;
+  align-items:end;
+  gap:20px;
+  margin-bottom:18px;
+}
+
+.shopTitle{
+  font-size:30px;
+  letter-spacing:-1px;
+}
+
+.shopSub{
+  color:var(--muted);
+  font-size:13px;
+  margin-top:5px;
+}
+
+.sort{
+  height:43px;
+  background:#11151a;
+  color:white;
+  border:1px solid var(--border);
+  border-radius:11px;
+  padding:0 12px;
+  outline:none;
+}
+
+/* PRODUCTS */
+
+.products{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:15px;
+}
+
+.product{
+  border:1px solid var(--border);
+  background:#11151a;
+  border-radius:17px;
+  overflow:hidden;
+  transition:.2s;
+}
+
+.product:hover{
+  transform:translateY(-3px);
+  border-color:#414a56;
+  box-shadow:0 20px 45px rgba(0,0,0,.28);
+}
+
+.productImage{
+  height:245px;
+  background:#181d24;
+  position:relative;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.productImage img{
+  width:100%;
+  height:100%;
+  object-fit:contain;
+  padding:25px;
+}
+
+.imageFallback{
+  color:#697381;
+  text-align:center;
+  font-size:12px;
+  display:none;
+}
+
+.brand{
+  position:absolute;
+  top:11px;
+  left:11px;
+  z-index:3;
+  background:rgba(8,10,13,.9);
+  border:1px solid #343b45;
+  color:#c5cdd6;
+  border-radius:999px;
+  padding:6px 9px;
+  font-size:10px;
+  font-weight:800;
+}
+
+.heart{
+  position:absolute;
+  top:10px;
+  right:10px;
+  width:38px;
+  height:38px;
+  border-radius:11px;
+  border:1px solid #343b45;
+  background:rgba(8,10,13,.9);
+  color:white;
+  z-index:4;
+}
+
+.heart.active{
+  background:white;
+  color:#090b0e;
+}
+
+.productInfo{
+  padding:15px;
+}
+
+.productCategory{
+  color:#7f8997;
+  font-size:10px;
+  text-transform:uppercase;
+  font-weight:800;
+  letter-spacing:.08em;
+}
+
+.productName{
+  margin-top:7px;
+  font-size:16px;
+  line-height:1.35;
+  min-height:43px;
+}
+
+.productDescription{
+  color:#89939f;
+  font-size:12px;
+  line-height:1.5;
+  min-height:36px;
+  margin-top:7px;
+}
+
+.productBottom{
+  display:flex;
+  justify-content:space-between;
+  align-items:end;
+  gap:10px;
+  margin-top:16px;
+}
+
+.productPrice{
+  font-size:21px;
+  font-weight:900;
+}
+
+.add{
+  width:43px;
+  height:43px;
+  border:0;
+  border-radius:11px;
+  background:white;
+  color:#090b0e;
+  font-size:22px;
+  font-weight:900;
+}
+
+/* PAGINATION */
+
+.pagination{
+  display:flex;
+  justify-content:center;
+  gap:7px;
+  margin-top:25px;
+}
+
+.page{
+  min-width:40px;
+  height:40px;
+  border-radius:10px;
+  background:#11151a;
+  border:1px solid var(--border);
+  color:white;
+}
+
+.page.active{
+  background:white;
+  color:#090b0e;
+}
+
+/* OVERLAY */
+
+.overlay{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.65);
+  backdrop-filter:blur(4px);
+  z-index:500;
+  display:none;
+}
+
+.overlay.active{
+  display:block;
+}
+
+/* DRAWER */
+
+.drawer{
+  position:fixed;
+  right:0;
+  top:0;
+  width:min(450px,100%);
+  height:100vh;
+  background:#0e1116;
+  border-left:1px solid var(--border);
+  z-index:600;
+  transform:translateX(100%);
+  transition:.25s;
+  display:flex;
+  flex-direction:column;
+}
+
+.drawer.open{
+  transform:translateX(0);
+}
+
+.drawerHead{
+  min-height:70px;
+  padding:0 18px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  border-bottom:1px solid var(--border);
+}
+
+.drawerTitle{
+  font-size:19px;
+  font-weight:900;
+}
+
+.close{
+  width:39px;
+  height:39px;
+  border:1px solid var(--border);
+  background:#161b21;
+  color:white;
+  border-radius:10px;
+  font-size:19px;
+}
+
+.drawerBody{
+  flex:1;
+  overflow:auto;
+  padding:15px;
+}
+
+/* CART */
+
+.cartItem{
+  display:grid;
+  grid-template-columns:72px 1fr auto;
+  gap:11px;
+  padding:10px;
+  margin-bottom:9px;
+  border:1px solid var(--border);
+  background:#12171d;
+  border-radius:13px;
+}
+
+.cartItem img{
+  width:72px;
+  height:72px;
+  object-fit:contain;
+  background:#191e25;
+  border-radius:9px;
+  padding:7px;
+}
+
+.cartName{
+  font-size:13px;
+  font-weight:800;
+  line-height:1.4;
+}
+
+.cartPrice{
+  color:#8c96a3;
+  font-size:12px;
+  margin-top:4px;
+}
+
+.quantity{
+  display:flex;
+  align-items:center;
+  gap:5px;
+  margin-top:7px;
+}
+
+.quantity button{
+  width:27px;
+  height:27px;
+  border:1px solid var(--border);
+  border-radius:7px;
+  background:#181e25;
+  color:white;
+}
+
+.remove{
+  background:none;
+  border:0;
+  color:#ff8b92;
+  font-size:11px;
+  margin-top:7px;
+}
+
+.cartFooter{
+  padding:17px;
+  border-top:1px solid var(--border);
+}
+
+.total{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:12px;
+}
+
+.total strong{
+  font-size:24px;
+}
+
+/* MODAL */
+
+.modalLayer{
+  position:fixed;
+  inset:0;
+  z-index:700;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:18px;
+}
+
+.modalLayer.open{
+  display:flex;
+}
+
+.modal{
+  width:min(1000px,100%);
+  max-height:calc(100vh - 36px);
+  overflow:auto;
+  background:#0e1116;
+  border:1px solid var(--border);
+  border-radius:21px;
+  box-shadow:0 30px 90px rgba(0,0,0,.6);
+}
+
+.modalHead{
+  height:65px;
+  padding:0 18px;
+  border-bottom:1px solid var(--border);
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+}
+
+.modalBody{
+  padding:22px;
+}
+
+.detail{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:25px;
+}
+
+.detailImage{
+  min-height:420px;
+  background:#171c22;
+  border-radius:17px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.detailImage img{
+  width:100%;
+  height:420px;
+  object-fit:contain;
+  padding:35px;
+}
+
+.detailCategory{
+  color:#89939f;
+  font-size:11px;
+  text-transform:uppercase;
+  font-weight:800;
+}
+
+.detail h2{
+  font-size:40px;
+  line-height:1.05;
+  margin-top:8px;
+  letter-spacing:-1.5px;
+}
+
+.detail p{
+  color:#9aa4b0;
+  line-height:1.7;
+  margin-top:17px;
+}
+
+.detailPrice{
+  font-size:32px;
+  font-weight:900;
+  margin-top:22px;
+}
+
+.detailButtons{
+  display:flex;
+  gap:9px;
+  margin-top:18px;
+  flex-wrap:wrap;
+}
+
+/* EMPTY */
+
+.empty{
+  grid-column:1/-1;
+  border:1px dashed #363e48;
+  border-radius:16px;
+  text-align:center;
+  padding:60px 20px;
+  color:#89939f;
+}
+
+/* ACCOUNT */
+
+.accountBox{
+  display:grid;
+  gap:13px;
+}
+
+.accountCard{
+  background:#12171d;
+  border:1px solid var(--border);
+  border-radius:15px;
+  padding:15px;
+}
+
+.accountCard h3{
+  margin-bottom:8px;
+}
+
+.accountCard p{
+  color:#89939f;
+  font-size:13px;
+  line-height:1.6;
+}
+
+.cityInput{
+  width:100%;
+  height:43px;
+  margin-top:10px;
+  padding:0 12px;
+  background:#0d1014;
+  border:1px solid var(--border);
+  border-radius:10px;
+  color:white;
+  outline:none;
+}
+
+.orders{
+  margin-top:10px;
+}
+
+.order{
+  border:1px solid var(--border);
+  background:#0e1217;
+  border-radius:12px;
+  padding:12px;
+  margin-top:8px;
+}
+
+.orderTop{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+}
+
+.status{
+  color:var(--green);
+  font-size:11px;
+  font-weight:800;
+}
+
+.orderInfo{
+  color:#8d97a4;
+  font-size:12px;
+  line-height:1.6;
+  margin-top:7px;
+}
+
+.danger{
+  margin-top:10px;
+  background:#241417;
+  color:#ff979e;
+  border:1px solid #592a30;
+  min-height:41px;
+  padding:0 13px;
+  border-radius:10px;
+  font-weight:800;
+}
+
+/* TOAST */
+
+.toast{
+  position:fixed;
+  bottom:22px;
+  left:50%;
+  transform:translate(-50%,30px);
+  opacity:0;
+  pointer-events:none;
+  background:white;
+  color:#090b0e;
+  padding:12px 16px;
+  border-radius:11px;
+  font-size:13px;
+  font-weight:800;
+  z-index:1000;
+  transition:.2s;
+}
+
+.toast.show{
+  opacity:1;
+  transform:translate(-50%,0);
+}
+
+/* FOOTER */
+
+.footer{
+  border-top:1px solid var(--border);
+  color:#707a87;
+  text-align:center;
+  padding:28px 20px;
+  font-size:12px;
+}
+
+/* RESPONSIVE */
+
+@media(max-width:1100px){
+  .products{
+    grid-template-columns:repeat(3,1fr);
+  }
+}
+
+@media(max-width:800px){
+  .headerTop{
+    flex-wrap:wrap;
+    height:auto;
+    padding-top:12px;
+    padding-bottom:12px;
+  }
+
+  .searchBox{
+    order:3;
+    flex-basis:100%;
+    max-width:none;
+  }
+
+  .hero{
+    padding:35px 25px;
+  }
+
+  .products{
+    grid-template-columns:repeat(2,1fr);
+  }
+
+  .detail{
+    grid-template-columns:1fr;
+  }
+}
+
+@media(max-width:520px){
+  .main{
+    padding-left:12px;
+    padding-right:12px;
+  }
+
+  .hero{
+    padding:27px 20px;
+    border-radius:18px;
+  }
+
+  .hero h1{
+    font-size:38px;
+  }
+
+  .products{
+    grid-template-columns:1fr;
+  }
+
+  .shopHeader{
+    align-items:stretch;
+    flex-direction:column;
+  }
+
+  .sort{
+    width:100%;
+  }
+
+  .productImage{
+    height:270px;
+  }
+}
+</style>
 </head>
 
 <body>
 
-  <header class="header">
-    <div class="container header-main">
+<header class="header">
 
-      <a href="#" class="logo" id="logoHome">
-        <span class="logo-mark">N</span>
-        <span>NOVASHOP</span>
-      </a>
+  <div class="headerTop">
 
-      <div class="search-wrap">
-        <span class="search-icon">⌕</span>
-        <input
-          id="searchInput"
-          class="search"
-          type="search"
-          placeholder="Rechercher un produit, une marque..."
-          autocomplete="off"
-        >
-      </div>
+    <a href="#" class="logo" id="homeButton">
+      <span class="logoBox">N</span>
+      <span>NOVASHOP</span>
+    </a>
 
-      <div class="header-actions">
-        <button class="icon-btn" id="favoritesBtn" title="Favoris" aria-label="Favoris">
-          ♡
-          <span class="count" id="favoriteCount">0</span>
-        </button>
-
-        <button class="icon-btn" id="accountBtn" title="Compte" aria-label="Compte">
-          ◉
-        </button>
-
-        <button class="icon-btn" id="cartBtn" title="Panier" aria-label="Panier">
-          🛒
-          <span class="count" id="cartCount">0</span>
-        </button>
-      </div>
+    <div class="searchBox">
+      <span class="searchIcon">⌕</span>
+      <input
+        id="searchInput"
+        type="search"
+        placeholder="Rechercher un produit ou une marque..."
+      >
     </div>
 
-    <div class="category-bar">
-      <div class="container category-inner" id="categoryButtons"></div>
-    </div>
-  </header>
+    <div class="headerButtons">
 
-  <main>
-
-    <section class="hero">
-      <div class="container">
-        <div class="hero-card">
-
-          <div class="hero-copy">
-            <span class="eyebrow">Gaming • PC • Setup</span>
-
-            <h1>Le hardware qu’il te faut. Sans le bruit inutile.</h1>
-
-            <p>
-              Une sélection claire de composants et périphériques gaming,
-              avec une interface pensée pour trouver rapidement ce que tu cherches.
-            </p>
-
-            <div class="hero-buttons">
-              <button class="primary-btn" id="heroShopBtn">
-                Voir les produits
-              </button>
-
-              <button class="secondary-btn" id="heroFavoritesBtn">
-                Mes favoris
-              </button>
-            </div>
-          </div>
-
-          <div class="hero-side">
-            <div class="hero-stat">
-              <strong id="heroProductCount">0</strong>
-              <span>produits disponibles</span>
-            </div>
-
-            <div class="hero-stat">
-              <strong>≤ 700 €</strong>
-              <span>prix maximum dans ce catalogue</span>
-            </div>
-
-            <div class="hero-stat">
-              <strong>AMD</strong>
-              <span>pas de processeurs Intel dans cette sélection</span>
-            </div>
-          </div>
-
-        </div>
-      </div>
-    </section>
-
-    <section class="shop" id="productsSection">
-      <div class="container">
-
-        <div class="section-head">
-
-          <div>
-            <h2 class="section-title">Produits</h2>
-            <p class="section-subtitle" id="resultsText">
-              Chargement...
-            </p>
-          </div>
-
-          <div class="toolbar">
-            <select class="select" id="sortSelect">
-              <option value="featured">Pertinence</option>
-              <option value="priceAsc">Prix croissant</option>
-              <option value="priceDesc">Prix décroissant</option>
-              <option value="nameAsc">Nom A → Z</option>
-              <option value="nameDesc">Nom Z → A</option>
-            </select>
-          </div>
-
-        </div>
-
-        <div class="products-grid" id="productsGrid"></div>
-
-        <div class="pagination" id="pagination"></div>
-
-      </div>
-    </section>
-
-  </main>
-
-  <footer class="footer">
-    <div class="container">
-      NovaShop • Catalogue gaming & informatique
-    </div>
-  </footer>
-
-  <div class="overlay" id="overlay"></div>
-
-  <!-- PANIER -->
-
-  <aside class="drawer" id="cartDrawer">
-    <div class="drawer-head">
-      <div class="drawer-title">Mon panier</div>
-      <button class="close-btn" data-close="cart">×</button>
-    </div>
-
-    <div class="drawer-content" id="cartContent"></div>
-
-    <div class="cart-total">
-      <div class="total-line">
-        <span>Total</span>
-        <strong id="cartTotal">0,00 €</strong>
-      </div>
-
-      <button class="primary-btn full-btn" id="checkoutBtn">
-        Passer la commande
+      <button class="headerBtn" id="favoritesButton">
+        ♡
+        <span class="counter" id="favoritesCounter">0</span>
       </button>
-    </div>
-  </aside>
 
-  <!-- FAVORIS -->
+      <button class="headerBtn" id="accountButton">
+        ◉
+      </button>
 
-  <aside class="drawer" id="favoritesDrawer">
-    <div class="drawer-head">
-      <div class="drawer-title">Mes favoris</div>
-      <button class="close-btn" data-close="favorites">×</button>
-    </div>
-
-    <div class="drawer-content" id="favoritesContent"></div>
-  </aside>
-
-  <!-- MODAL PRODUIT -->
-
-  <div class="modal-wrap" id="productModal">
-    <div class="modal">
-
-      <div class="modal-head">
-        <strong>Détails du produit</strong>
-        <button class="close-btn" data-close="product">×</button>
-      </div>
-
-      <div class="modal-body" id="productModalBody"></div>
+      <button class="headerBtn" id="cartButton">
+        🛒
+        <span class="counter" id="cartCounter">0</span>
+      </button>
 
     </div>
+
   </div>
 
-  <!-- MODAL COMPTE -->
+  <div class="categories">
+    <div class="categoriesInner" id="categories"></div>
+  </div>
 
-  <div class="modal-wrap" id="accountModal">
-    <div class="modal">
+</header>
 
-      <div class="modal-head">
-        <strong>Mon compte</strong>
-        <button class="close-btn" data-close="account">×</button>
+
+<main class="main">
+
+  <section class="hero">
+
+    <div class="heroText">
+
+      <span class="heroSmall">
+        Gaming • PC • Setup
+      </span>
+
+      <h1>
+        Ton setup.<br>
+        Tes composants.<br>
+        NovaShop.
+      </h1>
+
+      <p>
+        Une sélection de matériel gaming et informatique,
+        présentée simplement pour trouver rapidement ce qu'il te faut.
+      </p>
+
+      <div class="heroButtons">
+
+        <button
+          class="btnPrimary"
+          id="shopButton"
+        >
+          Voir les produits
+        </button>
+
+        <button
+          class="btnSecondary"
+          id="heroFavoritesButton"
+        >
+          Mes favoris
+        </button>
+
       </div>
 
-      <div class="modal-body">
-        <div class="account-grid">
+    </div>
 
-          <div class="account-card">
-            <h3>Profil local</h3>
-            <div class="account-muted">
-              Ces informations sont enregistrées sur cet appareil.
-            </div>
+  </section>
 
-            <input
-              id="cityInput"
-              class="account-input"
-              type="text"
-              placeholder="Ville de livraison"
-              maxlength="80"
-            >
 
-            <div class="account-actions">
-              <button class="primary-btn" id="saveCityBtn">
-                Enregistrer la ville
-              </button>
-            </div>
-          </div>
+  <section id="productsSection">
 
-          <div class="account-card">
-            <h3>Commandes</h3>
-            <div id="ordersContent"></div>
-          </div>
+    <div class="shopHeader">
 
-          <div class="account-card">
-            <h3>Données</h3>
-            <div class="account-muted">
-              Supprime les favoris, le panier, la ville et les commandes enregistrées
-              localement.
-            </div>
+      <div>
+        <h2 class="shopTitle">
+          Produits
+        </h2>
 
-            <div class="account-actions">
-              <button class="danger-btn" id="deleteAllDataBtn">
-                Supprimer toutes mes données
-              </button>
-            </div>
-          </div>
+        <p
+          class="shopSub"
+          id="resultsText"
+        >
+          Chargement...
+        </p>
+      </div>
+
+      <select
+        class="sort"
+        id="sortSelect"
+      >
+        <option value="featured">
+          Pertinence
+        </option>
+
+        <option value="priceAsc">
+          Prix croissant
+        </option>
+
+        <option value="priceDesc">
+          Prix décroissant
+        </option>
+
+        <option value="nameAsc">
+          Nom A → Z
+        </option>
+
+        <option value="nameDesc">
+          Nom Z → A
+        </option>
+      </select>
+
+    </div>
+
+
+    <div
+      class="products"
+      id="products"
+    ></div>
+
+
+    <div
+      class="pagination"
+      id="pagination"
+    ></div>
+
+  </section>
+
+</main>
+
+
+<footer class="footer">
+  NovaShop • Gaming & Informatique
+</footer>
+
+
+<div
+  class="overlay"
+  id="overlay"
+></div>
+
+
+<!-- PANIER -->
+
+<aside
+  class="drawer"
+  id="cartDrawer"
+>
+
+  <div class="drawerHead">
+
+    <span class="drawerTitle">
+      Mon panier
+    </span>
+
+    <button
+      class="close"
+      data-close
+    >
+      ×
+    </button>
+
+  </div>
+
+  <div
+    class="drawerBody"
+    id="cartContent"
+  ></div>
+
+  <div class="cartFooter">
+
+    <div class="total">
+
+      <span>Total</span>
+
+      <strong id="cartTotal">
+        0,00 €
+      </strong>
+
+    </div>
+
+    <button
+      class="btnPrimary"
+      id="checkoutButton"
+      style="width:100%"
+    >
+      Passer la commande
+    </button>
+
+  </div>
+
+</aside>
+
+
+<!-- FAVORIS -->
+
+<aside
+  class="drawer"
+  id="favoritesDrawer"
+>
+
+  <div class="drawerHead">
+
+    <span class="drawerTitle">
+      Mes favoris
+    </span>
+
+    <button
+      class="close"
+      data-close
+    >
+      ×
+    </button>
+
+  </div>
+
+  <div
+    class="drawerBody"
+    id="favoritesContent"
+  ></div>
+
+</aside>
+
+
+<!-- PRODUIT -->
+
+<div
+  class="modalLayer"
+  id="productModal"
+>
+
+  <div class="modal">
+
+    <div class="modalHead">
+
+      <strong>
+        Produit
+      </strong>
+
+      <button
+        class="close"
+        data-close
+      >
+        ×
+      </button>
+
+    </div>
+
+    <div
+      class="modalBody"
+      id="productContent"
+    ></div>
+
+  </div>
+
+</div>
+
+
+<!-- COMPTE -->
+
+<div
+  class="modalLayer"
+  id="accountModal"
+>
+
+  <div class="modal">
+
+    <div class="modalHead">
+
+      <strong>
+        Mon compte
+      </strong>
+
+      <button
+        class="close"
+        data-close
+      >
+        ×
+      </button>
+
+    </div>
+
+    <div class="modalBody">
+
+      <div class="accountBox">
+
+        <div class="accountCard">
+
+          <h3>
+            Livraison
+          </h3>
+
+          <p>
+            Enregistre ta ville pour tes commandes.
+          </p>
+
+          <input
+            id="cityInput"
+            class="cityInput"
+            type="text"
+            placeholder="Ville"
+          >
+
+          <button
+            class="btnPrimary"
+            id="saveCityButton"
+            style="margin-top:10px"
+          >
+            Enregistrer
+          </button>
 
         </div>
+
+
+        <div class="accountCard">
+
+          <h3>
+            Mes commandes
+          </h3>
+
+          <div
+            class="orders"
+            id="ordersContent"
+          ></div>
+
+        </div>
+
+
+        <div class="accountCard">
+
+          <h3>
+            Données locales
+          </h3>
+
+          <p>
+            Supprimer les données NovaShop enregistrées sur cet appareil.
+          </p>
+
+          <button
+            class="danger"
+            id="deleteDataButton"
+          >
+            Supprimer toutes mes données
+          </button>
+
+        </div>
+
       </div>
 
     </div>
+
   </div>
 
-  <div class="toast" id="toast"></div>
+</div>
 
-  <script src="index.js" defer></script>
+
+<div
+  class="toast"
+  id="toast"
+></div>
+
+
+<script src="index.js"></script>
+
 </body>
 </html>
