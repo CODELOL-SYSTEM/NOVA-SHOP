@@ -1,167 +1,155 @@
 "use strict";
 
 /*
-==========================================================
- NOVASHOP MARKETPLACE
- VERSION COMPLÈTE
-==========================================================
+  ============================================================
+  NOVASHOP
+  ============================================================
+
+  CODE PROMO GRATUIT :
+  NOVA100
+
+  CODE DASHBOARD :
+  NOVA-ADMIN
+
+  Aucun paiement bancaire réel.
+  Le bouton Payer crée une commande locale uniquement
+  après validation du code NOVA100.
+  ============================================================
 */
-
-window.NovaShopLoaded = true;
-
-/* ========================================================
-   CONFIGURATION
-======================================================== */
-
-const STORAGE_KEYS = {
-  cart: "novashop_cart_v3",
-  orders: "novashop_orders_v3",
-  favorites: "novashop_favorites_v3",
-  account: "novashop_account_v3",
-  city: "novashop_city_v3"
-};
-
-/* ========================================================
-   PRODUITS RÉELS FOURNIS
-======================================================== */
 
 const PRODUCTS = [
 
   {
-    id:"cpu-9600x",
-    code:"NS-CPU-9600X",
-    brand:"AMD",
-    name:"Ryzen 5 9600X",
-    category:"Processeurs",
-    price:239.99,
-    image:"https://cdn.idealo.com/folder/Product/204581/7/204581794/s4_produktbild_gross/amd-ryzen-5-9600x-boxed.jpg"
+    id: "cpu-9600x",
+    code: "NS-CPU-9600X",
+    brand: "AMD",
+    name: "AMD Ryzen 5 9600X",
+    category: "Processeurs",
+    price: 239.99,
+    image: "https://cdn.idealo.com/folder/Product/204581/7/204581794/s4_produktbild_gross/amd-ryzen-5-9600x-boxed.jpg"
   },
 
   {
-    id:"ram-corsair-32",
-    code:"NS-RAM-COR-32",
-    brand:"Corsair",
-    name:"Vengeance RGB 32 Go DDR5 6000 CL38",
-    category:"RAM",
-    price:119.99,
-    image:"https://cdn.idealo.com/folder/Product/212257/2/212257224/s4_produktbild_gross/corsair-vengeance-rgb-kit-32go-ddr5-6000-cl38-gris-cmh32gx5m2d6000z38.jpg"
+    id: "ram-corsair-32",
+    code: "NS-RAM-COR-32",
+    brand: "Corsair",
+    name: "Vengeance RGB 32 Go DDR5-6000 CL38",
+    category: "RAM",
+    price: 119.99,
+    image: "https://cdn.idealo.com/folder/Product/212257/2/212257224/s4_produktbild_gross/corsair-vengeance-rgb-kit-32go-ddr5-6000-cl38-gris-cmh32gx5m2d6000z38.jpg"
   },
 
   {
-    id:"ram-kingston-32",
-    code:"NS-RAM-KF-32",
-    brand:"Kingston",
-    name:"FURY Beast RGB 32 Go DDR5 5600 CL36",
-    category:"RAM",
-    price:109.99,
-    image:"https://cdn.idealo.com/folder/Product/202133/2/202133232/s4_produktbild_gross/kingston-fury-beast-rgb-32-go-kit-ddr5-5600-cl36-kf556c36bbeak2-32.jpg"
+    id: "ram-kingston-32",
+    code: "NS-RAM-KF-32",
+    brand: "Kingston",
+    name: "FURY Beast RGB 32 Go DDR5-5600 CL36",
+    category: "RAM",
+    price: 99.99,
+    image: "https://cdn.idealo.com/folder/Product/202133/2/202133232/s4_produktbild_gross/kingston-fury-beast-rgb-32-go-kit-ddr5-5600-cl36-kf556c36bbeak2-32.jpg"
   },
 
   {
-    id:"ssd-1tb",
-    code:"NS-SSD-990P-1T",
-    brand:"Samsung",
-    name:"990 PRO 1 To NVMe",
-    category:"SSD",
-    price:99.99,
-    image:"https://images.samsung.com/is/image/samsung/p6pim/fr/mz-v9p1t0bw/gallery/fr-990-pro-nvme-ssd-mz-v9p1t0bw-538116922?$650_519_PNG$"
+    id: "ssd-990pro-1",
+    code: "NS-SSD-990P-1T",
+    brand: "Samsung",
+    name: "990 PRO 1 To NVMe",
+    category: "SSD",
+    price: 109.99,
+    image: "https://images.samsung.com/is/image/samsung/p6pim/fr/mz-v9p1t0bw/gallery/fr-990-pro-nvme-ssd-mz-v9p1t0bw-538116922?$650_519_PNG$"
   },
 
   {
-    id:"ssd-2tb",
-    code:"NS-SSD-990P-2T",
-    brand:"Samsung",
-    name:"990 PRO 2 To NVMe",
-    category:"SSD",
-    price:169.99,
-    image:"https://images.samsung.com/is/image/samsung/p6pim/fr/mz-v9p2t0bw/gallery/fr-990-pro-nvme-ssd-mz-v9p2t0bw-538116939?$650_519_PNG$"
+    id: "ssd-990pro-2",
+    code: "NS-SSD-990P-2T",
+    brand: "Samsung",
+    name: "990 PRO 2 To NVMe",
+    category: "SSD",
+    price: 169.99,
+    image: "https://images.samsung.com/is/image/samsung/p6pim/fr/mz-v9p2t0bw/gallery/fr-990-pro-nvme-ssd-mz-v9p2t0bw-538116939?$650_519_PNG$"
   },
 
   {
-    id:"psu-rm850x",
-    code:"NS-PSU-RM850X",
-    brand:"Corsair",
-    name:"RM850x 850 W",
-    category:"Alimentations",
-    price:149.99,
-    image:"https://assets.corsair.com/image/upload/c_pad,q_auto,h_1024,w_1024/products/PSUs/CP-9020270-NA/Gallery/RM850x_01.webp"
+    id: "psu-rm850x",
+    code: "NS-PSU-RM850X",
+    brand: "Corsair",
+    name: "RM850x 850W",
+    category: "Alimentations",
+    price: 149.99,
+    image: "https://assets.corsair.com/image/upload/c_pad,q_auto,h_1024,w_1024/products/PSUs/CP-9020270-NA/Gallery/RM850x_01.webp"
   },
 
   {
-    id:"case-5000d",
-    code:"NS-CASE-5000D",
-    brand:"Corsair",
-    name:"5000D Airflow",
-    category:"Boîtiers",
-    price:149.99,
-    image:"https://assets.corsair.com/image/upload/c_pad,q_auto,h_1024,w_1024/products/Cases/CC-9011210-WW/Gallery/5000D_AF_WHITE_01.webp"
+    id: "case-5000d",
+    code: "NS-CASE-5000D",
+    brand: "Corsair",
+    name: "5000D Airflow",
+    category: "Boîtiers",
+    price: 159.99,
+    image: "https://assets.corsair.com/image/upload/c_pad,q_auto,h_1024,w_1024/products/Cases/CC-9011210-WW/Gallery/5000D_AF_WHITE_01.webp"
   },
 
   {
-    id:"arctic-360",
-    code:"NS-AIO-LF3-360",
-    brand:"ARCTIC",
-    name:"Liquid Freezer III 360",
-    category:"Refroidissement",
-    price:119.99,
-    image:"https://www.arctic.de/media/17/9c/4f/1712927838/liquid-freezer-III-360-black-gallery-1.png"
+    id: "aio-lf3",
+    code: "NS-AIO-LF3-360",
+    brand: "ARCTIC",
+    name: "Liquid Freezer III 360",
+    category: "Refroidissement",
+    price: 119.99,
+    image: "https://www.arctic.de/media/17/9c/4f/1712927838/liquid-freezer-III-360-black-gallery-1.png"
   },
 
   {
-    id:"odyssey-g6",
-    code:"NS-MON-OLED-G6",
-    brand:"Samsung",
-    name:"Odyssey OLED G6",
-    category:"Écrans",
-    price:699.99,
-    image:"https://images.samsung.com/is/image/samsung/p6pim/fr/ls27dg602suxen/gallery/fr-odyssey-oled-g6-g60sd-ls27dg602suxen-541415717?$650_519_PNG$"
+    id: "monitor-g6",
+    code: "NS-MON-OLED-G6",
+    brand: "Samsung",
+    name: "Odyssey OLED G6 27 pouces",
+    category: "Écrans",
+    price: 599.99,
+    image: "https://images.samsung.com/is/image/samsung/p6pim/fr/ls27dg602suxen/gallery/fr-odyssey-oled-g6-g60sd-ls27dg602suxen-541415717?$650_519_PNG$"
   },
 
   {
-    id:"logitech-tkl",
-    code:"NS-KB-PROX-TKL",
-    brand:"Logitech G",
-    name:"PRO X TKL Wireless",
-    category:"Claviers",
-    price:179.99,
-    image:"https://resource.logitech.com/w_800,c_limit,q_auto,f_auto,dpr_auto/d_transparent.gif/content/dam/logitech/en/products/keyboards/pro-x-tkl-wireless/gallery/pro-x-tkl-wireless-black-gallery-1.png"
+    id: "keyboard-prox",
+    code: "NS-KB-PROX-TKL",
+    brand: "Logitech G",
+    name: "PRO X TKL Wireless",
+    category: "Claviers",
+    price: 179.99,
+    image: "https://resource.logitech.com/w_800,c_limit,q_auto,f_auto,dpr_auto/d_transparent.gif/content/dam/logitech/en/products/keyboards/pro-x-tkl-wireless/gallery/pro-x-tkl-wireless-black-gallery-1.png"
   },
 
   {
-    id:"superlight-2",
-    code:"NS-MOUSE-SUPERLIGHT2",
-    brand:"Logitech G",
-    name:"PRO X SUPERLIGHT 2",
-    category:"Souris",
-    price:149.99,
-    image:"https://resource.logitech.com/w_800,c_limit,q_auto,f_auto,dpr_auto/d_transparent.gif/content/dam/logitech/en/products/mice/pro-x2-superlight-wireless-mouse/gallery/pro-x2-superlight-black-gallery-1.png"
+    id: "mouse-superlight2",
+    code: "NS-MOUSE-SUPERLIGHT2",
+    brand: "Logitech G",
+    name: "PRO X SUPERLIGHT 2",
+    category: "Souris",
+    price: 129.99,
+    image: "https://resource.logitech.com/w_800,c_limit,q_auto,f_auto,dpr_auto/d_transparent.gif/content/dam/logitech/en/products/mice/pro-x2-superlight-wireless-mouse/gallery/pro-x2-superlight-black-gallery-1.png"
   },
 
   {
-    id:"wave-3",
-    code:"NS-MIC-WAVE3",
-    brand:"Elgato",
-    name:"Wave:3",
-    category:"Micros",
-    price:139.99,
-    image:"https://help.elgato.com/hc/article_attachments/360093559172/Wave_3.png"
+    id: "mic-wave3",
+    code: "NS-MIC-WAVE3",
+    brand: "Elgato",
+    name: "Wave:3",
+    category: "Micros",
+    price: 139.99,
+    image: "https://help.elgato.com/hc/article_attachments/360093559172/Wave_3.png"
   },
 
   {
-    id:"dualsense",
-    code:"NS-PAD-DS5",
-    brand:"Sony",
-    name:"DualSense PS5",
-    category:"Manettes",
-    price:69.99,
-    image:"https://gmedia.playstation.com/is/image/SIEPDC/dualsense-ps5-controller-product-thumbnail-01-en-14sep21?$1600px$"
+    id: "dualsense",
+    code: "NS-GAMEPAD-DS5",
+    brand: "Sony",
+    name: "DualSense Wireless Controller",
+    category: "Manettes",
+    price: 69.99,
+    image: "https://gmedia.playstation.com/is/image/SIEPDC/dualsense-ps5-controller-product-thumbnail-01-en-14sep21?$1600px$"
   }
 
 ];
-
-/* ========================================================
-   CATÉGORIES
-======================================================== */
 
 const CATEGORIES = [
   "Tous",
@@ -180,1173 +168,846 @@ const CATEGORIES = [
   "Manettes"
 ];
 
-/* ========================================================
-   ÉTAT
-======================================================== */
-
-let state = {
-  category:"Tous",
-  search:"",
-  sort:"relevance",
-  cart:load(STORAGE_KEYS.cart,{}),
-  orders:load(STORAGE_KEYS.orders,[]),
-  favorites:load(STORAGE_KEYS.favorites,[]),
-  account:load(
-    STORAGE_KEYS.account,
-    {
-      name:"",
-      email:""
-    }
-  ),
-  city:load(STORAGE_KEYS.city,"")
+const STORAGE = {
+  cart: "novashop_cart",
+  favorites: "novashop_favorites",
+  orders: "novashop_orders",
+  profile: "novashop_profile"
 };
 
-/* ========================================================
-   DOM
-======================================================== */
+const FREE_CODE = "NOVA100";
+const DASHBOARD_CODE = "NOVA-ADMIN";
 
-const marketplacePage =
-  document.getElementById("marketplacePage");
+const STATUS_LIST = [
+  "Commande reçue",
+  "Préparation",
+  "Expédiée",
+  "En livraison",
+  "Livrée"
+];
 
-const dashboardPage =
-  document.getElementById("dashboardPage");
+const state = {
+  category: "Tous",
+  search: "",
+  sort: "relevance",
+  cart: load(STORAGE.cart, []),
+  favorites: load(STORAGE.favorites, []),
+  orders: load(STORAGE.orders, []),
+  profile: load(STORAGE.profile, {}),
+  discountValid: false
+};
 
-const accountPage =
-  document.getElementById("accountPage");
+const $ = id => document.getElementById(id);
 
-const categoryBar =
-  document.getElementById("categoryBar");
-
-const productGrid =
-  document.getElementById("productGrid");
-
-const productCount =
-  document.getElementById("productCount");
-
-const searchForm =
-  document.getElementById("searchForm");
-
-const searchInput =
-  document.getElementById("searchInput");
-
-const sortSelect =
-  document.getElementById("sortSelect");
-
-const cartDrawer =
-  document.getElementById("cartDrawer");
-
-const cartItems =
-  document.getElementById("cartItems");
-
-const cartBadge =
-  document.getElementById("cartBadge");
-
-const cartTotal =
-  document.getElementById("cartTotal");
-
-const overlay =
-  document.getElementById("overlay");
-
-const accountModal =
-  document.getElementById("accountModal");
-
-const checkoutModal =
-  document.getElementById("checkoutModal");
-
-const checkoutForm =
-  document.getElementById("checkoutForm");
-
-const checkoutTotal =
-  document.getElementById("checkoutTotal");
-
-const toast =
-  document.getElementById("toast");
-
-/* ========================================================
-   STORAGE
-======================================================== */
-
-function load(key,fallback){
-
-  try{
-
-    const raw =
-      localStorage.getItem(key);
-
-    if(raw === null){
-      return fallback;
-    }
-
-    return JSON.parse(raw);
-
-  }catch(error){
-
-    console.warn(
-      "NovaShop : impossible de lire",
-      key
-    );
-
+function load(key, fallback) {
+  try {
+    const value = localStorage.getItem(key);
+    return value ? JSON.parse(value) : fallback;
+  } catch {
     return fallback;
   }
 }
 
-function save(key,value){
-
-  try{
-
-    localStorage.setItem(
-      key,
-      JSON.stringify(value)
-    );
-
-  }catch(error){
-
-    console.warn(
-      "NovaShop : impossible d'enregistrer",
-      key
-    );
-  }
+function save(key, value) {
+  localStorage.setItem(key, JSON.stringify(value));
 }
 
-/* ========================================================
-   UTILITAIRES
-======================================================== */
-
-function money(value){
-
-  return Number(value).toLocaleString(
-    "fr-FR",
-    {
-      style:"currency",
-      currency:"EUR"
-    }
-  );
-}
-
-function normalize(value){
-
-  return String(value ?? "")
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g,"")
-    .toLowerCase()
-    .trim();
-}
-
-function escapeHTML(value){
-
-  return String(value ?? "")
-    .replaceAll("&","&amp;")
-    .replaceAll("<","&lt;")
-    .replaceAll(">","&gt;")
-    .replaceAll('"',"&quot;")
-    .replaceAll("'","&#039;");
-}
-
-function getProduct(id){
-
-  return PRODUCTS.find(
-    product => product.id === id
-  );
-}
-
-function getCartCount(){
-
-  return Object.values(state.cart)
-    .reduce(
-      (total,quantity)=>
-        total + Number(quantity || 0),
-      0
-    );
-}
-
-function getCartTotal(){
-
-  return Object.entries(state.cart)
-    .reduce(
-      (total,[id,quantity])=>{
-
-        const product =
-          getProduct(id);
-
-        if(!product){
-          return total;
-        }
-
-        return total +
-          product.price *
-          Number(quantity || 0);
-
-      },
-      0
-    );
-}
-
-function showToast(message){
-
-  toast.textContent =
-    message;
-
-  toast.classList.add("show");
-
-  clearTimeout(
-    showToast.timeout
-  );
-
-  showToast.timeout =
-    setTimeout(
-      ()=>{
-        toast.classList.remove("show");
-      },
-      2400
-    );
-}
-
-/* ========================================================
-   PAGES
-======================================================== */
-
-function hideAllPages(){
-
-  marketplacePage.classList.remove("active");
-  dashboardPage.classList.remove("active");
-  accountPage.classList.remove("active");
-}
-
-function showMarketplace(){
-
-  hideAllPages();
-
-  marketplacePage.classList.add("active");
-
-  window.scrollTo({
-    top:0,
-    behavior:"smooth"
+function money(value) {
+  return Number(value).toLocaleString("fr-FR", {
+    style: "currency",
+    currency: "EUR"
   });
 }
 
-function showDashboard(){
+function escapeHTML(value) {
+  return String(value ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
 
-  hideAllPages();
+function toast(message) {
+  const element = $("toast");
 
-  dashboardPage.classList.add("active");
+  element.textContent = message;
+  element.classList.add("show");
+
+  clearTimeout(toast.timer);
+
+  toast.timer = setTimeout(() => {
+    element.classList.remove("show");
+  }, 2800);
+}
+
+function init() {
+
+  renderCategories();
+  renderProducts();
+  renderCart();
+  updateAccountFields();
+
+  $("searchBtn").addEventListener("click", performSearch);
+
+  $("searchInput").addEventListener("keydown", event => {
+    if (event.key === "Enter") {
+      performSearch();
+    }
+  });
+
+  $("sortSelect").addEventListener("change", event => {
+    state.sort = event.target.value;
+    renderProducts();
+  });
+
+  $("cartBtn").addEventListener("click", openCart);
+  $("closeCart").addEventListener("click", closeCart);
+
+  $("overlay").addEventListener("click", closeCart);
+
+  $("checkoutBtn").addEventListener("click", openCheckout);
+
+  $("accountBtn").addEventListener("click", () => {
+    openModal("accountModal");
+  });
+
+  $("accountForm").addEventListener("submit", saveAccount);
+
+  $("promoBtn").addEventListener("click", applyPromo);
+
+  $("checkoutForm").addEventListener("submit", processPayment);
+
+  $("backMarketplaceBtn").addEventListener("click", openMarketplace);
+
+  $("deleteDataBtn").addEventListener("click", deleteAllData);
+
+  $("printInvoiceBtn").addEventListener("click", printInvoice);
+
+  document.addEventListener("click", globalClickHandler);
+
+  document.addEventListener("keydown", event => {
+    if (event.key === "Escape") {
+      closeEverything();
+    }
+  });
+
+  window.addEventListener("storage", () => {
+    state.cart = load(STORAGE.cart, []);
+    state.favorites = load(STORAGE.favorites, []);
+    state.orders = load(STORAGE.orders, []);
+    renderProducts();
+    renderCart();
+  });
+}
+
+function renderCategories() {
+
+  const container = $("categories");
+
+  container.innerHTML = CATEGORIES.map(category => `
+    <button
+      class="category ${state.category === category ? "active" : ""}"
+      data-category="${escapeHTML(category)}"
+    >
+      ${escapeHTML(category)}
+    </button>
+  `).join("");
+}
+
+function renderProducts() {
+
+  let products = [...PRODUCTS];
+
+  const search = state.search.trim().toLowerCase();
+
+  if (state.category !== "Tous") {
+    products = products.filter(product =>
+      product.category === state.category
+    );
+  }
+
+  if (search) {
+    products = products.filter(product => {
+      const text = [
+        product.name,
+        product.brand,
+        product.category,
+        product.code
+      ].join(" ").toLowerCase();
+
+      return text.includes(search);
+    });
+  }
+
+  if (state.sort === "priceAsc") {
+    products.sort((a, b) => a.price - b.price);
+  }
+
+  if (state.sort === "priceDesc") {
+    products.sort((a, b) => b.price - a.price);
+  }
+
+  if (state.sort === "name") {
+    products.sort((a, b) =>
+      a.name.localeCompare(b.name, "fr")
+    );
+  }
+
+  $("resultCount").textContent =
+    `${products.length} produit${products.length > 1 ? "s" : ""}`;
+
+  if (!products.length) {
+    $("productsGrid").innerHTML = "";
+    $("emptyState").classList.add("show");
+    return;
+  }
+
+  $("emptyState").classList.remove("show");
+
+  $("productsGrid").innerHTML = products.map(product => {
+
+    const favorite = state.favorites.includes(product.id);
+
+    return `
+      <article class="product">
+
+        <div class="product-image">
+
+          <img
+            src="${product.image}"
+            alt="${escapeHTML(product.name)}"
+            loading="lazy"
+            referrerpolicy="no-referrer"
+            onerror="this.style.display='none';this.nextElementSibling.style.display='block'"
+          >
+
+          <span
+            class="image-error"
+            style="display:none"
+          >
+            Image indisponible
+          </span>
+
+          <button
+            class="favorite ${favorite ? "active" : ""}"
+            data-action="favorite"
+            data-id="${product.id}"
+            aria-label="Favori"
+          >
+            ${favorite ? "♥" : "♡"}
+          </button>
+
+        </div>
+
+        <div class="product-info">
+
+          <div class="product-brand">
+            ${escapeHTML(product.brand)}
+          </div>
+
+          <div class="product-name">
+            ${escapeHTML(product.name)}
+          </div>
+
+          <span class="product-category">
+            ${escapeHTML(product.category)}
+          </span>
+
+          <div class="product-bottom">
+
+            <div>
+              <div class="price">
+                ${money(product.price)}
+              </div>
+
+              <div class="demo">
+                Prix de démonstration
+              </div>
+            </div>
+
+            <button
+              class="add-btn"
+              data-action="add"
+              data-id="${product.id}"
+            >
+              Ajouter
+            </button>
+
+          </div>
+
+        </div>
+
+      </article>
+    `;
+
+  }).join("");
+}
+
+function performSearch() {
+
+  const value = $("searchInput").value.trim();
+
+  if (!value) {
+    state.search = "";
+    state.category = "Tous";
+    renderCategories();
+    renderProducts();
+    return;
+  }
+
+  const normalized = value.toUpperCase();
+
+  /*
+    IMPORTANT :
+    Le Dashboard n'est pas affiché dans la navigation.
+    Il faut connaître le code exact.
+  */
+
+  if (normalized === DASHBOARD_CODE) {
+    $("searchInput").value = "";
+    state.search = "";
+    openDashboard();
+    toast("🔐 Code administrateur accepté");
+    return;
+  }
+
+  state.search = value;
+  state.category = "Tous";
+
+  renderCategories();
+  renderProducts();
+}
+
+function openMarketplace() {
+
+  $("marketplaceView").classList.remove("hidden");
+  $("dashboardView").classList.remove("show");
+
+  window.scrollTo({
+    top: 0,
+    behavior: "smooth"
+  });
+}
+
+function openDashboard() {
+
+  $("marketplaceView").classList.add("hidden");
+  $("dashboardView").classList.add("show");
+
+  closeEverything();
 
   renderDashboard();
 
   window.scrollTo({
-    top:0,
-    behavior:"smooth"
+    top: 0,
+    behavior: "smooth"
   });
 }
 
-function showAccount(){
+function renderDashboard() {
 
-  hideAllPages();
+  const orders = [...state.orders]
+    .sort((a, b) =>
+      new Date(b.date) - new Date(a.date)
+    );
 
-  accountPage.classList.add("active");
+  const preparing = orders.filter(order =>
+    order.status === "Commande reçue" ||
+    order.status === "Préparation"
+  ).length;
 
-  document.getElementById(
-    "accountName"
-  ).value =
-    state.account.name || "";
+  const delivered = orders.filter(order =>
+    order.status === "Livrée"
+  ).length;
 
-  document.getElementById(
-    "accountEmail"
-  ).value =
-    state.account.email || "";
+  const total = orders.reduce(
+    (sum, order) => sum + Number(order.total || 0),
+    0
+  );
 
-  window.scrollTo({
-    top:0,
-    behavior:"smooth"
-  });
-}
+  $("statOrders").textContent = orders.length;
+  $("statPreparing").textContent = preparing;
+  $("statDelivered").textContent = delivered;
+  $("statTotal").textContent = money(total);
 
-/* ========================================================
-   CATÉGORIES
-======================================================== */
+  $("dashboardCity").textContent =
+    state.profile.city || "Non définie";
 
-function renderCategories(){
+  const container = $("ordersList");
 
-  categoryBar.innerHTML =
-    CATEGORIES
-      .map(category=>{
+  if (!orders.length) {
+    container.innerHTML = `
+      <div style="
+        text-align:center;
+        padding:40px 10px;
+        color:#6b7280
+      ">
+        <div style="font-size:35px">📦</div>
+        <p style="margin-top:10px">
+          Aucune commande pour le moment.
+        </p>
+      </div>
+    `;
 
-        const active =
-          state.category === category
-            ? "active"
-            : "";
-
-        return `
-          <button
-            class="categoryButton ${active}"
-            data-category="${escapeHTML(category)}"
-          >
-            ${escapeHTML(category)}
-          </button>
-        `;
-
-      })
-      .join("");
-
-  categoryBar
-    .querySelectorAll("[data-category]")
-    .forEach(button=>{
-
-      button.addEventListener(
-        "click",
-        ()=>{
-
-          state.category =
-            button.dataset.category;
-
-          state.search =
-            "";
-
-          searchInput.value =
-            "";
-
-          renderCategories();
-          renderProducts();
-
-        }
-      );
-
-    });
-}
-
-/* ========================================================
-   PRODUITS
-======================================================== */
-
-function getFilteredProducts(){
-
-  let list =
-    PRODUCTS.slice();
-
-  if(
-    state.category !== "Tous"
-  ){
-
-    list =
-      list.filter(
-        product =>
-          product.category ===
-          state.category
-      );
+    return;
   }
 
-  const query =
-    normalize(state.search);
+  container.innerHTML = orders.map(order => {
 
-  if(query){
+    const date = new Date(order.date).toLocaleString(
+      "fr-FR",
+      {
+        dateStyle: "medium",
+        timeStyle: "short"
+      }
+    );
 
-    list =
-      list.filter(product=>{
+    const items = order.items.map(item =>
+      `${escapeHTML(item.name)} × ${item.qty}`
+    ).join("<br>");
 
-        const haystack =
-          normalize(
-            [
-              product.brand,
-              product.name,
-              product.category,
-              product.code
-            ].join(" ")
-          );
+    const index = STATUS_LIST.indexOf(order.status);
 
-        return haystack.includes(
-          query
-        );
+    const canAdvance =
+      index >= 0 &&
+      index < STATUS_LIST.length - 1;
 
-      });
-  }
+    return `
+      <div class="order">
 
-  switch(state.sort){
+        <div class="order-top">
 
-    case "priceAsc":
+          <div>
+            <strong>${escapeHTML(order.id)}</strong>
 
-      list.sort(
-        (a,b)=>
-          a.price - b.price
-      );
+            <div style="
+              color:#6b7280;
+              font-size:12px;
+              margin-top:4px
+            ">
+              ${escapeHTML(date)}
+            </div>
+          </div>
 
-      break;
+          <span class="status">
+            ${escapeHTML(order.status)}
+          </span>
 
-    case "priceDesc":
-
-      list.sort(
-        (a,b)=>
-          b.price - a.price
-      );
-
-      break;
-
-    case "name":
-
-      list.sort(
-        (a,b)=>
-          `${a.brand} ${a.name}`
-            .localeCompare(
-              `${b.brand} ${b.name}`,
-              "fr"
-            )
-      );
-
-      break;
-
-    default:
-      break;
-  }
-
-  return list;
-}
-
-function renderProducts(){
-
-  const list =
-    getFilteredProducts();
-
-  productCount.textContent =
-    `${list.length} produit${list.length > 1 ? "s" : ""}`;
-
-  if(!list.length){
-
-    productGrid.innerHTML = `
-
-      <div class="emptyState">
-
-        <div class="emptyIcon">
-          🔎
         </div>
 
-        <h3>
-          Aucun produit trouvé
-        </h3>
+        <div class="order-items">
+          ${items}
+        </div>
 
-        <p>
-          Aucun produit ne correspond à cette recherche.
+        <div style="
+          margin-top:12px;
+          padding-top:12px;
+          border-top:1px solid #e5e7eb;
+          font-size:13px
+        ">
+
+          <strong>Livraison</strong><br>
+
+          ${escapeHTML(order.delivery.fullName)}<br>
+          ${escapeHTML(order.delivery.address)}<br>
+          ${escapeHTML(order.delivery.postalCode)}
+          ${escapeHTML(order.delivery.city)}<br>
+          ${escapeHTML(order.delivery.country)}
+
+        </div>
+
+        <div style="
+          display:flex;
+          align-items:center;
+          justify-content:space-between;
+          gap:10px;
+          margin-top:15px
+        ">
+
+          <strong style="font-size:18px">
+            ${money(order.total)}
+          </strong>
+
+          ${
+            canAdvance
+              ? `
+                <button
+                  class="secondary"
+                  data-action="next-status"
+                  data-order="${order.id}"
+                >
+                  Avancer le statut
+                </button>
+              `
+              : `
+                <span style="
+                  color:#16a34a;
+                  font-weight:800;
+                  font-size:13px
+                ">
+                  ✓ Livrée
+                </span>
+              `
+          }
+
+        </div>
+
+      </div>
+    `;
+
+  }).join("");
+}
+
+function addToCart(id) {
+
+  const product = PRODUCTS.find(
+    item => item.id === id
+  );
+
+  if (!product) return;
+
+  const existing = state.cart.find(
+    item => item.id === id
+  );
+
+  if (existing) {
+    existing.qty += 1;
+  } else {
+    state.cart.push({
+      id,
+      qty: 1
+    });
+  }
+
+  save(STORAGE.cart, state.cart);
+
+  renderCart();
+
+  toast(`🛒 ${product.name} ajouté au panier`);
+}
+
+function changeQuantity(id, amount) {
+
+  const item = state.cart.find(
+    product => product.id === id
+  );
+
+  if (!item) return;
+
+  item.qty += amount;
+
+  if (item.qty <= 0) {
+    state.cart = state.cart.filter(
+      product => product.id !== id
+    );
+  }
+
+  save(STORAGE.cart, state.cart);
+
+  renderCart();
+}
+
+function removeFromCart(id) {
+
+  state.cart = state.cart.filter(
+    item => item.id !== id
+  );
+
+  save(STORAGE.cart, state.cart);
+
+  renderCart();
+
+  toast("Produit retiré du panier");
+}
+
+function getCartDetails() {
+
+  return state.cart.map(item => {
+
+    const product = PRODUCTS.find(
+      product => product.id === item.id
+    );
+
+    if (!product) return null;
+
+    return {
+      ...product,
+      qty: item.qty,
+      subtotal: product.price * item.qty
+    };
+
+  }).filter(Boolean);
+}
+
+function getCartTotal() {
+
+  return getCartDetails().reduce(
+    (total, item) =>
+      total + item.subtotal,
+    0
+  );
+}
+
+function renderCart() {
+
+  const items = getCartDetails();
+
+  const quantity = state.cart.reduce(
+    (sum, item) => sum + item.qty,
+    0
+  );
+
+  $("cartCount").textContent = quantity;
+
+  if (!items.length) {
+
+    $("cartItems").innerHTML = `
+      <div style="
+        text-align:center;
+        padding:60px 10px;
+        color:#6b7280
+      ">
+        <div style="font-size:40px">🛒</div>
+        <p style="margin-top:10px">
+          Votre panier est vide.
         </p>
+      </div>
+    `;
 
-        <button
-          class="secondary"
-          id="resetFilters"
+  } else {
+
+    $("cartItems").innerHTML = items.map(item => `
+
+      <div class="cart-item">
+
+        <img
+          src="${item.image}"
+          alt="${escapeHTML(item.name)}"
+          referrerpolicy="no-referrer"
         >
-          Réinitialiser
-        </button>
 
-      </div>
+        <div class="cart-item-info">
 
-    `;
+          <div class="cart-item-name">
+            ${escapeHTML(item.name)}
+          </div>
 
-    document
-      .getElementById("resetFilters")
-      .addEventListener(
-        "click",
-        ()=>{
-          state.category =
-            "Tous";
+          <div class="cart-price">
+            ${money(item.subtotal)}
+          </div>
 
-          state.search =
-            "";
+          <div class="qty">
 
-          searchInput.value =
-            "";
+            <button
+              data-action="qty-minus"
+              data-id="${item.id}"
+            >
+              −
+            </button>
 
-          renderCategories();
-          renderProducts();
-        }
-      );
+            <strong>${item.qty}</strong>
 
-    return;
-  }
+            <button
+              data-action="qty-plus"
+              data-id="${item.id}"
+            >
+              +
+            </button>
 
-  productGrid.innerHTML =
-    list
-      .map(product=>{
+            <button
+              class="remove"
+              data-action="remove"
+              data-id="${item.id}"
+            >
+              Supprimer
+            </button>
 
-        const favorite =
-          state.favorites.includes(
-            product.id
-          );
+          </div>
 
-        return `
-
-          <article
-            class="productCard"
-          >
-
-            <div class="productVisual">
-
-              <img
-                src="${product.image}"
-                alt="${escapeHTML(
-                  product.brand +
-                  " " +
-                  product.name
-                )}"
-                loading="lazy"
-              >
-
-              <button
-                class="favoriteButton ${favorite ? "active" : ""}"
-                data-favorite="${product.id}"
-                aria-label="Favori"
-              >
-                ${favorite ? "♥" : "♡"}
-              </button>
-
-            </div>
-
-            <div class="productBody">
-
-              <div class="productBrand">
-                ${escapeHTML(product.brand)}
-              </div>
-
-              <h3 class="productName">
-                ${escapeHTML(product.name)}
-              </h3>
-
-              <div class="productMeta">
-
-                <span>
-                  ${escapeHTML(product.category)}
-                </span>
-
-                <span class="productRating">
-                  ★★★★★
-                </span>
-
-              </div>
-
-              <div class="productCode">
-                ${escapeHTML(product.code)}
-              </div>
-
-              <div class="productPrice">
-                ${money(product.price)}
-              </div>
-
-              <div class="stock">
-                ● Disponible
-              </div>
-
-              <button
-                class="addButton"
-                data-add="${product.id}"
-              >
-                Ajouter au panier
-              </button>
-
-            </div>
-
-          </article>
-
-        `;
-
-      })
-      .join("");
-
-  productGrid
-    .querySelectorAll("[data-add]")
-    .forEach(button=>{
-
-      button.addEventListener(
-        "click",
-        ()=>{
-
-          addToCart(
-            button.dataset.add
-          );
-
-        }
-      );
-
-    });
-
-  productGrid
-    .querySelectorAll("[data-favorite]")
-    .forEach(button=>{
-
-      button.addEventListener(
-        "click",
-        ()=>{
-
-          toggleFavorite(
-            button.dataset.favorite
-          );
-
-        }
-      );
-
-    });
-}
-
-/* ========================================================
-   FAVORIS
-======================================================== */
-
-function toggleFavorite(id){
-
-  if(
-    state.favorites.includes(id)
-  ){
-
-    state.favorites =
-      state.favorites.filter(
-        favoriteId =>
-          favoriteId !== id
-      );
-
-    showToast(
-      "Retiré des favoris"
-    );
-
-  }else{
-
-    state.favorites.push(id);
-
-    showToast(
-      "Ajouté aux favoris ❤️"
-    );
-  }
-
-  save(
-    STORAGE_KEYS.favorites,
-    state.favorites
-  );
-
-  renderProducts();
-}
-
-/* ========================================================
-   PANIER
-======================================================== */
-
-function addToCart(id){
-
-  if(!getProduct(id)){
-    return;
-  }
-
-  state.cart[id] =
-    Number(state.cart[id] || 0) + 1;
-
-  save(
-    STORAGE_KEYS.cart,
-    state.cart
-  );
-
-  updateCart();
-
-  showToast(
-    "Produit ajouté au panier 🛒"
-  );
-}
-
-function changeQuantity(id,delta){
-
-  if(!state.cart[id]){
-    return;
-  }
-
-  state.cart[id] =
-    Number(state.cart[id]) +
-    Number(delta);
-
-  if(
-    state.cart[id] <= 0
-  ){
-
-    delete state.cart[id];
-  }
-
-  save(
-    STORAGE_KEYS.cart,
-    state.cart
-  );
-
-  updateCart();
-}
-
-function removeFromCart(id){
-
-  delete state.cart[id];
-
-  save(
-    STORAGE_KEYS.cart,
-    state.cart
-  );
-
-  updateCart();
-
-  showToast(
-    "Produit retiré du panier"
-  );
-}
-
-function updateCart(){
-
-  cartBadge.textContent =
-    getCartCount();
-
-  cartTotal.textContent =
-    money(getCartTotal());
-
-  checkoutTotal.textContent =
-    money(getCartTotal());
-
-  const entries =
-    Object.entries(state.cart)
-      .filter(
-        ([id,quantity])=>
-          getProduct(id) &&
-          Number(quantity) > 0
-      );
-
-  if(!entries.length){
-
-    cartItems.innerHTML = `
-
-      <div class="emptyState"
-           style="padding:45px 12px">
-
-        <div class="emptyIcon">
-          🛒
         </div>
 
-        <h3>
-          Votre panier est vide
-        </h3>
-
-        <p>
-          Ajoutez des produits pour commencer.
-        </p>
-
       </div>
 
-    `;
-
-    return;
+    `).join("");
   }
 
-  cartItems.innerHTML =
-    entries
-      .map(
-        ([id,quantity])=>{
+  $("cartTotal").textContent =
+    money(getCartTotal());
 
-          const product =
-            getProduct(id);
+  $("checkoutBtn").disabled =
+    items.length === 0;
+}
 
-          return `
+function openCart() {
 
-            <div class="cartItem">
+  $("overlay").classList.add("show");
+  $("cartDrawer").classList.add("open");
+}
 
-              <img
-                class="cartItemImage"
-                src="${product.image}"
-                alt="${escapeHTML(product.name)}"
-              >
+function closeCart() {
 
-              <div class="cartItemContent">
+  $("overlay").classList.remove("show");
+  $("cartDrawer").classList.remove("open");
+}
 
-                <h3 class="cartItemName">
-                  ${escapeHTML(product.brand)}
-                  ${escapeHTML(product.name)}
-                </h3>
+function openModal(id) {
 
-                <div class="cartItemPrice">
-                  ${money(product.price)}
-                </div>
+  $(id).classList.add("show");
+}
 
-                <div class="quantityRow">
+function closeModal(id) {
 
-                  <button
-                    class="quantityButton"
-                    data-minus="${product.id}"
-                  >
-                    −
-                  </button>
+  $(id).classList.remove("show");
+}
 
-                  <span class="quantityNumber">
-                    ${quantity}
-                  </span>
+function closeEverything() {
 
-                  <button
-                    class="quantityButton"
-                    data-plus="${product.id}"
-                  >
-                    +
-                  </button>
+  closeCart();
 
-                  <button
-                    class="removeButton"
-                    data-remove="${product.id}"
-                  >
-                    Supprimer
-                  </button>
-
-                </div>
-
-              </div>
-
-            </div>
-
-          `;
-
-        }
-      )
-      .join("");
-
-  cartItems
-    .querySelectorAll("[data-minus]")
-    .forEach(button=>{
-
-      button.addEventListener(
-        "click",
-        ()=>{
-          changeQuantity(
-            button.dataset.minus,
-            -1
-          );
-        }
-      );
-
+  document.querySelectorAll(".modal-wrap")
+    .forEach(modal => {
+      modal.classList.remove("show");
     });
 
-  cartItems
-    .querySelectorAll("[data-plus]")
-    .forEach(button=>{
-
-      button.addEventListener(
-        "click",
-        ()=>{
-          changeQuantity(
-            button.dataset.plus,
-            1
-          );
-        }
-      );
-
-    });
-
-  cartItems
-    .querySelectorAll("[data-remove]")
-    .forEach(button=>{
-
-      button.addEventListener(
-        "click",
-        ()=>{
-          removeFromCart(
-            button.dataset.remove
-          );
-        }
-      );
-
-    });
+  $("overlay").classList.remove("show");
 }
 
-/* ========================================================
-   OUVRIR / FERMER PANIER
-======================================================== */
+function openCheckout() {
 
-function openCart(){
-
-  cartDrawer.classList.add("open");
-  overlay.classList.add("active");
-
-  updateCart();
-}
-
-function closeCart(){
-
-  cartDrawer.classList.remove("open");
-
-  if(
-    !accountModal.classList.contains("open") &&
-    !checkoutModal.classList.contains("open")
-  ){
-
-    overlay.classList.remove("active");
-  }
-}
-
-/* ========================================================
-   MODALS
-======================================================== */
-
-function openModal(modal){
-
-  modal.classList.add("open");
-
-  overlay.classList.add("active");
-}
-
-function closeModal(modal){
-
-  modal.classList.remove("open");
-
-  if(
-    !cartDrawer.classList.contains("open") &&
-    !accountModal.classList.contains("open") &&
-    !checkoutModal.classList.contains("open")
-  ){
-
-    overlay.classList.remove("active");
-  }
-}
-
-function closeEverything(){
-
-  cartDrawer.classList.remove("open");
-
-  accountModal.classList.remove("open");
-
-  checkoutModal.classList.remove("open");
-
-  overlay.classList.remove("active");
-}
-
-/* ========================================================
-   RECHERCHE
-======================================================== */
-
-searchForm.addEventListener(
-  "submit",
-  event=>{
-
-    event.preventDefault();
-
-    const query =
-      searchInput.value.trim();
-
-    if(!query){
-
-      state.search =
-        "";
-
-      state.category =
-        "Tous";
-
-      renderCategories();
-      renderProducts();
-
-      return;
-    }
-
-    /*
-    --------------------------------------------------------
-    CODE PRODUIT
-    Si le code exact est recherché :
-    -> ouverture automatique Dashboard
-    --------------------------------------------------------
-    */
-
-    const exactCode =
-      PRODUCTS.find(
-        product =>
-          normalize(product.code) ===
-          normalize(query)
-      );
-
-    if(exactCode){
-
-      showToast(
-        "Code produit reconnu → Dashboard 🏢"
-      );
-
-      setTimeout(
-        ()=>{
-          showDashboard();
-        },
-        250
-      );
-
-      return;
-    }
-
-    state.category =
-      "Tous";
-
-    state.search =
-      query;
-
-    renderCategories();
-    renderProducts();
-
-    setTimeout(
-      ()=>{
-        document
-          .getElementById(
-            "productsSection"
-          )
-          .scrollIntoView({
-            behavior:"smooth"
-          });
-      },
-      20
-    );
-
-  }
-);
-
-/* ========================================================
-   CHECKOUT
-======================================================== */
-
-function openCheckout(){
-
-  if(
-    getCartCount() <= 0
-  ){
-
-    showToast(
-      "Le panier est vide."
-    );
-
+  if (!state.cart.length) {
+    toast("🛒 Le panier est vide");
     return;
   }
 
   closeCart();
 
-  document.getElementById(
-    "checkoutName"
-  ).value =
-    state.account.name || "";
+  state.discountValid = false;
 
-  document.getElementById(
-    "checkoutCity"
-  ).value =
-    state.city || "";
+  $("promoInput").value = "";
+  $("promoStatus").textContent = "";
+  $("promoStatus").className = "promo-status";
 
-  document.getElementById(
-    "checkoutAddress"
-  ).value =
-    "";
+  updateCheckoutTotal();
 
-  document.getElementById(
-    "checkoutZip"
-  ).value =
-    "";
+  $("fullName").value =
+    state.profile.name || "";
 
-  checkoutTotal.textContent =
-    money(getCartTotal());
+  $("address").value =
+    state.profile.address || "";
 
-  openModal(
-    checkoutModal
-  );
+  $("postalCode").value =
+    state.profile.postalCode || "";
+
+  $("city").value =
+    state.profile.city || "";
+
+  $("country").value =
+    state.profile.country || "France";
+
+  openModal("checkoutModal");
 }
 
-checkoutForm.addEventListener(
-  "submit",
-  event=>{
+function updateCheckoutTotal() {
 
-    event.preventDefault();
+  const original = getCartTotal();
 
-    const name =
-      document.getElementById(
-        "checkoutName"
-      ).value.trim();
+  const total =
+    state.discountValid
+      ? 0
+      : original;
 
-    const address =
-      document.getElementById(
-        "checkoutAddress"
-      ).value.trim();
+  $("checkoutTotal").textContent =
+    money(total);
 
-    const zip =
-      document.getElementById(
-        "checkoutZip"
-      ).value.trim();
+  $("payBtn").textContent =
+    `🔓 Payer ${money(total)}`;
 
-    const city =
-      document.getElementById(
-        "checkoutCity"
-      ).value.trim();
+  $("payBtn").disabled =
+    !state.discountValid;
+}
 
-    const country =
-      document.getElementById(
-        "checkoutCountry"
-      ).value;
+function applyPromo(event) {
 
-    /*
-    --------------------------------------------------------
-    ADRESSE OBLIGATOIRE
-    --------------------------------------------------------
-    */
+  event.preventDefault();
 
-    if(
-      !name ||
-      !address ||
-      !zip ||
-      !city ||
-      !country
-    ){
+  const code =
+    $("promoInput").value
+      .trim()
+      .toUpperCase();
 
-      showToast(
-        "⚠️ Tous les champs de livraison sont obligatoires."
-      );
+  const status = $("promoStatus");
 
-      return;
-    }
+  if (code === FREE_CODE) {
 
-    if(zip.length < 4){
+    state.discountValid = true;
 
-      showToast(
-        "⚠️ Vérifie le code postal."
-      );
+    status.textContent =
+      "✓ Code accepté : réduction de 100 % appliquée.";
 
-      return;
-    }
+    status.className =
+      "promo-status success";
 
-    createOrder({
-      name,
-      address,
-      zip,
-      city,
-      country
-    });
+    toast("🎟️ Réduction de 100 % activée");
 
-  }
-);
-
-/* ========================================================
-   CRÉATION COMMANDE
-======================================================== */
-
-function createOrder(delivery){
-
-  const items =
-    Object.entries(state.cart)
-      .map(
-        ([id,quantity])=>{
-
-          const product =
-            getProduct(id);
-
-          if(!product){
-            return null;
-          }
-
-          return {
-            id:product.id,
-            code:product.code,
-            brand:product.brand,
-            name:product.name,
-            image:product.image,
-            price:product.price,
-            quantity:Number(quantity)
-          };
-
-        }
-      )
-      .filter(Boolean);
-
-  if(!items.length){
-
-    showToast(
-      "Le panier est vide."
-    );
+    updateCheckoutTotal();
 
     return;
   }
+
+  state.discountValid = false;
+
+  status.textContent =
+    "Code invalide.";
+
+  status.className =
+    "promo-status error";
+
+  updateCheckoutTotal();
+}
+
+function processPayment(event) {
+
+  event.preventDefault();
+
+  /*
+    SÉCURITÉ DU SYSTÈME DE DÉMO :
+    impossible de créer une commande tant que
+    NOVA100 n'a pas été validé.
+  */
+
+  if (!state.discountValid) {
+
+    toast("🔒 Entre d'abord le code de réduction");
+
+    return;
+  }
+
+  const form = $("checkoutForm");
+
+  if (!form.checkValidity()) {
+
+    form.reportValidity();
+
+    return;
+  }
+
+  const items = getCartDetails();
+
+  if (!items.length) {
+
+    toast("Panier vide");
+
+    return;
+  }
+
+  const delivery = {
+    fullName: $("fullName").value.trim(),
+    address: $("address").value.trim(),
+    postalCode: $("postalCode").value.trim(),
+    city: $("city").value.trim(),
+    country: $("country").value
+  };
 
   const order = {
 
@@ -1363,823 +1024,615 @@ function createOrder(delivery){
       "Commande reçue",
 
     warehouse:
-      "Entrepôt",
+      "Entrepôt NovaShop",
 
-    customer:{
-      name:delivery.name,
-      address:delivery.address,
-      zip:delivery.zip,
-      city:delivery.city,
-      country:delivery.country
-    },
+    discountCode:
+      FREE_CODE,
 
-    items,
+    originalTotal:
+      getCartTotal(),
+
+    discount:
+      getCartTotal(),
 
     total:
-      getCartTotal()
+      0,
+
+    delivery,
+
+    items:
+      items.map(item => ({
+        id: item.id,
+        code: item.code,
+        name: item.name,
+        brand: item.brand,
+        qty: item.qty,
+        unitPrice: item.price,
+        subtotal: item.subtotal
+      }))
 
   };
 
-  state.orders.unshift(
-    order
-  );
+  state.orders.push(order);
 
-  state.cart = {};
+  save(STORAGE.orders, state.orders);
 
-  state.city =
-    delivery.city;
+  state.profile = {
+    ...state.profile,
+    name: delivery.fullName,
+    address: delivery.address,
+    postalCode: delivery.postalCode,
+    city: delivery.city,
+    country: delivery.country
+  };
 
-  state.account.name =
-    delivery.name;
+  save(STORAGE.profile, state.profile);
 
-  save(
-    STORAGE_KEYS.orders,
-    state.orders
-  );
+  state.cart = [];
 
-  save(
-    STORAGE_KEYS.cart,
-    state.cart
-  );
+  save(STORAGE.cart, state.cart);
 
-  save(
-    STORAGE_KEYS.city,
-    state.city
-  );
+  renderCart();
 
-  save(
-    STORAGE_KEYS.account,
-    state.account
-  );
+  closeModal("checkoutModal");
 
-  closeEverything();
+  createInvoice(order);
 
-  updateCart();
+  toast("✅ Commande créée et facture générée");
 
-  showToast(
-    "Commande créée avec succès 📦"
-  );
-
-  setTimeout(
-    showDashboard,
-    400
-  );
+  state.discountValid = false;
 }
 
-/* ========================================================
-   DASHBOARD
-======================================================== */
+function createInvoice(order) {
 
-const ORDER_STATUSES = [
-  "Commande reçue",
-  "Préparation",
-  "Expédiée",
-  "En livraison",
-  "Livrée"
-];
-
-function renderDashboard(){
-
-  const orders =
-    Array.isArray(state.orders)
-      ? state.orders
-      : [];
-
-  /*
-  STATS
-  */
-
-  document.getElementById(
-    "statOrders"
-  ).textContent =
-    orders.length;
-
-  document.getElementById(
-    "statPreparing"
-  ).textContent =
-    orders.filter(
-      order =>
-        order.status ===
-        "Préparation"
-    ).length;
-
-  document.getElementById(
-    "statShipped"
-  ).textContent =
-    orders.filter(
-      order =>
-        [
-          "Expédiée",
-          "En livraison",
-          "Livrée"
-        ].includes(
-          order.status
-        )
-    ).length;
-
-  const total =
-    orders.reduce(
-      (sum,order)=>
-        sum +
-        Number(order.total || 0),
-      0
+  const date =
+    new Date(order.date).toLocaleString(
+      "fr-FR",
+      {
+        dateStyle: "medium",
+        timeStyle: "short"
+      }
     );
 
-  document.getElementById(
-    "statTotal"
-  ).textContent =
-    money(total);
+  const itemsRows = order.items.map(item => `
 
-  document.getElementById(
-    "dashboardCity"
-  ).value =
-    state.city || "";
+    <tr>
+      <td>
+        ${escapeHTML(item.name)}
+      </td>
 
-  /*
-  COMMANDES
-  */
+      <td>
+        ${item.qty}
+      </td>
 
-  const ordersList =
-    document.getElementById(
-      "ordersList"
-    );
+      <td>
+        ${money(item.unitPrice)}
+      </td>
 
-  if(!orders.length){
+      <td>
+        ${money(item.subtotal)}
+      </td>
+    </tr>
 
-    ordersList.innerHTML = `
+  `).join("");
 
-      <div class="emptyState"
-           style="padding:50px 15px">
+  $("invoiceContent").innerHTML = `
 
-        <div class="emptyIcon">
-          📦
+    <div class="invoice">
+
+      <div class="invoice-head">
+
+        <div>
+          <h2>NOVASHOP</h2>
+
+          <p style="
+            color:#6b7280;
+            margin-top:5px
+          ">
+            Facture de démonstration
+          </p>
         </div>
 
-        <h3>
-          Aucune commande
-        </h3>
+        <div style="text-align:right">
 
-        <p>
-          Les commandes apparaîtront ici après validation.
-        </p>
+          <strong>
+            ${escapeHTML(order.id)}
+          </strong>
+
+          <div style="
+            color:#6b7280;
+            margin-top:5px;
+            font-size:13px
+          ">
+            ${escapeHTML(date)}
+          </div>
+
+        </div>
 
       </div>
 
-    `;
+      <div style="
+        display:grid;
+        grid-template-columns:1fr 1fr;
+        gap:20px;
+        margin-bottom:25px
+      ">
+
+        <div>
+          <strong>Client</strong>
+
+          <p style="
+            margin-top:7px;
+            line-height:1.6
+          ">
+            ${escapeHTML(order.delivery.fullName)}<br>
+            ${escapeHTML(order.delivery.address)}<br>
+            ${escapeHTML(order.delivery.postalCode)}
+            ${escapeHTML(order.delivery.city)}<br>
+            ${escapeHTML(order.delivery.country)}
+          </p>
+        </div>
+
+        <div>
+          <strong>Expédition</strong>
+
+          <p style="
+            margin-top:7px;
+            line-height:1.6
+          ">
+            ${escapeHTML(order.warehouse)}<br>
+            Statut : ${escapeHTML(order.status)}
+          </p>
+        </div>
+
+      </div>
+
+      <table class="invoice-items">
+
+        <thead>
+          <tr>
+            <th>Produit</th>
+            <th>Qté</th>
+            <th>Prix</th>
+            <th>Total</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          ${itemsRows}
+        </tbody>
+
+      </table>
+
+      <div style="
+        margin-top:15px;
+        text-align:right;
+        color:#16a34a;
+        font-weight:800
+      ">
+        Code promo : ${FREE_CODE} (-100 %)
+      </div>
+
+      <div style="
+        margin-top:5px;
+        text-align:right;
+        color:#6b7280
+      ">
+        Sous-total : ${money(order.originalTotal)}
+      </div>
+
+      <div class="invoice-total">
+        Total payé : 0,00 €
+      </div>
+
+      <div style="
+        margin-top:18px;
+        padding:12px;
+        background:#f8fafc;
+        border-radius:8px;
+        color:#6b7280;
+        font-size:12px
+      ">
+        Facture générée automatiquement par NovaShop.
+        Cette facture appartient à une démonstration locale
+        et ne constitue pas une preuve de paiement bancaire.
+      </div>
+
+    </div>
+
+  `;
+
+  openModal("invoiceModal");
+}
+
+function printInvoice() {
+
+  const content =
+    $("invoiceContent").innerHTML;
+
+  const win =
+    window.open(
+      "",
+      "_blank",
+      "width=900,height=700"
+    );
+
+  if (!win) {
+
+    toast("Autorise les fenêtres pop-up pour imprimer");
 
     return;
   }
 
-  ordersList.innerHTML =
-    orders
-      .map(
-        order=>{
+  win.document.write(`
+    <!DOCTYPE html>
+    <html lang="fr">
+    <head>
+      <meta charset="UTF-8">
+      <title>Facture NovaShop</title>
 
-          const date =
-            new Date(order.date);
+      <style>
 
-          const dateText =
-            Number.isNaN(
-              date.getTime()
-            )
-              ? "Date inconnue"
-              : date.toLocaleString(
-                  "fr-FR",
-                  {
-                    dateStyle:"medium",
-                    timeStyle:"short"
-                  }
-                );
-
-          const itemsHTML =
-            order.items
-              .map(
-                item =>
-                  `${item.quantity} × ${escapeHTML(item.brand)} ${escapeHTML(item.name)}`
-              )
-              .join("<br>");
-
-          const statusIndex =
-            ORDER_STATUSES.indexOf(
-              order.status
-            );
-
-          const canAdvance =
-            statusIndex >= 0 &&
-            statusIndex <
-              ORDER_STATUSES.length - 1;
-
-          return `
-
-            <article class="orderCard">
-
-              <div class="orderHeader">
-
-                <div>
-
-                  <div class="orderId">
-                    ${escapeHTML(order.id)}
-                  </div>
-
-                  <div class="orderDate">
-                    ${escapeHTML(dateText)}
-                  </div>
-
-                </div>
-
-                <div class="orderTotal">
-                  ${money(order.total)}
-                </div>
-
-              </div>
-
-              <div class="statusBadge">
-                ${escapeHTML(order.status)}
-              </div>
-
-              <div class="orderInfo">
-
-                <strong>Produits</strong><br>
-
-                ${itemsHTML}
-
-                <br><br>
-
-                <strong>Adresse de livraison</strong><br>
-
-                ${escapeHTML(order.customer.name)}
-                <br>
-
-                ${escapeHTML(order.customer.address)}
-                <br>
-
-                ${escapeHTML(order.customer.zip)}
-                ${escapeHTML(order.customer.city)}
-                <br>
-
-                ${escapeHTML(order.customer.country)}
-
-                <br><br>
-
-                <strong>Entrepôt :</strong>
-                ${escapeHTML(order.warehouse)}
-
-              </div>
-
-              <div class="orderActions">
-
-                ${
-                  canAdvance
-                    ?
-                    `
-                      <button
-                        class="smallButton"
-                        data-advance="${escapeHTML(order.id)}"
-                      >
-                        Faire avancer le statut →
-                      </button>
-                    `
-                    :
-                    `
-                      <button
-                        class="smallButton"
-                        disabled
-                      >
-                        ✓ Commande terminée
-                      </button>
-                    `
-                }
-
-                <button
-                  class="smallButton danger"
-                  data-delete-order="${escapeHTML(order.id)}"
-                >
-                  Supprimer
-                </button>
-
-              </div>
-
-            </article>
-
-          `;
-
+        body{
+          font-family:Arial,sans-serif;
+          padding:40px;
+          color:#111827;
         }
-      )
-      .join("");
 
-  ordersList
-    .querySelectorAll(
-      "[data-advance]"
-    )
-    .forEach(button=>{
-
-      button.addEventListener(
-        "click",
-        ()=>{
-          advanceOrder(
-            button.dataset.advance
-          );
+        .invoice{
+          max-width:850px;
+          margin:auto;
         }
-      );
 
-    });
-
-  ordersList
-    .querySelectorAll(
-      "[data-delete-order]"
-    )
-    .forEach(button=>{
-
-      button.addEventListener(
-        "click",
-        ()=>{
-          deleteOrder(
-            button.dataset.deleteOrder
-          );
+        .invoice-head{
+          display:flex;
+          justify-content:space-between;
+          border-bottom:1px solid #ddd;
+          padding-bottom:20px;
+          margin-bottom:20px;
         }
-      );
 
-    });
+        .invoice-items{
+          width:100%;
+          border-collapse:collapse;
+        }
+
+        th,td{
+          padding:12px 5px;
+          text-align:left;
+          border-bottom:1px solid #ddd;
+        }
+
+        .invoice-total{
+          text-align:right;
+          font-size:25px;
+          font-weight:bold;
+          margin-top:20px;
+        }
+
+      </style>
+
+    </head>
+
+    <body>
+
+      ${content}
+
+      <script>
+        window.onload = function(){
+          window.print();
+        };
+      <\/script>
+
+    </body>
+    </html>
+  `);
+
+  win.document.close();
 }
 
-function advanceOrder(id){
+function saveAccount(event) {
+
+  event.preventDefault();
+
+  state.profile = {
+    ...state.profile,
+
+    name:
+      $("accountName").value.trim(),
+
+    email:
+      $("accountEmail").value.trim()
+  };
+
+  save(STORAGE.profile, state.profile);
+
+  closeModal("accountModal");
+
+  toast("✓ Compte enregistré");
+}
+
+function updateAccountFields() {
+
+  $("accountName").value =
+    state.profile.name || "";
+
+  $("accountEmail").value =
+    state.profile.email || "";
+}
+
+function toggleFavorite(id) {
+
+  if (state.favorites.includes(id)) {
+
+    state.favorites =
+      state.favorites.filter(
+        item => item !== id
+      );
+
+    toast("Retiré des favoris");
+
+  } else {
+
+    state.favorites.push(id);
+
+    toast("♥ Ajouté aux favoris");
+  }
+
+  save(
+    STORAGE.favorites,
+    state.favorites
+  );
+
+  renderProducts();
+}
+
+function openProduct(id) {
+
+  const product =
+    PRODUCTS.find(item => item.id === id);
+
+  if (!product) return;
+
+  const favorite =
+    state.favorites.includes(product.id);
+
+  $("productModalBody").innerHTML = `
+
+    <div class="product-detail">
+
+      <div class="detail-image">
+
+        <img
+          src="${product.image}"
+          alt="${escapeHTML(product.name)}"
+          referrerpolicy="no-referrer"
+        >
+
+      </div>
+
+      <div>
+
+        <div class="product-brand">
+          ${escapeHTML(product.brand)}
+        </div>
+
+        <h1 style="
+          font-size:28px;
+          margin-top:7px
+        ">
+          ${escapeHTML(product.name)}
+        </h1>
+
+        <span class="product-category">
+          ${escapeHTML(product.category)}
+        </span>
+
+        <div class="detail-price">
+          ${money(product.price)}
+        </div>
+
+        <div class="demo">
+          Prix de démonstration
+        </div>
+
+        <div class="code">
+          Code produit : <strong>${product.code}</strong>
+        </div>
+
+        <div style="
+          display:flex;
+          gap:10px;
+          margin-top:20px
+        ">
+
+          <button
+            class="primary"
+            data-action="add"
+            data-id="${product.id}"
+          >
+            Ajouter au panier
+          </button>
+
+          <button
+            class="secondary"
+            data-action="favorite"
+            data-id="${product.id}"
+          >
+            ${favorite ? "♥ Favori" : "♡ Favori"}
+          </button>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  `;
+
+  openModal("productModal");
+}
+
+function nextOrderStatus(orderId) {
 
   const order =
     state.orders.find(
-      item => item.id === id
+      item => item.id === orderId
     );
 
-  if(!order){
-    return;
-  }
+  if (!order) return;
 
   const index =
-    ORDER_STATUSES.indexOf(
-      order.status
-    );
+    STATUS_LIST.indexOf(order.status);
 
-  if(
+  if (
     index < 0 ||
-    index >=
-      ORDER_STATUSES.length - 1
-  ){
-
+    index >= STATUS_LIST.length - 1
+  ) {
     return;
   }
 
   order.status =
-    ORDER_STATUSES[index + 1];
+    STATUS_LIST[index + 1];
 
   save(
-    STORAGE_KEYS.orders,
+    STORAGE.orders,
     state.orders
   );
 
   renderDashboard();
 
-  showToast(
-    "Statut : " + order.status
-  );
+  toast(`📦 Statut : ${order.status}`);
 }
 
-function deleteOrder(id){
+function deleteAllData() {
 
   const confirmed =
-    confirm(
-      "Supprimer cette commande du Dashboard ?"
+    window.confirm(
+      "Supprimer toutes les données locales NovaShop ?"
     );
 
-  if(!confirmed){
+  if (!confirmed) return;
+
+  Object.values(STORAGE)
+    .forEach(key => {
+      localStorage.removeItem(key);
+    });
+
+  state.cart = [];
+  state.favorites = [];
+  state.orders = [];
+  state.profile = {};
+  state.discountValid = false;
+
+  renderCart();
+  renderProducts();
+  updateAccountFields();
+  renderDashboard();
+
+  openMarketplace();
+
+  toast("Données NovaShop supprimées");
+}
+
+function globalClickHandler(event) {
+
+  const category =
+    event.target.closest("[data-category]");
+
+  if (category) {
+
+    state.category =
+      category.dataset.category;
+
+    state.search = "";
+
+    $("searchInput").value = "";
+
+    renderCategories();
+    renderProducts();
+
     return;
   }
 
-  state.orders =
-    state.orders.filter(
-      order =>
-        order.id !== id
-    );
+  const actionElement =
+    event.target.closest("[data-action]");
 
-  save(
-    STORAGE_KEYS.orders,
-    state.orders
-  );
+  if (actionElement) {
 
-  renderDashboard();
+    const action =
+      actionElement.dataset.action;
 
-  showToast(
-    "Commande supprimée."
-  );
-}
+    const id =
+      actionElement.dataset.id;
 
-/* ========================================================
-   VILLE DASHBOARD
-======================================================== */
-
-document
-  .getElementById("saveCity")
-  .addEventListener(
-    "click",
-    ()=>{
-
-      const city =
-        document
-          .getElementById(
-            "dashboardCity"
-          )
-          .value
-          .trim();
-
-      if(!city){
-
-        showToast(
-          "Indique une ville."
-        );
-
-        return;
-      }
-
-      state.city =
-        city;
-
-      save(
-        STORAGE_KEYS.city,
-        state.city
-      );
-
-      showToast(
-        "Ville enregistrée 🏙️"
-      );
-
+    if (action === "add") {
+      addToCart(id);
+      return;
     }
-  );
 
-/* ========================================================
-   COMPTE
-======================================================== */
-
-document
-  .getElementById("saveAccount")
-  .addEventListener(
-    "click",
-    ()=>{
-
-      state.account.name =
-        document
-          .getElementById(
-            "accountName"
-          )
-          .value
-          .trim();
-
-      state.account.email =
-        document
-          .getElementById(
-            "accountEmail"
-          )
-          .value
-          .trim();
-
-      save(
-        STORAGE_KEYS.account,
-        state.account
-      );
-
-      showToast(
-        "Compte enregistré."
-      );
-
+    if (action === "favorite") {
+      toggleFavorite(id);
+      return;
     }
-  );
 
-/* ========================================================
-   SUPPRESSION DONNÉES
-======================================================== */
+    if (action === "qty-minus") {
+      changeQuantity(id, -1);
+      return;
+    }
 
-document
-  .getElementById(
-    "deleteAllData"
-  )
-  .addEventListener(
-    "click",
-    ()=>{
+    if (action === "qty-plus") {
+      changeQuantity(id, 1);
+      return;
+    }
 
-      const confirmed =
-        confirm(
-          "Supprimer toutes les commandes, favoris, panier et informations du compte NovaShop ?"
-        );
+    if (action === "remove") {
+      removeFromCart(id);
+      return;
+    }
 
-      if(!confirmed){
-        return;
-      }
-
-      Object.values(
-        STORAGE_KEYS
-      ).forEach(
-        key =>
-          localStorage.removeItem(
-            key
-          )
+    if (action === "next-status") {
+      nextOrderStatus(
+        actionElement.dataset.order
       );
-
-      state = {
-
-        category:"Tous",
-
-        search:"",
-
-        sort:"relevance",
-
-        cart:{},
-
-        orders:[],
-
-        favorites:[],
-
-        account:{
-          name:"",
-          email:""
-        },
-
-        city:""
-
-      };
-
-      updateCart();
-
-      renderDashboard();
-
-      renderProducts();
-
-      showToast(
-        "Toutes les données NovaShop ont été supprimées."
-      );
-
+      return;
     }
-  );
-
-/* ========================================================
-   NAVIGATION
-======================================================== */
-
-document
-  .getElementById("logo")
-  .addEventListener(
-    "click",
-    event=>{
-
-      event.preventDefault();
-
-      showMarketplace();
-
-    }
-  );
-
-document
-  .getElementById(
-    "discoverButton"
-  )
-  .addEventListener(
-    "click",
-    ()=>{
-
-      document
-        .getElementById(
-          "productsSection"
-        )
-        .scrollIntoView({
-          behavior:"smooth"
-        });
-
-    }
-  );
-
-document
-  .getElementById(
-    "heroDashboard"
-  )
-  .addEventListener(
-    "click",
-    showDashboard
-  );
-
-document
-  .getElementById(
-    "dashboardButton"
-  )
-  .addEventListener(
-    "click",
-    showDashboard
-  );
-
-document
-  .getElementById(
-    "backFromDashboard"
-  )
-  .addEventListener(
-    "click",
-    showMarketplace
-  );
-
-document
-  .getElementById(
-    "backFromAccount"
-  )
-  .addEventListener(
-    "click",
-    showMarketplace
-  );
-
-document
-  .getElementById(
-    "accountButton"
-  )
-  .addEventListener(
-    "click",
-    ()=>{
-      openModal(
-        accountModal
-      );
-    }
-  );
-
-document
-  .getElementById(
-    "cartButton"
-  )
-  .addEventListener(
-    "click",
-    openCart
-  );
-
-document
-  .getElementById(
-    "dashboardCartButton"
-  )
-  .addEventListener(
-    "click",
-    openCart
-  );
-
-document
-  .getElementById(
-    "closeCart"
-  )
-  .addEventListener(
-    "click",
-    closeCart
-  );
-
-document
-  .getElementById(
-    "checkoutButton"
-  )
-  .addEventListener(
-    "click",
-    openCheckout
-  );
-
-document
-  .getElementById(
-    "modalAccount"
-  )
-  .addEventListener(
-    "click",
-    ()=>{
-
-      closeModal(
-        accountModal
-      );
-
-      showAccount();
-
-    }
-  );
-
-document
-  .getElementById(
-    "modalDashboard"
-  )
-  .addEventListener(
-    "click",
-    ()=>{
-
-      closeModal(
-        accountModal
-      );
-
-      showDashboard();
-
-    }
-  );
-
-document
-  .getElementById(
-    "modalOrders"
-  )
-  .addEventListener(
-    "click",
-    ()=>{
-
-      closeModal(
-        accountModal
-      );
-
-      showDashboard();
-
-    }
-  );
-
-document
-  .getElementById(
-    "accountOrders"
-  )
-  .addEventListener(
-    "click",
-    showDashboard
-  );
-
-/* ========================================================
-   TRI
-======================================================== */
-
-sortSelect.addEventListener(
-  "change",
-  ()=>{
-
-    state.sort =
-      sortSelect.value;
-
-    renderProducts();
-
   }
-);
 
-/* ========================================================
-   FERMETURE MODALES
-======================================================== */
+  const close =
+    event.target.closest("[data-close]");
 
-document
-  .querySelectorAll(
-    "[data-close]"
-  )
-  .forEach(button=>{
+  if (close) {
 
-    button.addEventListener(
-      "click",
-      ()=>{
-
-        const modal =
-          document.getElementById(
-            button.dataset.close
-          );
-
-        if(modal){
-          closeModal(modal);
-        }
-
-      }
+    closeModal(
+      close.dataset.close
     );
 
-  });
+    return;
+  }
 
-overlay.addEventListener(
-  "click",
-  closeEverything
-);
+  const productCard =
+    event.target.closest(".product");
+
+  if (
+    productCard &&
+    !event.target.closest("button")
+  ) {
+
+    const addButton =
+      productCard.querySelector(
+        '[data-action="add"]'
+      );
+
+    if (addButton) {
+      openProduct(
+        addButton.dataset.id
+      );
+    }
+  }
+}
 
 document.addEventListener(
-  "keydown",
-  event=>{
-
-    if(event.key === "Escape"){
-
-      closeEverything();
-
-    }
-
-  }
+  "DOMContentLoaded",
+  init
 );
-
-/* ========================================================
-   INITIALISATION
-======================================================== */
-
-function initNovaShop(){
-
-  renderCategories();
-
-  renderProducts();
-
-  updateCart();
-
-  renderDashboard();
-
-  console.log(
-    "NovaShop chargé :",
-    PRODUCTS.length,
-    "produits"
-  );
-
-}
-
-initNovaShop();
