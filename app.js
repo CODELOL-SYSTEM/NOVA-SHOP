@@ -4215,1096 +4215,3556 @@ console.log(
   "PayPal.Me:",
   PAYPAL_ME
 );/* =========================================================
-   PARTIE 4/4
-   FINALISATION NOVASHOP
+   NOVASHOP — PARTIE 4/4
+   FINALISATION / ROBUSTESSE / COMPATIBILITÉ
 ========================================================= */
 
 
 /* =========================================================
-   ACCESSIBILITÉ + FERMETURE DES MODALES
+   SÉCURITÉ AFFICHAGE
 ========================================================= */
 
-document
-  .querySelectorAll(".modal")
-  .forEach(modal => {
-
-    modal.addEventListener(
-      "click",
-      event => {
-
-        if(
-          event.target === modal
-        ){
-
-          closeModal(
-            modal.id
-          );
-
-        }
-
-      }
-    );
-
-  });
+function safeText(value) {
+  return String(
+    value ?? ""
+  );
+}
 
 
 /* =========================================================
-   MODAL OPEN / CLOSE ROBUSTE
+   NORMALISATION PRODUITS
 ========================================================= */
 
-function refreshOverlay(){
+function normalizeProduct(product) {
 
-  const opened =
-    document.querySelector(
-      ".modal.open, .drawer.open"
+  return {
+    ...product,
+
+    id:
+      safeText(
+        product.id
+      ),
+
+    name:
+      safeText(
+        product.name
+      ),
+
+    category:
+      safeText(
+        product.category
+      ),
+
+    image:
+      safeText(
+        product.image
+      ),
+
+    description:
+      safeText(
+        product.description ||
+        "Produit gaming disponible sur NovaShop."
+      ),
+
+    price:
+      Number(
+        product.price
+      ) || 0
+  };
+
+}
+
+
+const PRODUCT_CATALOG =
+  PRODUCTS.map(
+    normalizeProduct
+  );
+
+
+/* =========================================================
+   REMPLACE LE CATALOGUE SI NÉCESSAIRE
+========================================================= */
+
+if (
+  Array.isArray(PRODUCTS) &&
+  PRODUCTS.length
+) {
+
+  for (
+    let i = 0;
+    i < PRODUCTS.length;
+    i++
+  ) {
+
+    PRODUCTS[i] =
+      normalizeProduct(
+        PRODUCTS[i]
+      );
+
+  }
+
+}
+
+
+/* =========================================================
+   VALIDATION DONNÉES
+========================================================= */
+
+function isValidProduct(product) {
+
+  if (!product) {
+    return false;
+  }
+
+  if (!product.id) {
+    return false;
+  }
+
+  if (!product.name) {
+    return false;
+  }
+
+  if (!product.image) {
+    return false;
+  }
+
+  if (
+    !Number.isFinite(
+      Number(product.price)
+    )
+  ) {
+    return false;
+  }
+
+  return true;
+
+}
+
+
+/* =========================================================
+   NETTOYAGE CATALOGUE
+========================================================= */
+
+function cleanCatalog() {
+
+  const valid =
+    PRODUCTS.filter(
+      isValidProduct
     );
 
-  const overlay =
-    $("overlay");
 
-  if(overlay){
+  if (
+    valid.length !==
+    PRODUCTS.length
+  ) {
 
-    overlay.classList.toggle(
-      "show",
-      !!opened
+    PRODUCTS.splice(
+      0,
+      PRODUCTS.length,
+      ...valid
     );
 
   }
 
-  document.body.classList.toggle(
-    "modal-open",
-    !!opened
+}
+
+
+/* =========================================================
+   FAVORIS
+========================================================= */
+
+function favoriteExists(
+  productId
+) {
+
+  return favorites.includes(
+    String(productId)
   );
 
 }
 
 
-const originalOpenModal =
-  window.openModal;
+function updateFavoriteButtons() {
 
-window.openModal =
-  function(id){
+  document
+    .querySelectorAll(
+      "[data-favorite]"
+    )
+    .forEach(
+      button => {
 
-    if(
-      typeof originalOpenModal ===
-      "function"
-    ){
-
-      originalOpenModal(id);
-
-    }
-
-    refreshOverlay();
-
-  };
+        const id =
+          String(
+            button.dataset.favorite
+          );
 
 
-const originalCloseModal =
-  window.closeModal;
-
-window.closeModal =
-  function(id){
-
-    if(
-      typeof originalCloseModal ===
-      "function"
-    ){
-
-      originalCloseModal(id);
-
-    }
-
-    refreshOverlay();
-
-  };
+        const active =
+          favoriteExists(id);
 
 
-/* =========================================================
-   INTERACTIONS CLAVIER
-========================================================= */
+        button.classList.toggle(
+          "active",
+          active
+        );
 
-document.addEventListener(
-  "keydown",
-  event => {
 
-    if(
-      event.key === "/" &&
-      document.activeElement?.tagName
-        !== "INPUT" &&
-      document.activeElement?.tagName
-        !== "TEXTAREA"
-    ){
+        button.setAttribute(
+          "aria-label",
+          active
+            ? "Retirer des favoris"
+            : "Ajouter aux favoris"
+        );
 
-      event.preventDefault();
 
-      $("searchInput")
-        ?.focus();
+        button.textContent =
+          active
+            ? "♥"
+            : "♡";
 
-    }
+      }
+    );
 
-  }
-);
+}
 
 
 /* =========================================================
-   CART DRAWER
+   PANIER : SYNCHRONISATION
 ========================================================= */
 
-function syncCartUI(){
+function syncCart() {
 
-  renderCart();
+  cart =
+    cart
+      .filter(
+        item =>
+          PRODUCTS.some(
+            product =>
+              String(
+                product.id
+              ) ===
+              String(
+                item.id
+              )
+          )
+      )
+      .map(
+        item => ({
+
+          ...item,
+
+          quantity:
+            Math.max(
+              1,
+              Number(
+                item.quantity
+              ) || 1
+            )
+
+        })
+      );
+
+
+  saveJSON(
+    "novaCart",
+    cart
+  );
+
 
   updateCartCount();
 
 }
 
 
-function updateCartCount(){
-
-  const count =
-    cart.reduce(
-      (total,item) =>
-        total + item.quantity,
-      0
-    );
-
-  const cartCount =
-    $("cartCount");
-
-  if(cartCount){
-
-    cartCount.textContent =
-      count;
-
-    cartCount.classList.toggle(
-      "has-items",
-      count > 0
-    );
-
-  }
-
-}
-
-
 /* =========================================================
-   FAVORITES COUNT
+   FAVORIS : SYNCHRONISATION
 ========================================================= */
 
-function updateFavoriteCount(){
-
-  const count =
-    favorites.length;
-
-  document
-    .querySelectorAll(
-      "[data-favorite-count]"
-    )
-    .forEach(element => {
-
-      element.textContent =
-        count;
-
-    });
-
-}
-
-
-/* =========================================================
-   STORAGE SYNC
-========================================================= */
-
-window.addEventListener(
-  "storage",
-  event => {
-
-    if(
-      event.key === "novaCart"
-    ){
-
-      cart =
-        loadJSON(
-          "novaCart",
-          []
-        );
-
-      syncCartUI();
-
-    }
-
-
-    if(
-      event.key === "novaFavorites"
-    ){
-
-      favorites =
-        loadJSON(
-          "novaFavorites",
-          []
-        );
-
-      updateFavoriteCount();
-
-      renderProducts();
-
-    }
-
-
-    if(
-      event.key === "novaOrders"
-    ){
-
-      orders =
-        loadJSON(
-          "novaOrders",
-          []
-        );
-
-      renderOrders();
-
-    }
-
-  }
-);
-
-
-/* =========================================================
-   IMAGE ERROR HANDLING
-========================================================= */
-
-document.addEventListener(
-  "error",
-  event => {
-
-    const image =
-      event.target;
-
-    if(
-      !(image instanceof HTMLImageElement)
-    ){
-
-      return;
-
-    }
-
-    if(
-      image.dataset.handled === "true"
-    ){
-
-      return;
-
-    }
-
-    image.dataset.handled =
-      "true";
-
-
-    const card =
-      image.closest(
-        ".card"
-      );
-
-    if(card){
-
-      /*
-        Si l'image d'un produit
-        n'est pas disponible,
-        le produit est retiré
-        de l'affichage.
-      */
-
-      card.remove();
-
-      updateVisibleProductCount();
-
-      return;
-
-    }
-
-
-    /*
-      Pour les autres images,
-      on ne détruit pas toute
-      l'interface.
-    */
-
-    image.style.visibility =
-      "hidden";
-
-  },
-  true
-);
-
-
-/* =========================================================
-   COMPTEUR PRODUITS VISIBLES
-========================================================= */
-
-function updateVisibleProductCount(){
-
-  const grid =
-    $("productsGrid");
-
-  const countElement =
-    $("resultCount");
-
-  if(!grid || !countElement)return;
-
-  const cards =
-    grid.querySelectorAll(
-      ".card"
-    );
-
-  countElement.textContent =
-    `${cards.length} produit${cards.length > 1 ? "s" : ""}`;
-
-  const empty =
-    $("emptyState");
-
-  if(empty){
-
-    empty.classList.toggle(
-      "show",
-      cards.length === 0
-    );
-
-  }
-
-}
-
-
-/* =========================================================
-   VALIDATION FORMULAIRES EN TEMPS RÉEL
-========================================================= */
-
-function markField(
-  element,
-  valid
-){
-
-  if(!element)return;
-
-  element.classList.toggle(
-    "valid",
-    valid
-  );
-
-  element.classList.toggle(
-    "invalid",
-    !valid
-  );
-
-}
-
-
-[
-  "fullName",
-  "address",
-  "postalCode",
-  "city",
-  "country"
-]
-.forEach(id => {
-
-  $(id)?.addEventListener(
-    "input",
-    () => {
-
-      validateAddress();
-
-    }
-  );
-
-});
-
-
-$("promoCode")
-  ?.addEventListener(
-    "input",
-    () => {
-
-      currentPromo =
-        null;
-
-      const message =
-        $("promoMessage");
-
-      if(message){
-
-        message.textContent =
-          "";
-
-        message.className =
-          "promo-message";
-
-      }
-
-    }
-  );
-
-
-/* =========================================================
-   AUTO FORMAT CODE PROMO
-========================================================= */
-
-$("promoCode")
-  ?.addEventListener(
-    "input",
-    event => {
-
-      event.target.value =
-        event.target.value
-          .toUpperCase()
-          .replace(
-            /[^A-Z0-9_-]/g,
-            ""
-          );
-
-    }
-  );
-
-
-/* =========================================================
-   NUMÉRO DE TÉLÉPHONE
-========================================================= */
-
-$("signupPhone")
-  ?.addEventListener(
-    "input",
-    event => {
-
-      let value =
-        event.target.value;
-
-      value =
-        value.replace(
-          /[^0-9+ ]/g,
-          ""
-        );
-
-      event.target.value =
-        value;
-
-    }
-  );
-
-
-/* =========================================================
-   CODE ADMIN FORMAT
-========================================================= */
-
-$("adminCode")
-  ?.addEventListener(
-    "input",
-    event => {
-
-      event.target.value =
-        event.target.value
-          .toUpperCase();
-
-    }
-  );
-
-
-/* =========================================================
-   PRODUCT CARD HOVER SOUND
-========================================================= */
-
-let lastHoverSound =
-  0;
-
-document.addEventListener(
-  "pointerover",
-  event => {
-
-    const card =
-      event.target.closest(
-        ".card"
-      );
-
-    if(!card)return;
-
-    const now =
-      Date.now();
-
-    if(
-      now - lastHoverSound <
-      180
-    ){
-
-      return;
-
-    }
-
-    lastHoverSound =
-      now;
-
-  }
-);
-
-
-/* =========================================================
-   MOBILE MENU
-========================================================= */
-
-$("mobileMenuButton")
-  ?.addEventListener(
-    "click",
-    () => {
-
-      $("mobileMenu")
-        ?.classList.toggle(
-          "open"
-        );
-
-    }
-  );
-
-
-document
-  .querySelectorAll(
-    "#mobileMenu [data-category]"
-  )
-  .forEach(button => {
-
-    button.addEventListener(
-      "click",
-      () => {
-
-        $("mobileMenu")
-          ?.classList.remove(
-            "open"
-          );
-
-      }
-    );
-
-  });
-
-
-/* =========================================================
-   SMOOTH CATEGORY SCROLL
-========================================================= */
-
-document
-  .querySelectorAll(
-    ".category-pill"
-  )
-  .forEach(button => {
-
-    button.addEventListener(
-      "click",
-      () => {
-
-        $("productsSection")
-          ?.scrollIntoView({
-            behavior:"smooth",
-            block:"start"
-          });
-
-      }
-    );
-
-  });
-
-
-/* =========================================================
-   CHECKOUT RENDER FINAL
-========================================================= */
-
-function refreshCheckout(){
-
-  if(
-    typeof renderCheckout ===
-    "function"
-  ){
-
-    renderCheckout();
-
-  }
-
-  validateAddress();
-
-}
-
-
-/* =========================================================
-   EMPÊCHE PAIEMENT SI PANIER VIDE
-========================================================= */
-
-function updatePayButton(){
-
-  const button =
-    $("payButton");
-
-  if(!button)return;
-
-  const hasItems =
-    cart.length > 0;
-
-  const validPromo =
-    currentPromo &&
-    currentPromo.percent ===
-      100;
-
-  button.disabled =
-    !hasItems ||
-    !validPromo;
-
-  if(!hasItems){
-
-    button.title =
-      "Votre panier est vide";
-
-  }else if(!validPromo){
-
-    button.title =
-      "Un code promotionnel de 100% est requis";
-
-  }else{
-
-    button.title =
-      "Valider la commande";
-
-  }
-
-}
-
-
-setInterval(
-  updatePayButton,
-  500
-);
-
-
-/* =========================================================
-   ACCOUNT REFRESH
-========================================================= */
-
-function refreshAccount(){
-
-  if(
-    typeof renderAccount ===
-    "function"
-  ){
-
-    renderAccount();
-
-  }
-
-}
-
-
-document.addEventListener(
-  "nova:account",
-  refreshAccount
-);
-
-
-/* =========================================================
-   FOCUS AUTOMATIQUE
-========================================================= */
-
-function focusFirstInput(
-  modalId
-){
-
-  const modal =
-    $(modalId);
-
-  if(!modal)return;
-
-  const input =
-    modal.querySelector(
-      "input:not([type='hidden']):not([disabled])"
-    );
-
-  if(input){
-
-    setTimeout(
-      () => input.focus(),
-      80
-    );
-
-  }
-
-}
-
-
-[
-  "authModal",
-  "checkoutModal",
-  "settingsModal",
-  "dashboardModal"
-]
-.forEach(id => {
-
-  const modal =
-    $(id);
-
-  modal?.addEventListener(
-    "transitionend",
-    () => {
-
-      if(
-        modal.classList.contains(
-          "open"
+function syncFavorites() {
+
+  favorites =
+    favorites.filter(
+      id =>
+        PRODUCTS.some(
+          product =>
+            String(
+              product.id
+            ) ===
+            String(id)
         )
-      ){
+    );
 
-        focusFirstInput(
-          id
-        );
 
-      }
-
-    }
+  saveJSON(
+    "novaFavorites",
+    favorites
   );
 
-});
+}
 
 
 /* =========================================================
-   PROTECTION DASHBOARD UI
+   ORDERS : SYNCHRONISATION
 ========================================================= */
 
-function protectDashboard(){
+function syncOrders() {
 
-  const button =
-    $("adminButton");
+  if (
+    !Array.isArray(orders)
+  ) {
 
-  const panel =
-    $("adminPanel");
+    orders = [];
 
-  if(!isAdmin()){
+  }
 
-    if(button){
 
-      button.hidden =
-        true;
+  orders =
+    orders.filter(
+      order =>
+        order &&
+        order.id
+    );
 
-    }
 
-    if(panel){
+  saveJSON(
+    "novaOrders",
+    orders
+  );
 
-      panel.classList.add(
-        "hidden"
-      );
+}
 
-    }
+
+/* =========================================================
+   REVIEWS : SYNCHRONISATION
+========================================================= */
+
+function syncReviews() {
+
+  if (
+    !Array.isArray(reviews)
+  ) {
+
+    reviews = [];
+
+  }
+
+
+  reviews =
+    reviews.filter(
+      review =>
+        review &&
+        review.productId &&
+        review.userId
+    );
+
+
+  saveJSON(
+    "novaReviews",
+    reviews
+  );
+
+}
+
+
+/* =========================================================
+   AFFICHAGE COMPTE
+========================================================= */
+
+function renderAccount() {
+
+  const container =
+    $("accountInfo");
+
+  if (!container) return;
+
+
+  if (!currentUser) {
+
+    container.innerHTML = `
+
+      <div
+        class="account-login-state"
+      >
+
+        <div
+          class="account-avatar"
+        >
+          👤
+        </div>
+
+        <strong>
+          Connecte-toi à NovaShop
+        </strong>
+
+        <p>
+          Accède à tes commandes et à tes favoris.
+        </p>
+
+      </div>
+
+    `;
 
     return;
 
   }
 
-  if(button){
 
-    button.hidden =
-      false;
+  const name =
+    currentUser.displayName ||
+    currentUser.email
+      ?.split("@")[0] ||
+    "Utilisateur";
+
+
+  const phone =
+    localStorage.getItem(
+      "novaPhone_" +
+      currentUser.uid
+    );
+
+
+  container.innerHTML = `
+
+    <div
+      class="account-profile"
+    >
+
+      <div
+        class="account-avatar"
+      >
+        ${escapeHTML(
+          name
+            .charAt(0)
+            .toUpperCase()
+        )}
+      </div>
+
+
+      <div
+        class="account-profile-main"
+      >
+
+        <strong>
+          ${escapeHTML(
+            name
+          )}
+        </strong>
+
+        <span>
+          ${escapeHTML(
+            currentUser.email ||
+            ""
+          )}
+        </span>
+
+        ${
+          phone
+            ? `
+              <span>
+                ${escapeHTML(
+                  phone
+                )}
+              </span>
+            `
+            : ""
+        }
+
+      </div>
+
+    </div>
+
+
+    <div
+      class="account-stats"
+    >
+
+      <div>
+        <strong>
+          ${getUserOrders().length}
+        </strong>
+
+        <span>
+          commandes
+        </span>
+      </div>
+
+
+      <div>
+        <strong>
+          ${favorites.length}
+        </strong>
+
+        <span>
+          favoris
+        </span>
+      </div>
+
+    </div>
+
+  `;
+
+}
+
+
+/* =========================================================
+   OUVRIR COMPTE
+========================================================= */
+
+function openAccount() {
+
+  if (!currentUser) {
+
+    showLogin();
+
+    openModal(
+      "authModal"
+    );
+
+    return;
+
+  }
+
+
+  renderAccount();
+
+  openModal(
+    "accountModal"
+  );
+
+}
+
+
+/* =========================================================
+   AUTH UI
+========================================================= */
+
+function showLogin() {
+
+  $("loginTab")
+    ?.classList.add(
+      "active"
+    );
+
+  $("signupTab")
+    ?.classList.remove(
+      "active"
+    );
+
+
+  $("loginForm")
+    ?.classList.remove(
+      "hidden"
+    );
+
+  $("signupForm")
+    ?.classList.add(
+      "hidden"
+    );
+
+}
+
+
+function showSignup() {
+
+  $("signupTab")
+    ?.classList.add(
+      "active"
+    );
+
+  $("loginTab")
+    ?.classList.remove(
+      "active"
+    );
+
+
+  $("signupForm")
+    ?.classList.remove(
+      "hidden"
+    );
+
+  $("loginForm")
+    ?.classList.add(
+      "hidden"
+    );
+
+}
+
+
+/* =========================================================
+   AUTH ERROR PRO
+========================================================= */
+
+function authErrorMessage(
+  error
+) {
+
+  const code =
+    error?.code ||
+    "";
+
+
+  const messages = {
+
+    "auth/api-key-not-valid":
+      "Clé Firebase invalide.",
+
+    "auth/network-request-failed":
+      "Erreur réseau.",
+
+    "auth/operation-not-allowed":
+      "Cette méthode de connexion n'est pas activée dans Firebase.",
+
+    "auth/popup-blocked":
+      "La fenêtre Google a été bloquée par le navigateur.",
+
+    "auth/popup-closed-by-user":
+      "Connexion annulée.",
+
+    "auth/unauthorized-domain":
+      "Le domaine GitHub Pages n'est pas autorisé dans Firebase.",
+
+    "auth/email-already-in-use":
+      "Cette adresse est déjà utilisée.",
+
+    "auth/invalid-email":
+      "Adresse e-mail invalide.",
+
+    "auth/invalid-credential":
+      "Identifiants incorrects.",
+
+    "auth/weak-password":
+      "Le mot de passe est trop faible."
+
+  };
+
+
+  return (
+    messages[code] ||
+    "Une erreur d'authentification est survenue."
+  );
+
+}
+
+
+/* =========================================================
+   MODALES
+========================================================= */
+
+function openModal(
+  id
+) {
+
+  const modal =
+    $(id);
+
+  if (!modal) return;
+
+
+  modal.classList.remove(
+    "hidden"
+  );
+
+
+  $("overlay")
+    ?.classList.remove(
+      "hidden"
+    );
+
+
+  document.body.classList.add(
+    "modal-open"
+  );
+
+}
+
+
+function closeModal(
+  id
+) {
+
+  const modal =
+    $(id);
+
+  if (!modal) return;
+
+
+  modal.classList.add(
+    "hidden"
+  );
+
+
+  const anyOpen =
+    document.querySelector(
+      ".modal:not(.hidden), .drawer:not(.hidden)"
+    );
+
+
+  if (!anyOpen) {
+
+    $("overlay")
+      ?.classList.add(
+        "hidden"
+      );
+
+
+    document.body.classList.remove(
+      "modal-open"
+    );
 
   }
 
 }
 
 
-protectDashboard();
-
-
-/* =========================================================
-   RE-ACTUALISATION APRÈS CONNEXION
-========================================================= */
-
-onAuthStateChanged(
-  auth,
-  user => {
-
-    currentUser =
-      user || null;
-
-    protectDashboard();
-
-    updateAdminButton();
-
-    updateFavoriteCount();
-
-    if(
-      $("ordersModal")
-        ?.classList.contains(
-          "open"
-        )
-    ){
-
-      renderOrders();
-
-    }
-
-    if(
-      $("accountModal")
-        ?.classList.contains(
-          "open"
-        )
-    ){
-
-      renderAccount();
-
-    }
-
-  }
-);
-
-
-/* =========================================================
-   NETTOYAGE DES ANCIENS MODALES
-========================================================= */
-
-function cleanModalState(){
+function closeAll() {
 
   document
     .querySelectorAll(
-      ".modal.open, .drawer.open"
+      ".modal, .drawer"
     )
-    .forEach(element => {
+    .forEach(
+      element => {
 
-      element.setAttribute(
-        "aria-hidden",
-        "false"
-      );
+        element.classList.add(
+          "hidden"
+        );
 
-    });
+      }
+    );
+
+
+  $("overlay")
+    ?.classList.add(
+      "hidden"
+    );
+
+
+  document.body.classList.remove(
+    "modal-open"
+  );
 
 }
 
 
-cleanModalState();
+/* =========================================================
+   DARK MODE
+========================================================= */
+
+function applySettings() {
+
+  const dark =
+    localStorage.getItem(
+      "novaDarkMode"
+    ) !== "false";
+
+
+  const sound =
+    localStorage.getItem(
+      "novaSound"
+    ) !== "false";
+
+
+  document.body.classList.toggle(
+    "dark",
+    dark
+  );
+
+
+  window.novaSoundEnabled =
+    sound;
+
+
+  const darkButton =
+    $("darkModeToggle");
+
+
+  if (darkButton) {
+
+    darkButton.textContent =
+      dark
+        ? "☀️"
+        : "🌙";
+
+  }
+
+
+  const soundButton =
+    $("soundToggle");
+
+
+  if (soundButton) {
+
+    soundButton.textContent =
+      sound
+        ? "🔊"
+        : "🔇";
+
+  }
+
+}
+
+
+function toggleDarkMode() {
+
+  const enabled =
+    document.body.classList.contains(
+      "dark"
+    );
+
+
+  localStorage.setItem(
+    "novaDarkMode",
+    String(!enabled)
+  );
+
+
+  applySettings();
+
+  playClick();
+
+}
+
+
+function toggleSound() {
+
+  const enabled =
+    window.novaSoundEnabled !== false;
+
+
+  localStorage.setItem(
+    "novaSound",
+    String(!enabled)
+  );
+
+
+  applySettings();
+
+  playClick();
+
+}
 
 
 /* =========================================================
-   ACCESSIBILITÉ BOUTONS
+   SON
 ========================================================= */
 
-document
-  .querySelectorAll(
-    "button"
-  )
-  .forEach(button => {
+function playClick() {
 
-    if(
-      !button.getAttribute(
-        "type"
-      )
-    ){
+  if (
+    window.novaSoundEnabled === false
+  ) {
+    return;
+  }
 
-      button.setAttribute(
-        "type",
-        "button"
-      );
+
+  try {
+
+    const AudioContext =
+      window.AudioContext ||
+      window.webkitAudioContext;
+
+
+    if (!AudioContext) {
+      return;
+    }
+
+
+    if (!window.novaAudioContext) {
+
+      window.novaAudioContext =
+        new AudioContext();
 
     }
 
-  });
+
+    const ctx =
+      window.novaAudioContext;
 
 
-document
-  .querySelectorAll(
-    "input"
-  )
-  .forEach(input => {
+    const oscillator =
+      ctx.createOscillator();
 
-    input.setAttribute(
-      "autocomplete",
-      input.type === "password"
-        ? "current-password"
-        : input.autocomplete || "on"
+    const gain =
+      ctx.createGain();
+
+
+    oscillator.type =
+      "sine";
+
+
+    oscillator.frequency.setValueAtTime(
+      520,
+      ctx.currentTime
     );
 
-  });
+
+    oscillator.frequency.exponentialRampToValueAtTime(
+      240,
+      ctx.currentTime +
+      0.055
+    );
+
+
+    gain.gain.setValueAtTime(
+      0.045,
+      ctx.currentTime
+    );
+
+
+    gain.gain.exponentialRampToValueAtTime(
+      0.001,
+      ctx.currentTime +
+      0.06
+    );
+
+
+    oscillator.connect(
+      gain
+    );
+
+
+    gain.connect(
+      ctx.destination
+    );
+
+
+    oscillator.start();
+
+    oscillator.stop(
+      ctx.currentTime +
+      0.065
+    );
+
+  } catch {
+
+    /* son facultatif */
+
+  }
+
+}
 
 
 /* =========================================================
-   PAGE VISIBILITY
+   CLICK GLOBAL
 ========================================================= */
 
 document.addEventListener(
-  "visibilitychange",
-  () => {
+  "click",
+  event => {
 
-    if(
-      document.visibilityState ===
-      "visible"
-    ){
+    const interactive =
+      event.target.closest(
+        "button, a, select, input[type='checkbox']"
+      );
 
-      renderCart();
 
-      updateCartCount();
+    if (
+      interactive &&
+      !interactive.hasAttribute(
+        "data-no-sound"
+      )
+    ) {
 
-      updateFavoriteCount();
-
-      protectDashboard();
+      playClick();
 
     }
 
   }
 );
+
+
+/* =========================================================
+   ADMIN BUTTON
+========================================================= */
+
+function updateAdminButton() {
+
+  const button =
+    $("adminButton");
+
+  if (!button) return;
+
+
+  const admin =
+    isAdmin();
+
+
+  button.classList.toggle(
+    "hidden",
+    !admin
+  );
+
+}
+
+
+/* =========================================================
+   CHECKOUT : UTILISATEUR
+========================================================= */
+
+function getCheckoutData() {
+
+  return {
+
+    customer:
+      $("fullName")
+        ?.value
+        .trim() ||
+      "",
+
+    address:
+      $("address")
+        ?.value
+        .trim() ||
+      "",
+
+    postalCode:
+      $("postalCode")
+        ?.value
+        .trim() ||
+      "",
+
+    city:
+      $("city")
+        ?.value
+        .trim() ||
+      "",
+
+    country:
+      $("country")
+        ?.value
+        .trim() ||
+      ""
+
+  };
+
+}
+
+
+/* =========================================================
+   ADRESSE
+========================================================= */
+
+function validateAddress() {
+
+  const data =
+    getCheckoutData();
+
+
+  const validName =
+    data.customer.length >= 2;
+
+
+  const validAddress =
+    data.address.length >= 5;
+
+
+  const validPostal =
+    /^[0-9]{5}$/.test(
+      data.postalCode
+    );
+
+
+  const validCity =
+    data.city.length >= 2;
+
+
+  const validCountry =
+    data.country.length >= 2;
+
+
+  const valid =
+    validName &&
+    validAddress &&
+    validPostal &&
+    validCity &&
+    validCountry;
+
+
+  const button =
+    $("payButton");
+
+
+  if (button) {
+
+    button.dataset.addressValid =
+      String(valid);
+
+  }
+
+
+  return valid;
+
+}
+
+
+/* =========================================================
+   TOTAL PANIER
+========================================================= */
+
+function getSubtotal() {
+
+  return cart.reduce(
+    (
+      total,
+      item
+    ) => {
+
+      const product =
+        PRODUCTS.find(
+          p =>
+            String(
+              p.id
+            ) ===
+            String(
+              item.id
+            )
+        );
+
+
+      if (!product) {
+        return total;
+      }
+
+
+      return total +
+        (
+          Number(
+            product.price
+          ) *
+          Number(
+            item.quantity
+          )
+        );
+
+    },
+    0
+  );
+
+}
+
+
+/* =========================================================
+   PANIER
+========================================================= */
+
+function openCart() {
+
+  syncCart();
+
+  renderCart();
+
+  openModal(
+    "cartDrawer"
+  );
+
+}
+
+
+/* =========================================================
+   TOTAL AVEC PROMO
+========================================================= */
+
+function getCheckoutTotals() {
+
+  const subtotal =
+    getSubtotal();
+
+
+  let discount =
+    0;
+
+
+  if (currentPromo) {
+
+    discount =
+      subtotal *
+      (
+        Number(
+          currentPromo.percent
+        ) /
+        100
+      );
+
+  }
+
+
+  discount =
+    Math.min(
+      subtotal,
+      discount
+    );
+
+
+  return {
+
+    subtotal,
+
+    discount,
+
+    total:
+      Math.max(
+        0,
+        subtotal -
+        discount
+      )
+
+  };
+
+}
+
+
+/* =========================================================
+   PROMO
+========================================================= */
+
+function applyPromo() {
+
+  const input =
+    $("promoCode");
+
+  const message =
+    $("promoMessage");
+
+
+  const code =
+    input
+      ?.value
+      .trim()
+      .toUpperCase();
+
+
+  if (!code) {
+
+    currentPromo =
+      null;
+
+
+    if (message) {
+
+      message.textContent =
+        "Entre un code promo.";
+
+      message.className =
+        "promo-message error";
+
+    }
+
+
+    renderCheckout();
+
+    updatePayButton();
+
+    return;
+
+  }
+
+
+  const promo =
+    PROMO_CODES[code];
+
+
+  if (!promo) {
+
+    currentPromo =
+      null;
+
+
+    if (message) {
+
+      message.textContent =
+        "Code promo invalide.";
+
+      message.className =
+        "promo-message error";
+
+    }
+
+
+    renderCheckout();
+
+    updatePayButton();
+
+    return;
+
+  }
+
+
+  currentPromo = {
+
+    code,
+
+    percent:
+      Number(
+        promo.percent
+      )
+
+  };
+
+
+  if (message) {
+
+    message.textContent =
+      `✓ Code ${code} appliqué : ${promo.percent}%`;
+
+    message.className =
+      "promo-message success";
+
+  }
+
+
+  renderCheckout();
+
+  updatePayButton();
+
+}
+
+
+/* =========================================================
+   CRÉATION COMMANDE
+========================================================= */
+
+function createOrder() {
+
+  if (!currentUser) {
+    return null;
+  }
+
+
+  const data =
+    getCheckoutData();
+
+
+  const totals =
+    getCheckoutTotals();
+
+
+  const orderId =
+    "NOVA-" +
+    Date.now()
+      .toString(36)
+      .toUpperCase();
+
+
+  const items =
+    cart.map(
+      item => {
+
+        const product =
+          PRODUCTS.find(
+            p =>
+              String(
+                p.id
+              ) ===
+              String(
+                item.id
+              )
+          );
+
+
+        return {
+
+          id:
+            product.id,
+
+          name:
+            product.name,
+
+          price:
+            Number(
+              product.price
+            ),
+
+          quantity:
+            Number(
+              item.quantity
+            )
+
+        };
+
+      }
+    );
+
+
+  const order = {
+
+    id:
+      orderId,
+
+    userId:
+      currentUser.uid,
+
+    email:
+      currentUser.email ||
+      "",
+
+    customer:
+      data.customer,
+
+    address:
+      data.address,
+
+    postalCode:
+      data.postalCode,
+
+    city:
+      data.city,
+
+    country:
+      data.country,
+
+    warehouse:
+      "Entrepôt",
+
+    items,
+
+    subtotal:
+      totals.subtotal,
+
+    discount:
+      totals.discount,
+
+    total:
+      totals.total,
+
+    promo:
+      currentPromo
+        ?.code ||
+      null,
+
+    payment:
+      totals.total === 0
+        ? "Code promotionnel"
+        : "PayPal",
+
+    status:
+      totals.total === 0
+        ? "Commande créée"
+        : "En attente de confirmation du paiement",
+
+    date:
+      new Date()
+        .toISOString()
+
+  };
+
+
+  orders.push(
+    order
+  );
+
+
+  syncOrders();
+
+
+  return order;
+
+}
+
+
+/* =========================================================
+   ALIAS COMPATIBILITÉ
+========================================================= */
+
+function createDemoOrder() {
+
+  return createOrder();
+
+}
+
+
+/* =========================================================
+   PAYPAL
+========================================================= */
+
+function openPayPal(
+  amount
+) {
+
+  const numericAmount =
+    Number(amount);
+
+
+  if (
+    !Number.isFinite(
+      numericAmount
+    ) ||
+    numericAmount <= 0
+  ) {
+
+    toast(
+      "Montant de paiement invalide."
+    );
+
+    return;
+
+  }
+
+
+  const url =
+    `${PAYPAL_ME}/${numericAmount.toFixed(2)}`;
+
+
+  window.open(
+    url,
+    "_blank",
+    "noopener,noreferrer"
+  );
+
+
+  toast(
+    "PayPal ouvert. Le paiement doit être confirmé avant validation."
+  );
+
+}
+
+
+/* =========================================================
+   CHECKOUT
+========================================================= */
+
+function openCheckout() {
+
+  if (!currentUser) {
+
+    closeAll();
+
+    showLogin();
+
+    openModal(
+      "authModal"
+    );
+
+    toast(
+      "Connecte-toi pour commander."
+    );
+
+    return;
+
+  }
+
+
+  if (!cart.length) {
+
+    toast(
+      "Ton panier est vide."
+    );
+
+    return;
+
+  }
+
+
+  renderCheckout();
+
+  openModal(
+    "checkoutModal"
+  );
+
+}
+
+
+function renderCheckout() {
+
+  const items =
+    $("checkoutItems");
+
+
+  if (items) {
+
+    items.innerHTML =
+      cart
+        .map(
+          item => {
+
+            const product =
+              PRODUCTS.find(
+                p =>
+                  String(
+                    p.id
+                  ) ===
+                  String(
+                    item.id
+                  )
+              );
+
+
+            if (!product) {
+              return "";
+            }
+
+
+            return `
+
+              <div
+                class="checkout-item"
+              >
+
+                <div>
+
+                  <strong>
+                    ${escapeHTML(
+                      product.name
+                    )}
+                  </strong>
+
+                  <span>
+                    × ${item.quantity}
+                  </span>
+
+                </div>
+
+
+                <strong>
+                  ${money(
+                    product.price *
+                    item.quantity
+                  )}
+                </strong>
+
+              </div>
+
+            `;
+
+          }
+        )
+        .join("");
+
+  }
+
+
+  const totals =
+    getCheckoutTotals();
+
+
+  if ($("checkoutSubtotal")) {
+
+    $("checkoutSubtotal")
+      .textContent =
+      money(
+        totals.subtotal
+      );
+
+  }
+
+
+  if ($("checkoutDiscount")) {
+
+    $("checkoutDiscount")
+      .textContent =
+      "-" +
+      money(
+        totals.discount
+      );
+
+  }
+
+
+  if ($("checkoutTotal")) {
+
+    $("checkoutTotal")
+      .textContent =
+      money(
+        totals.total
+      );
+
+  }
+
+
+  updatePayButton();
+
+}
+
+
+/* =========================================================
+   PAIEMENT FINAL
+========================================================= */
+
+async function processPayment() {
+
+  if (!currentUser) {
+
+    toast(
+      "Connecte-toi pour continuer."
+    );
+
+    return;
+
+  }
+
+
+  if (!cart.length) {
+
+    toast(
+      "Ton panier est vide."
+    );
+
+    return;
+
+  }
+
+
+  if (!validateAddress()) {
+
+    toast(
+      "Vérifie les informations de livraison."
+    );
+
+    return;
+
+  }
+
+
+  const totals =
+    getCheckoutTotals();
+
+
+  /*
+   * 100% promo :
+   * commande réellement gratuite dans cette démo.
+   */
+
+  if (
+    totals.total === 0
+  ) {
+
+    const order =
+      createOrder();
+
+
+    if (!order) {
+      return;
+    }
+
+
+    cart = [];
+
+    currentPromo =
+      null;
+
+
+    saveJSON(
+      "novaCart",
+      cart
+    );
+
+
+    renderCart();
+
+    updateCartCount();
+
+    closeAll();
+
+
+    toast(
+      "🎉 Commande créée !"
+    );
+
+
+    setTimeout(
+      () => {
+
+        openInvoice(
+          order.id
+        );
+
+      },
+      250
+    );
+
+
+    return;
+
+  }
+
+
+  /*
+   * PayPal réel :
+   * ouverture du lien seulement.
+   * On ne marque jamais automatiquement
+   * la commande comme payée.
+   */
+
+  openPayPal(
+    totals.total
+  );
+
+
+  const order =
+    createOrder();
+
+
+  if (order) {
+
+    closeAll();
+
+
+    toast(
+      "Commande enregistrée en attente de confirmation PayPal."
+    );
+
+  }
+
+}
+
+
+/* =========================================================
+   PRODUITS
+========================================================= */
+
+function getFilteredProducts() {
+
+  let result =
+    PRODUCTS.filter(
+      isValidProduct
+    );
+
+
+  if (
+    currentCategory &&
+    currentCategory !==
+      "Tous"
+  ) {
+
+    result =
+      result.filter(
+        product =>
+          product.category ===
+          currentCategory
+      );
+
+  }
+
+
+  const query =
+    currentSearch
+      .trim()
+      .toLowerCase();
+
+
+  if (query) {
+
+    result =
+      result.filter(
+        product => {
+
+          const text =
+            [
+              product.name,
+              product.category,
+              product.description
+            ]
+            .join(" ")
+            .toLowerCase();
+
+
+          return text.includes(
+            query
+          );
+
+        }
+      );
+
+  }
+
+
+  switch (
+    currentSort
+  ) {
+
+    case "priceAsc":
+
+      result.sort(
+        (
+          a,
+          b
+        ) =>
+          a.price -
+          b.price
+      );
+
+      break;
+
+
+    case "priceDesc":
+
+      result.sort(
+        (
+          a,
+          b
+        ) =>
+          b.price -
+          a.price
+      );
+
+      break;
+
+
+    case "name":
+
+      result.sort(
+        (
+          a,
+          b
+        ) =>
+          a.name.localeCompare(
+            b.name,
+            "fr"
+          )
+      );
+
+      break;
+
+
+    default:
+
+      break;
+
+  }
+
+
+  return result;
+
+}
+
+
+/* =========================================================
+   PRODUITS RENDER
+========================================================= */
+
+function renderProducts() {
+
+  const grid =
+    $("productsGrid");
+
+  if (!grid) return;
+
+
+  cleanCatalog();
+
+
+  const products =
+    getFilteredProducts();
+
+
+  if ($("resultCount")) {
+
+    $("resultCount")
+      .textContent =
+      `${products.length} produit${
+        products.length > 1
+          ? "s"
+          : ""
+      }`;
+
+  }
+
+
+  if (!products.length) {
+
+    grid.innerHTML =
+      "";
+
+
+    $("emptyState")
+      ?.classList.remove(
+        "hidden"
+      );
+
+
+    return;
+
+  }
+
+
+  $("emptyState")
+    ?.classList.add(
+      "hidden"
+    );
+
+
+  grid.innerHTML =
+    products
+      .map(
+        product =>
+          createProductCard(
+            product
+          )
+      )
+      .join("");
+
+
+  updateFavoriteButtons();
+
+}
+
+
+/* =========================================================
+   CARTE PRODUIT
+========================================================= */
+
+function createProductCard(
+  product
+) {
+
+  const average =
+    getProductAverageRating(
+      product.id
+    );
+
+
+  const reviewsCount =
+    getProductReviews(
+      product.id
+    ).length;
+
+
+  const favorite =
+    favoriteExists(
+      product.id
+    );
+
+
+  return `
+
+    <article
+      class="product-card"
+      data-product-card="${escapeHTML(
+        product.id
+      )}"
+    >
+
+      <button
+        type="button"
+        class="favorite-button ${
+          favorite
+            ? "active"
+            : ""
+        }"
+        data-favorite="${escapeHTML(
+          product.id
+        )}"
+        aria-label="${
+          favorite
+            ? "Retirer des favoris"
+            : "Ajouter aux favoris"
+        }"
+      >
+        ${
+          favorite
+            ? "♥"
+            : "♡"
+        }
+      </button>
+
+
+      <button
+        type="button"
+        class="product-image-button"
+        data-view="${escapeHTML(
+          product.id
+        )}"
+      >
+
+        <img
+          src="${escapeHTML(
+            product.image
+          )}"
+          alt="${escapeHTML(
+            product.name
+          )}"
+          loading="lazy"
+          decoding="async"
+        />
+
+      </button>
+
+
+      <div
+        class="product-card-body"
+      >
+
+        <div
+          class="product-category"
+        >
+          ${escapeHTML(
+            product.category
+          )}
+        </div>
+
+
+        <h3>
+          ${escapeHTML(
+            product.name
+          )}
+        </h3>
+
+
+        <div
+          class="product-rating"
+        >
+
+          <span>
+            ${starsHTML(
+              average
+            )}
+          </span>
+
+          <small>
+            ${
+              average
+                ? average.toFixed(1)
+                : "Nouveau"
+            }
+
+            ${
+              reviewsCount
+                ? `(${reviewsCount})`
+                : ""
+            }
+          </small>
+
+        </div>
+
+
+        <div
+          class="product-card-bottom"
+        >
+
+          <strong
+            class="product-price"
+          >
+            ${money(
+              product.price
+            )}
+          </strong>
+
+
+          <button
+            type="button"
+            class="add-button"
+            data-add="${escapeHTML(
+              product.id
+            )}"
+          >
+            🛒 Ajouter
+          </button>
+
+        </div>
+
+
+        <button
+          type="button"
+          class="view-button"
+          data-view="${escapeHTML(
+            product.id
+          )}"
+        >
+          Voir le produit
+        </button>
+
+      </div>
+
+    </article>
+
+  `;
+
+}
+
+
+/* =========================================================
+   ÉTOILES
+========================================================= */
+
+function starsHTML(
+  rating
+) {
+
+  const value =
+    Number(
+      rating
+    ) || 0;
+
+
+  let html = "";
+
+
+  for (
+    let i = 1;
+    i <= 5;
+    i++
+  ) {
+
+    html +=
+      i <= value
+        ? "★"
+        : "☆";
+
+  }
+
+
+  return html;
+
+}
+
+
+/* =========================================================
+   AVIS
+========================================================= */
+
+function getProductReviews(
+  productId
+) {
+
+  return reviews.filter(
+    review =>
+      String(
+        review.productId
+      ) ===
+      String(
+        productId
+      )
+  );
+
+}
+
+
+function getProductAverageRating(
+  productId
+) {
+
+  const list =
+    getProductReviews(
+      productId
+    );
+
+
+  if (!list.length) {
+    return 0;
+  }
+
+
+  const total =
+    list.reduce(
+      (
+        sum,
+        review
+      ) =>
+        sum +
+        Number(
+          review.rating
+        ),
+      0
+    );
+
+
+  return (
+    total /
+    list.length
+  );
+
+}
+
+
+/* =========================================================
+   NOM UTILISATEUR MASQUÉ
+========================================================= */
+
+function maskedReviewerName(
+  name
+) {
+
+  const value =
+    String(
+      name ||
+      "Utilisateur"
+    )
+    .trim();
+
+
+  const first =
+    value
+      .slice(
+        0,
+        3
+      );
+
+
+  return (
+    first +
+    "***"
+  );
+
+}
+
+
+/* =========================================================
+   OUVRIR PRODUIT
+========================================================= */
+
+function openProduct(
+  productId
+) {
+
+  const product =
+    PRODUCTS.find(
+      p =>
+        String(
+          p.id
+        ) ===
+        String(
+          productId
+        )
+    );
+
+
+  if (!product) {
+
+    toast(
+      "Produit introuvable."
+    );
+
+    return;
+
+  }
+
+
+  const container =
+    $("productDetail");
+
+
+  if (!container) return;
+
+
+  const average =
+    getProductAverageRating(
+      product.id
+    );
+
+
+  const productReviews =
+    getProductReviews(
+      product.id
+    );
+
+
+  container.innerHTML = `
+
+    <div
+      class="product-detail-layout"
+    >
+
+      <div
+        class="product-detail-image"
+      >
+
+        <img
+          src="${escapeHTML(
+            product.image
+          )}"
+          alt="${escapeHTML(
+            product.name
+          )}"
+        />
+
+      </div>
+
+
+      <div
+        class="product-detail-info"
+      >
+
+        <span
+          class="product-category"
+        >
+          ${escapeHTML(
+            product.category
+          )}
+        </span>
+
+
+        <h2>
+          ${escapeHTML(
+            product.name
+          )}
+        </h2>
+
+
+        <div
+          class="product-rating large"
+        >
+
+          ${starsHTML(
+            average
+          )}
+
+          <span>
+            ${
+              average
+                ? average.toFixed(1)
+                : "Aucun avis"
+            }
+          </span>
+
+        </div>
+
+
+        <p>
+          ${escapeHTML(
+            product.description
+          )}
+        </p>
+
+
+        <div
+          class="product-detail-price"
+        >
+          ${money(
+            product.price
+          )}
+        </div>
+
+
+        <button
+          type="button"
+          class="primary-button"
+          data-detail-add="${escapeHTML(
+            product.id
+          )}"
+        >
+          🛒 Ajouter au panier
+        </button>
+
+      </div>
+
+    </div>
+
+
+    <section
+      class="reviews-section"
+    >
+
+      <div
+        class="reviews-heading"
+      >
+
+        <h3>
+          Avis clients
+        </h3>
+
+        <span>
+          ${
+            productReviews.length
+          } avis
+        </span>
+
+      </div>
+
+
+      ${
+        productReviews.length
+          ? productReviews
+              .slice()
+              .reverse()
+              .map(
+                review => `
+
+                  <div
+                    class="review-card"
+                  >
+
+                    <div
+                      class="review-top"
+                    >
+
+                      <strong>
+                        ${escapeHTML(
+                          maskedReviewerName(
+                            review.userName
+                          )
+                        )}
+                      </strong>
+
+                      <span>
+                        ${starsHTML(
+                          review.rating
+                        )}
+                      </span>
+
+                    </div>
+
+
+                    <p>
+                      ${escapeHTML(
+                        review.comment
+                      )}
+                    </p>
+
+
+                    <small>
+                      ${new Date(
+                        review.date
+                      ).toLocaleDateString(
+                        "fr-FR"
+                      )}
+                    </small>
+
+                  </div>
+
+                `
+              )
+              .join("")
+          : `
+            <div
+              class="review-empty"
+            >
+              Aucun avis pour le moment.
+            </div>
+          `
+      }
+
+
+      ${
+        currentUser
+          ? `
+            <div
+              class="review-form"
+            >
+
+              <h3>
+                Donner ton avis
+              </h3>
+
+              <div
+                class="review-stars-input"
+              >
+
+                ${[1,2,3,4,5]
+                  .map(
+                    n => `
+                      <button
+                        type="button"
+                        data-rating="${n}"
+                      >
+                        ★
+                      </button>
+                    `
+                  )
+                  .join("")
+                }
+
+              </div>
+
+
+              <textarea
+                id="reviewComment"
+                maxlength="500"
+                placeholder="Ton avis sur ce produit..."
+              ></textarea>
+
+
+              <button
+                type="button"
+                class="primary-button"
+                data-submit-review="${escapeHTML(
+                  product.id
+                )}"
+              >
+                Publier l'avis
+              </button>
+
+            </div>
+          `
+          : `
+            <div
+              class="review-login-note"
+            >
+              Connecte-toi pour publier un avis.
+            </div>
+          `
+      }
+
+    </section>
+
+  `;
+
+
+  openModal(
+    "productModal"
+  );
+
+}
+
+
+/* =========================================================
+   PRODUIT DETAIL EVENTS
+========================================================= */
+
+$("productDetail")
+  ?.addEventListener(
+    "click",
+    event => {
+
+      const add =
+        event.target.closest(
+          "[data-detail-add]"
+        );
+
+
+      if (add) {
+
+        addToCart(
+          add.dataset.detailAdd
+        );
+
+        return;
+
+      }
+
+
+      const rating =
+        event.target.closest(
+          "[data-rating]"
+        );
+
+
+      if (rating) {
+
+        window.selectedReviewRating =
+          Number(
+            rating.dataset.rating
+          );
+
+
+        document
+          .querySelectorAll(
+            "[data-rating]"
+          )
+          .forEach(
+            button => {
+
+              button.classList.toggle(
+                "selected",
+                Number(
+                  button.dataset.rating
+                ) <=
+                window.selectedReviewRating
+              );
+
+            }
+          );
+
+        return;
+
+      }
+
+
+      const submit =
+        event.target.closest(
+          "[data-submit-review]"
+        );
+
+
+      if (submit) {
+
+        submitReview(
+          submit.dataset.submitReview
+        );
+
+      }
+
+    }
+  );
+
+
+/* =========================================================
+   AJOUT AVIS
+========================================================= */
+
+function submitReview(
+  productId
+) {
+
+  if (!currentUser) {
+
+    toast(
+      "Connecte-toi pour publier un avis."
+    );
+
+    return;
+
+  }
+
+
+  const rating =
+    Number(
+      window.selectedReviewRating
+    );
+
+
+  const comment =
+    $("reviewComment")
+      ?.value
+      .trim();
+
+
+  if (
+    rating < 1 ||
+    rating > 5
+  ) {
+
+    toast(
+      "Choisis une note."
+    );
+
+    return;
+
+  }
+
+
+  if (!comment) {
+
+    toast(
+      "Écris un commentaire."
+    );
+
+    return;
+
+  }
+
+
+  const already =
+    reviews.some(
+      review =>
+        String(
+          review.productId
+        ) ===
+        String(
+          productId
+        ) &&
+        review.userId ===
+        currentUser.uid
+    );
+
+
+  if (already) {
+
+    toast(
+      "Tu as déjà publié un avis sur ce produit."
+    );
+
+    return;
+
+  }
+
+
+  const name =
+    currentUser.displayName ||
+    currentUser.email
+      ?.split("@")[0] ||
+    "Utilisateur";
+
+
+  reviews.push({
+
+    id:
+      "review-" +
+      Date.now(),
+
+    productId:
+      String(
+        productId
+      ),
+
+    userId:
+      currentUser.uid,
+
+    userName:
+      name,
+
+    rating,
+
+    comment,
+
+    date:
+      new Date()
+        .toISOString()
+
+  });
+
+
+  syncReviews();
+
+
+  window.selectedReviewRating =
+    0;
+
+
+  openProduct(
+    productId
+  );
+
+
+  toast(
+    "✓ Avis publié"
+  );
+
+}
+
+
+/* =========================================================
+   CART RENDER
+========================================================= */
+
+function renderCart() {
+
+  syncCart();
+
+
+  const container =
+    $("cartItems");
+
+
+  if (!container) return;
+
+
+  if (!cart.length) {
+
+    container.innerHTML = `
+
+      <div
+        class="cart-empty"
+      >
+
+        <div>
+          🛒
+        </div>
+
+        <strong>
+          Ton panier est vide
+        </strong>
+
+        <p>
+          Ajoute des produits pour commencer.
+        </p>
+
+      </div>
+
+    `;
+
+
+  } else {
+
+    container.innerHTML =
+      cart
+        .map(
+          item => {
+
+            const product =
+              PRODUCTS.find(
+                p =>
+                  String(
+                    p.id
+                  ) ===
+                  String(
+                    item.id
+                  )
+              );
+
+
+            if (!product) {
+              return "";
+            }
+
+
+            return `
+
+              <div
+                class="cart-item"
+              >
+
+                <img
+                  src="${escapeHTML(
+                    product.image
+                  )}"
+                  alt="${escapeHTML(
+                    product.name
+                  )}"
+                />
+
+
+                <div
+                  class="cart-item-info"
+                >
+
+                  <strong>
+                    ${escapeHTML(
+                      product.name
+                    )}
+                  </strong>
+
+
+                  <span>
+                    ${money(
+                      product.price
+                    )}
+                  </span>
+
+
+                  <div
+                    class="quantity-controls"
+                  >
+
+                    <button
+                      type="button"
+                      data-minus="${escapeHTML(
+                        product.id
+                      )}"
+                    >
+                      −
+                    </button>
+
+                    <span>
+                      ${item.quantity}
+                    </span>
+
+                    <button
+                      type="button"
+                      data-plus="${escapeHTML(
+                        product.id
+                      )}"
+                    >
+                      +
+                    </button>
+
+                  </div>
+
+                </div>
+
+
+                <button
+                  type="button"
+                  class="remove-cart"
+                  data-remove="${escapeHTML(
+                    product.id
+                  )}"
+                >
+                  ×
+                </button>
+
+              </div>
+
+            `;
+
+          }
+        )
+        .join("");
+
+  }
+
+
+  const subtotal =
+    getSubtotal();
+
+
+  if ($("cartSubtotal")) {
+
+    $("cartSubtotal")
+      .textContent =
+      money(
+        subtotal
+      );
+
+  }
+
+
+  if ($("cartTotal")) {
+
+    $("cartTotal")
+      .textContent =
+      money(
+        subtotal
+      );
+
+  }
+
+
+  updateCartCount();
+
+}
+
+
+/* =========================================================
+   AJOUT PANIER
+========================================================= */
+
+function addToCart(
+  productId
+) {
+
+  const product =
+    PRODUCTS.find(
+      p =>
+        String(
+          p.id
+        ) ===
+        String(
+          productId
+        )
+    );
+
+
+  if (!product) {
+
+    toast(
+      "Produit introuvable."
+    );
+
+    return;
+
+  }
+
+
+  const existing =
+    cart.find(
+      item =>
+        String(
+          item.id
+        ) ===
+        String(
+          productId
+        )
+    );
+
+
+  if (existing) {
+
+    existing.quantity += 1;
+
+  } else {
+
+    cart.push({
+
+      id:
+        String(
+          productId
+        ),
+
+      quantity:
+        1
+
+    });
+
+  }
+
+
+  saveJSON(
+    "novaCart",
+    cart
+  );
+
+
+  renderCart();
+
+
+  toast(
+    "✓ Produit ajouté au panier"
+  );
+
+}
+
+
+/* =========================================================
+   QUANTITÉ
+========================================================= */
+
+function changeQuantity(
+  productId,
+  delta
+) {
+
+  const item =
+    cart.find(
+      entry =>
+        String(
+          entry.id
+        ) ===
+        String(
+          productId
+        )
+    );
+
+
+  if (!item) {
+    return;
+  }
+
+
+  item.quantity +=
+    Number(delta);
+
+
+  if (
+    item.quantity <=
+    0
+  ) {
+
+    cart =
+      cart.filter(
+        entry =>
+          String(
+            entry.id
+          ) !==
+          String(
+            productId
+          )
+      );
+
+  }
+
+
+  saveJSON(
+    "novaCart",
+    cart
+  );
+
+
+  renderCart();
+
+  renderCheckout();
+
+}
+
+
+/* =========================================================
+   SUPPRESSION PANIER
+========================================================= */
+
+function removeFromCart(
+  productId
+) {
+
+  cart =
+    cart.filter(
+      item =>
+        String(
+          item.id
+        ) !==
+        String(
+          productId
+        )
+    );
+
+
+  saveJSON(
+    "novaCart",
+    cart
+  );
+
+
+  renderCart();
+
+  renderCheckout();
+
+
+  toast(
+    "Produit retiré du panier."
+  );
+
+}
+
+
+/* =========================================================
+   FAVORIS
+========================================================= */
+
+function toggleFavorite(
+  productId
+) {
+
+  const id =
+    String(
+      productId
+    );
+
+
+  if (
+    favorites.includes(
+      id
+    )
+  ) {
+
+    favorites =
+      favorites.filter(
+        favorite =>
+          favorite !==
+          id
+      );
+
+
+    toast(
+      "Retiré des favoris."
+    );
+
+  } else {
+
+    favorites.push(
+      id
+    );
+
+
+    toast(
+      "♥ Ajouté aux favoris."
+    );
+
+  }
+
+
+  saveJSON(
+    "novaFavorites",
+    favorites
+  );
+
+
+  updateFavoriteButtons();
+
+  renderAccount();
+
+}
+
+
+/* =========================================================
+   ADMIN COMMANDES
+========================================================= */
+
+function renderAdminOrders() {
+
+  const container =
+    $("adminOrdersTable");
+
+
+  if (!container) {
+    return;
+  }
+
+
+  if (!orders.length) {
+
+    container.innerHTML = `
+
+      <div
+        class="admin-empty"
+      >
+        Aucune commande.
+      </div>
+
+    `;
+
+    return;
+
+  }
+
+
+  container.innerHTML = `
+
+    <div
+      class="admin-table-wrapper"
+    >
+
+      <table
+        class="admin-table"
+      >
+
+        <thead>
+
+          <tr>
+
+            <th>
+              Commande
+            </th>
+
+            <th>
+              Client
+            </th>
+
+            <th>
+              Total
+            </th>
+
+            <th>
+              Statut
+            </th>
+
+            <th>
+              Facture
+            </th>
+
+          </tr>
+
+        </thead>
+
+
+        <tbody>
+
+          ${orders
+            .slice()
+            .reverse()
+            .map(
+              order => `
+
+                <tr>
+
+                  <td>
+                    ${escapeHTML(
+                      order.id
+                    )}
+                  </td>
+
+                  <td>
+
+                    <strong>
+                      ${escapeHTML(
+                        order.customer
+                      )}
+                    </strong>
+
+                    <small>
+                      ${escapeHTML(
+                        order.email
+                      )}
+                    </small>
+
+                  </td>
+
+                  <td>
+                    ${money(
+                      order.total
+                    )}
+                  </td>
+
+                  <td>
+                    ${escapeHTML(
+                      order.status
+                    )}
+                  </td>
+
+                  <td>
+
+                    <button
+                      type="button"
+                      class="secondary-button"
+                      data-admin-invoice="${escapeHTML(
+                        order.id
+                      )}"
+                    >
+                      🧾 Voir
+                    </button>
+
+                  </td>
+
+                </tr>
+
+              `
+            )
+            .join("")
+          }
+
+        </tbody>
+
+      </table>
+
+    </div>
+
+  `;
+
+}
+
+
+/* =========================================================
+   ADMIN PROMOS
+========================================================= */
+
+function renderAdminPromos() {
+
+  const container =
+    $("adminPromoCodes");
+
+
+  if (!container) {
+    return;
+  }
+
+
+  container.innerHTML =
+    Object.entries(
+      PROMO_CODES
+    )
+    .map(
+      ([code, promo]) => `
+
+        <div
+          class="promo-admin-card"
+        >
+
+          <strong>
+            ${escapeHTML(
+              code
+            )}
+          </strong>
+
+          <span>
+            ${Number(
+              promo.percent
+            )}% de réduction
+          </span>
+
+        </div>
+
+      `
+    )
+    .join("");
+
+}
+
+
+/* =========================================================
+   DASHBOARD
+========================================================= */
+
+function renderDashboard() {
+
+  if (!isAdmin()) {
+    return;
+  }
+
+
+  const freeOrders =
+    orders.filter(
+      order =>
+        Number(
+          order.total
+        ) === 0
+    ).length;
+
+
+  const catalogValue =
+    PRODUCTS.reduce(
+      (
+        total,
+        product
+      ) =>
+        total +
+        Number(
+          product.price
+        ),
+      0
+    );
+
+
+  if ($("adminOrdersCount")) {
+
+    $("adminOrdersCount")
+      .textContent =
+      orders.length;
+
+  }
+
+
+  if ($("adminFreeOrders")) {
+
+    $("adminFreeOrders")
+      .textContent =
+      freeOrders;
+
+  }
+
+
+  if ($("adminCatalogValue")) {
+
+    $("adminCatalogValue")
+      .textContent =
+      money(
+        catalogValue
+      );
+
+  }
+
+
+  renderAdminOrders();
+
+  renderAdminPromos();
+
+}
 
 
 /* =========================================================
    INITIALISATION FINALE
 ========================================================= */
 
-function finalInit(){
+function finalBoot() {
 
-  try{
+  cleanCatalog();
 
-    renderProducts();
+  syncCart();
 
-  }catch(error){
+  syncFavorites();
 
-    console.error(
-      "renderProducts:",
-      error
+  syncOrders();
+
+  syncReviews();
+
+  applySettings();
+
+  renderProducts();
+
+  renderCart();
+
+  renderAccount();
+
+  updateAdminButton();
+
+  updateAccountButton();
+
+  updateCartCount();
+
+  updatePayButton();
+
+}
+
+
+/* =========================================================
+   PROTECTION CONTRE DOUBLE BOOT
+========================================================= */
+
+if (
+  !window.__NOVASHOP_STARTED__
+) {
+
+  window.__NOVASHOP_STARTED__ =
+    true;
+
+
+  if (
+    document.readyState ===
+    "loading"
+  ) {
+
+    document.addEventListener(
+      "DOMContentLoaded",
+      finalBoot,
+      {
+        once:true
+      }
     );
 
-  }
+  } else {
 
-
-  try{
-
-    renderCart();
-
-  }catch(error){
-
-    console.error(
-      "renderCart:",
-      error
-    );
-
-  }
-
-
-  try{
-
-    updateCartCount();
-
-  }catch(error){
-
-    console.error(
-      "updateCartCount:",
-      error
-    );
-
-  }
-
-
-  try{
-
-    updateFavoriteCount();
-
-  }catch(error){
-
-    console.error(
-      "updateFavoriteCount:",
-      error
-    );
-
-  }
-
-
-  try{
-
-    protectDashboard();
-
-  }catch(error){
-
-    console.error(
-      "protectDashboard:",
-      error
-    );
+    finalBoot();
 
   }
 
 }
 
 
-if(
-  document.readyState ===
-  "loading"
-){
-
-  document.addEventListener(
-    "DOMContentLoaded",
-    finalInit,
-    {
-      once:true
-    }
-  );
-
-}else{
-
-  finalInit();
-
-}
-
-
 /* =========================================================
-   DEBUG NOVASHOP
+   FIN NOVASHOP
 ========================================================= */
-
-window.NOVASHOP =
-  {
-
-    version:
-      "2026.09",
-
-    products:
-      PRODUCTS,
-
-    getCart:
-      () => cart,
-
-    getFavorites:
-      () => favorites,
-
-    getOrders:
-      () => orders,
-
-    getCurrentUser:
-      () => currentUser,
-
-    isAdmin:
-      () => isAdmin(),
-
-    openProduct:
-      id =>
-        openProduct(id),
-
-    addToCart:
-      id =>
-        addToCart(id),
-
-    openCart:
-      () =>
-        openCart(),
-
-    openAccount:
-      () =>
-        openAccount(),
-
-    openDashboard:
-      () =>
-        openDashboard()
-
-  };
-
-
-/* =========================================================
-   FIN
-========================================================= */
-
-console.log(
-  "%c NOVASHOP ",
-  "background:#111827;color:white;font-size:18px;font-weight:900;padding:8px 14px;border-radius:8px"
-);
-
-console.log(
-  "%cMarketplace initialisée.",
-  "font-size:13px;color:#64748b"
-);
