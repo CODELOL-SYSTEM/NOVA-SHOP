@@ -1,1327 +1,1841 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-<meta name="theme-color" content="#111827">
-<title>NovaShop</title>
-
-<style>
-*{
-  box-sizing:border-box;
-  margin:0;
-  padding:0;
-}
-
-:root{
-  --bg:#f5f6f8;
-  --card:#fff;
-  --text:#17191d;
-  --muted:#69707d;
-  --border:#e2e5e9;
-  --primary:#111827;
-  --accent:#ff6a00;
-  --green:#16a34a;
-  --red:#dc2626;
-  --blue:#2563eb;
-  --shadow:0 8px 30px rgba(0,0,0,.08);
-}
-
-body.dark{
-  --bg:#0f1115;
-  --card:#181b21;
-  --text:#f5f7fa;
-  --muted:#9ca3af;
-  --border:#292e37;
-  --primary:#fff;
-  --shadow:0 8px 30px rgba(0,0,0,.25);
-}
-
-body{
-  font-family:Arial,Helvetica,sans-serif;
-  background:var(--bg);
-  color:var(--text);
-  min-height:100vh;
-  transition:.2s;
-}
-
-button,input,select{
-  font:inherit;
-}
-
-button{
-  cursor:pointer;
-  border:0;
-}
-
-button:disabled{
-  opacity:.5;
-  cursor:not-allowed;
-}
-
-.topbar{
-  background:#111827;
-  color:#fff;
-  text-align:center;
-  padding:8px;
-  font-size:13px;
-}
-
-header{
-  position:sticky;
-  top:0;
-  z-index:50;
-  background:var(--card);
-  border-bottom:1px solid var(--border);
-}
-
-.header-inner{
-  max-width:1400px;
-  margin:auto;
-  padding:15px 22px;
-  display:flex;
-  align-items:center;
-  gap:14px;
-}
-
-.logo{
-  font-size:25px;
-  font-weight:900;
-  letter-spacing:-1px;
-  white-space:nowrap;
-}
-
-.logo span{
-  color:var(--accent);
-}
-
-.search{
-  flex:1;
-  display:flex;
-  max-width:650px;
-  margin:auto;
-}
-
-.search input{
-  width:100%;
-  padding:12px 15px;
-  border:1px solid var(--border);
-  border-radius:10px 0 0 10px;
-  outline:none;
-  background:var(--bg);
-  color:var(--text);
-}
-
-.search button{
-  padding:0 18px;
-  background:var(--accent);
-  color:#fff;
-  border-radius:0 10px 10px 0;
-}
-
-.header-actions{
-  display:flex;
-  gap:7px;
-}
-
-.icon-btn{
-  background:var(--bg);
-  color:var(--text);
-  border:1px solid var(--border);
-  padding:10px 12px;
-  border-radius:9px;
-}
-
-.icon-btn:hover{
-  transform:translateY(-1px);
-}
-
-.cart-count{
-  background:var(--accent);
-  color:#fff;
-  border-radius:50%;
-  min-width:19px;
-  height:19px;
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  font-size:11px;
-  margin-left:3px;
-}
-
-nav{
-  max-width:1400px;
-  margin:auto;
-  padding:0 22px 14px;
-  display:flex;
-  gap:8px;
-  overflow:auto;
-}
-
-.category{
-  white-space:nowrap;
-  padding:9px 15px;
-  border:1px solid var(--border);
-  background:var(--bg);
-  color:var(--text);
-  border-radius:999px;
-}
-
-.category.active{
-  background:#111827;
-  color:#fff;
-  border-color:#111827;
-}
-
-body.dark .category.active{
-  background:#fff;
-  color:#111;
-}
-
-main{
-  max-width:1400px;
-  margin:auto;
-  padding:30px 22px 80px;
-}
-
-.hero{
-  min-height:300px;
-  border-radius:22px;
-  background:linear-gradient(120deg,#111827,#263244);
-  color:#fff;
-  padding:55px;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:30px;
-  overflow:hidden;
-  box-shadow:var(--shadow);
-}
-
-.hero h1{
-  font-size:clamp(38px,5vw,65px);
-  line-height:1;
-  max-width:650px;
-}
-
-.hero p{
-  margin-top:18px;
-  color:#d1d5db;
-  font-size:17px;
-}
-
-.hero-buttons{
-  display:flex;
-  gap:10px;
-  margin-top:25px;
-}
-
-.primary{
-  background:var(--accent);
-  color:#fff;
-  padding:13px 19px;
-  border-radius:10px;
-  font-weight:bold;
-}
-
-.secondary{
-  background:var(--bg);
-  color:var(--text);
-  border:1px solid var(--border);
-  padding:13px 19px;
-  border-radius:10px;
-  font-weight:bold;
-}
-
-.hero .secondary{
-  background:#fff;
-  color:#111827;
-  border:0;
-}
-
-.products-head{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  margin:35px 0 18px;
-  gap:15px;
-}
-
-.products-head h2{
-  font-size:28px;
-}
-
-.products-controls{
-  display:flex;
-  align-items:center;
-  gap:12px;
-}
-
-select{
-  background:var(--card);
-  color:var(--text);
-  border:1px solid var(--border);
-  padding:10px;
-  border-radius:9px;
-}
-
-.products-grid{
-  display:grid;
-  grid-template-columns:repeat(4,minmax(0,1fr));
-  gap:18px;
-}
-
-.card{
-  background:var(--card);
-  border:1px solid var(--border);
-  border-radius:15px;
-  overflow:hidden;
-  box-shadow:0 3px 12px rgba(0,0,0,.04);
-  position:relative;
-  transition:.2s;
-}
-
-.card:hover{
-  transform:translateY(-4px);
-  box-shadow:var(--shadow);
-}
-
-.product-image{
-  height:220px;
-  width:100%;
-  object-fit:contain;
-  background:#fff;
-  padding:15px;
-}
-
-.favorite{
-  position:absolute;
-  right:10px;
-  top:10px;
-  width:35px;
-  height:35px;
-  border-radius:50%;
-  background:#fff;
-  border:1px solid #ddd;
-  z-index:2;
-}
-
-.product-info{
-  padding:16px;
-}
-
-.product-category{
-  color:var(--muted);
-  font-size:12px;
-}
-
-.product-name{
-  margin-top:6px;
-  min-height:42px;
-  font-weight:bold;
-}
-
-.rating{
-  margin-top:8px;
-  font-size:13px;
-}
-
-.price{
-  margin-top:10px;
-  font-size:21px;
-  font-weight:900;
-}
-
-.product-buttons{
-  display:flex;
-  gap:8px;
-  margin-top:14px;
-}
-
-.product-buttons button{
-  flex:1;
-  padding:10px;
-  border-radius:8px;
-}
-
-.view{
-  background:var(--bg);
-  color:var(--text);
-}
-
-.add{
-  background:var(--accent);
-  color:#fff;
-}
-
-.empty{
-  display:none;
-  padding:50px;
-  text-align:center;
-  color:var(--muted);
-}
-
-.overlay{
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,.55);
-  z-index:90;
-  display:none;
-}
-
-.modal{
-  position:fixed;
-  z-index:100;
-  left:50%;
-  top:50%;
-  transform:translate(-50%,-50%);
-  width:min(780px,calc(100vw - 30px));
-  max-height:90vh;
-  overflow:auto;
-  background:var(--card);
-  color:var(--text);
-  border-radius:17px;
-  box-shadow:0 25px 80px rgba(0,0,0,.3);
-  display:none;
-}
-
-.modal.open{
-  display:block;
-}
-
-.modal-header{
-  padding:18px 20px;
-  border-bottom:1px solid var(--border);
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  position:sticky;
-  top:0;
-  background:var(--card);
-  z-index:2;
-}
-
-.close{
-  width:35px;
-  height:35px;
-  border-radius:8px;
-  background:var(--bg);
-  color:var(--text);
-}
-
-.modal-body{
-  padding:20px;
-}
-
-.form{
-  display:grid;
-  gap:12px;
-}
-
-.form input{
-  width:100%;
-  padding:12px;
-  border-radius:9px;
-  border:1px solid var(--border);
-  background:var(--bg);
-  color:var(--text);
-}
-
-.form label{
-  font-size:13px;
-  font-weight:bold;
-}
-
-.form button{
-  padding:13px;
-  border-radius:9px;
-}
-
-.tabs{
-  display:flex;
-  gap:5px;
-  margin-bottom:18px;
-}
-
-.tab{
-  flex:1;
-  padding:11px;
-  border-radius:8px;
-  background:var(--bg);
-  color:var(--text);
-}
-
-.tab.active{
-  background:#111827;
-  color:#fff;
-}
-
-.hidden{
-  display:none!important;
-}
-
-.cart-item,
-.order{
-  border:1px solid var(--border);
-  padding:15px;
-  border-radius:11px;
-  margin-bottom:10px;
-}
-
-.cart-row{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:10px;
-}
-
-.qty{
-  display:flex;
-  align-items:center;
-  gap:7px;
-}
-
-.qty button{
-  width:30px;
-  height:30px;
-  border-radius:7px;
-  background:var(--bg);
-  color:var(--text);
-}
-
-.total{
-  display:flex;
-  justify-content:space-between;
-  font-size:20px;
-  font-weight:bold;
-  padding:16px 0;
-}
-
-.checkout-grid{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:12px;
-}
-
-.checkout-field{
-  display:grid;
-  gap:6px;
-}
-
-.checkout-field.full{
-  grid-column:1/-1;
-}
-
-.checkout-field label{
-  font-size:13px;
-  font-weight:bold;
-}
-
-.checkout-field input{
-  width:100%;
-  padding:12px;
-  border-radius:9px;
-  border:1px solid var(--border);
-  background:var(--bg);
-  color:var(--text);
-}
-
-.address-status{
-  display:none;
-  padding:12px;
-  border-radius:10px;
-  margin-top:4px;
-  font-size:13px;
-}
-
-.address-status.show{
-  display:block;
-}
-
-.address-status.success{
-  background:#dcfce7;
-  color:#166534;
-  border:1px solid #86efac;
-}
-
-.address-status.error{
-  background:#fee2e2;
-  color:#991b1b;
-  border:1px solid #fca5a5;
-}
-
-.address-status.loading{
-  background:#dbeafe;
-  color:#1e40af;
-  border:1px solid #93c5fd;
-}
-
-body.dark .address-status.success{
-  background:#052e16;
-  color:#bbf7d0;
-}
-
-body.dark .address-status.error{
-  background:#450a0a;
-  color:#fecaca;
-}
-
-body.dark .address-status.loading{
-  background:#172554;
-  color:#bfdbfe;
-}
-
-.address-result{
-  display:none;
-  margin-top:8px;
-  padding:12px;
-  border:1px solid var(--border);
-  border-radius:10px;
-  background:var(--bg);
-}
-
-.address-result.show{
-  display:block;
-}
-
-.admin-grid{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:12px;
-  margin-top:15px;
-}
-
-.admin-field{
-  display:grid;
-  gap:6px;
-}
-
-.admin-field input,
-.admin-field select{
-  width:100%;
-  padding:10px;
-  border:1px solid var(--border);
-  border-radius:8px;
-  background:var(--bg);
-  color:var(--text);
-}
-
-.admin-full{
-  grid-column:1/-1;
-}
-
-.save{
-  width:100%;
-  padding:12px;
-  border-radius:9px;
-  background:var(--green);
-  color:#fff;
-  font-weight:bold;
-}
-
-.delete{
-  width:100%;
-  padding:12px;
-  border-radius:9px;
-  background:var(--red);
-  color:#fff;
-  font-weight:bold;
-  margin-top:8px;
-}
-
-.stats{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:12px;
-  margin-bottom:20px;
-}
-
-.stat{
-  background:var(--bg);
-  border:1px solid var(--border);
-  border-radius:12px;
-  padding:18px;
-}
-
-.stat strong{
-  display:block;
-  font-size:26px;
-  margin-top:5px;
-}
-
-.delivery{
-  background:var(--bg);
-  padding:13px;
-  border-radius:10px;
-  margin-top:12px;
-  display:grid;
-  gap:7px;
-}
-
-.countdown{
-  font-size:20px;
-  font-weight:bold;
-  margin:8px 0;
-}
-
-.progress{
-  height:8px;
-  background:#d8dce2;
-  border-radius:10px;
-  overflow:hidden;
-  margin-top:5px;
-}
-
-.progress span{
-  display:block;
-  height:100%;
-  background:var(--accent);
-  width:0%;
-  transition:width .4s;
-}
-
-.order-status{
-  display:inline-flex;
-  width:max-content;
-  padding:5px 9px;
-  border-radius:999px;
-  font-size:12px;
-  font-weight:bold;
-  background:#e5e7eb;
-  color:#111827;
-}
-
-.status-prep{
-  background:#fef3c7;
-  color:#92400e;
-}
-
-.status-transit{
-  background:#dbeafe;
-  color:#1e40af;
-}
-
-.status-imminent{
-  background:#ffedd5;
-  color:#9a3412;
-}
-
-.status-delivered{
-  background:#dcfce7;
-  color:#166534;
-}
-
-.invoice{
-  line-height:1.6;
-}
-
-.invoice-head{
-  display:flex;
-  justify-content:space-between;
-  border-bottom:1px solid var(--border);
-  padding-bottom:15px;
-  margin-bottom:18px;
-}
-
-.invoice-table{
-  width:100%;
-  border-collapse:collapse;
-  margin-top:15px;
-}
-
-.invoice-table td,
-.invoice-table th{
-  padding:9px;
-  border-bottom:1px solid var(--border);
-  text-align:left;
-}
-
-.notice{
-  padding:13px;
-  border-radius:10px;
-  background:var(--bg);
-  border:1px solid var(--border);
-  margin-bottom:15px;
-}
-
-.notice.red{
-  background:#fee2e2;
-  color:#991b1b;
-  border-color:#fca5a5;
-}
-
-.notice.green{
-  background:#dcfce7;
-  color:#166534;
-  border-color:#86efac;
-}
-
-.dashboard-title{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:10px;
-  margin-bottom:15px;
-}
-
-.live{
-  font-size:12px;
-  color:var(--green);
-  font-weight:bold;
-}
-
-.toast{
-  position:fixed;
-  right:20px;
-  bottom:20px;
-  z-index:300;
-  background:#111827;
-  color:#fff;
-  padding:13px 17px;
-  border-radius:10px;
-  transform:translateY(100px);
-  opacity:0;
-  transition:.25s;
-  max-width:360px;
-}
-
-.toast.show{
-  transform:translateY(0);
-  opacity:1;
-}
-
-@media(max-width:1050px){
-  .products-grid{
-    grid-template-columns:repeat(3,1fr);
-  }
-}
-
-@media(max-width:800px){
-  .header-inner{
-    flex-wrap:wrap;
-  }
-
-  .search{
-    order:3;
-    flex-basis:100%;
-  }
-
-  .products-grid{
-    grid-template-columns:repeat(2,1fr);
-  }
-
-  .hero{
-    padding:35px;
-  }
-
-  .checkout-grid,
-  .admin-grid,
-  .stats{
-    grid-template-columns:1fr;
-  }
-
-  .checkout-field.full,
-  .admin-full{
-    grid-column:auto;
-  }
-}
-
-@media(max-width:550px){
-  .products-grid{
-    grid-template-columns:1fr;
-  }
-
-  .hero{
-    min-height:250px;
-    padding:25px;
-  }
-
-  .hero h1{
-    font-size:38px;
-  }
-
-  .header-actions{
-    width:100%;
-    justify-content:space-between;
-  }
-
-  .header-actions .icon-btn{
-    padding:9px;
-  }
-
-  .hero-buttons{
-    flex-direction:column;
-  }
-
-  .invoice-head{
-    flex-direction:column;
-    gap:10px;
-  }
-}
-
-@media print{
-  body>*:not(#invoiceModal){
-    display:none!important;
-  }
-
-  #invoiceModal{
-    display:block!important;
-    position:static;
-    transform:none;
-    width:100%;
-    max-height:none;
-    box-shadow:none;
-  }
-
-  .modal-header,
-  #printInvoice{
-    display:none!important;
-  }
-}
-</style>
+
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>NovaShop</title>
+
+  <meta
+    name="description"
+    content="NovaShop - Boutique en ligne"
+  >
+
+  <style>
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family:
+        Inter,
+        Arial,
+        sans-serif;
+
+      background:
+        #070b14;
+
+      color:
+        #ffffff;
+
+      min-height:
+        100vh;
+    }
+
+    button,
+    input {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    /* =====================================================
+       HEADER
+       ===================================================== */
+
+    header {
+
+      position:
+        sticky;
+
+      top:
+        0;
+
+      z-index:
+        1000;
+
+      height:
+        72px;
+
+      background:
+        rgba(7,11,20,.92);
+
+      backdrop-filter:
+        blur(18px);
+
+      border-bottom:
+        1px solid
+        rgba(255,255,255,.08);
+
+      display:
+        flex;
+
+      align-items:
+        center;
+
+      justify-content:
+        space-between;
+
+      padding:
+        0 5%;
+    }
+
+    .logo {
+
+      font-size:
+        25px;
+
+      font-weight:
+        900;
+
+      letter-spacing:
+        -.7px;
+
+      color:
+        #ffffff;
+    }
+
+    .logo span {
+      color:
+        #5b8cff;
+    }
+
+    nav {
+
+      display:
+        flex;
+
+      gap:
+        25px;
+
+      align-items:
+        center;
+    }
+
+    nav a {
+
+      color:
+        #aeb8ca;
+
+      font-weight:
+        600;
+
+      transition:
+        .2s;
+    }
+
+    nav a:hover {
+      color:
+        #ffffff;
+    }
+
+    .header-actions {
+
+      display:
+        flex;
+
+      gap:
+        10px;
+
+      align-items:
+        center;
+    }
+
+    .icon-btn {
+
+      border:
+        1px solid
+        rgba(255,255,255,.1);
+
+      background:
+        rgba(255,255,255,.04);
+
+      color:
+        white;
+
+      border-radius:
+        12px;
+
+      padding:
+        10px 13px;
+
+      transition:
+        .2s;
+    }
+
+    .icon-btn:hover {
+
+      background:
+        rgba(255,255,255,.09);
+
+      transform:
+        translateY(-1px);
+    }
+
+    /* =====================================================
+       HERO
+       ===================================================== */
+
+    .hero {
+
+      min-height:
+        520px;
+
+      display:
+        flex;
+
+      align-items:
+        center;
+
+      justify-content:
+        center;
+
+      text-align:
+        center;
+
+      padding:
+        80px 20px;
+
+      background:
+        radial-gradient(
+          circle at 50% 0%,
+          rgba(67,100,255,.22),
+          transparent 55%
+        );
+    }
+
+    .hero-content {
+      max-width:
+        850px;
+    }
+
+    .badge {
+
+      display:
+        inline-flex;
+
+      padding:
+        8px 13px;
+
+      border:
+        1px solid
+        rgba(91,140,255,.3);
+
+      background:
+        rgba(91,140,255,.08);
+
+      color:
+        #82a7ff;
+
+      border-radius:
+        999px;
+
+      font-size:
+        13px;
+
+      font-weight:
+        800;
+
+      margin-bottom:
+        20px;
+    }
+
+    .hero h1 {
+
+      font-size:
+        clamp(
+          45px,
+          7vw,
+          85px
+        );
+
+      line-height:
+        .95;
+
+      letter-spacing:
+        -4px;
+
+      margin-bottom:
+        25px;
+    }
+
+    .hero h1 span {
+      color:
+        #5b8cff;
+    }
+
+    .hero p {
+
+      color:
+        #9ca8bc;
+
+      max-width:
+        650px;
+
+      margin:
+        0 auto 30px;
+
+      font-size:
+        18px;
+
+      line-height:
+        1.7;
+    }
+
+    .hero-buttons {
+
+      display:
+        flex;
+
+      justify-content:
+        center;
+
+      gap:
+        12px;
+
+      flex-wrap:
+        wrap;
+    }
+
+    .primary-btn {
+
+      border:
+        0;
+
+      background:
+        #5b8cff;
+
+      color:
+        white;
+
+      padding:
+        14px 22px;
+
+      border-radius:
+        12px;
+
+      font-weight:
+        800;
+
+      transition:
+        .2s;
+    }
+
+    .primary-btn:hover {
+
+      background:
+        #477cf6;
+
+      transform:
+        translateY(-2px);
+    }
+
+    .secondary-btn {
+
+      border:
+        1px solid
+        rgba(255,255,255,.12);
+
+      background:
+        rgba(255,255,255,.04);
+
+      color:
+        white;
+
+      padding:
+        14px 22px;
+
+      border-radius:
+        12px;
+
+      font-weight:
+        800;
+    }
+
+    /* =====================================================
+       PRODUCTS
+       ===================================================== */
+
+    section {
+
+      padding:
+        70px 5%;
+    }
+
+    .section-title {
+
+      display:
+        flex;
+
+      justify-content:
+        space-between;
+
+      align-items:
+        end;
+
+      margin-bottom:
+        30px;
+
+      gap:
+        20px;
+    }
+
+    .section-title h2 {
+
+      font-size:
+        34px;
+
+      letter-spacing:
+        -1px;
+    }
+
+    .section-title p {
+
+      color:
+        #8793a8;
+    }
+
+    .products-grid {
+
+      display:
+        grid;
+
+      grid-template-columns:
+        repeat(
+          auto-fit,
+          minmax(
+            220px,
+            1fr
+          )
+        );
+
+      gap:
+        18px;
+    }
+
+    .product-card {
+
+      background:
+        #0d1320;
+
+      border:
+        1px solid
+        rgba(255,255,255,.07);
+
+      border-radius:
+        18px;
+
+      overflow:
+        hidden;
+
+      transition:
+        .25s;
+    }
+
+    .product-card:hover {
+
+      transform:
+        translateY(-5px);
+
+      border-color:
+        rgba(91,140,255,.3);
+    }
+
+    .product-image {
+
+      height:
+        220px;
+
+      background:
+        linear-gradient(
+          135deg,
+          #111a2c,
+          #080d17
+        );
+
+      display:
+        flex;
+
+      align-items:
+        center;
+
+      justify-content:
+        center;
+
+      font-size:
+        65px;
+    }
+
+    .product-info {
+      padding:
+        18px;
+    }
+
+    .product-info h3 {
+
+      margin-bottom:
+        7px;
+    }
+
+    .product-info p {
+
+      color:
+        #8490a5;
+
+      font-size:
+        14px;
+
+      margin-bottom:
+        15px;
+    }
+
+    .product-bottom {
+
+      display:
+        flex;
+
+      align-items:
+        center;
+
+      justify-content:
+        space-between;
+    }
+
+    .price {
+
+      font-size:
+        19px;
+
+      font-weight:
+        900;
+    }
+
+    /* =====================================================
+       ACCOUNT
+       ===================================================== */
+
+    .account-section {
+
+      max-width:
+        1000px;
+
+      margin:
+        auto;
+    }
+
+    .account-card {
+
+      background:
+        #0d1320;
+
+      border:
+        1px solid
+        rgba(255,255,255,.07);
+
+      border-radius:
+        20px;
+
+      padding:
+        28px;
+    }
+
+    .account-card h2 {
+      margin-bottom:
+        8px;
+    }
+
+    .account-email {
+
+      color:
+        #8f9bb0;
+
+      margin-bottom:
+        20px;
+    }
+
+    /* =====================================================
+       ORDERS
+       ===================================================== */
+
+    .orders-container {
+
+      display:
+        grid;
+
+      gap:
+        15px;
+    }
+
+    .order-card {
+
+      background:
+        #0d1320;
+
+      border:
+        1px solid
+        rgba(255,255,255,.08);
+
+      border-radius:
+        18px;
+
+      padding:
+        22px;
+    }
+
+    .order-header {
+
+      display:
+        flex;
+
+      align-items:
+        center;
+
+      justify-content:
+        space-between;
+
+      gap:
+        15px;
+
+      margin-bottom:
+        20px;
+    }
+
+    .order-header small {
+
+      display:
+        block;
+
+      color:
+        #69758b;
+
+      font-size:
+        11px;
+
+      margin-bottom:
+        5px;
+    }
+
+    .order-header strong {
+      display:
+        block;
+    }
+
+    .order-status {
+
+      background:
+        rgba(91,140,255,.1);
+
+      color:
+        #80a4ff;
+
+      padding:
+        8px 12px;
+
+      border-radius:
+        999px;
+
+      font-size:
+        13px;
+
+      font-weight:
+        800;
+    }
+
+    .order-info {
+
+      display:
+        grid;
+
+      grid-template-columns:
+        repeat(
+          auto-fit,
+          minmax(
+            180px,
+            1fr
+          )
+        );
+
+      gap:
+        12px;
+
+      margin-bottom:
+        18px;
+    }
+
+    .order-info > div {
+
+      background:
+        rgba(255,255,255,.03);
+
+      border-radius:
+        12px;
+
+      padding:
+        13px;
+    }
+
+    .order-info span {
+
+      display:
+        block;
+
+      color:
+        #77849a;
+
+      font-size:
+        12px;
+
+      margin-bottom:
+        5px;
+    }
+
+    .order-info strong {
+      font-size:
+        14px;
+    }
+
+    .order-product {
+
+      display:
+        flex;
+
+      justify-content:
+        space-between;
+
+      padding:
+        9px 0;
+
+      border-bottom:
+        1px solid
+        rgba(255,255,255,.05);
+    }
+
+    .order-total {
+
+      display:
+        flex;
+
+      justify-content:
+        space-between;
+
+      padding-top:
+        16px;
+
+      margin-top:
+        10px;
+
+      font-size:
+        18px;
+    }
+
+    .empty-orders {
+
+      text-align:
+        center;
+
+      padding:
+        40px;
+
+      background:
+        #0d1320;
+
+      border-radius:
+        18px;
+
+      border:
+        1px solid
+        rgba(255,255,255,.07);
+    }
+
+    .empty-orders p {
+
+      color:
+        #7e8ba0;
+
+      margin-top:
+        8px;
+    }
+
+    /* =====================================================
+       MODAL
+       ===================================================== */
+
+    .modal {
+
+      position:
+        fixed;
+
+      inset:
+        0;
+
+      z-index:
+        9999;
+
+      background:
+        rgba(0,0,0,.72);
+
+      backdrop-filter:
+        blur(8px);
+
+      display:
+        none;
+
+      align-items:
+        center;
+
+      justify-content:
+        center;
+
+      padding:
+        20px;
+    }
+
+    .modal.active {
+      display:
+        flex;
+    }
+
+    .modal-box {
+
+      width:
+        min(
+          100%,
+          470px
+        );
+
+      background:
+        #0e1523;
+
+      border:
+        1px solid
+        rgba(255,255,255,.1);
+
+      border-radius:
+        22px;
+
+      padding:
+        28px;
+
+      box-shadow:
+        0 30px 80px
+        rgba(0,0,0,.5);
+    }
+
+    .modal-top {
+
+      display:
+        flex;
+
+      justify-content:
+        space-between;
+
+      align-items:
+        center;
+
+      margin-bottom:
+        24px;
+    }
+
+    .modal-top h2 {
+      font-size:
+        25px;
+    }
+
+    .close-btn {
+
+      width:
+        38px;
+
+      height:
+        38px;
+
+      border:
+        0;
+
+      background:
+        rgba(255,255,255,.06);
+
+      color:
+        white;
+
+      border-radius:
+        10px;
+
+      font-size:
+        20px;
+    }
+
+    /* =====================================================
+       FORMS
+       ===================================================== */
+
+    .form-group {
+
+      margin-bottom:
+        15px;
+    }
+
+    .form-group label {
+
+      display:
+        block;
+
+      margin-bottom:
+        7px;
+
+      color:
+        #c5ccda;
+
+      font-size:
+        13px;
+
+      font-weight:
+        700;
+    }
+
+    .form-group input {
+
+      width:
+        100%;
+
+      border:
+        1px solid
+        rgba(255,255,255,.1);
+
+      background:
+        #080d17;
+
+      color:
+        white;
+
+      border-radius:
+        11px;
+
+      padding:
+        13px 14px;
+
+      outline:
+        none;
+
+      transition:
+        .2s;
+    }
+
+    .form-group input:focus {
+
+      border-color:
+        #5b8cff;
+
+      box-shadow:
+        0 0 0 3px
+        rgba(91,140,255,.1);
+    }
+
+    .form-group input.valid {
+
+      border-color:
+        #31c48d;
+    }
+
+    .form-group input.invalid {
+
+      border-color:
+        #ff5c6c;
+    }
+
+    .password-rules {
+
+      background:
+        rgba(91,140,255,.06);
+
+      border:
+        1px solid
+        rgba(91,140,255,.14);
+
+      border-radius:
+        12px;
+
+      padding:
+        13px;
+
+      margin:
+        5px 0 16px;
+
+      color:
+        #9ca9bf;
+
+      font-size:
+        12px;
+
+      line-height:
+        1.8;
+    }
+
+    .password-rules strong {
+      color:
+        #ffffff;
+    }
+
+    .form-submit {
+
+      width:
+        100%;
+
+      margin-top:
+        5px;
+    }
+
+    .switch-auth {
+
+      text-align:
+        center;
+
+      margin-top:
+        18px;
+
+      color:
+        #7f8ba0;
+
+      font-size:
+        14px;
+    }
+
+    .switch-auth button {
+
+      background:
+        none;
+
+      border:
+        0;
+
+      color:
+        #6e9aff;
+
+      font-weight:
+        800;
+
+      margin-left:
+        4px;
+    }
+
+    .google-btn {
+
+      width:
+        100%;
+
+      margin-top:
+        12px;
+
+      border:
+        1px solid
+        rgba(255,255,255,.1);
+
+      background:
+        rgba(255,255,255,.05);
+
+      color:
+        white;
+
+      padding:
+        13px;
+
+      border-radius:
+        11px;
+
+      font-weight:
+        800;
+    }
+
+    /* =====================================================
+       FOOTER
+       ===================================================== */
+
+    footer {
+
+      border-top:
+        1px solid
+        rgba(255,255,255,.07);
+
+      padding:
+        35px 5%;
+
+      color:
+        #667389;
+
+      text-align:
+        center;
+    }
+
+    /* =====================================================
+       RESPONSIVE
+       ===================================================== */
+
+    @media (
+      max-width: 750px
+    ) {
+
+      header {
+        padding:
+          0 15px;
+      }
+
+      nav {
+        display:
+          none;
+      }
+
+      .hero {
+        min-height:
+          450px;
+      }
+
+      .hero h1 {
+        letter-spacing:
+          -2px;
+      }
+
+      section {
+        padding:
+          50px 15px;
+      }
+
+      .section-title {
+        display:
+          block;
+      }
+
+      .section-title p {
+        margin-top:
+          8px;
+      }
+
+      .modal-box {
+        padding:
+          22px;
+      }
+    }
+
+  </style>
+
 </head>
 
 <body>
 
-<div class="topbar">
-  🚚 Livraison suivie en temps réel • NovaShop
-</div>
+  <!-- =====================================================
+       HEADER
+       ===================================================== -->
 
-<header>
-  <div class="header-inner">
+  <header>
 
-    <div class="logo">
-      NOVA<span>SHOP</span>
-    </div>
+    <a
+      href="#home"
+      class="logo"
+    >
+      Nova<span>Shop</span>
+    </a>
 
-    <div class="search">
-      <input id="searchInput" placeholder="Rechercher un produit...">
-      <button id="searchButton">🔎</button>
-    </div>
+    <nav>
+
+      <a href="#home">
+        Accueil
+      </a>
+
+      <a href="#products">
+        Produits
+      </a>
+
+      <a href="#orders">
+        Mes commandes
+      </a>
+
+      <a href="#account">
+        Mon compte
+      </a>
+
+    </nav>
 
     <div class="header-actions">
-      <button class="icon-btn" id="accountButton">🔐</button>
-      <button class="icon-btn" id="ordersButton" style="display:none">📦</button>
-      <button class="icon-btn" id="adminButton" style="display:none">👑 Dashboard</button>
-      <button class="icon-btn" id="settingsButton">⚙️</button>
-      <button class="icon-btn" id="cartButton">
-        🛒 <span class="cart-count" id="cartCount">0</span>
-      </button>
-    </div>
 
-  </div>
-
-  <nav>
-    <button class="category active" data-category="Tous">Tous</button>
-    <button class="category" data-category="Composants">Composants</button>
-    <button class="category" data-category="PC Gamer">PC Gamer</button>
-    <button class="category" data-category="Claviers">Claviers</button>
-    <button class="category" data-category="Souris">Souris</button>
-    <button class="category" data-category="Casques">Casques</button>
-    <button class="category" data-category="Stockage">Stockage</button>
-    <button class="category" data-category="Alimentations">Alimentations</button>
-    <button class="category" data-category="Boîtiers">Boîtiers</button>
-    <button class="category" data-category="Refroidissement">Refroidissement</button>
-    <button class="category" data-category="Écrans">Écrans</button>
-    <button class="category" data-category="Streaming">Streaming</button>
-    <button class="category" data-category="Manettes">Manettes</button>
-  </nav>
-</header>
-
-<main>
-
-<section class="hero">
-  <div>
-    <h1>Le matériel gaming, simplement.</h1>
-    <p>PC, composants, périphériques et accessoires gaming.</p>
-
-    <div class="hero-buttons">
-      <button class="primary" id="heroProducts">
-        Voir les produits
+      <button
+        class="icon-btn"
+        data-action="login"
+        data-account
+      >
+        Compte
       </button>
 
-      <button class="secondary" id="heroOrders">
-        Mes commandes
-      </button>
-    </div>
-  </div>
-</section>
-
-<section>
-  <div class="products-head">
-    <div>
-      <h2>Produits</h2>
-      <span id="resultsCount">0 produits</span>
-    </div>
-
-    <div class="products-controls">
-      <select id="sortSelect">
-        <option value="relevance">Pertinence</option>
-        <option value="priceAsc">Prix croissant</option>
-        <option value="priceDesc">Prix décroissant</option>
-        <option value="name">Nom A-Z</option>
-      </select>
-    </div>
-  </div>
-
-  <div class="products-grid" id="productsGrid"></div>
-
-  <div class="empty" id="emptyState">
-    Aucun produit trouvé.
-  </div>
-</section>
-
-</main>
-
-<div class="overlay" id="overlay"></div>
-
-<!-- AUTH -->
-
-<div class="modal" id="authModal">
-  <div class="modal-header">
-    <strong>Compte NovaShop</strong>
-    <button class="close" data-close="authModal">✕</button>
-  </div>
-
-  <div class="modal-body">
-
-    <div class="tabs">
-      <button class="tab active" id="loginTab">Connexion</button>
-      <button class="tab" id="signupTab">Créer un compte</button>
-    </div>
-
-    <form class="form" id="loginForm">
-
-      <label>E-mail</label>
-      <input id="loginEmail" type="email" required>
-
-      <label>Mot de passe</label>
-      <input id="loginPassword" type="password" required>
-
-      <button class="primary" type="submit">
-        Se connecter
+      <button
+        class="icon-btn"
+        onclick="document.getElementById('cart').scrollIntoView()"
+      >
+        🛒
+        <span data-cart-count>
+          0
+        </span>
       </button>
 
-      <button class="secondary" type="button" id="googleButton">
-        🔵 Continuer avec Google
-      </button>
-
-    </form>
-
-    <form class="form hidden" id="signupForm">
-
-      <label>E-mail / Gmail *</label>
-      <input id="signupEmail" type="email" required>
-
-      <label>Téléphone *</label>
-      <input id="signupPhone" type="tel" required>
-
-      <label>Mot de passe *</label>
-      <input id="signupPassword" type="password" minlength="6" required>
-
-      <label>Confirmation *</label>
-      <input id="signupConfirm" type="password" required>
-
-      <button class="primary" type="submit">
-        Créer mon compte
-      </button>
-
-      <button class="secondary" type="button" id="googleSignupButton">
-        🔵 Créer avec Google
-      </button>
-
-    </form>
-
-  </div>
-</div>
-
-<!-- ACCOUNT -->
-
-<div class="modal" id="accountModal">
-
-  <div class="modal-header">
-    <strong>Mon compte</strong>
-    <button class="close" data-close="accountModal">✕</button>
-  </div>
-
-  <div class="modal-body" id="accountContent"></div>
-
-</div>
-
-<!-- PRODUCT -->
-
-<div class="modal" id="productModal">
-
-  <div class="modal-header">
-    <strong>Produit</strong>
-    <button class="close" data-close="productModal">✕</button>
-  </div>
-
-  <div class="modal-body" id="productContent"></div>
-
-</div>
-
-<!-- CART -->
-
-<div class="modal" id="cartModal">
-
-  <div class="modal-header">
-    <strong>Mon panier</strong>
-    <button class="close" data-close="cartModal">✕</button>
-  </div>
-
-  <div class="modal-body">
-
-    <div id="cartContent"></div>
-
-    <div class="total">
-      <span>Total</span>
-      <span id="cartTotal">0,00 €</span>
     </div>
 
-    <button class="primary" style="width:100%" id="checkoutButton">
-      Passer la commande
-    </button>
+  </header>
 
-  </div>
 
-</div>
+  <!-- =====================================================
+       HERO
+       ===================================================== -->
 
-<!-- CHECKOUT -->
+  <main id="home">
 
-<div class="modal" id="checkoutModal">
+    <section class="hero">
 
-  <div class="modal-header">
-    <strong>Finaliser la commande</strong>
-    <button class="close" data-close="checkoutModal">✕</button>
-  </div>
+      <div class="hero-content">
 
-  <div class="modal-body">
-
-    <div class="total">
-      <span>Sous-total</span>
-      <span id="checkoutSubtotal">0,00 €</span>
-    </div>
-
-    <div class="total">
-      <span>Réduction</span>
-      <span id="checkoutDiscount">0,00 €</span>
-    </div>
-
-    <div class="total">
-      <span>Total</span>
-      <span id="checkoutTotal">0,00 €</span>
-    </div>
-
-    <div class="notice">
-      📍 Ton adresse sera vérifiée avant le paiement
-    </div>
-
-    <form class="form" id="checkoutForm">
-
-      <div class="checkout-grid">
-
-        <div class="checkout-field">
-          <label>Nom complet</label>
-          <input id="fullName" required>
+        <div class="badge">
+          ✦ NOVASHOP
         </div>
 
-        <div class="checkout-field">
-          <label>Pays</label>
-          <input id="country" value="France" required>
-        </div>
+        <h1>
+          Le shopping,
+          <span>autrement.</span>
+        </h1>
 
-        <div class="checkout-field full">
-          <label>Adresse</label>
-          <input id="address" placeholder="Ex : 10 rue de Paris" required>
-        </div>
+        <p>
+          Découvre les produits NovaShop,
+          ajoute-les à ton panier et suis
+          tes commandes directement depuis
+          ton compte.
+        </p>
 
-        <div class="checkout-field">
-          <label>Code postal</label>
-          <input id="postalCode" inputmode="numeric" maxlength="5" required>
-        </div>
+        <div class="hero-buttons">
 
-        <div class="checkout-field">
-          <label>Ville</label>
-          <input id="city" placeholder="Ex : Lille" required>
+          <a
+            href="#products"
+            class="primary-btn"
+          >
+            Découvrir les produits
+          </a>
+
+          <button
+            class="secondary-btn"
+            data-action="login"
+          >
+            Mon compte
+          </button>
+
         </div>
 
       </div>
 
-      <button
-        type="button"
-        class="secondary"
-        id="verifyAddressButton"
-      >
-        📍 Vérifier mon adresse
-      </button>
+    </section>
+
+
+    <!-- ===================================================
+         PRODUCTS
+         =================================================== -->
+
+    <section id="products">
+
+      <div class="section-title">
+
+        <div>
+
+          <h2>
+            Produits
+          </h2>
+
+          <p>
+            Les nouveautés NovaShop
+          </p>
+
+        </div>
+
+      </div>
 
       <div
-        class="address-status"
-        id="addressStatus"
-      ></div>
+        class="products-grid"
+        id="productsGrid"
+      >
+
+        <article class="product-card">
+
+          <div class="product-image">
+            🎧
+          </div>
+
+          <div class="product-info">
+
+            <h3>
+              Nova Headset
+            </h3>
+
+            <p>
+              Casque gaming confortable.
+            </p>
+
+            <div class="product-bottom">
+
+              <span class="price">
+                49,99 €
+              </span>
+
+              <button
+                class="primary-btn"
+                onclick="NovaShop.addToCart({
+                  id:'headset-001',
+                  name:'Nova Headset',
+                  price:49.99
+                })"
+              >
+                Ajouter
+              </button>
+
+            </div>
+
+          </div>
+
+        </article>
+
+
+        <article class="product-card">
+
+          <div class="product-image">
+            🖱️
+          </div>
+
+          <div class="product-info">
+
+            <h3>
+              Nova Mouse
+            </h3>
+
+            <p>
+              Souris gaming rapide et précise.
+            </p>
+
+            <div class="product-bottom">
+
+              <span class="price">
+                29,99 €
+              </span>
+
+              <button
+                class="primary-btn"
+                onclick="NovaShop.addToCart({
+                  id:'mouse-001',
+                  name:'Nova Mouse',
+                  price:29.99
+                })"
+              >
+                Ajouter
+              </button>
+
+            </div>
+
+          </div>
+
+        </article>
+
+
+        <article class="product-card">
+
+          <div class="product-image">
+            ⌨️
+          </div>
+
+          <div class="product-info">
+
+            <h3>
+              Nova Keyboard
+            </h3>
+
+            <p>
+              Clavier compact pour gaming.
+            </p>
+
+            <div class="product-bottom">
+
+              <span class="price">
+                59,99 €
+              </span>
+
+              <button
+                class="primary-btn"
+                onclick="NovaShop.addToCart({
+                  id:'keyboard-001',
+                  name:'Nova Keyboard',
+                  price:59.99
+                })"
+              >
+                Ajouter
+              </button>
+
+            </div>
+
+          </div>
+
+        </article>
+
+      </div>
+
+    </section>
+
+
+    <!-- ===================================================
+         CART
+         =================================================== -->
+
+    <section id="cart">
+
+      <div class="section-title">
+
+        <div>
+
+          <h2>
+            Mon panier
+          </h2>
+
+          <p>
+            Tes produits sélectionnés
+          </p>
+
+        </div>
+
+      </div>
+
+      <div class="account-card">
+
+        <div id="cartContent">
+
+          <p style="color:#8a96aa">
+            Utilise les boutons
+            « Ajouter » pour remplir ton panier.
+          </p>
+
+          <p
+            style="
+              margin-top:15px;
+              font-weight:800;
+            "
+          >
+            Total :
+            <span data-cart-total>
+              0,00 €
+            </span>
+          </p>
+
+          <button
+            class="primary-btn"
+            style="margin-top:18px"
+            data-action="clear-cart"
+          >
+            Vider le panier
+          </button>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- ===================================================
+         ACCOUNT
+         =================================================== -->
+
+    <section id="account">
+
+      <div class="account-section">
+
+        <div class="account-card">
+
+          <h2>
+            Mon compte
+          </h2>
+
+          <p
+            class="account-email"
+            data-user-email
+          >
+            Non connecté
+          </p>
+
+          <div class="logged-out">
+
+            <button
+              class="primary-btn"
+              data-action="login"
+            >
+              Se connecter
+            </button>
+
+          </div>
+
+          <div
+            class="logged-in"
+            style="display:none"
+          >
+
+            <button
+              class="secondary-btn"
+              data-action="logout"
+            >
+              Se déconnecter
+            </button>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- ===================================================
+         ORDERS
+         =================================================== -->
+
+    <section id="orders">
+
+      <div class="section-title">
+
+        <div>
+
+          <h2>
+            Mes commandes
+          </h2>
+
+          <p>
+            Suis tes commandes en direct.
+          </p>
+
+        </div>
+
+      </div>
 
       <div
-        class="address-result"
-        id="addressResult"
-      ></div>
-
-      <label>Code promotionnel</label>
-
-      <input
-        id="promoCode"
-        placeholder="Ex : NOVA100"
+        class="orders-container"
+        data-orders
       >
 
-      <button
-        type="button"
-        class="secondary"
-        id="applyPromo"
+        <div class="empty-orders">
+
+          <div
+            style="font-size:40px"
+          >
+            🔒
+          </div>
+
+          <h3>
+            Connecte-toi
+          </h3>
+
+          <p>
+            Connecte-toi pour voir tes commandes.
+          </p>
+
+        </div>
+
+      </div>
+
+    </section>
+
+  </main>
+
+
+  <!-- =====================================================
+       AUTH MODAL
+       ===================================================== -->
+
+  <div
+    class="modal"
+    id="authModal"
+  >
+
+    <div class="modal-box">
+
+      <div class="modal-top">
+
+        <h2>
+          Compte NovaShop
+        </h2>
+
+        <button
+          class="close-btn"
+          data-action="close-auth"
+        >
+          ×
+        </button>
+
+      </div>
+
+
+      <!-- ================================================
+           LOGIN
+           ================================================ -->
+
+      <form
+        id="loginForm"
       >
-        Appliquer
-      </button>
 
-      <div id="promoMessage"></div>
+        <div class="form-group">
 
-      <button
-        type="submit"
-        class="primary"
-        id="payButton"
-        disabled
+          <label
+            for="loginEmail"
+          >
+            Adresse e-mail
+          </label>
+
+          <input
+            type="email"
+            id="loginEmail"
+            placeholder="exemple@email.com"
+            autocomplete="email"
+            required
+          >
+
+        </div>
+
+
+        <div class="form-group">
+
+          <label
+            for="loginPassword"
+          >
+            Mot de passe
+          </label>
+
+          <input
+            type="password"
+            id="loginPassword"
+            placeholder="Ton mot de passe"
+            autocomplete="current-password"
+            required
+          >
+
+        </div>
+
+
+        <button
+          type="submit"
+          class="primary-btn form-submit"
+        >
+          Se connecter
+        </button>
+
+
+        <button
+          type="button"
+          class="google-btn"
+          data-action="google-login"
+        >
+          🔵 Continuer avec Google
+        </button>
+
+
+        <div class="switch-auth">
+
+          Pas encore de compte ?
+
+          <button
+            type="button"
+            onclick="
+              document.getElementById('loginForm').style.display='none';
+              document.getElementById('signupForm').style.display='block';
+            "
+          >
+            Créer un compte
+          </button>
+
+        </div>
+
+      </form>
+
+
+      <!-- ================================================
+           SIGNUP
+           ================================================ -->
+
+      <form
+        id="signupForm"
+        style="display:none"
       >
-        🔒 Vérifie ton adresse pour continuer
-      </button>
 
-    </form>
+        <div class="form-group">
 
-  </div>
+          <label
+            for="signupEmail"
+          >
+            Adresse e-mail
+          </label>
 
-</div>
+          <input
+            type="email"
+            id="signupEmail"
+            placeholder="exemple@email.com"
+            autocomplete="email"
+            required
+          >
 
-<!-- ORDERS -->
+        </div>
 
-<div class="modal" id="ordersModal">
 
-  <div class="modal-header">
-    <strong>Mes commandes</strong>
-    <button class="close" data-close="ordersModal">✕</button>
-  </div>
+        <div class="form-group">
 
-  <div class="modal-body" id="ordersContent"></div>
+          <label
+            for="signupPhone"
+          >
+            Téléphone
+          </label>
 
-</div>
+          <input
+            type="tel"
+            id="signupPhone"
+            placeholder="06 00 00 00 00"
+            autocomplete="tel"
+          >
 
-<!-- DASHBOARD -->
+        </div>
 
-<div class="modal" id="dashboardModal">
 
-  <div class="modal-header">
+        <div class="form-group">
 
-    <div>
-      <strong>👑 Dashboard NovaShop</strong>
-      <div class="live">● Synchronisation Firestore active</div>
+          <label
+            for="signupPassword"
+          >
+            Mot de passe
+          </label>
+
+          <input
+            type="password"
+            id="signupPassword"
+            placeholder="Ton mot de passe"
+            minlength="6"
+            maxlength="30"
+            autocomplete="new-password"
+            required
+          >
+
+        </div>
+
+
+        <div class="password-rules">
+
+          <strong>
+            🔐 Règles du mot de passe
+          </strong>
+
+          <br>
+
+          ✓ 6 caractères minimum
+
+          <br>
+
+          ✓ 30 caractères maximum
+
+          <br>
+
+          ✓ 1 lettre minuscule
+
+          <br>
+
+          ✓ 1 lettre majuscule
+
+          <br>
+
+          ✓ 1 chiffre
+
+        </div>
+
+
+        <div class="form-group">
+
+          <label
+            for="signupConfirm"
+          >
+            Confirmer le mot de passe
+          </label>
+
+          <input
+            type="password"
+            id="signupConfirm"
+            placeholder="Retape ton mot de passe"
+            minlength="6"
+            maxlength="30"
+            autocomplete="new-password"
+            required
+          >
+
+        </div>
+
+
+        <button
+          type="submit"
+          class="primary-btn form-submit"
+        >
+          Créer mon compte
+        </button>
+
+
+        <div class="switch-auth">
+
+          Déjà un compte ?
+
+          <button
+            type="button"
+            onclick="
+              document.getElementById('signupForm').style.display='none';
+              document.getElementById('loginForm').style.display='block';
+            "
+          >
+            Se connecter
+          </button>
+
+        </div>
+
+      </form>
+
     </div>
 
-    <button class="close" data-close="dashboardModal">
-      ✕
-    </button>
-
   </div>
 
-  <div class="modal-body">
 
-    <div class="stats">
+  <!-- =====================================================
+       FOOTER
+       ===================================================== -->
 
-      <div class="stat">
-        Commandes
-        <strong id="statOrders">0</strong>
-      </div>
+  <footer>
 
-      <div class="stat">
-        Commandes gratuites
-        <strong id="statFree">0</strong>
-      </div>
+    © 2026 NovaShop · Tous droits réservés
 
-      <div class="stat">
-        Valeur catalogue
-        <strong id="statCatalog">0 €</strong>
-      </div>
+  </footer>
 
-    </div>
 
-    <h3>📦 Gestion des livraisons</h3>
+  <!-- =====================================================
+       APP JS
+       ===================================================== -->
 
-    <div id="adminOrders"></div>
-
-    <h3 style="margin-top:25px">
-      🎟️ Codes promotionnels
-    </h3>
-
-    <div id="adminPromos"></div>
-
-  </div>
-
-</div>
-
-<!-- INVOICE -->
-
-<div class="modal" id="invoiceModal">
-
-  <div class="modal-header">
-    <strong>Facture NovaShop</strong>
-    <button class="close" data-close="invoiceModal">
-      ✕
-    </button>
-  </div>
-
-  <div class="modal-body">
-
-    <div id="invoiceContent"></div>
-
-    <button
-      class="primary"
-      id="printInvoice"
-      style="margin-top:20px;width:100%"
-    >
-      🖨️ Imprimer
-    </button>
-
-  </div>
-
-</div>
-
-<!-- SETTINGS -->
-
-<div class="modal" id="settingsModal">
-
-  <div class="modal-header">
-    <strong>⚙️ Paramètres</strong>
-    <button class="close" data-close="settingsModal">
-      ✕
-    </button>
-  </div>
-
-  <div class="modal-body">
-
-    <label>
-      <input type="checkbox" id="darkSwitch">
-      🌙 Mode sombre
-    </label>
-
-    <br><br>
-
-    <label>
-      <input type="checkbox" id="soundSwitch">
-      🔊 Sons
-    </label>
-
-  </div>
-
-</div>
-
-<div class="toast" id="toast"></div>
-
-<script type="module" src="app.js"></script>
+  <script src="app.js"></script>
 
 </body>
+
 </html>
