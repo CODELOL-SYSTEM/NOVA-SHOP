@@ -1,5 +1,5 @@
 const FIREBASE_CONFIG = {
-  apiKey: "AIzaSyAZ5vAkAEfIBpfLyhxgO7uvNdJ67KYKWD0",
+  apiKey: "AIzaSyAZ5vAkAEfIBpfLyhxG7ovNdJ67KYKWD0",
   authDomain: "novashop-4ee63.firebaseapp.com",
   projectId: "novashop-4ee63",
   storageBucket: "novashop-4ee63.firebasestorage.app",
@@ -10,8 +10,6 @@ const FIREBASE_CONFIG = {
 
 const ADMIN_EMAIL = "pc2alex.les@gmail.com";
 const ADMIN_CODE = "NOVA-ADMIN-2026";
-
-const API_URL = "https://TON-SERVEUR-NOVASHOP.example.com";
 
 const STORAGE = {
   cart:"nova_cart",
@@ -164,14 +162,24 @@ let currentCategory = "Tous";
 let searchTerm = "";
 let currentProductId = null;
 let currentPromo = null;
+
 let firebaseAuth = null;
 let firebaseTools = null;
+
+let firestore = null;
+let firestoreTools = null;
+
+let unsubscribeOrders = null;
+let liveOrders = [];
+
+let addressVerified = false;
+let verifiedAddress = null;
 
 const $ = id => document.getElementById(id);
 
 function load(key,fallback){
   try{
-    const value=localStorage.getItem(key);
+    const value = localStorage.getItem(key);
     return value ? JSON.parse(value) : fallback;
   }catch{
     return fallback;
@@ -186,39 +194,55 @@ function money(value){
   return new Intl.NumberFormat("fr-FR",{
     style:"currency",
     currency:"EUR"
-  }).format(value);
+  }).format(Number(value)||0);
 }
 
 function dateFR(value){
-  return new Intl.DateTimeFormat("fr-FR",{
-    dateStyle:"medium",
-    timeStyle:"short"
-  }).format(new Date(value));
+  if(!value)return "Date inconnue";
+
+  try{
+    return new Intl.DateTimeFormat("fr-FR",{
+      dateStyle:"medium",
+      timeStyle:"short"
+    }).format(new Date(value));
+  }catch{
+    return "Date inconnue";
+  }
 }
 
 function toast(message){
   const el=$("toast");
+
+  if(!el)return;
+
   el.textContent=message;
   el.classList.add("show");
 
-  setTimeout(()=>{
+  clearTimeout(window.__toastTimer);
+
+  window.__toastTimer=setTimeout(()=>{
     el.classList.remove("show");
-  },2500);
+  },2800);
 }
 
 function openModal(id){
   closeAllModals();
 
   const modal=$(id);
+
   if(!modal)return;
 
   modal.classList.add("open");
+
   $("overlay").style.display="block";
 }
 
 function closeModal(id){
   const modal=$(id);
-  if(modal)modal.classList.remove("open");
+
+  if(modal){
+    modal.classList.remove("open");
+  }
 
   if(!document.querySelector(".modal.open")){
     $("overlay").style.display="none";
@@ -237,6 +261,7 @@ function playBop(){
 
   try{
     const AudioCtx=window.AudioContext||window.webkitAudioContext;
+
     if(!AudioCtx)return;
 
     const ctx=new AudioCtx();
@@ -254,12 +279,22 @@ function playBop(){
   }catch{}
 }
 
+function escapeHTML(value){
+  return String(value??"")
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
+}
+
 function cart(){
   return load(STORAGE.cart,[]);
 }
 
 function setCart(items){
   save(STORAGE.cart,items);
+
   renderCart();
   updateCartCount();
 }
@@ -281,30 +316,38 @@ function toggleFavorite(id){
     toast("Retiré des favoris");
   }else{
     list.push(id);
-    toast("Ajouté aux favoris ❤️");
+    toast("Ajouté aux favoris");
   }
 
   save(STORAGE.favorites,list);
+
   renderProducts();
 }
 
 function addToCart(id){
   const items=cart();
+
   const found=items.find(x=>x.id===id);
 
   if(found){
     found.qty++;
   }else{
-    items.push({id,qty:1});
+    items.push({
+      id,
+      qty:1
+    });
   }
 
   setCart(items);
+
   playBop();
-  toast("Produit ajouté au panier 🛒");
+
+  toast("Produit ajouté au panier");
 }
 
 function changeQty(id,delta){
   const items=cart();
+
   const found=items.find(x=>x.id===id);
 
   if(!found)return;
@@ -322,13 +365,15 @@ function changeQty(id,delta){
 function cartTotal(){
   return cart().reduce((total,item)=>{
     const product=products.find(p=>p.id===item.id);
-    return total+(product ? product.price*item.qty : 0);
+
+    return total+
+      (product ? product.price*item.qty : 0);
   },0);
 }
 
 function updateCartCount(){
-  $("cartCount").textContent=cart()
-    .reduce((a,b)=>a+b.qty,0);
+  $("cartCount").textContent=
+    cart().reduce((a,b)=>a+b.qty,0);
 }
 
 function ratingData(productId){
@@ -336,11 +381,16 @@ function ratingData(productId){
     .filter(r=>r.productId===productId);
 
   if(!reviews.length){
-    return {average:0,count:0,reviews:[]};
+    return {
+      average:0,
+      count:0,
+      reviews:[]
+    };
   }
 
   const average=
-    reviews.reduce((sum,r)=>sum+r.rating,0)/reviews.length;
+    reviews.reduce((sum,r)=>sum+Number(r.rating),0)/
+    reviews.length;
 
   return {
     average,
@@ -350,14 +400,19 @@ function ratingData(productId){
 }
 
 function stars(value){
-  return "★".repeat(Math.round(value))+
-         "☆".repeat(5-Math.round(value));
+  const rounded=Math.round(Number(value)||0);
+
+  return "★".repeat(rounded)+
+    "☆".repeat(5-rounded);
 }
 
 function renderProducts(){
   const grid=$("productsGrid");
 
+  if(!grid)return;
+
   let list=products.filter(p=>{
+
     const categoryOk=
       currentCategory==="Tous" ||
       p.category===currentCategory;
@@ -365,8 +420,8 @@ function renderProducts(){
     const searchOk=
       !searchTerm ||
       `${p.name} ${p.category}`
-      .toLowerCase()
-      .includes(searchTerm.toLowerCase());
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase());
 
     return categoryOk&&searchOk;
   });
@@ -394,68 +449,83 @@ function renderProducts(){
   grid.innerHTML="";
 
   list.forEach(product=>{
+
     const rating=ratingData(product.id);
 
     const card=document.createElement("article");
+
     card.className="card";
-    card.dataset.productId=product.id;
 
     card.innerHTML=`
-      <button class="favorite" data-favorite="${product.id}">
+      <button
+        class="favorite"
+        data-favorite="${escapeHTML(product.id)}"
+      >
         ${isFavorite(product.id)?"❤️":"♡"}
       </button>
 
       <img
         class="product-image"
-        src="${product.image}"
+        src="${escapeHTML(product.image)}"
         alt=""
       >
 
       <div class="product-info">
-        <div class="product-category">${product.category}</div>
+
+        <div class="product-category">
+          ${escapeHTML(product.category)}
+        </div>
 
         <div class="product-name">
-          ${product.name}
+          ${escapeHTML(product.name)}
         </div>
 
         <div class="rating">
-          ${rating.count
+          ${
+            rating.count
             ? `${stars(rating.average)} ${rating.average.toFixed(1)} (${rating.count})`
-            : "☆☆☆☆☆ Aucun avis"}
+            : "☆☆☆☆☆ Aucun avis"
+          }
         </div>
 
-        <div class="price">${money(product.price)}</div>
+        <div class="price">
+          ${money(product.price)}
+        </div>
 
         <div class="product-buttons">
-          <button class="view" data-view="${product.id}">
+
+          <button
+            class="view"
+            data-view="${escapeHTML(product.id)}"
+          >
             Voir
           </button>
 
-          <button class="add" data-add="${product.id}">
+          <button
+            class="add"
+            data-add="${escapeHTML(product.id)}"
+          >
             🛒 Ajouter
           </button>
+
         </div>
+
       </div>
     `;
 
     const img=card.querySelector("img");
 
     img.addEventListener("error",()=>{
-      card.remove();
-      updateVisibleCount();
+      img.style.visibility="hidden";
     });
 
     grid.appendChild(card);
   });
 }
 
-function updateVisibleCount(){
-  $("resultsCount").textContent=
-    `${document.querySelectorAll("#productsGrid .card").length} produit(s)`;
-}
-
 function openProduct(id){
   const product=products.find(p=>p.id===id);
+
   if(!product)return;
 
   currentProductId=id;
@@ -463,15 +533,18 @@ function openProduct(id){
   const data=ratingData(id);
 
   $("productContent").innerHTML=`
+
     <img
-      src="${product.image}"
+      src="${escapeHTML(product.image)}"
       style="width:100%;height:280px;object-fit:contain;background:white;border-radius:12px"
     >
 
-    <h2 style="margin-top:18px">${product.name}</h2>
+    <h2 style="margin-top:18px">
+      ${escapeHTML(product.name)}
+    </h2>
 
     <p style="color:var(--muted);margin-top:6px">
-      ${product.category}
+      ${escapeHTML(product.category)}
     </p>
 
     <div style="margin-top:12px">
@@ -479,9 +552,15 @@ function openProduct(id){
       ${data.count ? ` ${data.average.toFixed(1)}/5` : " Aucun avis"}
     </div>
 
-    <div class="price">${money(product.price)}</div>
+    <div class="price">
+      ${money(product.price)}
+    </div>
 
-    <button class="primary" style="width:100%;margin-top:15px" id="modalAdd">
+    <button
+      class="primary"
+      style="width:100%;margin-top:15px"
+      id="modalAdd"
+    >
       🛒 Ajouter au panier
     </button>
 
@@ -489,29 +568,59 @@ function openProduct(id){
 
     <h3>Avis clients</h3>
 
-    <div id="reviewsList" style="margin-top:12px">
-      ${data.reviews.length
+    <div
+      id="reviewsList"
+      style="margin-top:12px"
+    >
+      ${
+        data.reviews.length
         ? data.reviews.map(r=>`
+
           <div class="cart-item">
-            <strong>${r.name}</strong>
-            <div>${stars(r.rating)}</div>
-            <p style="margin-top:5px">${r.comment}</p>
+
+            <strong>
+              ${escapeHTML(r.name)}
+            </strong>
+
+            <div>
+              ${stars(r.rating)}
+            </div>
+
+            <p style="margin-top:5px">
+              ${escapeHTML(r.comment)}
+            </p>
+
             <small style="color:var(--muted)">
               ${dateFR(r.date)}
             </small>
+
           </div>
+
         `).join("")
-        : `<p style="color:var(--muted);margin-top:10px">Aucun avis.</p>`
+        : `
+          <p style="color:var(--muted);margin-top:10px">
+            Aucun avis.
+          </p>
+        `
       }
     </div>
 
     ${
       currentUser
       ? `
-        <h3 style="margin-top:20px">Laisser un avis</h3>
 
-        <form class="form" id="reviewForm" style="margin-top:10px">
+        <h3 style="margin-top:20px">
+          Laisser un avis
+        </h3>
+
+        <form
+          class="form"
+          id="reviewForm"
+          style="margin-top:10px"
+        >
+
           <label>Note</label>
+
           <select id="reviewRating">
             <option value="5">★★★★★</option>
             <option value="4">★★★★☆</option>
@@ -521,12 +630,25 @@ function openProduct(id){
           </select>
 
           <label>Commentaire</label>
-          <input id="reviewComment" maxlength="300" required>
 
-          <button class="primary">Publier</button>
+          <input
+            id="reviewComment"
+            maxlength="300"
+            required
+          >
+
+          <button class="primary">
+            Publier
+          </button>
+
         </form>
+
       `
-      : `<p style="margin-top:20px;color:var(--muted)">Connecte-toi pour laisser un avis.</p>`
+      : `
+        <p style="margin-top:20px;color:var(--muted)">
+          Connecte-toi pour laisser un avis.
+        </p>
+      `
     }
   `;
 
@@ -581,7 +703,8 @@ function submitReview(productId){
 
   save(STORAGE.reviews,reviews);
 
-  toast("Avis publié ⭐");
+  toast("Avis publié");
+
   openProduct(productId);
 }
 
@@ -589,52 +712,94 @@ function renderCart(){
   const items=cart();
 
   if(!items.length){
-    $("cartContent").innerHTML=
-      `<p style="color:var(--muted)">Ton panier est vide.</p>`;
+
+    $("cartContent").innerHTML=`
+      <p style="color:var(--muted)">
+        Ton panier est vide.
+      </p>
+    `;
 
     $("cartTotal").textContent=money(0);
+
     return;
   }
 
-  $("cartContent").innerHTML=items.map(item=>{
-    const p=products.find(x=>x.id===item.id);
+  $("cartContent").innerHTML=
+    items.map(item=>{
 
-    if(!p)return"";
+      const p=products.find(x=>x.id===item.id);
 
-    return `
-      <div class="cart-item">
-        <div class="cart-row">
-          <div>
-            <strong>${p.name}</strong>
-            <div style="color:var(--muted)">
-              ${money(p.price)}
+      if(!p)return"";
+
+      return `
+
+        <div class="cart-item">
+
+          <div class="cart-row">
+
+            <div>
+              <strong>
+                ${escapeHTML(p.name)}
+              </strong>
+
+              <div style="color:var(--muted)">
+                ${money(p.price)}
+              </div>
             </div>
+
+            <div class="qty">
+
+              <button
+                data-minus="${escapeHTML(p.id)}"
+              >
+                −
+              </button>
+
+              <strong>
+                ${item.qty}
+              </strong>
+
+              <button
+                data-plus="${escapeHTML(p.id)}"
+              >
+                +
+              </button>
+
+            </div>
+
           </div>
 
-          <div class="qty">
-            <button data-minus="${p.id}">−</button>
-            <strong>${item.qty}</strong>
-            <button data-plus="${p.id}">+</button>
-          </div>
         </div>
-      </div>
-    `;
-  }).join("");
 
-  $("cartTotal").textContent=money(cartTotal());
+      `;
+    }).join("");
+
+  $("cartTotal").textContent=
+    money(cartTotal());
 }
 
 function renderCheckout(){
   const subtotal=cartTotal();
+
   const discount=currentPromo
     ? subtotal*(currentPromo.discount/100)
     : 0;
 
-  const total=Math.max(0,subtotal-discount);
+  const total=Math.max(
+    0,
+    subtotal-discount
+  );
 
-  $("checkoutSubtotal").textContent=money(subtotal);
-  $("checkoutDiscount").textContent="- "+money(discount);
-  $("checkoutTotal").textContent=money(total);
+  $("checkoutSubtotal").textContent=
+    money(subtotal);
+
+  $("checkoutDiscount").textContent=
+    "- "+money(discount);
+
+  $("checkoutTotal").textContent=
+    money(total);
+
+  updatePayButton();
 }
 
 function applyPromo(){
@@ -643,10 +808,14 @@ function applyPromo(){
     .toUpperCase();
 
   if(!promos[code]){
+
     currentPromo=null;
+
     $("promoMessage").textContent=
       "❌ Code invalide.";
+
     renderCheckout();
+
     return;
   }
 
@@ -656,1055 +825,2667 @@ function applyPromo(){
   };
 
   $("promoMessage").textContent=
-    `✅ Code ${code} appliqué : ${promos[code]}%`;
+    `✅ ${code} appliqué : ${promos[code]}%`;
 
   renderCheckout();
 }
 
-function getDelivery(order){
-  const destination=
-    order.destination ||
-    order.address?.city ||
-    "France";
+function updatePayButton(){
+  const button=$("payButton");
 
-  const updatedAt=
-    Number(order.deliveryUpdatedAt||Date.now());
+  if(!button)return;
 
-  const duration=
-    Number(
-      order.deliveryDurationSeconds ??
-      Math.max(
-        0,
-        Math.floor(
-          (new Date(order.deliveryDate||Date.now()).getTime()-updatedAt)/1000
-        )
-      )
+  if(!addressVerified){
+
+    button.disabled=true;
+
+    button.textContent=
+      "🔒 Vérifie ton adresse pour continuer";
+
+    return;
+  }
+
+  if(!currentPromo){
+
+    button.disabled=true;
+
+    button.textContent=
+      "🎟️ Applique un code promotionnel";
+
+    return;
+  }
+
+  button.disabled=false;
+
+  button.textContent=
+    "💳 Continuer vers le paiement";
+}
+
+function setAddressStatus(type,message){
+  const el=$("addressStatus");
+
+  el.className=
+    `address-status show ${type}`;
+
+  el.textContent=message;
+}
+
+function resetAddressVerification(){
+  addressVerified=false;
+  verifiedAddress=null;
+
+  $("addressResult").classList.remove("show");
+  $("addressResult").innerHTML="";
+
+  setAddressStatus(
+    "error",
+    "❌ Adresse non vérifiée"
+  );
+
+  updatePayButton();
+}
+
+async function verifyAddress(){
+  const country=$("country").value
+    .trim()
+    .toLowerCase();
+
+  const address=$("address").value.trim();
+  const postalCode=$("postalCode").value.trim();
+  const city=$("city").value.trim();
+
+  if(
+    !address ||
+    !postalCode ||
+    !city
+  ){
+    resetAddressVerification();
+
+    setAddressStatus(
+      "error",
+      "❌ Complète l'adresse, le code postal et la ville."
     );
 
+    return;
+  }
+
+  if(country!=="france"){
+
+    resetAddressVerification();
+
+    setAddressStatus(
+      "error",
+      "❌ La vérification automatique est actuellement disponible pour la France."
+    );
+
+    return;
+  }
+
+  if(!/^[0-9]{5}$/.test(postalCode)){
+
+    resetAddressVerification();
+
+    setAddressStatus(
+      "error",
+      "❌ Code postal français invalide."
+    );
+
+    return;
+  }
+
+  setAddressStatus(
+    "loading",
+    "🔎 Vérification de l'adresse..."
+  );
+
+  $("addressResult").classList.remove("show");
+
+  try{
+
+    const query=
+      `${address}, ${postalCode} ${city}`;
+
+    const url=
+      "https://api-adresse.data.gouv.fr/search/"+
+      "?q="+encodeURIComponent(query)+
+      "&limit=5";
+
+    const response=
+      await fetch(url);
+
+    if(!response.ok){
+      throw new Error("API address error");
+    }
+
+    const data=await response.json();
+
+    const features=
+      Array.isArray(data.features)
+      ? data.features
+      : [];
+
+    const exact=features.find(feature=>{
+
+      const props=feature.properties||{};
+
+      const cp=
+        String(props.postcode||"");
+
+      const ville=
+        String(props.city||"")
+          .toLowerCase();
+
+      return cp===postalCode &&
+        ville===city.toLowerCase();
+    });
+
+    const result=exact||features[0];
+
+    if(!result){
+
+      resetAddressVerification();
+
+      setAddressStatus(
+        "error",
+        "❌ Adresse incorrecte ou introuvable. Le paiement est bloqué."
+      );
+
+      return;
+    }
+
+    const props=result.properties||{};
+
+    const verifiedCity=
+      props.city ||
+      city;
+
+    const verifiedPostcode=
+      props.postcode ||
+      postalCode;
+
+    const verifiedLabel=
+      props.label ||
+      `${address}, ${postalCode} ${city}`;
+
+    verifiedAddress={
+      address:verifiedLabel,
+      street:props.name||address,
+      postalCode:verifiedPostcode,
+      city:verifiedCity,
+      latitude:result.geometry?.coordinates?.[1]??null,
+      longitude:result.geometry?.coordinates?.[0]??null
+    };
+
+    addressVerified=true;
+
+    $("address").value=
+      props.name ||
+      address;
+
+    $("postalCode").value=
+      verifiedPostcode;
+
+    $("city").value=
+      verifiedCity;
+
+    $("addressResult").innerHTML=`
+      <strong>📍 Adresse reconnue</strong>
+      <div style="margin-top:5px">
+        ${escapeHTML(verifiedLabel)}
+      </div>
+    `;
+
+    $("addressResult").classList.add("show");
+
+    setAddressStatus(
+      "success",
+      "✅ Adresse valide. Tu peux continuer."
+    );
+
+    updatePayButton();
+
+  }catch(error){
+
+    console.error(error);
+
+    resetAddressVerification();
+
+    setAddressStatus(
+      "error",
+      "❌ Impossible de vérifier l'adresse pour le moment. Le paiement reste bloqué."
+    );
+  }
+}
+
+function getDelivery(order){
+
+  const updatedAt=
+    Number(order.deliveryUpdatedAt)||
+    new Date(order.createdAt||Date.now()).getTime();
+
+  const duration=
+    Number(order.deliveryDurationSeconds)||
+    0;
+
   return {
-    status:order.status||"Préparation",
-    truckLocation:order.truckLocation||"Entrepôt",
-    destination,
-    tracking:order.tracking||"NOVA-TRK-N/A",
-    durationSeconds:duration,
+
+    status:
+      order.status||
+      "Préparation",
+
+    truckLocation:
+      order.truckLocation||
+      "Entrepôt",
+
+    destination:
+      order.destination||
+      order.address?.city||
+      "France",
+
+    tracking:
+      order.tracking||
+      "NOVA-TRK-N/A",
+
+    durationSeconds:
+      duration,
+
     updatedAt,
-    deliveryDate:order.deliveryDate ||
-      new Date(updatedAt+duration*1000).toISOString()
+
+    deliveryDate:
+      order.deliveryDate||
+      new Date(
+        updatedAt+
+        duration*1000
+      ).toISOString()
+
   };
 }
 
 function remaining(order){
+
   const d=getDelivery(order);
 
-  if(d.status==="Livrée")return 0;
+  if(d.status==="Livrée"){
+    return 0;
+  }
 
   return Math.max(
     0,
     d.durationSeconds-
-    Math.floor((Date.now()-d.updatedAt)/1000)
+    Math.floor(
+      (Date.now()-d.updatedAt)/1000
+    )
   );
 }
 
 function durationText(seconds){
-  seconds=Math.max(0,seconds);
 
-  const days=Math.floor(seconds/86400);
+  seconds=Math.max(
+    0,
+    Math.floor(seconds)
+  );
+
+  const days=
+    Math.floor(seconds/86400);
+
   seconds%=86400;
 
-  const hours=Math.floor(seconds/3600);
+  const hours=
+    Math.floor(seconds/3600);
+
   seconds%=3600;
 
-  const minutes=Math.floor(seconds/60);
-  const secs=seconds%60;
+  const minutes=
+    Math.floor(seconds/60);
+
+  const secs=
+    seconds%60;
 
   return `${days}j ${String(hours).padStart(2,"0")}h ${String(minutes).padStart(2,"0")}m ${String(secs).padStart(2,"0")}s`;
 }
 
-function ordersForUser(){
-  if(!currentUser)return[];
+function statusClass(status){
 
-  return load(STORAGE.orders,[]).filter(
-    o=>o.userId===currentUser.uid ||
-       o.email===currentUser.email
+  if(status==="Préparation"){
+    return "status-prep";
+  }
+
+  if(status==="En transit"){
+    return "status-transit";
+  }
+
+  if(status==="Arrivée imminente"){
+    return "status-imminent";
+  }
+
+  if(status==="Livrée"){
+    return "status-delivered";
+  }
+
+  return "";
+}
+
+function ordersForUser(){
+
+  if(!currentUser){
+    return [];
+  }
+
+  return liveOrders.filter(order=>
+    order.userId===currentUser.uid ||
+    (
+      currentUser.email &&
+      order.email===currentUser.email
+    )
   );
 }
 
 function renderOrders(){
+
   if(!currentUser){
-    $("ordersContent").innerHTML=
-      `<p>Connecte-toi pour voir tes commandes.</p>`;
+
+    $("ordersContent").innerHTML=`
+      <p>
+        Connecte-toi pour voir tes commandes.
+      </p>
+    `;
+
     return;
   }
 
   const orders=ordersForUser();
 
   if(!orders.length){
-    $("ordersContent").innerHTML=
-      `<p style="color:var(--muted)">Aucune commande.</p>`;
+
+    $("ordersContent").innerHTML=`
+      <p style="color:var(--muted)">
+        Aucune commande.
+      </p>
+    `;
+
     return;
   }
 
-  $("ordersContent").innerHTML=orders.map(order=>{
-    const d=getDelivery(order);
-    const left=remaining(order);
+  $("ordersContent").innerHTML=
+    orders.map(order=>{
 
-    return `
-      <div class="order">
+      const d=getDelivery(order);
 
-        <strong>Commande #${order.id}</strong>
+      const left=remaining(order);
 
-        <p style="margin-top:6px">
-          ${dateFR(order.createdAt)}
-        </p>
+      const progress=
+        d.durationSeconds
+        ? Math.max(
+            5,
+            Math.min(
+              100,
+              100-
+              (left/
+              d.durationSeconds*
+              100)
+            )
+          )
+        : 100;
 
-        <p style="margin-top:6px">
-          Statut : <strong>${d.status}</strong>
-        </p>
+      return `
 
-        <div class="delivery">
+        <div class="order">
 
-          <div>
-            📍 Camion :
-            <strong>${d.truckLocation}</strong>
+          <strong>
+            Commande #${escapeHTML(order.id)}
+          </strong>
+
+          <p style="margin-top:6px">
+            ${dateFR(order.createdAt)}
+          </p>
+
+          <div
+            class="order-status ${statusClass(d.status)}"
+            style="margin-top:9px"
+          >
+            ${escapeHTML(d.status)}
           </div>
 
-          <div>
-            🎯 Destination :
-            <strong>${d.destination}</strong>
+          <div class="delivery">
+
+            <div>
+              📍 Position :
+              <strong>
+                ${escapeHTML(d.truckLocation)}
+              </strong>
+            </div>
+
+            <div>
+              🎯 Destination :
+              <strong>
+                ${escapeHTML(d.destination)}
+              </strong>
+            </div>
+
+            <div>
+              🔎 Suivi :
+              <strong>
+                ${escapeHTML(d.tracking)}
+              </strong>
+            </div>
+
+            <div class="countdown">
+
+              ${
+                d.status==="Livrée"
+                ? "✅ Livrée"
+                : left>0
+                  ? "⏱️ "+durationText(left)
+                  : "🚚 Arrivée imminente"
+              }
+
+            </div>
+
+            <div>
+              📅 Livraison estimée :
+              <strong>
+                ${dateFR(d.deliveryDate)}
+              </strong>
+            </div>
+
+            <div class="progress">
+              <span style="width:${progress}%"></span>
+            </div>
+
           </div>
 
-          <div>
-            🔎 Suivi :
-            <strong>${d.tracking}</strong>
-          </div>
-
-          <div class="countdown">
-            ${
-              d.status==="Livrée"
-              ? "✅ Livrée"
-              : left>0
-                ? "⏱️ "+durationText(left)
-                : "🚚 Arrivée imminente"
-            }
-          </div>
-
-          <div>
-            📅 ${dateFR(d.deliveryDate)}
-          </div>
-
-          <div class="progress">
-            <span style="width:${
-              d.durationSeconds
-                ? Math.max(5,Math.min(100,
-                    100-(left/d.durationSeconds*100)))
-                : 100
-            }%"></span>
-          </div>
+          <button
+            class="secondary"
+            style="margin-top:12px;width:100%"
+            data-invoice="${escapeHTML(order.id)}"
+          >
+            🧾 Facture
+          </button>
 
         </div>
 
-        <button
-          class="secondary"
-          style="margin-top:12px"
-          data-invoice="${order.id}"
-        >
-          🧾 Facture
-        </button>
+      `;
 
-      </div>
-    `;
-  }).join("");
+    }).join("");
 }
 
 function isAdminEmail(){
-  return currentUser?.email?.trim().toLowerCase()===
+
+  return currentUser?.email
+    ?.trim()
+    .toLowerCase()===
     ADMIN_EMAIL.toLowerCase();
+
 }
 
 function isAdminUnlocked(){
-  return localStorage.getItem(STORAGE.admin)==="true";
+
+  return localStorage.getItem(
+    STORAGE.admin
+  )==="true";
+
 }
 
 function updateAccountUI(){
+
   $("accountButton").textContent=
-    currentUser ? "👤" : "🔐";
+    currentUser
+    ? "👤"
+    : "🔐";
 
   $("ordersButton").style.display=
-    currentUser ? "inline-flex" : "none";
+    currentUser
+    ? "inline-flex"
+    : "none";
 
   $("adminButton").style.display=
-    isAdminEmail() ? "inline-flex" : "none";
+    isAdminEmail()
+    ? "inline-flex"
+    : "none";
+
 }
 
 function renderAccount(){
+
   if(!currentUser){
+
     $("accountContent").innerHTML=`
-      <p>Tu n'es pas connecté.</p>
-      <button class="primary" style="width:100%;margin-top:15px" id="accountLogin">
+
+      <p>
+        Tu n'es pas connecté.
+      </p>
+
+      <button
+        class="primary"
+        style="width:100%;margin-top:15px"
+        id="accountLogin"
+      >
         Se connecter
       </button>
+
     `;
 
-    $("accountLogin").addEventListener("click",()=>{
-      openModal("authModal");
-    });
+    $("accountLogin").addEventListener(
+      "click",
+      ()=>{
+        openModal("authModal");
+      }
+    );
 
     return;
   }
 
   $("accountContent").innerHTML=`
-    <h3>👤 ${currentUser.displayName || "Compte NovaShop"}</h3>
+
+    <h3>
+      👤 ${escapeHTML(
+        currentUser.displayName ||
+        "Compte NovaShop"
+      )}
+    </h3>
 
     <p style="margin-top:10px">
-      ${currentUser.email||""}
+      ${escapeHTML(currentUser.email||"")}
     </p>
 
-    <button class="secondary" style="width:100%;margin-top:20px" id="accountOrders">
+    <button
+      class="secondary"
+      style="width:100%;margin-top:20px"
+      id="accountOrders"
+    >
       📦 Mes commandes
     </button>
 
-    <button class="primary" style="width:100%;margin-top:10px" id="logoutButton">
-      Se déconnecter
-    </button>
-  `;
-
-  $("accountOrders").addEventListener("click",()=>{
-    renderOrders();
-    openModal("ordersModal");
-  });
-
-  $("logoutButton").addEventListener("click",async()=>{
-    if(firebaseAuth){
-      try{
-        await firebaseTools.signOut(firebaseAuth);
-      }catch{}
+    ${
+      isAdminEmail()
+      ? `
+        <button
+          class="primary"
+          style="width:100%;margin-top:10px"
+          id="accountDashboard"
+        >
+          👑 Ouvrir le dashboard
+        </button>
+      `
+      : ""
     }
 
-    currentUser=null;
-    localStorage.removeItem(STORAGE.admin);
+    <button
+      class="primary"
+      style="width:100%;margin-top:10px"
+      id="logoutButton"
+    >
+      Se déconnecter
+    </button>
 
-    updateAccountUI();
-    closeAllModals();
-    toast("Déconnecté.");
-  });
+  `;
+
+  $("accountOrders").addEventListener(
+    "click",
+    ()=>{
+      renderOrders();
+      openModal("ordersModal");
+    }
+  );
+
+  const dashboard=
+    $("accountDashboard");
+
+  if(dashboard){
+
+    dashboard.addEventListener(
+      "click",
+      openAdminDashboard
+    );
+
+  }
+
+  $("logoutButton").addEventListener(
+    "click",
+    async()=>{
+
+      try{
+
+        if(firebaseAuth){
+          await firebaseTools.signOut(
+            firebaseAuth
+          );
+        }
+
+      }catch{}
+
+      currentUser=null;
+
+      liveOrders=[];
+
+      stopOrdersListener();
+
+      localStorage.removeItem(
+        STORAGE.admin
+      );
+
+      updateAccountUI();
+
+      closeAllModals();
+
+      toast("Déconnecté.");
+
+    }
+  );
+
 }
 
 function renderDashboard(){
-  if(!isAdminEmail() || !isAdminUnlocked()){
+
+  if(
+    !isAdminEmail() ||
+    !isAdminUnlocked()
+  ){
     return;
   }
 
-  const orders=load(STORAGE.orders,[]);
+  const orders=liveOrders;
 
-  $("statOrders").textContent=orders.length;
+  $("statOrders").textContent=
+    orders.length;
 
   $("statFree").textContent=
-    orders.filter(o=>Number(o.discount)===100).length;
+    orders.filter(
+      o=>Number(o.discount)===100
+    ).length;
 
   $("statCatalog").textContent=
-    money(products.reduce((a,p)=>a+p.price,0));
+    money(
+      products.reduce(
+        (a,p)=>a+p.price,
+        0
+      )
+    );
 
   renderAdminOrders();
   renderAdminPromos();
+
 }
 
 function renderAdminOrders(){
-  const orders=load(STORAGE.orders,[]);
+
+  const orders=liveOrders;
 
   if(!orders.length){
-    $("adminOrders").innerHTML=
-      `<p style="color:var(--muted);margin-top:10px">Aucune commande.</p>`;
+
+    $("adminOrders").innerHTML=`
+      <p style="color:var(--muted);margin-top:10px">
+        Aucune commande.
+      </p>
+    `;
+
     return;
   }
 
-  $("adminOrders").innerHTML=orders.map(order=>{
-    const d=getDelivery(order);
+  $("adminOrders").innerHTML=
+    orders.map(order=>{
 
-    const remainingOld=remaining(order);
+      const d=getDelivery(order);
 
-    const days=Math.floor(remainingOld/86400);
-    const hours=Math.floor((remainingOld%86400)/3600);
-    const minutes=Math.floor((remainingOld%3600)/60);
+      const left=remaining(order);
 
-    return `
-      <div class="order">
+      const days=
+        Math.floor(left/86400);
 
-        <strong>#${order.id}</strong>
+      const hours=
+        Math.floor(
+          (left%86400)/3600
+        );
 
-        <p style="margin-top:7px">
-          ${order.email||""}
-        </p>
+      const minutes=
+        Math.floor(
+          (left%3600)/60
+        );
 
-        <div class="admin-grid">
+      return `
 
-          <div class="admin-field">
-            <label>Statut</label>
-            <select data-field="status" data-order="${order.id}">
-              ${[
-                "Préparation",
-                "En transit",
-                "Arrivée imminente",
-                "Livrée"
-              ].map(x=>`
-                <option ${x===d.status?"selected":""}>${x}</option>
-              `).join("")}
-            </select>
-          </div>
+        <div class="order">
 
-          <div class="admin-field">
-            <label>Suivi</label>
-            <input
-              data-field="tracking"
-              data-order="${order.id}"
-              value="${d.tracking}"
-            >
-          </div>
+          <strong>
+            #${escapeHTML(order.id)}
+          </strong>
 
-          <div class="admin-field">
-            <label>📍 Camion actuellement</label>
-            <input
-              data-field="truckLocation"
-              data-order="${order.id}"
-              value="${d.truckLocation}"
-            >
-          </div>
+          <p style="margin-top:7px">
+            👤 ${escapeHTML(
+              order.customer?.name||
+              "Client"
+            )}
+          </p>
 
-          <div class="admin-field">
-            <label>🎯 Destination</label>
-            <input
-              data-field="destination"
-              data-order="${order.id}"
-              value="${d.destination}"
-            >
-          </div>
+          <p style="margin-top:4px">
+            ✉️ ${escapeHTML(
+              order.email||""
+            )}
+          </p>
 
-          <div class="admin-field">
-            <label>Jours</label>
-            <input
-              type="number"
-              min="0"
-              data-field="days"
-              data-order="${order.id}"
-              value="${days}"
-            >
-          </div>
+          <p style="margin-top:4px">
+            📍 ${escapeHTML(
+              order.address?.address||""
+            )},
+            ${escapeHTML(
+              order.address?.postalCode||""
+            )}
+            ${escapeHTML(
+              order.address?.city||""
+            )}
+          </p>
 
-          <div class="admin-field">
-            <label>Heures</label>
-            <input
-              type="number"
-              min="0"
-              max="23"
-              data-field="hours"
-              data-order="${order.id}"
-              value="${hours}"
-            >
-          </div>
+          <div class="admin-grid">
 
-          <div class="admin-field">
-            <label>Minutes</label>
-            <input
-              type="number"
-              min="0"
-              max="59"
-              data-field="minutes"
-              data-order="${order.id}"
-              value="${minutes}"
-            >
-          </div>
+            <div class="admin-field">
 
-          <div class="admin-field">
-            <label>Arrivée actuelle</label>
-            <input
-              readonly
-              value="${dateFR(d.deliveryDate)}"
-            >
-          </div>
+              <label>Statut</label>
 
-          <div class="admin-full">
-            <button
-              class="save"
-              data-save-delivery="${order.id}"
-            >
-              💾 Enregistrer la livraison
-            </button>
+              <select
+                data-field="status"
+                data-order="${escapeHTML(order.id)}"
+              >
+
+                ${
+                  [
+                    "Préparation",
+                    "En transit",
+                    "Arrivée imminente",
+                    "Livrée"
+                  ].map(x=>`
+
+                    <option
+                      value="${escapeHTML(x)}"
+                      ${x===d.status?"selected":""}
+                    >
+                      ${escapeHTML(x)}
+                    </option>
+
+                  `).join("")
+                }
+
+              </select>
+
+            </div>
+
+            <div class="admin-field">
+
+              <label>Suivi</label>
+
+              <input
+                data-field="tracking"
+                data-order="${escapeHTML(order.id)}"
+                value="${escapeHTML(d.tracking)}"
+              >
+
+            </div>
+
+            <div class="admin-field">
+
+              <label>📍 Position actuelle</label>
+
+              <input
+                data-field="truckLocation"
+                data-order="${escapeHTML(order.id)}"
+                value="${escapeHTML(d.truckLocation)}"
+                placeholder="Ex : Lille"
+              >
+
+            </div>
+
+            <div class="admin-field">
+
+              <label>🎯 Destination affichée</label>
+
+              <input
+                data-field="destination"
+                data-order="${escapeHTML(order.id)}"
+                value="${escapeHTML(d.destination)}"
+                placeholder="Ex : Lille"
+              >
+
+            </div>
+
+            <div class="admin-field">
+
+              <label>Jours</label>
+
+              <input
+                type="number"
+                min="0"
+                data-field="days"
+                data-order="${escapeHTML(order.id)}"
+                value="${days}"
+              >
+
+            </div>
+
+            <div class="admin-field">
+
+              <label>Heures</label>
+
+              <input
+                type="number"
+                min="0"
+                max="23"
+                data-field="hours"
+                data-order="${escapeHTML(order.id)}"
+                value="${hours}"
+              >
+
+            </div>
+
+            <div class="admin-field">
+
+              <label>Minutes</label>
+
+              <input
+                type="number"
+                min="0"
+                max="59"
+                data-field="minutes"
+                data-order="${escapeHTML(order.id)}"
+                value="${minutes}"
+              >
+
+            </div>
+
+            <div class="admin-field">
+
+              <label>Livraison actuelle</label>
+
+              <input
+                readonly
+                value="${escapeHTML(
+                  dateFR(d.deliveryDate)
+                )}"
+              >
+
+            </div>
+
+            <div class="admin-full">
+
+              <button
+                class="save"
+                data-save-delivery="${escapeHTML(order.id)}"
+              >
+                💾 Enregistrer les changements
+              </button>
+
+              <button
+                class="delete"
+                data-delete-order="${escapeHTML(order.id)}"
+              >
+                🗑️ Supprimer la commande
+              </button>
+
+            </div>
+
           </div>
 
         </div>
 
-      </div>
-    `;
-  }).join("");
+      `;
+
+    }).join("");
+
 }
 
 function renderAdminPromos(){
+
   $("adminPromos").innerHTML=
-    Object.entries(promos).map(([code,discount])=>`
-      <div class="cart-item">
-        <strong>${code}</strong>
-        <span style="float:right">${discount}%</span>
-      </div>
-    `).join("");
+    Object.entries(promos)
+      .map(([code,discount])=>`
+
+        <div class="cart-item">
+
+          <strong>
+            ${escapeHTML(code)}
+          </strong>
+
+          <span style="float:right">
+            ${discount}%
+          </span>
+
+        </div>
+
+      `).join("");
+
 }
 
 function saveDelivery(orderId){
-  if(!isAdminEmail() || !isAdminUnlocked())return;
 
-  const orders=load(STORAGE.orders,[]);
-  const order=orders.find(o=>o.id===orderId);
+  if(
+    !isAdminEmail() ||
+    !isAdminUnlocked()
+  ){
+    return;
+  }
+
+  if(!firestore){
+    toast("Firestore n'est pas disponible.");
+    return;
+  }
+
+  const order=
+    liveOrders.find(
+      o=>o.id===orderId
+    );
 
   if(!order)return;
 
   const getField=field=>
     document.querySelector(
-      `[data-field="${field}"][data-order="${orderId}"]`
+      `[data-field="${field}"][data-order="${CSS.escape(orderId)}"]`
     );
 
-  const status=getField("status").value;
+  const status=
+    getField("status").value;
 
   const truckLocation=
-    getField("truckLocation").value.trim() ||
+    getField("truckLocation")
+      .value
+      .trim() ||
     "Entrepôt";
 
   const destination=
-    getField("destination").value.trim() ||
+    getField("destination")
+      .value
+      .trim() ||
+    order.address?.city ||
     "France";
 
   const tracking=
-    getField("tracking").value.trim() ||
+    getField("tracking")
+      .value
+      .trim() ||
     `NOVA-TRK-${orderId}`;
 
-  let days=Math.max(0,Number(getField("days").value)||0);
-  let hours=Math.min(23,Math.max(0,Number(getField("hours").value)||0));
-  let minutes=Math.min(59,Math.max(0,Number(getField("minutes").value)||0));
+  const days=Math.max(
+    0,
+    Number(getField("days").value)||0
+  );
+
+  const hours=Math.min(
+    23,
+    Math.max(
+      0,
+      Number(getField("hours").value)||0
+    )
+  );
+
+  const minutes=Math.min(
+    59,
+    Math.max(
+      0,
+      Number(getField("minutes").value)||0
+    )
+  );
 
   let duration=
     days*86400+
     hours*3600+
     minutes*60;
 
-  const now=Date.now();
-
   if(status==="Livrée"){
     duration=0;
   }
 
-  order.status=status;
-  order.truckLocation=truckLocation;
-  order.destination=destination;
-  order.tracking=tracking;
-  order.deliveryDurationSeconds=duration;
-  order.deliveryUpdatedAt=now;
-  order.deliveryDate=
-    new Date(now+duration*1000).toISOString();
+  const now=Date.now();
 
-  save(STORAGE.orders,orders);
+  const update={
+    status,
+    truckLocation,
+    destination,
+    tracking,
+    deliveryDurationSeconds:duration,
+    deliveryUpdatedAt:now,
+    deliveryDate:
+      new Date(
+        now+
+        duration*1000
+      ).toISOString(),
+    updatedAt:
+      new Date().toISOString()
+  };
 
-  renderDashboard();
-  renderOrders();
+  firestoreTools.updateDoc(
+    firestoreTools.doc(
+      firestore,
+      "orders",
+      orderId
+    ),
+    update
+  )
+  .then(()=>{
 
-  toast("Livraison mise à jour 🚚");
+    toast(
+      "🚚 Livraison synchronisée"
+    );
+
+  })
+  .catch(error=>{
+
+    console.error(error);
+
+    toast(
+      "❌ Impossible de modifier la commande"
+    );
+
+  });
+
+}
+
+async function deleteOrder(orderId){
+
+  if(
+    !isAdminEmail() ||
+    !isAdminUnlocked() ||
+    !firestore
+  ){
+    return;
+  }
+
+  const confirmed=
+    confirm(
+      `Supprimer définitivement la commande #${orderId} ?`
+    );
+
+  if(!confirmed)return;
+
+  try{
+
+    await firestoreTools.deleteDoc(
+      firestoreTools.doc(
+        firestore,
+        "orders",
+        orderId
+      )
+    );
+
+    toast(
+      "Commande supprimée"
+    );
+
+  }catch(error){
+
+    console.error(error);
+
+    toast(
+      "❌ Suppression impossible"
+    );
+
+  }
+
 }
 
 function createOrder(){
+
   if(!currentUser){
+
     openModal("authModal");
+
     return;
   }
 
-  if(!currentPromo || currentPromo.discount!==100){
-    toast("Pour la démo, utilise le code NOVA100.");
+  if(
+    !currentPromo ||
+    currentPromo.discount!==100
+  ){
+
+    toast(
+      "Pour la démo, utilise NOVA100."
+    );
+
     return;
   }
 
-  const fullName=$("fullName").value.trim();
-  const country=$("country").value.trim();
-  const address=$("address").value.trim();
-  const postalCode=$("postalCode").value.trim();
-  const city=$("city").value.trim();
+  if(!addressVerified || !verifiedAddress){
 
-  if(!fullName||!country||!address||!postalCode||!city){
-    toast("Complète tous les champs.");
+    setAddressStatus(
+      "error",
+      "❌ Adresse incorrecte. Paiement impossible."
+    );
+
+    updatePayButton();
+
     return;
   }
 
-  if(country.toLowerCase()==="france" &&
-     !/^[0-9]{5}$/.test(postalCode)){
-    toast("Code postal français invalide.");
-    return;
-  }
+  const fullName=
+    $("fullName").value.trim();
+
+  const country=
+    $("country").value.trim();
 
   const items=cart();
 
+  if(!fullName){
+
+    toast(
+      "Complète ton nom."
+    );
+
+    return;
+  }
+
   if(!items.length){
-    toast("Panier vide.");
+
+    toast(
+      "Panier vide."
+    );
+
     return;
   }
 
   const subtotal=cartTotal();
 
+  const orderId=
+    Math.random()
+      .toString(36)
+      .slice(2,8)
+      .toUpperCase();
+
   const order={
-    id:Math.random().toString(36).slice(2,8).toUpperCase(),
-    userId:currentUser.uid,
-    email:currentUser.email,
+
+    id:orderId,
+
+    userId:
+      currentUser.uid,
+
+    email:
+      currentUser.email||"",
+
     customer:{
       name:fullName
     },
+
     address:{
       country,
-      address,
-      postalCode,
-      city
+      address:
+        verifiedAddress.address,
+      street:
+        verifiedAddress.street,
+      postalCode:
+        verifiedAddress.postalCode,
+      city:
+        verifiedAddress.city,
+      latitude:
+        verifiedAddress.latitude,
+      longitude:
+        verifiedAddress.longitude
     },
+
     items,
+
     subtotal,
-    discount:100,
-    total:0,
-    promoCode:currentPromo.code,
-    paymentStatus:"pending",
-    status:"Préparation",
-    truckLocation:"Entrepôt",
-    destination:city,
-    tracking:"NOVA-TRK-"+Math.random().toString(36).slice(2,8).toUpperCase(),
-    deliveryDurationSeconds:259200,
-    deliveryUpdatedAt:Date.now(),
-    deliveryDate:new Date(
-      Date.now()+259200000
-    ).toISOString(),
-    createdAt:new Date().toISOString()
+
+    discount:
+      currentPromo.discount,
+
+    total:
+      Math.max(
+        0,
+        subtotal-
+        subtotal*
+        (currentPromo.discount/100)
+      ),
+
+    promoCode:
+      currentPromo.code,
+
+    paymentStatus:
+      "pending",
+
+    status:
+      "Préparation",
+
+    truckLocation:
+      "Entrepôt NovaShop",
+
+    destination:
+      verifiedAddress.city,
+
+    tracking:
+      "NOVA-TRK-"+
+      Math.random()
+        .toString(36)
+        .slice(2,8)
+        .toUpperCase(),
+
+    deliveryDurationSeconds:
+      259200,
+
+    deliveryUpdatedAt:
+      Date.now(),
+
+    deliveryDate:
+      new Date(
+        Date.now()+
+        259200000
+      ).toISOString(),
+
+    createdAt:
+      new Date().toISOString(),
+
+    updatedAt:
+      new Date().toISOString()
+
   };
 
-  const orders=load(STORAGE.orders,[]);
-  orders.unshift(order);
-  save(STORAGE.orders,orders);
+  saveOrderToFirestore(order);
 
-  setCart([]);
-  currentPromo=null;
+}
 
-  $("promoCode").value="";
-  $("promoMessage").textContent="";
+async function saveOrderToFirestore(order){
 
-  closeModal("checkoutModal");
+  if(!firestore){
 
-  showInvoice(order.id);
+    toast(
+      "❌ Service de commande indisponible."
+    );
 
-  toast("Commande créée 🎉");
+    return;
+  }
+
+  try{
+
+    await firestoreTools.setDoc(
+      firestoreTools.doc(
+        firestore,
+        "orders",
+        order.id
+      ),
+      order
+    );
+
+    setCart([]);
+
+    currentPromo=null;
+
+    addressVerified=false;
+    verifiedAddress=null;
+
+    $("promoCode").value="";
+    $("promoMessage").textContent="";
+
+    closeModal("checkoutModal");
+
+    showInvoice(order.id);
+
+    toast(
+      "🎉 Commande créée"
+    );
+
+  }catch(error){
+
+    console.error(error);
+
+    toast(
+      "❌ Impossible d'enregistrer la commande"
+    );
+
+  }
+
 }
 
 async function startPaypal(){
+
   if(!currentUser){
+
     openModal("authModal");
+
     return;
   }
 
-  if(!currentPromo || currentPromo.discount!==100){
-    toast("Utilise NOVA100 pour la démo gratuite.");
+  if(!addressVerified){
+
+    toast(
+      "❌ Adresse incorrecte. Paiement bloqué."
+    );
+
     return;
   }
+
+  if(
+    !currentPromo ||
+    currentPromo.discount!==100
+  ){
+
+    toast(
+      "Utilise NOVA100 pour la démo gratuite."
+    );
+
+    return;
+  }
+
+  /*
+    Ici tu peux brancher ton vrai système PayPal.
+    La commande n'est enregistrée qu'après
+    validation de l'adresse.
+  */
 
   createOrder();
+
 }
 
 function showInvoice(orderId){
-  const order=load(STORAGE.orders,[])
-    .find(o=>o.id===orderId);
 
-  if(!order)return;
+  const order=
+    liveOrders.find(
+      o=>o.id===orderId
+    );
+
+  if(!order){
+
+    toast(
+      "Facture introuvable."
+    );
+
+    return;
+  }
 
   $("invoiceContent").innerHTML=`
+
     <div class="invoice">
 
       <div class="invoice-head">
+
         <div>
+
           <h2>NOVASHOP</h2>
-          <p>Matériel gaming</p>
+
+          <p>
+            Matériel gaming
+          </p>
+
         </div>
 
         <div>
+
           <strong>FACTURE</strong>
-          <p>#${order.id}</p>
+
+          <p>
+            #${escapeHTML(order.id)}
+          </p>
+
         </div>
+
       </div>
 
-      <p><strong>Date :</strong> ${dateFR(order.createdAt)}</p>
-
-      <p style="margin-top:12px">
-        <strong>Client :</strong><br>
-        ${order.customer.name}<br>
-        ${order.email}
+      <p>
+        <strong>Date :</strong>
+        ${dateFR(order.createdAt)}
       </p>
 
       <p style="margin-top:12px">
+
+        <strong>Client :</strong><br>
+
+        ${escapeHTML(
+          order.customer?.name||"Client"
+        )}<br>
+
+        ${escapeHTML(
+          order.email||""
+        )}
+
+      </p>
+
+      <p style="margin-top:12px">
+
         <strong>Livraison :</strong><br>
-        ${order.address.address}<br>
-        ${order.address.postalCode} ${order.address.city}<br>
-        ${order.address.country}
+
+        ${escapeHTML(
+          order.address?.address||""
+        )}<br>
+
+        ${escapeHTML(
+          order.address?.postalCode||""
+        )}
+        ${escapeHTML(
+          order.address?.city||""
+        )}<br>
+
+        ${escapeHTML(
+          order.address?.country||"France"
+        )}
+
       </p>
 
       <table class="invoice-table">
+
         <thead>
+
           <tr>
             <th>Produit</th>
             <th>Qté</th>
             <th>Prix</th>
           </tr>
+
         </thead>
 
         <tbody>
-          ${order.items.map(item=>{
-            const p=products.find(x=>x.id===item.id);
 
-            return `
-              <tr>
-                <td>${p?.name||"Produit"}</td>
-                <td>${item.qty}</td>
-                <td>${money((p?.price||0)*item.qty)}</td>
-              </tr>
-            `;
-          }).join("")}
+          ${
+            (order.items||[])
+              .map(item=>{
+
+                const p=
+                  products.find(
+                    x=>x.id===item.id
+                  );
+
+                return `
+
+                  <tr>
+
+                    <td>
+                      ${escapeHTML(
+                        p?.name||
+                        "Produit"
+                      )}
+                    </td>
+
+                    <td>
+                      ${item.qty}
+                    </td>
+
+                    <td>
+                      ${money(
+                        (p?.price||0)*
+                        item.qty
+                      )}
+                    </td>
+
+                  </tr>
+
+                `;
+
+              }).join("")
+          }
+
         </tbody>
+
       </table>
 
       <div class="total">
         <span>Sous-total</span>
-        <span>${money(order.subtotal)}</span>
+        <span>
+          ${money(order.subtotal)}
+        </span>
       </div>
 
       <div class="total">
         <span>Réduction</span>
-        <span>-100%</span>
+        <span>
+          -${Number(order.discount)||0}%
+        </span>
       </div>
 
       <div class="total">
         <span>Total</span>
-        <span>${money(order.total)}</span>
+        <span>
+          ${money(order.total)}
+        </span>
       </div>
 
       <p>
         <strong>Paiement :</strong>
-        Code promotionnel
+        ${escapeHTML(
+          order.paymentStatus||
+          "pending"
+        )}
       </p>
 
     </div>
+
   `;
 
   openModal("invoiceModal");
+
 }
 
 function showAuthError(error){
-  const code=error?.code||"";
+
+  const code=
+    error?.code||
+    "";
 
   const messages={
-    "auth/invalid-credential":"E-mail ou mot de passe incorrect.",
-    "auth/user-not-found":"Compte introuvable.",
-    "auth/wrong-password":"Mot de passe incorrect.",
-    "auth/email-already-in-use":"Cette adresse est déjà utilisée.",
-    "auth/weak-password":"Mot de passe trop faible.",
-    "auth/invalid-email":"Adresse e-mail invalide.",
-    "auth/popup-closed-by-user":"Fenêtre Google fermée.",
-    "auth/popup-blocked":"La fenêtre Google a été bloquée.",
-    "auth/unauthorized-domain":"Domaine non autorisé dans Firebase."
+
+    "auth/invalid-credential":
+      "E-mail ou mot de passe incorrect.",
+
+    "auth/user-not-found":
+      "Compte introuvable.",
+
+    "auth/wrong-password":
+      "Mot de passe incorrect.",
+
+    "auth/email-already-in-use":
+      "Cette adresse est déjà utilisée.",
+
+    "auth/weak-password":
+      "Mot de passe trop faible.",
+
+    "auth/invalid-email":
+      "Adresse e-mail invalide.",
+
+    "auth/popup-closed-by-user":
+      "Fenêtre Google fermée.",
+
+    "auth/popup-blocked":
+      "La fenêtre Google a été bloquée.",
+
+    "auth/unauthorized-domain":
+      "Domaine non autorisé dans Firebase."
+
   };
 
-  toast(messages[code]||"Erreur de connexion.");
+  toast(
+    messages[code]||
+    "Erreur de connexion."
+  );
+
 }
 
 async function initFirebase(){
+
   try{
-    const appModule=await import(
-      "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js"
-    );
 
-    const authModule=await import(
-      "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js"
-    );
+    const appModule=
+      await import(
+        "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js"
+      );
 
-    const app=appModule.initializeApp(FIREBASE_CONFIG);
+    const authModule=
+      await import(
+        "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js"
+      );
 
-    firebaseAuth=authModule.getAuth(app);
-    firebaseTools=authModule;
+    const firestoreModule=
+      await import(
+        "https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js"
+      );
+
+    const app=
+      appModule.initializeApp(
+        FIREBASE_CONFIG
+      );
+
+    firebaseAuth=
+      authModule.getAuth(app);
+
+    firebaseTools=
+      authModule;
+
+    firestore=
+      firestoreModule.getFirestore(app);
+
+    firestoreTools=
+      firestoreModule;
 
     authModule.onAuthStateChanged(
       firebaseAuth,
       user=>{
+
         currentUser=user;
+
         updateAccountUI();
 
-        if($("accountModal").classList.contains("open")){
-          renderAccount();
+        if(user){
+
+          startOrdersListener();
+
+        }else{
+
+          stopOrdersListener();
+
         }
+
+        if(
+          $("accountModal")
+            .classList
+            .contains("open")
+        ){
+
+          renderAccount();
+
+        }
+
+        if(
+          $("ordersModal")
+            .classList
+            .contains("open")
+        ){
+
+          renderOrders();
+
+        }
+
       }
     );
 
   }catch(error){
-    console.warn("Firebase non disponible",error);
+
+    console.error(
+      "Firebase non disponible",
+      error
+    );
+
+    toast(
+      "⚠️ Firebase non disponible"
+    );
+
   }
+
+}
+
+function startOrdersListener(){
+
+  if(
+    !firestore ||
+    !currentUser
+  ){
+    return;
+  }
+
+  stopOrdersListener();
+
+  const query=
+    firestoreTools.query(
+      firestoreTools.collection(
+        firestore,
+        "orders"
+      ),
+      firestoreTools.where(
+        "userId",
+        "==",
+        currentUser.uid
+      ),
+      firestoreTools.orderBy(
+        "createdAt",
+        "desc"
+      )
+    );
+
+  unsubscribeOrders=
+    firestoreTools.onSnapshot(
+      query,
+      snapshot=>{
+
+        const mine=
+          snapshot.docs.map(
+            doc=>({
+              ...doc.data(),
+              id:doc.id
+            })
+          );
+
+        liveOrders=mine;
+
+        renderOrders();
+
+        if(
+          isAdminEmail() &&
+          isAdminUnlocked()
+        ){
+          renderDashboard();
+        }
+
+      },
+      error=>{
+
+        console.error(
+          "Orders listener",
+          error
+        );
+
+        /*
+          Fallback si la requête composite
+          Firestore nécessite un index.
+        */
+
+        startSimpleOrdersListener();
+
+      }
+    );
+
+}
+
+function startSimpleOrdersListener(){
+
+  if(
+    !firestore ||
+    !currentUser
+  ){
+    return;
+  }
+
+  stopOrdersListener();
+
+  const query=
+    firestoreTools.query(
+      firestoreTools.collection(
+        firestore,
+        "orders"
+      ),
+      firestoreTools.where(
+        "userId",
+        "==",
+        currentUser.uid
+      )
+    );
+
+  unsubscribeOrders=
+    firestoreTools.onSnapshot(
+      query,
+      snapshot=>{
+
+        liveOrders=
+          snapshot.docs
+            .map(doc=>({
+              ...doc.data(),
+              id:doc.id
+            }))
+            .sort(
+              (a,b)=>
+                new Date(
+                  b.createdAt||0
+                )-
+                new Date(
+                  a.createdAt||0
+                )
+            );
+
+        renderOrders();
+
+      },
+      error=>{
+        console.error(error);
+      }
+    );
+
+}
+
+function stopOrdersListener(){
+
+  if(unsubscribeOrders){
+
+    unsubscribeOrders();
+
+    unsubscribeOrders=null;
+
+  }
+
+}
+
+function startAdminOrdersListener(){
+
+  if(
+    !firestore ||
+    !isAdminEmail() ||
+    !isAdminUnlocked()
+  ){
+    return;
+  }
+
+  if(
+    window.__adminOrdersUnsubscribe
+  ){
+    window.__adminOrdersUnsubscribe();
+    window.__adminOrdersUnsubscribe=null;
+  }
+
+  const query=
+    firestoreTools.collection(
+      firestore,
+      "orders"
+    );
+
+  window.__adminOrdersUnsubscribe=
+    firestoreTools.onSnapshot(
+      query,
+      snapshot=>{
+
+        const orders=
+          snapshot.docs
+            .map(doc=>({
+              ...doc.data(),
+              id:doc.id
+            }))
+            .sort(
+              (a,b)=>
+                new Date(
+                  b.createdAt||0
+                )-
+                new Date(
+                  a.createdAt||0
+                )
+            );
+
+        liveOrders=orders;
+
+        renderDashboard();
+
+        if(
+          $("ordersModal")
+            .classList
+            .contains("open")
+        ){
+          renderOrders();
+        }
+
+      },
+      error=>{
+
+        console.error(
+          "Admin orders listener",
+          error
+        );
+
+        toast(
+          "❌ Accès Firestore refusé"
+        );
+
+      }
+    );
+
+}
+
+function openAdminDashboard(){
+
+  if(!currentUser){
+
+    openModal("authModal");
+
+    return;
+  }
+
+  if(!isAdminEmail()){
+
+    toast(
+      "Compte non autorisé."
+    );
+
+    return;
+  }
+
+  if(!isAdminUnlocked()){
+
+    const code=
+      prompt(
+        "Code Dashboard NovaShop :"
+      );
+
+    if(code!==ADMIN_CODE){
+
+      toast(
+        "Code incorrect."
+      );
+
+      return;
+    }
+
+    localStorage.setItem(
+      STORAGE.admin,
+      "true"
+    );
+
+  }
+
+  startAdminOrdersListener();
+
+  renderDashboard();
+
+  openModal("dashboardModal");
+
 }
 
 async function loginEmail(e){
+
   e.preventDefault();
 
   if(!firebaseAuth){
-    toast("Firebase n'est pas disponible.");
+
+    toast(
+      "Firebase n'est pas disponible."
+    );
+
     return;
   }
 
   try{
-    await firebaseTools.signInWithEmailAndPassword(
-      firebaseAuth,
-      $("loginEmail").value.trim(),
-      $("loginPassword").value
-    );
+
+    await firebaseTools
+      .signInWithEmailAndPassword(
+        firebaseAuth,
+        $("loginEmail").value.trim(),
+        $("loginPassword").value
+      );
 
     closeModal("authModal");
-    toast("Connexion réussie 👋");
+
+    toast(
+      "Connexion réussie"
+    );
 
   }catch(error){
+
     showAuthError(error);
+
   }
+
 }
 
 async function signupEmail(e){
+
   e.preventDefault();
 
   if(!firebaseAuth){
-    toast("Firebase n'est pas disponible.");
+
+    toast(
+      "Firebase n'est pas disponible."
+    );
+
     return;
   }
 
-  const email=$("signupEmail").value.trim();
-  const phone=$("signupPhone").value.trim();
-  const password=$("signupPassword").value;
-  const confirm=$("signupConfirm").value;
+  const email=
+    $("signupEmail").value.trim();
+
+  const phone=
+    $("signupPhone").value.trim();
+
+  const password=
+    $("signupPassword").value;
+
+  const confirm=
+    $("signupConfirm").value;
 
   if(password!==confirm){
-    toast("Les mots de passe ne correspondent pas.");
+
+    toast(
+      "Les mots de passe ne correspondent pas."
+    );
+
     return;
   }
 
   if(phone.length<8){
-    toast("Numéro de téléphone invalide.");
+
+    toast(
+      "Numéro de téléphone invalide."
+    );
+
     return;
   }
 
   try{
-    const result=
-      await firebaseTools.createUserWithEmailAndPassword(
-        firebaseAuth,
-        email,
-        password
-      );
 
-    const profiles=load(STORAGE.profiles,{});
+    const result=
+      await firebaseTools
+        .createUserWithEmailAndPassword(
+          firebaseAuth,
+          email,
+          password
+        );
+
+    const profiles=
+      load(
+        STORAGE.profiles,
+        {}
+      );
 
     profiles[result.user.uid]={
       phone
     };
 
-    save(STORAGE.profiles,profiles);
+    save(
+      STORAGE.profiles,
+      profiles
+    );
 
     closeModal("authModal");
-    toast("Compte créé 🎉");
+
+    toast(
+      "Compte créé"
+    );
 
   }catch(error){
+
     showAuthError(error);
+
   }
+
 }
 
 async function googleLogin(){
+
   if(!firebaseAuth){
-    toast("Firebase n'est pas disponible.");
+
+    toast(
+      "Firebase n'est pas disponible."
+    );
+
     return;
   }
 
   try{
-    const provider=new firebaseTools.GoogleAuthProvider();
 
-    await firebaseTools.signInWithPopup(
-      firebaseAuth,
-      provider
-    );
+    const provider=
+      new firebaseTools.GoogleAuthProvider();
+
+    await firebaseTools
+      .signInWithPopup(
+        firebaseAuth,
+        provider
+      );
 
     closeModal("authModal");
-    toast("Connexion Google réussie.");
+
+    toast(
+      "Connexion Google réussie."
+    );
+
   }catch(error){
+
     showAuthError(error);
+
   }
+
 }
 
 function setupEvents(){
 
-  $("searchButton").addEventListener("click",()=>{
-    searchTerm=$("searchInput").value.trim();
-    renderProducts();
-  });
+  $("searchButton")
+    .addEventListener(
+      "click",
+      ()=>{
+        searchTerm=
+          $("searchInput")
+            .value
+            .trim();
 
-  $("searchInput").addEventListener("keydown",e=>{
-    if(e.key==="Enter"){
-      searchTerm=e.target.value.trim();
-      renderProducts();
-    }
-  });
-
-  $("sortSelect").addEventListener(
-    "change",
-    renderProducts
-  );
-
-  document.querySelectorAll(".category").forEach(button=>{
-    button.addEventListener("click",()=>{
-      document.querySelectorAll(".category")
-        .forEach(x=>x.classList.remove("active"));
-
-      button.classList.add("active");
-
-      currentCategory=button.dataset.category;
-
-      renderProducts();
-    });
-  });
-
-  $("productsGrid").addEventListener("click",e=>{
-
-    const favorite=e.target.closest("[data-favorite]");
-    const view=e.target.closest("[data-view]");
-    const add=e.target.closest("[data-add]");
-
-    if(favorite){
-      toggleFavorite(favorite.dataset.favorite);
-    }
-
-    if(view){
-      openProduct(view.dataset.view);
-    }
-
-    if(add){
-      addToCart(add.dataset.add);
-    }
-  });
-
-  $("cartContent").addEventListener("click",e=>{
-    const plus=e.target.closest("[data-plus]");
-    const minus=e.target.closest("[data-minus]");
-
-    if(plus){
-      changeQty(plus.dataset.plus,1);
-    }
-
-    if(minus){
-      changeQty(minus.dataset.minus,-1);
-    }
-  });
-
-  $("cartButton").addEventListener("click",()=>{
-    renderCart();
-    openModal("cartModal");
-  });
-
-  $("accountButton").addEventListener("click",()=>{
-    renderAccount();
-    openModal("accountModal");
-  });
-
-  $("ordersButton").addEventListener("click",()=>{
-    renderOrders();
-    openModal("ordersModal");
-  });
-
-  $("heroOrders").addEventListener("click",()=>{
-    if(!currentUser){
-      openModal("authModal");
-      return;
-    }
-
-    renderOrders();
-    openModal("ordersModal");
-  });
-
-  $("heroProducts").addEventListener("click",()=>{
-    document.querySelector(".products-head")
-      ?.scrollIntoView({behavior:"smooth"});
-  });
-
-  $("checkoutButton").addEventListener("click",()=>{
-    if(!currentUser){
-      openModal("authModal");
-      return;
-    }
-
-    if(!cart().length){
-      toast("Ton panier est vide.");
-      return;
-    }
-
-    renderCheckout();
-    openModal("checkoutModal");
-  });
-
-  $("applyPromo").addEventListener(
-    "click",
-    applyPromo
-  );
-
-  $("checkoutForm").addEventListener(
-    "submit",
-    e=>{
-      e.preventDefault();
-      startPaypal();
-    }
-  );
-
-  $("loginForm").addEventListener(
-    "submit",
-    loginEmail
-  );
-
-  $("signupForm").addEventListener(
-    "submit",
-    signupEmail
-  );
-
-  $("googleButton").addEventListener(
-    "click",
-    googleLogin
-  );
-
-  $("googleSignupButton").addEventListener(
-    "click",
-    googleLogin
-  );
-
-  $("loginTab").addEventListener("click",()=>{
-    $("loginTab").classList.add("active");
-    $("signupTab").classList.remove("active");
-
-    $("loginForm").classList.remove("hidden");
-    $("signupForm").classList.add("hidden");
-  });
-
-  $("signupTab").addEventListener("click",()=>{
-    $("signupTab").classList.add("active");
-    $("loginTab").classList.remove("active");
-
-    $("signupForm").classList.remove("hidden");
-    $("loginForm").classList.add("hidden");
-  });
-
-  $("adminButton").addEventListener("click",()=>{
-    if(!currentUser){
-      openModal("authModal");
-      return;
-    }
-
-    if(!isAdminEmail()){
-      toast("Compte non autorisé.");
-      return;
-    }
-
-    if(!isAdminUnlocked()){
-      const code=prompt("Code Dashboard NovaShop :");
-
-      if(code!==ADMIN_CODE){
-        toast("Code incorrect.");
-        return;
+        renderProducts();
       }
+    );
 
-      localStorage.setItem(
-        STORAGE.admin,
-        "true"
+  $("searchInput")
+    .addEventListener(
+      "keydown",
+      e=>{
+
+        if(e.key==="Enter"){
+
+          searchTerm=
+            e.target.value
+              .trim();
+
+          renderProducts();
+
+        }
+
+      }
+    );
+
+  $("sortSelect")
+    .addEventListener(
+      "change",
+      renderProducts
+    );
+
+  document
+    .querySelectorAll(".category")
+    .forEach(button=>{
+
+      button.addEventListener(
+        "click",
+        ()=>{
+
+          document
+            .querySelectorAll(".category")
+            .forEach(x=>
+              x.classList
+                .remove("active")
+            );
+
+          button.classList
+            .add("active");
+
+          currentCategory=
+            button.dataset.category;
+
+          renderProducts();
+
+        }
       );
-    }
 
-    renderDashboard();
-    openModal("dashboardModal");
-  });
-
-  $("adminOrders").addEventListener("click",e=>{
-    const button=e.target.closest("[data-save-delivery]");
-
-    if(button){
-      saveDelivery(button.dataset.saveDelivery);
-    }
-  });
-
-  $("ordersContent").addEventListener("click",e=>{
-    const button=e.target.closest("[data-invoice]");
-
-    if(button){
-      showInvoice(button.dataset.invoice);
-    }
-  });
-
-  $("settingsButton").addEventListener("click",()=>{
-    $("darkSwitch").checked=
-      localStorage.getItem(STORAGE.dark)==="true";
-
-    $("soundSwitch").checked=
-      localStorage.getItem(STORAGE.sound)!=="false";
-
-    openModal("settingsModal");
-  });
-
-  $("darkSwitch").addEventListener("change",e=>{
-    document.body.classList.toggle(
-      "dark",
-      e.target.checked
-    );
-
-    localStorage.setItem(
-      STORAGE.dark,
-      String(e.target.checked)
-    );
-  });
-
-  $("soundSwitch").addEventListener("change",e=>{
-    localStorage.setItem(
-      STORAGE.sound,
-      String(e.target.checked)
-    );
-  });
-
-  $("printInvoice").addEventListener(
-    "click",
-    ()=>window.print()
-  );
-
-  document.querySelectorAll("[data-close]").forEach(button=>{
-    button.addEventListener("click",()=>{
-      closeModal(button.dataset.close);
     });
+
+  $("productsGrid")
+    .addEventListener(
+      "click",
+      e=>{
+
+        const favorite=
+          e.target.closest(
+            "[data-favorite]"
+          );
+
+        const view=
+          e.target.closest(
+            "[data-view]"
+          );
+
+        const add=
+          e.target.closest(
+            "[data-add]"
+          );
+
+        if(favorite){
+
+          toggleFavorite(
+            favorite.dataset.favorite
+          );
+
+        }
+
+        if(view){
+
+          openProduct(
+            view.dataset.view
+          );
+
+        }
+
+        if(add){
+
+          addToCart(
+            add.dataset.add
+          );
+
+        }
+
+      }
+    );
+
+  $("cartContent")
+    .addEventListener(
+      "click",
+      e=>{
+
+        const plus=
+          e.target.closest(
+            "[data-plus]"
+          );
+
+        const minus=
+          e.target.closest(
+            "[data-minus]"
+          );
+
+        if(plus){
+
+          changeQty(
+            plus.dataset.plus,
+            1
+          );
+
+        }
+
+        if(minus){
+
+          changeQty(
+            minus.dataset.minus,
+            -1
+          );
+
+        }
+
+      }
+    );
+
+  $("cartButton")
+    .addEventListener(
+      "click",
+      ()=>{
+
+        renderCart();
+
+        openModal("cartModal");
+
+      }
+    );
+
+  $("accountButton")
+    .addEventListener(
+      "click",
+      ()=>{
+
+        renderAccount();
+
+        openModal("accountModal");
+
+      }
+    );
+
+  $("ordersButton")
+    .addEventListener(
+      "click",
+      ()=>{
+
+        renderOrders();
+
+        openModal("ordersModal");
+
+      }
+    );
+
+  $("heroOrders")
+    .addEventListener(
+      "click",
+      ()=>{
+
+        if(!currentUser){
+
+          openModal("authModal");
+
+          return;
+        }
+
+        renderOrders();
+
+        openModal("ordersModal");
+
+      }
+    );
+
+  $("heroProducts")
+    .addEventListener(
+      "click",
+      ()=>{
+
+        document
+          .querySelector(".products-head")
+          ?.scrollIntoView({
+            behavior:"smooth"
+          });
+
+      }
+    );
+
+  $("checkoutButton")
+    .addEventListener(
+      "click",
+      ()=>{
+
+        if(!currentUser){
+
+          openModal("authModal");
+
+          return;
+        }
+
+        if(!cart().length){
+
+          toast(
+            "Ton panier est vide."
+          );
+
+          return;
+        }
+
+        addressVerified=false;
+        verifiedAddress=null;
+
+        $("addressStatus")
+          .className=
+          "address-status";
+
+        $("addressResult")
+          .classList
+          .remove("show");
+
+        renderCheckout();
+
+        openModal(
+          "checkoutModal"
+        );
+
+      }
+    );
+
+  $("verifyAddressButton")
+    .addEventListener(
+      "click",
+      verifyAddress
+    );
+
+  [
+    "address",
+    "postalCode",
+    "city",
+    "country"
+  ].forEach(id=>{
+
+    $(id).addEventListener(
+      "input",
+      ()=>{
+
+        if(addressVerified){
+
+          resetAddressVerification();
+
+        }
+
+      }
+    );
+
   });
 
-  $("overlay").addEventListener(
-    "click",
-    closeAllModals
-  );
+  $("applyPromo")
+    .addEventListener(
+      "click",
+      applyPromo
+    );
 
-  document.addEventListener("keydown",e=>{
-    if(e.key==="Escape"){
-      closeAllModals();
-    }
-  });
+  $("checkoutForm")
+    .addEventListener(
+      "submit",
+      e=>{
+
+        e.preventDefault();
+
+        startPaypal();
+
+      }
+    );
+
+  $("loginForm")
+    .addEventListener(
+      "submit",
+      loginEmail
+    );
+
+  $("signupForm")
+    .addEventListener(
+      "submit",
+      signupEmail
+    );
+
+  $("googleButton")
+    .addEventListener(
+      "click",
+      googleLogin
+    );
+
+  $("googleSignupButton")
+    .addEventListener(
+      "click",
+      googleLogin
+    );
+
+  $("loginTab")
+    .addEventListener(
+      "click",
+      ()=>{
+
+        $("loginTab")
+          .classList
+          .add("active");
+
+        $("signupTab")
+          .classList
+          .remove("active");
+
+        $("loginForm")
+          .classList
+          .remove("hidden");
+
+        $("signupForm")
+          .classList
+          .add("hidden");
+
+      }
+    );
+
+  $("signupTab")
+    .addEventListener(
+      "click",
+      ()=>{
+
+        $("signupTab")
+          .classList
+          .add("active");
+
+        $("loginTab")
+          .classList
+          .remove("active");
+
+        $("signupForm")
+          .classList
+          .remove("hidden");
+
+        $("loginForm")
+          .classList
+          .add("hidden");
+
+      }
+    );
+
+  $("adminButton")
+    .addEventListener(
+      "click",
+      openAdminDashboard
+    );
+
+  $("adminOrders")
+    .addEventListener(
+      "click",
+      e=>{
+
+        const saveButton=
+          e.target.closest(
+            "[data-save-delivery]"
+          );
+
+        const deleteButton=
+          e.target.closest(
+            "[data-delete-order]"
+          );
+
+        if(saveButton){
+
+          saveDelivery(
+            saveButton
+              .dataset
+              .saveDelivery
+          );
+
+        }
+
+        if(deleteButton){
+
+          deleteOrder(
+            deleteButton
+              .dataset
+              .deleteOrder
+          );
+
+        }
+
+      }
+    );
+
+  $("ordersContent")
+    .addEventListener(
+      "click",
+      e=>{
+
+        const button=
+          e.target.closest(
+            "[data-invoice]"
+          );
+
+        if(button){
+
+          showInvoice(
+            button.dataset.invoice
+          );
+
+        }
+
+      }
+    );
+
+  $("settingsButton")
+    .addEventListener(
+      "click",
+      ()=>{
+
+        $("darkSwitch")
+          .checked=
+          localStorage.getItem(
+            STORAGE.dark
+          )==="true";
+
+        $("soundSwitch")
+          .checked=
+          localStorage.getItem(
+            STORAGE.sound
+          )!=="false";
+
+        openModal(
+          "settingsModal"
+        );
+
+      }
+    );
+
+  $("darkSwitch")
+    .addEventListener(
+      "change",
+      e=>{
+
+        document.body
+          .classList
+          .toggle(
+            "dark",
+            e.target.checked
+          );
+
+        localStorage.setItem(
+          STORAGE.dark,
+          String(
+            e.target.checked
+          )
+        );
+
+      }
+    );
+
+  $("soundSwitch")
+    .addEventListener(
+      "change",
+      e=>{
+
+        localStorage.setItem(
+          STORAGE.sound,
+          String(
+            e.target.checked
+          )
+        );
+
+      }
+    );
+
+  $("printInvoice")
+    .addEventListener(
+      "click",
+      ()=>window.print()
+    );
+
+  document
+    .querySelectorAll("[data-close]")
+    .forEach(button=>{
+
+      button.addEventListener(
+        "click",
+        ()=>{
+          closeModal(
+            button.dataset.close
+          );
+        }
+      );
+
+    });
+
+  $("overlay")
+    .addEventListener(
+      "click",
+      closeAllModals
+    );
+
+  document
+    .addEventListener(
+      "keydown",
+      e=>{
+
+        if(e.key==="Escape"){
+          closeAllModals();
+        }
+
+      }
+    );
+
 }
 
 function boot(){
-  document.body.classList.toggle(
-    "dark",
-    localStorage.getItem(STORAGE.dark)==="true"
-  );
+
+  document.body
+    .classList
+    .toggle(
+      "dark",
+      localStorage.getItem(
+        STORAGE.dark
+      )==="true"
+    );
 
   setupEvents();
+
   renderProducts();
+
   renderCart();
+
   updateCartCount();
+
   updateAccountUI();
 
-  setInterval(()=>{
-    if($("ordersModal").classList.contains("open")){
+  setInterval(
+    ()=>{
+
       renderOrders();
-    }
-  },1000);
+
+      if(
+        isAdminEmail() &&
+        isAdminUnlocked() &&
+        $("dashboardModal")
+          .classList
+          .contains("open")
+      ){
+
+        renderAdminOrders();
+
+      }
+
+    },
+    1000
+  );
+
 }
 
 boot();
+
 initFirebase();
