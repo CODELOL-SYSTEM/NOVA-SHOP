@@ -1,28 +1,25 @@
-import {
-  initializeApp
-} from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
 
 import {
   getAuth,
-  createUserWithEmailAndPassword,
+  onAuthStateChanged,
   signInWithEmailAndPassword,
-  signOut,
-  onAuthStateChanged
-} from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
+  createUserWithEmailAndPassword,
+  GoogleAuthProvider,
+  signInWithPopup,
+  signOut
+} from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
 
 import {
   getFirestore,
   collection,
   doc,
-  addDoc,
+  setDoc,
   updateDoc,
-  deleteDoc,
-  getDoc,
-  onSnapshot,
   query,
   where,
-  serverTimestamp
-} from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+  onSnapshot
+} from "https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js";
 
 
 /* =========================================================
@@ -40,16 +37,34 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
+
 const auth = getAuth(app);
+
 const db = getFirestore(app);
 
 
 /* =========================================================
-   ADMIN
+   CONSTANTES
 ========================================================= */
 
 const ADMIN_EMAIL = "pc2alex.les@gmail.com";
+
 const ADMIN_CODE = "NOVA-ADMIN-2026";
+
+const CART_KEY = "novashop_cart";
+
+const SETTINGS_KEY = "novashop_settings";
+
+
+/* =========================================================
+   PROMOTIONS
+========================================================= */
+
+const promos = {
+  NOVA100: 100,
+  NOVA20: 20,
+  NOVA10: 10
+};
 
 
 /* =========================================================
@@ -57,266 +72,272 @@ const ADMIN_CODE = "NOVA-ADMIN-2026";
 ========================================================= */
 
 const products = [
+
   {
-    id: "iphone",
-    name: "iPhone",
-    category: "Téléphones",
-    price: 899.99,
-    image: "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=900&q=85"
+    id: "p1",
+    name: "Gigabyte B650 AORUS Elite AX",
+    category: "Composants",
+    price: 189.99,
+    image: "https://m.media-amazon.com/images/I/81JFKzNyl+L._AC_SL1500_.jpg"
   },
+
   {
-    id: "samsung",
-    name: "Samsung Galaxy",
-    category: "Téléphones",
-    price: 749.99,
-    image: "https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?auto=format&fit=crop&w=900&q=85"
+    id: "p2",
+    name: "PC Gamer AMD Ryzen 7 7800X3D | RX 9070 XT | 32 Go DDR5",
+    category: "PC Gamer",
+    price: 2237.65,
+    image: "https://www.memorypc.fr/thumbnail/53/79/73/1786604635/019f8f1c2c6972a8a3ea1ee9516a0652_1784812416_800x800.png"
   },
+
   {
-    id: "macbook",
-    name: "MacBook",
-    category: "Ordinateurs",
-    price: 1299.99,
-    image: "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?auto=format&fit=crop&w=900&q=85"
-  },
-  {
-    id: "gaming-pc",
-    name: "PC Gaming RGB",
-    category: "Ordinateurs",
-    price: 1499.99,
-    image: "https://images.unsplash.com/photo-1587202372775-e229f172b9d7?auto=format&fit=crop&w=900&q=85"
-  },
-  {
-    id: "ps5",
-    name: "PlayStation 5",
-    category: "Gaming",
-    price: 549.99,
-    image: "https://images.unsplash.com/photo-1606813907291-d86efa9b94db?auto=format&fit=crop&w=900&q=85"
-  },
-  {
-    id: "xbox",
-    name: "Xbox Series X",
-    category: "Gaming",
-    price: 499.99,
-    image: "https://images.unsplash.com/photo-1621259182978-fbf93132d53d?auto=format&fit=crop&w=900&q=85"
-  },
-  {
-    id: "headset",
-    name: "Casque Gaming",
-    category: "Gaming",
-    price: 89.99,
-    image: "https://images.unsplash.com/photo-1599669454699-248893623440?auto=format&fit=crop&w=900&q=85"
-  },
-  {
-    id: "keyboard",
-    name: "Clavier Gaming",
-    category: "Gaming",
-    price: 69.99,
-    image: "https://images.unsplash.com/photo-1587829741301-dc798b83add3?auto=format&fit=crop&w=900&q=85"
-  },
-  {
-    id: "mouse",
-    name: "Souris Gaming",
-    category: "Gaming",
+    id: "p3",
+    name: "HyperX Cloud II",
+    category: "Casques",
     price: 49.99,
-    image: "https://images.unsplash.com/photo-1527814050087-3793815479db?auto=format&fit=crop&w=900&q=85"
+    image: "https://cdn.shopify.com/s/files/1/0551/0548/6979/files/hyperx_cloud_ii_red_1_main_64x64.jpg?v=1764129756"
   },
+
   {
-    id: "monitor",
-    name: "Écran Gaming 180 Hz",
-    category: "Gaming",
-    price: 229.99,
-    image: "https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?auto=format&fit=crop&w=900&q=85"
+    id: "p4",
+    name: "TECORS Clavier Gamer Mécanique 60% AZERTY",
+    category: "Claviers",
+    price: 30,
+    image: "https://m.media-amazon.com/images/I/71-lhAU97VL._AC_SL1500_.jpg"
   },
+
   {
-    id: "airpods",
-    name: "Écouteurs Bluetooth",
-    category: "Audio",
-    price: 149.99,
-    image: "https://images.unsplash.com/photo-1600294037681-c80b4cb5b434?auto=format&fit=crop&w=900&q=85"
+    id: "p5",
+    name: "Clavier Magnétique 65% Celshading Noir",
+    category: "Claviers",
+    price: 120.90,
+    image: "https://tryhard-gear.com/cdn/shop/files/TestCelshadingnoirV2.webp?v=1762273866&width=832"
   },
+
   {
-    id: "speaker",
-    name: "Enceinte Bluetooth",
-    category: "Audio",
-    price: 79.99,
-    image: "https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?auto=format&fit=crop&w=900&q=85"
+    id: "p6",
+    name: "Ajazz AJ199 MAX Carbon Fiber Wireless Gaming Mouse",
+    category: "Souris",
+    price: 49.99,
+    image: "https://ae-pic-a1.aliexpress-media.com/kf/S1e981b53ccfe4e1391cd5b5deb4fce87o.png_960x960.png_.avif"
   },
+
   {
-    id: "camera",
-    name: "Appareil Photo",
-    category: "Photo",
-    price: 699.99,
-    image: "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&w=900&q=85"
+    id: "p7",
+    name: "Logitech G PRO X2 Superstrike Blanc et Noir",
+    category: "Souris",
+    price: 150.99,
+    image: "https://static.fnac-static.com/multimedia/Images/FR/MDM/7a/34/bc/29111418/1540-1.jpg"
   },
+
   {
-    id: "watch",
-    name: "Smartwatch",
-    category: "Accessoires",
-    price: 199.99,
-    image: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=900&q=85"
+    id: "p8",
+    name: "Samsung 990 PRO 1TB",
+    category: "Stockage",
+    price: 249.99,
+    image: "https://content.pearl.fr/media/cache/default/article_ultralarge_high_nocrop/shared/images/articles/M/MW1/disque-dur-interne-ssd-990-pro-pcie-nvme-m-2-2280-1-to-ref_MW1148_2.jpg"
   },
+
   {
-    id: "tablet",
-    name: "Tablette",
-    category: "Tablettes",
-    price: 399.99,
-    image: "https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?auto=format&fit=crop&w=900&q=85"
+    id: "p9",
+    name: "Samsung 990 PRO 2TB",
+    category: "Stockage",
+    price: 199.93,
+    image: "https://pc.comparer.fr/500x500/310191422.webp"
   },
+
   {
-    id: "tv",
-    name: "TV 4K",
-    category: "TV",
-    price: 799.99,
-    image: "https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?auto=format&fit=crop&w=900&q=85"
+    id: "p10",
+    name: "CORSAIR RM1000x EU",
+    category: "Alimentations",
+    price: 159.90,
+    image: "https://assets.corsair.com/image/upload/c_pad,q_85,h_608,w_608,f_auto/products/Power-Supply-Units/base-rmx-2024-config/gallery/black/1000/RM1000x_2024_01.webp"
   },
+
   {
-    id: "router",
-    name: "Routeur Wi-Fi",
-    category: "Réseau",
-    price: 119.99,
-    image: "https://images.unsplash.com/photo-1606904825846-647eb07f5be2?auto=format&fit=crop&w=900&q=85"
+    id: "p11",
+    name: "CORSAIR RM850x EU",
+    category: "Alimentations",
+    price: 134.90,
+    image: "https://assets.corsair.com/image/upload/c_pad,q_85,h_608,w_608,f_auto/products/Power-Supply-Units/base-rmx-2024-config/gallery/black/850/RM850x_2024_01.webp"
   },
+
   {
-    id: "ssd",
-    name: "SSD 2 To",
-    category: "Informatique",
-    price: 159.99,
-    image: "https://images.unsplash.com/photo-1597872200969-2b65d56bd16b?auto=format&fit=crop&w=900&q=85"
+    id: "p12",
+    name: "Corsair Frame 5000D RS ARGB Noir",
+    category: "Boîtiers",
+    price: 159.90,
+    image: "https://media.ldlc.com/r1600/ld/products/00/06/26/05/LD0006260502.jpg"
+  },
+
+  {
+    id: "p13",
+    name: "ARCTIC Liquid Freezer III Pro 360 A-RGB Black",
+    category: "Refroidissement",
+    price: 129.90,
+    image: "https://cdn.idealo.com/folder/Product/206182/0/206182034/s4_produktbild_gross/arctic-liquid-freezer-iii-pro-360-a-rgb-black.jpg"
+  },
+
+  {
+    id: "p14",
+    name: "Samsung 27 QD-OLED Odyssey G6",
+    category: "Écrans",
+    price: 399.95,
+    image: "https://media.ldlc.com/r705/ld/products/00/06/32/99/LD0006329977.jpg"
+  },
+
+  {
+    id: "p15",
+    name: "ELGATO Wave Mic Arm Pro",
+    category: "Streaming",
+    price: 229.90,
+    image: "https://www.digit-photo.com/images/produits/ELGATO10AAT9901/1.jpg"
+  },
+
+  {
+    id: "p16",
+    name: "Sony DualSense Cosmic Red PS5/PC",
+    category: "Manettes",
+    price: 74.90,
+    image: "https://media.carrefour.fr/media/referential/media/cc07d7de4b9e4bea8c063e8f9bb46d94/p_200x200/0711719023005_0.jpg"
+  },
+
+  {
+    id: "p17",
+    name: "ASUS TUF Gaming B650-PLUS",
+    category: "Composants",
+    price: 179.90,
+    image: "https://media.materiel.net/r550/products/MN0005986139.jpg"
+  },
+
+  {
+    id: "p18",
+    name: "MSI MAG B650 Tomahawk WiFi",
+    category: "Composants",
+    price: 189.90,
+    image: "https://m.media-amazon.com/images/I/71TYAcZ4J8L._AC_SL1200_.jpg"
   }
+
 ];
 
 
 /* =========================================================
-   VARIABLES
+   IMAGE DE SECOURS
 ========================================================= */
 
-let currentUser = null;
-let authMode = "login";
+const fallbackImages = {
 
-let selectedCategory = "Tous";
-let searchValue = "";
+  "Composants":
+    "https://images.unsplash.com/photo-1591488320449-011701bb6704?auto=format&fit=crop&w=900&q=80",
 
-let cart = [];
+  "PC Gamer":
+    "https://images.unsplash.com/photo-1587202372634-32705e3bf49c?auto=format&fit=crop&w=900&q=80",
 
-let reviewsCache = {};
+  "Casques":
+    "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=900&q=80",
 
-let questionsUnsubscribe = null;
-let adminQuestionsUnsubscribe = null;
+  "Claviers":
+    "https://images.unsplash.com/photo-1587829741301-dc798b83add3?auto=format&fit=crop&w=900&q=80",
+
+  "Souris":
+    "https://images.unsplash.com/photo-1527814050087-3793815479db?auto=format&fit=crop&w=900&q=80",
+
+  "Stockage":
+    "https://images.unsplash.com/photo-1597872200969-2b65d56bd16b?auto=format&fit=crop&w=900&q=80",
+
+  "Alimentations":
+    "https://images.unsplash.com/photo-1625842268584-8f3296236761?auto=format&fit=crop&w=900&q=80",
+
+  "Boîtiers":
+    "https://images.unsplash.com/photo-1587831990711-23ca6441447b?auto=format&fit=crop&w=900&q=80",
+
+  "Refroidissement":
+    "https://images.unsplash.com/photo-1591799264318-7e6ef8ddb7ea?auto=format&fit=crop&w=900&q=80",
+
+  "Écrans":
+    "https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?auto=format&fit=crop&w=900&q=80",
+
+  "Streaming":
+    "https://images.unsplash.com/photo-1590602847861-f357a9332bbc?auto=format&fit=crop&w=900&q=80",
+
+  "Manettes":
+    "https://images.unsplash.com/photo-1605901309584-818e25960a8f?auto=format&fit=crop&w=900&q=80"
+
+};
 
 
 /* =========================================================
-   UTILITAIRES
+   IMAGE ERROR
 ========================================================= */
 
-function randomInt(min, max) {
-  return Math.floor(
-    Math.random() * (max - min + 1)
-  ) + min;
-}
+function imageError(img, category){
 
-function randomItem(array) {
-  return array[
-    Math.floor(Math.random() * array.length)
-  ];
-}
+  if(!img)
+    return;
 
-function money(value) {
-  return new Intl.NumberFormat("fr-FR", {
-    style: "currency",
-    currency: "EUR"
-  }).format(value);
-}
+  img.onerror = null;
 
-function escapeHtml(value) {
+  img.src =
+    fallbackImages[category] ||
+    fallbackImages["Composants"];
 
-  return String(value ?? "")
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;");
-}
-
-function stars(rating) {
-
-  const rounded = Math.round(rating);
-
-  return "★".repeat(rounded) +
-         "☆".repeat(5 - rounded);
-}
-
-function showToast(message) {
-
-  const old = document.querySelector(".novashop-toast");
-
-  if (old) old.remove();
-
-  const toast = document.createElement("div");
-
-  toast.className = "novashop-toast";
-
-  toast.textContent = message;
-
-  document.body.appendChild(toast);
-
-  setTimeout(() => {
-    toast.remove();
-  }, 3000);
-}
-
-function openModal(id) {
-
-  const modal = document.getElementById(id);
-
-  if (modal) {
-    modal.classList.add("open");
-  }
-}
-
-function closeModal(id) {
-
-  const modal = document.getElementById(id);
-
-  if (modal) {
-    modal.classList.remove("open");
-  }
 }
 
 
 /* =========================================================
-   AVIS
+   NOMS POUR AVIS
 ========================================================= */
 
 const firstNames = [
+
   "Lucas",
-  "Emma",
-  "Louis",
-  "Jade",
-  "Gabriel",
-  "Léa",
   "Hugo",
-  "Chloé",
-  "Nathan",
-  "Manon",
-  "Tom",
-  "Camille",
   "Noah",
-  "Sarah",
+  "Léo",
+  "Nathan",
+  "Tom",
   "Enzo",
-  "Inès",
-  "Arthur",
-  "Zoé",
+  "Louis",
+  "Gabriel",
+  "Jules",
   "Mathis",
-  "Lola",
   "Ethan",
-  "Mia",
   "Théo",
-  "Alice"
+  "Maxime",
+  "Alex",
+  "Antoine",
+  "Arthur",
+  "Raphaël",
+  "Adam",
+  "Paul",
+  "Simon",
+  "Rayan",
+  "Thomas",
+  "Martin",
+  "Sacha",
+  "Liam",
+  "Nolan",
+  "Evan",
+  "Axel",
+  "Mattéo",
+  "Kylian",
+  "Victor",
+  "Milan",
+  "Oscar",
+  "Nino",
+  "Gabin",
+  "Robin",
+  "Noé",
+  "Eliott",
+  "Valentin"
+
 ];
 
+
 const lastNames = [
+
   "Martin",
   "Bernard",
+  "Dubois",
   "Thomas",
   "Robert",
   "Richard",
@@ -326,6 +347,7 @@ const lastNames = [
   "Moreau",
   "Simon",
   "Laurent",
+  "Lefebvre",
   "Michel",
   "Garcia",
   "David",
@@ -333,101 +355,189 @@ const lastNames = [
   "Roux",
   "Vincent",
   "Fournier",
+  "Morel",
   "Girard",
-  "Bonnet"
+  "André",
+  "Lemoine",
+  "Faure",
+  "Mercier",
+  "Blanc",
+  "Guerin",
+  "Boyer",
+  "Garnier"
+
 ];
+
+
+/* =========================================================
+   TEXTES AVIS
+========================================================= */
 
 const reviewTexts = {
 
   5: [
-    "Excellent produit, je recommande.",
-    "Très bonne qualité.",
-    "Livraison rapide et produit parfait.",
-    "Super achat.",
-    "Très satisfait de mon achat.",
+
+    "Très bon produit, fonctionne parfaitement.",
+    "Bonne qualité et livraison rapide.",
     "Produit conforme à la description.",
-    "Rien à redire.",
-    "Très bon rapport qualité prix.",
-    "Je suis vraiment satisfait.",
-    "Fonctionne parfaitement."
+    "Très satisfait de mon achat.",
+    "Installation simple et résultat excellent.",
+    "La qualité est vraiment au rendez-vous.",
+    "Correspond parfaitement à mes attentes.",
+    "Rien à signaler, tout fonctionne correctement.",
+    "Très bonne expérience avec ce produit.",
+    "Excellent produit.",
+    "Très bonne surprise.",
+    "Produit de très bonne qualité.",
+    "Tout fonctionne parfaitement.",
+    "Très satisfait.",
+    "Rapport qualité prix intéressant.",
+    "Installation rapide et simple.",
+    "Produit exactement comme prévu."
+
   ],
 
   4: [
-    "Très bon produit.",
-    "Bonne qualité dans l'ensemble.",
-    "Je recommande.",
-    "Produit conforme.",
-    "Très satisfait.",
-    "Bon achat.",
-    "Livraison correcte.",
-    "Bonne expérience."
+
+    "Très bon produit, quelques petits détails pourraient être améliorés.",
+    "Bonne qualité générale.",
+    "Produit efficace et conforme.",
+    "Très satisfait malgré quelques petits points.",
+    "Bonne expérience dans l'ensemble.",
+    "Le produit fait parfaitement son travail.",
+    "Qualité correcte et utilisation agréable.",
+    "Bon produit.",
+    "Très bonne qualité.",
+    "Fonctionne très bien.",
+    "Je suis satisfait.",
+    "Bonne expérience globale."
+
   ],
 
   3: [
-    "Produit correct.",
-    "Ça fonctionne correctement.",
-    "Qualité moyenne mais satisfaisante.",
-    "Pas mal.",
-    "Produit convenable."
+
+    "Produit correct pour son prix.",
+    "Fonctionne correctement.",
+    "Bonne expérience mais quelques améliorations seraient possibles.",
+    "Produit satisfaisant dans l'ensemble.",
+    "Rien d'exceptionnel mais ça fonctionne.",
+    "Correct dans l'ensemble.",
+    "Produit convenable.",
+    "Ça fait le travail.",
+    "Expérience moyenne mais correcte."
+
   ],
 
   2: [
-    "Moyen.",
-    "Je m'attendais à mieux.",
-    "Quelques défauts.",
-    "Correct sans plus."
+
+    "Le produit fonctionne mais certains points sont à améliorer.",
+    "Qualité moyenne.",
+    "Quelques défauts rencontrés.",
+    "Pas totalement convaincu.",
+    "Il y a quelques points à revoir.",
+    "Fonctionne mais peut mieux faire."
+
   ],
 
   1: [
-    "Déçu de mon achat.",
+
+    "Produit qui ne correspond pas totalement à mes attentes.",
+    "Quelques problèmes rencontrés.",
+    "Expérience décevante.",
+    "Je rencontre plusieurs problèmes.",
     "Pas vraiment satisfait.",
-    "Qualité décevante."
+    "Produit à améliorer."
+
   ]
+
 };
 
 
-function generateReviews(product) {
+/* =========================================================
+   OUTILS
+========================================================= */
+
+function randomItem(array){
+
+  return array[
+    Math.floor(
+      Math.random() * array.length
+    )
+  ];
+
+}
+
+
+function randomInt(min, max){
+
+  return Math.floor(
+    Math.random() * (max - min + 1)
+  ) + min;
+
+}
+
+
+/* =========================================================
+   AVIS GÉNÉRÉS
+========================================================= */
+
+function generateReviews(product){
 
   const reviews = [];
 
-  const reviewCount = randomInt(850, 950);
+  const reviewCount =
+    randomInt(850, 950);
 
-  for (let i = 0; i < reviewCount; i++) {
+  for(let i = 0; i < reviewCount; i++){
 
     const roll = Math.random();
 
     let rating;
 
-    if (roll < 0.72) {
+    if(roll < 0.72){
 
       rating = 5;
 
-    } else if (roll < 0.90) {
+    }
+
+    else if(roll < 0.90){
 
       rating = 4;
 
-    } else if (roll < 0.97) {
+    }
+
+    else if(roll < 0.97){
 
       rating = 3;
 
-    } else if (roll < 0.99) {
+    }
+
+    else if(roll < 0.99){
 
       rating = 2;
 
-    } else {
-
-      rating = 1;
     }
 
-    const first = randomItem(firstNames);
-    const last = randomItem(lastNames);
+    else{
 
-    const daysAgo = randomInt(0, 720);
+      rating = 1;
 
-    const date = new Date(
-      Date.now() -
-      daysAgo * 86400000
-    );
+    }
+
+    const first =
+      randomItem(firstNames);
+
+    const last =
+      randomItem(lastNames);
+
+    const daysAgo =
+      randomInt(0, 720);
+
+    const date =
+      new Date(
+        Date.now() -
+        daysAgo * 86400000
+      );
 
     reviews.push({
 
@@ -440,100 +550,405 @@ function generateReviews(product) {
       rating,
 
       text:
-        randomItem(reviewTexts[rating]),
+        randomItem(
+          reviewTexts[rating]
+        ),
 
       date
+
     });
+
   }
 
   return reviews;
-}
 
-
-function getReviews(product) {
-
-  if (!reviewsCache[product.id]) {
-
-    reviewsCache[product.id] =
-      generateReviews(product);
-  }
-
-  return reviewsCache[product.id];
-}
-
-
-function getReviewStats(product) {
-
-  const reviews = getReviews(product);
-
-  let total = 0;
-
-  for (const review of reviews) {
-    total += review.rating;
-  }
-
-  return {
-
-    count: reviews.length,
-
-    average:
-      reviews.length
-        ? total / reviews.length
-        : 0
-  };
 }
 
 
 /* =========================================================
-   CATEGORIES
+   CACHE AVIS
 ========================================================= */
 
-function renderCategories() {
+const reviewsCache = {};
 
-  const container =
-    document.getElementById("categories");
 
-  if (!container) return;
+function getReviews(product){
 
-  const categories = [
-    "Tous",
-    ...new Set(
-      products.map(product => product.category)
-    )
-  ];
+  if(!reviewsCache[product.id]){
 
-  container.innerHTML =
-    categories.map(category => {
+    reviewsCache[product.id] =
+      generateReviews(product);
 
-      const active =
-        category === selectedCategory
-          ? "active"
-          : "";
+  }
 
-      return `
-        <button
-          class="category-btn ${active}"
-          data-category="${escapeHtml(category)}"
-        >
-          ${escapeHtml(category)}
-        </button>
-      `;
+  return reviewsCache[product.id];
 
-    }).join("");
+}
 
-  container
-    .querySelectorAll("[data-category]")
-    .forEach(button => {
 
-      button.addEventListener("click", () => {
+/* =========================================================
+   STATS AVIS
+========================================================= */
 
-        selectedCategory =
-          button.dataset.category;
+function getReviewStats(product){
 
-        renderCategories();
-        renderProducts();
-      });
-    });
+  const reviews =
+    getReviews(product);
+
+  const total =
+    reviews.reduce(
+      (sum, review) =>
+        sum + review.rating,
+      0
+    );
+
+  return {
+
+    count:
+      reviews.length,
+
+    average:
+      total / reviews.length
+
+  };
+
+}
+
+
+/* =========================================================
+   ÉTOILES
+========================================================= */
+
+function stars(value){
+
+  const rounded =
+    Math.max(
+      0,
+      Math.min(
+        5,
+        Math.round(value)
+      )
+    );
+
+  return (
+    "★".repeat(rounded) +
+    "☆".repeat(5 - rounded)
+  );
+
+}
+
+
+/* =========================================================
+   ÉTAT
+========================================================= */
+
+let currentUser = null;
+
+let currentCategory = "Tous";
+
+let currentSearch = "";
+
+let currentSort = "default";
+
+let cart =
+  JSON.parse(
+    localStorage.getItem(
+      CART_KEY
+    ) || "[]"
+  );
+
+let appliedPromo = null;
+
+let unsubscribeOrders = null;
+
+let unsubscribeAdminOrders = null;
+
+let adminOrdersData = [];
+
+
+/* =========================================================
+   DOM
+========================================================= */
+
+const $ = id =>
+  document.getElementById(id);
+
+
+/* =========================================================
+   TOAST
+========================================================= */
+
+function showToast(message){
+
+  const toast =
+    $("toast");
+
+  if(!toast){
+
+    alert(message);
+
+    return;
+
+  }
+
+  toast.textContent =
+    message;
+
+  toast.classList.add(
+    "show"
+  );
+
+  setTimeout(()=>{
+
+    toast.classList.remove(
+      "show"
+    );
+
+  }, 3000);
+
+}
+
+
+/* =========================================================
+   MODALS
+========================================================= */
+
+function openModal(id){
+
+  const modal =
+    $(id);
+
+  if(!modal)
+    return;
+
+  modal.classList.remove(
+    "hidden"
+  );
+
+  const overlay =
+    $("overlay");
+
+  if(overlay){
+
+    overlay.classList.remove(
+      "hidden"
+    );
+
+  }
+
+}
+
+
+function closeModal(id){
+
+  const modal =
+    $(id);
+
+  if(modal){
+
+    modal.classList.add(
+      "hidden"
+    );
+
+  }
+
+  const modals =
+    document.querySelectorAll(
+      ".modal"
+    );
+
+  const stillOpen =
+    [...modals].some(
+      modal =>
+        !modal.classList.contains(
+          "hidden"
+        )
+    );
+
+  if(!stillOpen){
+
+    const overlay =
+      $("overlay");
+
+    if(overlay){
+
+      overlay.classList.add(
+        "hidden"
+      );
+
+    }
+
+  }
+
+}
+
+
+function closeAllModals(){
+
+  document.querySelectorAll(
+    ".modal"
+  ).forEach(modal => {
+
+    modal.classList.add(
+      "hidden"
+    );
+
+  });
+
+  const overlay =
+    $("overlay");
+
+  if(overlay){
+
+    overlay.classList.add(
+      "hidden"
+    );
+
+  }
+
+}
+
+
+/* =========================================================
+   HTML SAFE
+========================================================= */
+
+function escapeHtml(value){
+
+  return String(
+    value ?? ""
+  )
+
+  .replaceAll(
+    "&",
+    "&amp;"
+  )
+
+  .replaceAll(
+    "<",
+    "&lt;"
+  )
+
+  .replaceAll(
+    ">",
+    "&gt;"
+  )
+
+  .replaceAll(
+    '"',
+    "&quot;"
+  )
+
+  .replaceAll(
+    "'",
+    "&#039;"
+  );
+
+}
+
+
+/* =========================================================
+   PRIX
+========================================================= */
+
+function money(value){
+
+  return new Intl.NumberFormat(
+    "fr-FR",
+    {
+      style: "currency",
+      currency: "EUR"
+    }
+  ).format(value);
+
+}
+
+
+/* =========================================================
+   FILTRES
+========================================================= */
+
+function getFilteredProducts(){
+
+  let list =
+    [...products];
+
+  if(
+    currentCategory !== "Tous"
+  ){
+
+    list =
+      list.filter(
+        product =>
+          product.category ===
+          currentCategory
+      );
+
+  }
+
+  if(
+    currentSearch.trim()
+  ){
+
+    const search =
+      currentSearch
+        .trim()
+        .toLowerCase();
+
+    list =
+      list.filter(
+        product =>
+
+          product.name
+            .toLowerCase()
+            .includes(search)
+
+          ||
+
+          product.category
+            .toLowerCase()
+            .includes(search)
+
+      );
+
+  }
+
+  if(
+    currentSort === "priceAsc"
+  ){
+
+    list.sort(
+      (a, b) =>
+        a.price - b.price
+    );
+
+  }
+
+  if(
+    currentSort === "priceDesc"
+  ){
+
+    list.sort(
+      (a, b) =>
+        b.price - a.price
+    );
+
+  }
+
+  if(
+    currentSort === "rating"
+  ){
+
+    list.sort(
+      (a, b) =>
+        getReviewStats(b).average -
+        getReviewStats(a).average
+    );
+
+  }
+
+  return list;
+
 }
 
 
@@ -541,63 +956,75 @@ function renderCategories() {
    PRODUITS
 ========================================================= */
 
-function renderProducts() {
+function renderProducts(){
 
-  const container =
-    document.getElementById("productsGrid");
+  const grid =
+    $("productsGrid");
 
-  if (!container) return;
-
-  const filtered =
-    products.filter(product => {
-
-      const categoryOk =
-        selectedCategory === "Tous" ||
-        product.category === selectedCategory;
-
-      const search =
-        searchValue
-          .trim()
-          .toLowerCase();
-
-      const searchOk =
-        !search ||
-        product.name
-          .toLowerCase()
-          .includes(search) ||
-        product.category
-          .toLowerCase()
-          .includes(search);
-
-      return categoryOk && searchOk;
-    });
-
-  if (!filtered.length) {
-
-    container.innerHTML = `
-      <div class="empty">
-        Aucun produit trouvé.
-      </div>
-    `;
-
+  if(!grid)
     return;
+
+  const list =
+    getFilteredProducts();
+
+  const results =
+    $("resultsCount");
+
+  if(results){
+
+    results.textContent =
+      `${list.length} produit${list.length > 1 ? "s" : ""}`;
+
   }
 
-  container.innerHTML =
-    filtered.map(product => {
+  const empty =
+    $("emptyState");
+
+  if(!list.length){
+
+    grid.innerHTML = "";
+
+    if(empty){
+
+      empty.classList.remove(
+        "hidden"
+      );
+
+    }
+
+    return;
+
+  }
+
+  if(empty){
+
+    empty.classList.add(
+      "hidden"
+    );
+
+  }
+
+  grid.innerHTML =
+    list.map(product => {
 
       const stats =
         getReviewStats(product);
 
       return `
+
         <article class="product-card">
 
-          <img
-            class="product-image"
-            src="${product.image}"
-            alt="${escapeHtml(product.name)}"
-            loading="lazy"
-          >
+          <div class="product-image-wrap">
+
+            <img
+              class="product-image"
+              src="${escapeHtml(product.image)}"
+              alt="${escapeHtml(product.name)}"
+              loading="lazy"
+              onerror="imageError(this, '${escapeHtml(product.category)}')"
+            >
+
+          </div>
 
           <div class="product-info">
 
@@ -619,11 +1046,22 @@ function renderProducts() {
               "
             >
 
-              <span class="stars">
+              <span
+                style="
+                  color:#ffd166;
+                  font-size:17px;
+                  letter-spacing:1px;
+                "
+              >
                 ${stars(stats.average)}
               </span>
 
-              <strong>
+              <strong
+                style="
+                  color:#ffffff;
+                  font-size:14px;
+                "
+              >
                 ${stats.average.toFixed(1)}/5
               </strong>
 
@@ -633,7 +1071,7 @@ function renderProducts() {
                   font-size:12px;
                 "
               >
-                (${stats.count.toLocaleString("fr-FR")} avis)
+                (${stats.count} avis)
               </span>
 
             </div>
@@ -656,14 +1094,14 @@ function renderProducts() {
 
               <button
                 class="btn"
-                data-view-reviews="${product.id}"
+                data-view="${product.id}"
               >
                 💬 Voir les avis
               </button>
 
               <button
                 class="btn primary"
-                data-add-cart="${product.id}"
+                data-add="${product.id}"
               >
                 🛒
               </button>
@@ -673,124 +1111,208 @@ function renderProducts() {
           </div>
 
         </article>
+
       `;
 
     }).join("");
 
-  container
-    .querySelectorAll("[data-view-reviews]")
-    .forEach(button => {
+  document.querySelectorAll(
+    "[data-view]"
+  ).forEach(button => {
 
-      button.addEventListener("click", () => {
+    button.onclick = () => {
 
-        const product =
-          products.find(
-            p => p.id === button.dataset.viewReviews
-          );
+      openProduct(
+        button.dataset.view
+      );
 
-        if (product) {
-          openReviews(product);
-        }
-      });
-    });
+    };
 
-  container
-    .querySelectorAll("[data-add-cart]")
-    .forEach(button => {
+  });
 
-      button.addEventListener("click", () => {
+  document.querySelectorAll(
+    "[data-add]"
+  ).forEach(button => {
 
-        const product =
-          products.find(
-            p => p.id === button.dataset.addCart
-          );
+    button.onclick = () => {
 
-        if (product) {
-          addToCart(product);
-        }
-      });
-    });
+      addToCart(
+        button.dataset.add
+      );
+
+    };
+
+  });
+
 }
 
 
 /* =========================================================
-   AVIS MODAL
+   FICHE PRODUIT
 ========================================================= */
 
-function openReviews(product) {
+function openProduct(productId){
 
-  const container =
-    document.getElementById("reviewsContent");
+  const product =
+    products.find(
+      product =>
+        product.id === productId
+    );
 
-  if (!container) return;
-
-  const reviews =
-    getReviews(product);
+  if(!product)
+    return;
 
   const stats =
     getReviewStats(product);
 
-  const shuffled =
+  const reviews =
+    getReviews(product);
+
+  const visibleReviews =
     [...reviews]
-      .sort(() => Math.random() - 0.5)
-      .slice(0, 25);
+      .sort(
+        (a, b) =>
+          b.date - a.date
+      )
+      .slice(0, 50);
 
-  container.innerHTML = `
+  const content =
+    $("productContent");
 
-    <div class="reviews-header">
+  if(!content)
+    return;
 
-      <h2>
-        Avis sur ${escapeHtml(product.name)}
-      </h2>
+  content.innerHTML = `
 
-      <div class="review-big">
-        ${stats.average.toFixed(1)}/5
+    <div class="product-detail">
+
+      <img
+        class="product-detail-image"
+        src="${escapeHtml(product.image)}"
+        alt="${escapeHtml(product.name)}"
+        onerror="imageError(this, '${escapeHtml(product.category)}')"
+      >
+
+      <div>
+
+        <div class="product-category">
+          ${escapeHtml(product.category)}
+        </div>
+
+        <h1 style="margin:8px 0 12px;">
+          ${escapeHtml(product.name)}
+        </h1>
+
+        <div
+          class="rating"
+          style="font-size:20px;"
+        >
+          ${stars(stats.average)}
+        </div>
+
+        <div class="review-count">
+          ${stats.average.toFixed(2)}/5
+          · ${stats.count.toLocaleString("fr-FR")} avis
+        </div>
+
+        <div class="price">
+          ${money(product.price)}
+        </div>
+
+        <button
+          id="detailAdd"
+          class="btn primary"
+          style="width:100%;"
+        >
+          🛒 Ajouter au panier
+        </button>
+
       </div>
 
-      <div class="stars">
-        ${stars(stats.average)}
+    </div>
+
+    <div class="review-summary">
+
+      <div class="big-rating">
+        ${stats.average.toFixed(1)}
       </div>
 
       <div>
-        ${stats.count.toLocaleString("fr-FR")} avis
+
+        <div
+          class="rating"
+          style="font-size:20px;"
+        >
+          ${stars(stats.average)}
+        </div>
+
+        <div class="review-count">
+          ${stats.count.toLocaleString("fr-FR")} avis
+        </div>
+
       </div>
 
     </div>
 
-    <div class="review-list">
+    <h3>
+      Avis (${stats.count.toLocaleString("fr-FR")})
+    </h3>
 
-      ${shuffled.map(review => `
+    <div class="reviews-list">
 
-        <div class="review-item">
+      ${visibleReviews.map(
+        review => `
 
-          <div class="review-top">
+          <div class="review">
 
-            <strong>
-              ${escapeHtml(review.name)}
-            </strong>
+            <div class="review-head">
 
-            <span class="stars">
-              ${stars(review.rating)}
-            </span>
+              <strong>
+                ${escapeHtml(review.name)}
+              </strong>
+
+              <span class="rating">
+                ${stars(review.rating)}
+              </span>
+
+            </div>
+
+            <div>
+              ${escapeHtml(review.text)}
+            </div>
+
+            <div class="review-date">
+              ${review.date.toLocaleDateString("fr-FR")}
+            </div>
 
           </div>
 
-          <div class="review-text">
-            ${escapeHtml(review.text)}
-          </div>
-
-          <div class="review-date">
-            ${review.date.toLocaleDateString("fr-FR")}
-          </div>
-
-        </div>
-
-      `).join("")}
+        `
+      ).join("")}
 
     </div>
+
   `;
 
-  openModal("reviewsModal");
+  const add =
+    $("detailAdd");
+
+  if(add){
+
+    add.onclick = () => {
+
+      addToCart(
+        product.id
+      );
+
+    };
+
+  }
+
+  openModal(
+    "productModal"
+  );
+
 }
 
 
@@ -798,1803 +1320,1080 @@ function openReviews(product) {
    PANIER
 ========================================================= */
 
-function saveCart() {
+function saveCart(){
 
   localStorage.setItem(
-    "novashop_cart",
+    CART_KEY,
     JSON.stringify(cart)
   );
-}
-
-
-function loadCart() {
-
-  try {
-
-    const saved =
-      localStorage.getItem("novashop_cart");
-
-    cart =
-      saved
-        ? JSON.parse(saved)
-        : [];
-
-  } catch {
-
-    cart = [];
-  }
-}
-
-
-function addToCart(product) {
-
-  const existing =
-    cart.find(
-      item => item.id === product.id
-    );
-
-  if (existing) {
-
-    existing.quantity++;
-
-  } else {
-
-    cart.push({
-
-      id: product.id,
-
-      name: product.name,
-
-      price: product.price,
-
-      image: product.image,
-
-      quantity: 1
-    });
-  }
-
-  saveCart();
-  renderCart();
-
-  showToast(
-    `${product.name} ajouté au panier 🛒`
-  );
-}
-
-
-function removeFromCart(id) {
-
-  cart =
-    cart.filter(
-      item => item.id !== id
-    );
-
-  saveCart();
-  renderCart();
-}
-
-
-function changeQuantity(id, amount) {
-
-  const item =
-    cart.find(
-      product => product.id === id
-    );
-
-  if (!item) return;
-
-  item.quantity += amount;
-
-  if (item.quantity <= 0) {
-
-    removeFromCart(id);
-
-    return;
-  }
-
-  saveCart();
-  renderCart();
-}
-
-
-function renderCart() {
-
-  const container =
-    document.getElementById("cartContent");
-
-  if (!container) return;
-
-  if (!cart.length) {
-
-    container.innerHTML = `
-      <div class="empty">
-        🛒 Ton panier est vide.
-      </div>
-    `;
-
-    updateCartCount();
-
-    return;
-  }
-
-  let total = 0;
-
-  cart.forEach(item => {
-
-    total +=
-      item.price *
-      item.quantity;
-  });
-
-  container.innerHTML = `
-
-    <div class="cart-list">
-
-      ${cart.map(item => `
-
-        <div class="cart-item">
-
-          <img
-            src="${item.image}"
-            alt=""
-          >
-
-          <div class="cart-item-info">
-
-            <strong>
-              ${escapeHtml(item.name)}
-            </strong>
-
-            <div>
-              ${money(item.price)}
-            </div>
-
-            <div class="quantity">
-
-              <button
-                data-minus="${item.id}"
-              >
-                −
-              </button>
-
-              <span>
-                ${item.quantity}
-              </span>
-
-              <button
-                data-plus="${item.id}"
-              >
-                +
-              </button>
-
-            </div>
-
-          </div>
-
-          <button
-            class="delete-btn"
-            data-delete-cart="${item.id}"
-          >
-            🗑️
-          </button>
-
-        </div>
-
-      `).join("")}
-
-    </div>
-
-    <div class="cart-total">
-
-      <span>Total</span>
-
-      <strong>
-        ${money(total)}
-      </strong>
-
-    </div>
-
-    <button
-      class="btn primary full"
-      id="checkoutButton"
-    >
-      💳 Passer la commande
-    </button>
-  `;
-
-  container
-    .querySelectorAll("[data-minus]")
-    .forEach(button => {
-
-      button.addEventListener("click", () => {
-
-        changeQuantity(
-          button.dataset.minus,
-          -1
-        );
-      });
-    });
-
-  container
-    .querySelectorAll("[data-plus]")
-    .forEach(button => {
-
-      button.addEventListener("click", () => {
-
-        changeQuantity(
-          button.dataset.plus,
-          1
-        );
-      });
-    });
-
-  container
-    .querySelectorAll("[data-delete-cart]")
-    .forEach(button => {
-
-      button.addEventListener("click", () => {
-
-        removeFromCart(
-          button.dataset.deleteCart
-        );
-      });
-    });
-
-  const checkout =
-    document.getElementById("checkoutButton");
-
-  if (checkout) {
-
-    checkout.addEventListener(
-      "click",
-      openCheckout
-    );
-  }
 
   updateCartCount();
+
 }
 
 
-function updateCartCount() {
+function updateCartCount(){
 
   const count =
     cart.reduce(
-      (total, item) =>
-        total + item.quantity,
+      (sum, item) =>
+        sum + item.quantity,
       0
     );
 
-  document
-    .querySelectorAll(".cart-count")
-    .forEach(element => {
+  const element =
+    $("cartCount");
 
-      element.textContent = count;
-    });
+  if(element){
+
+    element.textContent =
+      count;
+
+  }
+
 }
 
 
-/* =========================================================
-   AUTH
-========================================================= */
+function addToCart(productId){
 
-async function handleAuth() {
+  const existing =
+    cart.find(
+      item =>
+        item.productId === productId
+    );
 
-  const email =
-    document
-      .getElementById("authEmail")
-      ?.value
-      .trim();
+  if(existing){
 
-  const password =
-    document
-      .getElementById("authPassword")
-      ?.value;
+    existing.quantity++;
 
-  const error =
-    document.getElementById("authError");
-
-  if (!email || !password) {
-
-    if (error) {
-      error.textContent =
-        "Remplis tous les champs.";
-    }
-
-    return;
   }
 
-  try {
+  else{
 
-    if (authMode === "login") {
+    cart.push({
 
-      await signInWithEmailAndPassword(
-        auth,
-        email,
-        password
-      );
+      productId,
 
-      showToast("Connexion réussie ✅");
+      quantity: 1
 
-    } else {
-
-      if (password.length < 6) {
-
-        if (error) {
-          error.textContent =
-            "Le mot de passe doit contenir au moins 6 caractères.";
-        }
-
-        return;
-      }
-
-      if (password.length > 30) {
-
-        if (error) {
-          error.textContent =
-            "Le mot de passe doit contenir maximum 30 caractères.";
-        }
-
-        return;
-      }
-
-      if (!/[a-z]/.test(password)) {
-
-        if (error) {
-          error.textContent =
-            "Il faut au moins une minuscule.";
-        }
-
-        return;
-      }
-
-      if (!/[A-Z]/.test(password)) {
-
-        if (error) {
-          error.textContent =
-            "Il faut au moins une majuscule.";
-        }
-
-        return;
-      }
-
-      if (!/[0-9]/.test(password)) {
-
-        if (error) {
-          error.textContent =
-            "Il faut au moins un chiffre.";
-        }
-
-        return;
-      }
-
-      await createUserWithEmailAndPassword(
-        auth,
-        email,
-        password
-      );
-
-      showToast("Compte créé ✅");
-    }
-
-    closeModal("authModal");
-
-  } catch (err) {
-
-    console.error(err);
-
-    if (error) {
-
-      error.textContent =
-        getFirebaseError(err);
-    }
-  }
-}
-
-
-function getFirebaseError(error) {
-
-  const code =
-    error?.code || "";
-
-  const errors = {
-
-    "auth/invalid-credential":
-      "Email ou mot de passe incorrect.",
-
-    "auth/invalid-email":
-      "Adresse email invalide.",
-
-    "auth/email-already-in-use":
-      "Cette adresse email est déjà utilisée.",
-
-    "auth/weak-password":
-      "Mot de passe trop faible.",
-
-    "auth/user-not-found":
-      "Utilisateur introuvable.",
-
-    "auth/wrong-password":
-      "Mot de passe incorrect.",
-
-    "auth/too-many-requests":
-      "Trop de tentatives. Réessaie plus tard."
-  };
-
-  return (
-    errors[code] ||
-    error?.message ||
-    "Une erreur est survenue."
-  );
-}
-
-
-function switchAuthMode() {
-
-  authMode =
-    authMode === "login"
-      ? "register"
-      : "login";
-
-  const title =
-    document.getElementById("authTitle");
-
-  const button =
-    document.getElementById("authSubmit");
-
-  const switchButton =
-    document.getElementById("authSwitch");
-
-  if (authMode === "login") {
-
-    if (title)
-      title.textContent = "Connexion";
-
-    if (button)
-      button.textContent = "Se connecter";
-
-    if (switchButton)
-      switchButton.textContent =
-        "Créer un compte";
-
-  } else {
-
-    if (title)
-      title.textContent = "Créer un compte";
-
-    if (button)
-      button.textContent =
-        "Créer mon compte";
-
-    if (switchButton)
-      switchButton.textContent =
-        "J'ai déjà un compte";
-  }
-}
-
-
-/* =========================================================
-   QUESTIONS
-========================================================= */
-
-async function sendQuestion() {
-
-  if (!currentUser) {
-
-    showToast(
-      "Connecte-toi pour poser une question."
-    );
-
-    return;
-  }
-
-  const input =
-    document.getElementById("newQuestionText");
-
-  if (!input) return;
-
-  const text =
-    input.value.trim();
-
-  if (!text) {
-
-    showToast(
-      "Écris ta question."
-    );
-
-    return;
-  }
-
-  try {
-
-    await addDoc(
-      collection(db, "questions"),
-      {
-
-        userId:
-          currentUser.uid,
-
-        userEmail:
-          currentUser.email || "",
-
-        text,
-
-        status:
-          "open",
-
-        createdAt:
-          serverTimestamp(),
-
-        updatedAt:
-          serverTimestamp()
-      }
-    );
-
-    input.value = "";
-
-    showToast(
-      "Question envoyée ✅"
-    );
-
-    loadUserQuestions();
-
-  } catch (error) {
-
-    console.error(
-      "ERREUR ENVOI QUESTION :",
-      error
-    );
-
-    showToast(
-      "Impossible d'envoyer la question."
-    );
-  }
-}
-
-
-async function sendAdminReply(
-  questionId
-) {
-
-  if (
-    !currentUser ||
-    currentUser.email !== ADMIN_EMAIL
-  ) {
-    return;
-  }
-
-  const input =
-    document.getElementById(
-      `adminReply-${questionId}`
-    );
-
-  if (!input) return;
-
-  const text =
-    input.value.trim();
-
-  if (!text) return;
-
-  try {
-
-    await addDoc(
-      collection(
-        db,
-        "questions",
-        questionId,
-        "messages"
-      ),
-      {
-
-        text,
-
-        senderId:
-          currentUser.uid,
-
-        senderEmail:
-          currentUser.email,
-
-        senderRole:
-          "admin",
-
-        createdAt:
-          serverTimestamp()
-      }
-    );
-
-    await updateDoc(
-      doc(db, "questions", questionId),
-      {
-        updatedAt:
-          serverTimestamp(),
-
-        status:
-          "answered"
-      }
-    );
-
-    input.value = "";
-
-    showToast(
-      "Réponse envoyée ✅"
-    );
-
-  } catch (error) {
-
-    console.error(
-      "ERREUR REPONSE ADMIN :",
-      error
-    );
-
-    showToast(
-      "Impossible d'envoyer la réponse."
-    );
-  }
-}
-
-
-async function sendUserReply(
-  questionId
-) {
-
-  if (!currentUser) return;
-
-  const input =
-    document.getElementById(
-      `userReply-${questionId}`
-    );
-
-  if (!input) return;
-
-  const text =
-    input.value.trim();
-
-  if (!text) return;
-
-  try {
-
-    await addDoc(
-      collection(
-        db,
-        "questions",
-        questionId,
-        "messages"
-      ),
-      {
-
-        text,
-
-        senderId:
-          currentUser.uid,
-
-        senderEmail:
-          currentUser.email,
-
-        senderRole:
-          "user",
-
-        createdAt:
-          serverTimestamp()
-      }
-    );
-
-    await updateDoc(
-      doc(db, "questions", questionId),
-      {
-        updatedAt:
-          serverTimestamp(),
-
-        status:
-          "open"
-      }
-    );
-
-    input.value = "";
-
-  } catch (error) {
-
-    console.error(
-      "ERREUR REPONSE UTILISATEUR :",
-      error
-    );
-
-    showToast(
-      "Impossible d'envoyer le message."
-    );
-  }
-}
-
-
-/* =========================================================
-   MESSAGES
-========================================================= */
-
-function loadQuestionMessages(
-  questionId,
-  containerId
-) {
-
-  const messagesRef =
-    collection(
-      db,
-      "questions",
-      questionId,
-      "messages"
-    );
-
-  const unsubscribe =
-    onSnapshot(
-      messagesRef,
-
-      snapshot => {
-
-        const messages =
-          [...snapshot.docs];
-
-        messages.sort(
-          (a, b) => {
-
-            const dateA =
-              a.data()
-                .createdAt
-                ?.toMillis?.() || 0;
-
-            const dateB =
-              b.data()
-                .createdAt
-                ?.toMillis?.() || 0;
-
-            return dateA - dateB;
-          }
-        );
-
-        const container =
-          document.getElementById(
-            containerId
-          );
-
-        if (!container) return;
-
-        if (!messages.length) {
-
-          container.innerHTML = `
-            <div
-              style="
-                color:#71809a;
-                padding:8px 0;
-              "
-            >
-              Aucun message pour le moment.
-            </div>
-          `;
-
-          return;
-        }
-
-        container.innerHTML =
-          messages.map(
-            messageDoc => {
-
-              const data =
-                messageDoc.data();
-
-              const isAdmin =
-                data.senderRole ===
-                "admin";
-
-              return `
-                <div
-                  class="
-                    message
-                    ${isAdmin
-                      ? "admin"
-                      : "user"}
-                  "
-                >
-
-                  <div class="message-author">
-
-                    ${
-                      isAdmin
-                        ? "👑 NovaShop"
-                        : "👤 " +
-                          escapeHtml(
-                            data.senderEmail ||
-                            "Utilisateur"
-                          )
-                    }
-
-                  </div>
-
-                  <div>
-                    ${escapeHtml(
-                      data.text || ""
-                    )}
-                  </div>
-
-                </div>
-              `;
-            }
-          ).join("");
-
-        container.scrollTop =
-          container.scrollHeight;
-      },
-
-      error => {
-
-        console.error(
-          "ERREUR MESSAGES :",
-          error
-        );
-
-        const container =
-          document.getElementById(
-            containerId
-          );
-
-        if (container) {
-
-          container.innerHTML = `
-            <div
-              style="
-                color:#ff7d7d;
-                padding:10px;
-              "
-            >
-              ❌ Impossible de charger les messages.
-              <br>
-              <small>
-                ${escapeHtml(
-                  error.message || ""
-                )}
-              </small>
-            </div>
-          `;
-        }
-      }
-    );
-
-  return unsubscribe;
-}
-
-
-/* =========================================================
-   QUESTIONS UTILISATEUR
-   SANS ORDERBY = PAS BESOIN D'INDEX COMPOSITE
-========================================================= */
-
-async function loadUserQuestions() {
-
-  const container =
-    document.getElementById(
-      "questionsContent"
-    );
-
-  if (!container) return;
-
-  if (!currentUser) {
-
-    container.innerHTML = `
-      <div class="empty">
-        Connecte-toi pour accéder à tes discussions.
-      </div>
-    `;
-
-    return;
-  }
-
-  if (questionsUnsubscribe) {
-
-    questionsUnsubscribe();
-
-    questionsUnsubscribe = null;
-  }
-
-  try {
-
-    const q =
-      query(
-        collection(db, "questions"),
-        where(
-          "userId",
-          "==",
-          currentUser.uid
-        )
-      );
-
-    questionsUnsubscribe =
-      onSnapshot(
-
-        q,
-
-        snapshot => {
-
-          const docs =
-            [...snapshot.docs];
-
-          docs.sort(
-            (a, b) => {
-
-              const dataA =
-                a.data();
-
-              const dataB =
-                b.data();
-
-              const dateA =
-                dataA.updatedAt
-                  ?.toMillis?.() ||
-                dataA.createdAt
-                  ?.toMillis?.() ||
-                0;
-
-              const dateB =
-                dataB.updatedAt
-                  ?.toMillis?.() ||
-                dataB.createdAt
-                  ?.toMillis?.() ||
-                0;
-
-              return dateB - dateA;
-            }
-          );
-
-          renderUserQuestions(
-            docs
-          );
-        },
-
-        error => {
-
-          console.error(
-            "ERREUR QUESTIONS :",
-            error
-          );
-
-          container.innerHTML = `
-            <div
-              style="
-                background:#32151a;
-                border:1px solid #71313b;
-                padding:18px;
-                border-radius:12px;
-                color:#ff9aa5;
-              "
-            >
-
-              ❌ Impossible de charger les questions.
-
-              <br><br>
-
-              <small>
-                ${escapeHtml(
-                  error.message ||
-                  "Erreur Firestore"
-                )}
-              </small>
-
-            </div>
-          `;
-        }
-      );
-
-  } catch (error) {
-
-    console.error(
-      "ERREUR QUESTIONS :",
-      error
-    );
-
-    container.innerHTML = `
-      <div style="color:#ff7d7d">
-
-        ❌ Impossible de charger les questions.
-
-        <br>
-
-        <small>
-          ${escapeHtml(
-            error.message || ""
-          )}
-        </small>
-
-      </div>
-    `;
-  }
-}
-
-
-function renderUserQuestions(
-  docs
-) {
-
-  const container =
-    document.getElementById(
-      "questionsContent"
-    );
-
-  if (!container) return;
-
-  let html = `
-
-    <div
-      style="
-        display:flex;
-        justify-content:space-between;
-        align-items:center;
-        gap:10px;
-        margin-bottom:18px;
-        flex-wrap:wrap;
-      "
-    >
-
-      <div>
-        <h3 style="margin:0">
-          Mes questions
-        </h3>
-
-        <div
-          style="
-            color:#71809a;
-            font-size:13px;
-            margin-top:4px;
-          "
-        >
-          Contacte NovaShop
-        </div>
-      </div>
-
-      <button
-        class="btn primary"
-        id="newQuestionButton"
-      >
-        ➕ Nouvelle question
-      </button>
-
-    </div>
-
-    <div id="newQuestionForm"></div>
-
-  `;
-
-  if (!docs.length) {
-
-    html += `
-      <div class="empty">
-        Tu n'as encore posé aucune question.
-      </div>
-    `;
-
-  } else {
-
-    html += docs.map(
-      questionDoc => {
-
-        const data =
-          questionDoc.data();
-
-        const questionId =
-          questionDoc.id;
-
-        const status =
-          data.status === "answered"
-            ? "Répondu"
-            : "En cours";
-
-        return `
-
-          <div class="question-card">
-
-            <div
-              style="
-                display:flex;
-                justify-content:space-between;
-                gap:10px;
-                align-items:flex-start;
-              "
-            >
-
-              <div>
-
-                <div
-                  style="
-                    font-size:12px;
-                    color:#71809a;
-                  "
-                >
-                  Ta question
-                </div>
-
-                <div
-                  style="
-                    margin-top:5px;
-                    font-weight:700;
-                  "
-                >
-                  ${escapeHtml(
-                    data.text || ""
-                  )}
-                </div>
-
-              </div>
-
-              <span
-                class="
-                  question-status
-                  ${
-                    data.status === "answered"
-                      ? "answered"
-                      : ""
-                  }
-                "
-              >
-                ${status}
-              </span>
-
-            </div>
-
-            <div
-              class="messages"
-              id="messages-user-${questionId}"
-            >
-              Chargement...
-            </div>
-
-            <div
-              class="reply-box"
-            >
-
-              <textarea
-                id="userReply-${questionId}"
-                placeholder="Écris un message..."
-              ></textarea>
-
-              <button
-                class="btn primary"
-                data-user-reply="${questionId}"
-              >
-                Envoyer
-              </button>
-
-            </div>
-
-          </div>
-
-        `;
-      }
-    ).join("");
-  }
-
-  container.innerHTML = html;
-
-  const newButton =
-    document.getElementById(
-      "newQuestionButton"
-    );
-
-  if (newButton) {
-
-    newButton.addEventListener(
-      "click",
-      showNewQuestionForm
-    );
-  }
-
-  container
-    .querySelectorAll(
-      "[data-user-reply]"
-    )
-    .forEach(button => {
-
-      button.addEventListener(
-        "click",
-        () => {
-
-          sendUserReply(
-            button.dataset.userReply
-          );
-        }
-      );
     });
 
-  docs.forEach(questionDoc => {
-
-    loadQuestionMessages(
-      questionDoc.id,
-      `messages-user-${questionDoc.id}`
-    );
-  });
-}
-
-
-/* =========================================================
-   NOUVELLE QUESTION
-========================================================= */
-
-function showNewQuestionForm() {
-
-  const container =
-    document.getElementById(
-      "newQuestionForm"
-    );
-
-  if (!container) return;
-
-  container.innerHTML = `
-
-    <div
-      class="new-question"
-    >
-
-      <textarea
-        id="newQuestionText"
-        placeholder="Écris ta question à NovaShop..."
-      ></textarea>
-
-      <div
-        style="
-          display:flex;
-          gap:10px;
-          margin-top:10px;
-        "
-      >
-
-        <button
-          class="btn primary"
-          id="sendQuestionButton"
-        >
-          📤 Envoyer
-        </button>
-
-        <button
-          class="btn"
-          id="cancelQuestionButton"
-        >
-          Annuler
-        </button>
-
-      </div>
-
-    </div>
-  `;
-
-  document
-    .getElementById(
-      "sendQuestionButton"
-    )
-    ?.addEventListener(
-      "click",
-      sendQuestion
-    );
-
-  document
-    .getElementById(
-      "cancelQuestionButton"
-    )
-    ?.addEventListener(
-      "click",
-      () => {
-
-        container.innerHTML = "";
-      }
-    );
-}
-
-
-/* =========================================================
-   QUESTIONS ADMIN
-   PAS DE ORDERBY
-========================================================= */
-
-function loadAdminQuestions() {
-
-  const container =
-    document.getElementById(
-      "adminQuestionsContent"
-    );
-
-  if (!container) return;
-
-  if (!currentUser) {
-
-    container.innerHTML = `
-      <div class="empty">
-        Connexion requise.
-      </div>
-    `;
-
-    return;
   }
 
-  if (
-    currentUser.email !== ADMIN_EMAIL
-  ) {
+  saveCart();
 
-    container.innerHTML = `
-      <div class="empty">
-        Accès administrateur requis.
-      </div>
-    `;
-
-    return;
-  }
-
-  if (adminQuestionsUnsubscribe) {
-
-    adminQuestionsUnsubscribe();
-
-    adminQuestionsUnsubscribe = null;
-  }
-
-  adminQuestionsUnsubscribe =
-    onSnapshot(
-
-      collection(db, "questions"),
-
-      snapshot => {
-
-        const docs =
-          [...snapshot.docs];
-
-        docs.sort(
-          (a, b) => {
-
-            const dataA =
-              a.data();
-
-            const dataB =
-              b.data();
-
-            const dateA =
-              dataA.updatedAt
-                ?.toMillis?.() ||
-              dataA.createdAt
-                ?.toMillis?.() ||
-              0;
-
-            const dateB =
-              dataB.updatedAt
-                ?.toMillis?.() ||
-              dataB.createdAt
-                ?.toMillis?.() ||
-              0;
-
-            return dateB - dateA;
-          }
-        );
-
-        renderAdminQuestions(
-          docs
-        );
-      },
-
-      error => {
-
-        console.error(
-          "ERREUR ADMIN QUESTIONS :",
-          error
-        );
-
-        container.innerHTML = `
-          <div
-            style="
-              background:#32151a;
-              border:1px solid #71313b;
-              padding:18px;
-              border-radius:12px;
-              color:#ff9aa5;
-            "
-          >
-
-            ❌ Impossible de charger les questions.
-
-            <br><br>
-
-            <small>
-              ${escapeHtml(
-                error.message || ""
-              )}
-            </small>
-
-          </div>
-        `;
-      }
-    );
-}
-
-
-function renderAdminQuestions(
-  docs
-) {
-
-  const container =
-    document.getElementById(
-      "adminQuestionsContent"
-    );
-
-  if (!container) return;
-
-  if (!docs.length) {
-
-    container.innerHTML = `
-      <div class="empty">
-        📭 Aucune question.
-      </div>
-    `;
-
-    updateQuestionBadge(0);
-
-    return;
-  }
-
-  updateQuestionBadge(
-    docs.length
+  showToast(
+    "Produit ajouté au panier 🛒"
   );
 
-  container.innerHTML =
-    docs.map(questionDoc => {
+}
 
-      const data =
-        questionDoc.data();
 
-      const id =
-        questionDoc.id;
+function removeFromCart(productId){
 
-      return `
+  cart =
+    cart.filter(
+      item =>
+        item.productId !== productId
+    );
 
-        <div
-          class="question-card admin-question"
+  saveCart();
+
+  renderCart();
+
+}
+
+
+function changeQuantity(
+  productId,
+  delta
+){
+
+  const item =
+    cart.find(
+      item =>
+        item.productId === productId
+    );
+
+  if(!item)
+    return;
+
+  item.quantity += delta;
+
+  if(item.quantity <= 0){
+
+    removeFromCart(
+      productId
+    );
+
+    return;
+
+  }
+
+  saveCart();
+
+  renderCart();
+
+}
+
+
+function getCartItems(){
+
+  return cart
+    .map(item => {
+
+      const product =
+        products.find(
+          p =>
+            p.id === item.productId
+        );
+
+      if(!product)
+        return null;
+
+      return {
+
+        ...product,
+
+        quantity:
+          item.quantity
+
+      };
+
+    })
+    .filter(Boolean);
+
+}
+
+
+function cartSubtotal(){
+
+  return getCartItems()
+    .reduce(
+      (sum, item) =>
+        sum +
+        item.price *
+        item.quantity,
+      0
+    );
+
+}
+
+
+/* =========================================================
+   AFFICHAGE PANIER
+========================================================= */
+
+function renderCart(){
+
+  const content =
+    $("cartContent");
+
+  if(!content)
+    return;
+
+  const items =
+    getCartItems();
+
+  if(!items.length){
+
+    content.innerHTML = `
+
+      <div class="empty">
+        Ton panier est vide 🛒
+      </div>
+
+    `;
+
+    if($("cartTotal")){
+
+      $("cartTotal")
+        .textContent =
+        money(0);
+
+    }
+
+    return;
+
+  }
+
+  content.innerHTML =
+    items.map(item => `
+
+      <div class="cart-item">
+
+        <img
+          src="${escapeHtml(item.image)}"
+          alt=""
+          onerror="imageError(this, '${escapeHtml(item.category)}')"
         >
 
-          <div
-            style="
-              display:flex;
-              justify-content:space-between;
-              gap:10px;
-            "
-          >
+        <div class="cart-item-main">
 
-            <div>
+          <strong>
+            ${escapeHtml(item.name)}
+          </strong>
 
-              <div
-                style="
-                  color:#71809a;
-                  font-size:12px;
-                "
-              >
-                👤
-                ${escapeHtml(
-                  data.userEmail ||
-                  "Utilisateur"
-                )}
-              </div>
+          <div class="review-count">
+            ${money(item.price)}
+          </div>
 
-              <div
-                style="
-                  font-weight:800;
-                  margin-top:6px;
-                "
-              >
-                ${escapeHtml(
-                  data.text || ""
-                )}
-              </div>
-
-            </div>
+          <div class="qty">
 
             <button
-              class="delete-btn"
-              data-delete-question="${id}"
+              data-minus="${item.id}"
+            >
+              −
+            </button>
+
+            <span>
+              ${item.quantity}
+            </span>
+
+            <button
+              data-plus="${item.id}"
+            >
+              +
+            </button>
+
+            <button
+              data-remove="${item.id}"
+              style="margin-left:8px;"
             >
               🗑️
             </button>
 
           </div>
 
-          <div
-            class="messages"
-            id="messages-admin-${id}"
-          >
-            Chargement...
-          </div>
-
-          <div
-            class="reply-box"
-          >
-
-            <textarea
-              id="adminReply-${id}"
-              placeholder="Répondre à cet utilisateur..."
-            ></textarea>
-
-            <button
-              class="btn primary"
-              data-admin-reply="${id}"
-            >
-              👑 Répondre
-            </button>
-
-          </div>
-
         </div>
 
-      `;
-    }).join("");
+      </div>
 
-  container
-    .querySelectorAll(
-      "[data-admin-reply]"
-    )
-    .forEach(button => {
+    `).join("");
 
-      button.addEventListener(
-        "click",
-        () => {
+  if($("cartTotal")){
 
-          sendAdminReply(
-            button.dataset.adminReply
-          );
-        }
+    $("cartTotal")
+      .textContent =
+      money(
+        cartSubtotal()
       );
-    });
 
-  container
-    .querySelectorAll(
-      "[data-delete-question]"
-    )
-    .forEach(button => {
+  }
 
-      button.addEventListener(
-        "click",
-        () => {
+  document.querySelectorAll(
+    "[data-minus]"
+  ).forEach(button => {
 
-          deleteQuestion(
-            button.dataset.deleteQuestion
-          );
-        }
+    button.onclick = () => {
+
+      changeQuantity(
+        button.dataset.minus,
+        -1
       );
-    });
 
-  docs.forEach(questionDoc => {
+    };
 
-    loadQuestionMessages(
-      questionDoc.id,
-      `messages-admin-${questionDoc.id}`
-    );
   });
-}
 
+  document.querySelectorAll(
+    "[data-plus]"
+  ).forEach(button => {
 
-function updateQuestionBadge(
-  count
-) {
+    button.onclick = () => {
 
-  document
-    .querySelectorAll(
-      ".question-count"
-    )
-    .forEach(element => {
+      changeQuantity(
+        button.dataset.plus,
+        1
+      );
 
-      element.textContent =
-        count;
+    };
 
-      element.style.display =
-        count > 0
-          ? "inline-flex"
-          : "none";
-    });
-}
+  });
 
+  document.querySelectorAll(
+    "[data-remove]"
+  ).forEach(button => {
 
-async function deleteQuestion(
-  questionId
-) {
+    button.onclick = () => {
 
-  if (
-    !currentUser ||
-    currentUser.email !== ADMIN_EMAIL
-  ) {
-    return;
-  }
+      removeFromCart(
+        button.dataset.remove
+      );
 
-  try {
+    };
 
-    await deleteDoc(
-      doc(
-        db,
-        "questions",
-        questionId
-      )
-    );
+  });
 
-    showToast(
-      "Question supprimée 🗑️"
-    );
-
-  } catch (error) {
-
-    console.error(
-      error
-    );
-
-    showToast(
-      "Impossible de supprimer la question."
-    );
-  }
 }
 
 
 /* =========================================================
-   COMMANDES
+   MOT DE PASSE
 ========================================================= */
 
-async function openCheckout() {
+function validatePassword(password){
 
-  if (!currentUser) {
+  if(password.length < 6)
+    return "Minimum 6 caractères.";
 
-    closeModal("cartModal");
+  if(password.length > 30)
+    return "Maximum 30 caractères.";
 
-    openModal("authModal");
+  if(!/[a-z]/.test(password))
+    return "Il faut une minuscule.";
 
-    showToast(
-      "Connecte-toi pour commander."
-    );
+  if(!/[A-Z]/.test(password))
+    return "Il faut une majuscule.";
 
-    return;
-  }
+  if(!/[0-9]/.test(password))
+    return "Il faut un chiffre.";
 
-  if (!cart.length) {
+  return null;
 
-    showToast(
-      "Ton panier est vide."
-    );
-
-    return;
-  }
-
-  openModal("checkoutModal");
 }
 
 
-async function createOrder() {
+/* =========================================================
+   LOGIN
+========================================================= */
 
-  if (!currentUser) {
+async function login(
+  email,
+  password
+){
 
-    showToast(
-      "Connecte-toi."
+  try{
+
+    await signInWithEmailAndPassword(
+      auth,
+      email,
+      password
     );
 
-    return;
+    showToast(
+      "Connexion réussie ✅"
+    );
+
+    closeAllModals();
+
   }
 
-  const address =
-    document
-      .getElementById("deliveryAddress")
+  catch(error){
+
+    console.error(error);
+
+    showToast(
+      "Email ou mot de passe incorrect."
+    );
+
+  }
+
+}
+
+
+/* =========================================================
+   INSCRIPTION
+========================================================= */
+
+async function signup(){
+
+  const email =
+    $("signupEmail")
       ?.value
       .trim();
 
-  if (!address) {
+  const phone =
+    $("signupPhone")
+      ?.value
+      .trim();
+
+  const password =
+    $("signupPassword")
+      ?.value;
+
+  const confirm =
+    $("signupConfirm")
+      ?.value;
+
+  const validation =
+    validatePassword(
+      password
+    );
+
+  if(validation){
 
     showToast(
-      "Adresse obligatoire."
+      validation
     );
 
     return;
+
   }
 
-  let total = 0;
+  if(password !== confirm){
 
-  cart.forEach(item => {
+    showToast(
+      "Les mots de passe ne correspondent pas."
+    );
 
-    total +=
-      item.price *
-      item.quantity;
-  });
+    return;
 
-  try {
+  }
 
-    const orderItems =
-      cart.map(item => ({
+  try{
 
-        id: item.id,
+    const result =
+      await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
 
-        name: item.name,
-
-        price: item.price,
-
-        quantity: item.quantity
-      }));
-
-    await addDoc(
-      collection(db, "orders"),
+    await setDoc(
+      doc(
+        db,
+        "users",
+        result.user.uid
+      ),
       {
 
-        userId:
-          currentUser.uid,
+        email,
 
-        userEmail:
-          currentUser.email,
-
-        items:
-          orderItems,
-
-        total,
-
-        address,
-
-        status:
-          "Préparation",
-
-        currentLocation:
-          "Entrepôt NovaShop",
-
-        destination:
-          address,
-
-        deliveryDate:
-          new Date(
-            Date.now() +
-            3 * 86400000
-          ),
+        phone,
 
         createdAt:
-          serverTimestamp()
+          Date.now()
+
+      },
+      {
+        merge: true
       }
+    );
+
+    showToast(
+      "Compte créé ✅"
+    );
+
+    closeAllModals();
+
+  }
+
+  catch(error){
+
+    console.error(error);
+
+    showToast(
+      "Impossible de créer le compte."
+    );
+
+  }
+
+}
+
+
+/* =========================================================
+   GOOGLE
+========================================================= */
+
+async function googleLogin(){
+
+  try{
+
+    const provider =
+      new GoogleAuthProvider();
+
+    const result =
+      await signInWithPopup(
+        auth,
+        provider
+      );
+
+    await setDoc(
+      doc(
+        db,
+        "users",
+        result.user.uid
+      ),
+      {
+
+        email:
+          result.user.email,
+
+        displayName:
+          result.user.displayName || "",
+
+        createdAt:
+          Date.now()
+
+      },
+      {
+        merge: true
+      }
+    );
+
+    showToast(
+      "Connexion Google réussie ✅"
+    );
+
+    closeAllModals();
+
+  }
+
+  catch(error){
+
+    console.error(error);
+
+    showToast(
+      "Connexion Google impossible."
+    );
+
+  }
+
+}
+
+
+/* =========================================================
+   COMPTE
+========================================================= */
+
+function renderAccount(){
+
+  const content =
+    $("accountContent");
+
+  if(!content)
+    return;
+
+  if(!currentUser){
+
+    content.innerHTML = `
+
+      <div class="account-box">
+
+        <div class="info-card">
+          Connecte-toi pour accéder à ton compte.
+        </div>
+
+        <button
+          id="accountLogin"
+          class="btn primary"
+        >
+          Se connecter
+        </button>
+
+      </div>
+
+    `;
+
+    const button =
+      $("accountLogin");
+
+    if(button){
+
+      button.onclick = () => {
+
+        closeModal(
+          "accountModal"
+        );
+
+        openModal(
+          "authModal"
+        );
+
+      };
+
+    }
+
+    return;
+
+  }
+
+  content.innerHTML = `
+
+    <div class="account-box">
+
+      <div class="info-card">
+
+        <strong>
+          Email
+        </strong>
+
+        <br>
+
+        ${escapeHtml(
+          currentUser.email || ""
+        )}
+
+      </div>
+
+      <button
+        id="accountOrders"
+        class="btn"
+      >
+        📦 Mes commandes
+      </button>
+
+      <button
+        id="logoutButton"
+        class="btn red"
+      >
+        🚪 Se déconnecter
+      </button>
+
+    </div>
+
+  `;
+
+  $("accountOrders").onclick = () => {
+
+    closeModal(
+      "accountModal"
+    );
+
+    openOrders();
+
+  };
+
+  $("logoutButton").onclick =
+    async () => {
+
+      await signOut(
+        auth
+      );
+
+      closeAllModals();
+
+      showToast(
+        "Déconnexion effectuée."
+      );
+
+    };
+
+}
+
+
+/* =========================================================
+   CHECKOUT TOTALS
+========================================================= */
+
+function updateCheckoutTotals(){
+
+  const subtotal =
+    cartSubtotal();
+
+  const discount =
+    appliedPromo
+      ? subtotal *
+        (
+          promos[appliedPromo] / 100
+        )
+      : 0;
+
+  const total =
+    Math.max(
+      0,
+      subtotal - discount
+    );
+
+  if($("checkoutSubtotal")){
+
+    $("checkoutSubtotal")
+      .textContent =
+      money(subtotal);
+
+  }
+
+  if($("checkoutDiscount")){
+
+    $("checkoutDiscount")
+      .textContent =
+      "-" + money(discount);
+
+  }
+
+  if($("checkoutTotal")){
+
+    $("checkoutTotal")
+      .textContent =
+      money(total);
+
+  }
+
+  return {
+
+    subtotal,
+
+    discount,
+
+    total
+
+  };
+
+}
+
+
+/* =========================================================
+   VALIDATION ADRESSE FRANÇAISE
+========================================================= */
+
+async function validateFrenchAddress(){
+
+  const address =
+    $("address")
+      ?.value
+      .trim();
+
+  const postal =
+    $("postalCode")
+      ?.value
+      .trim();
+
+  const city =
+    $("city")
+      ?.value
+      .trim();
+
+  if(
+    !address ||
+    !postal ||
+    !city
+  ){
+
+    throw new Error(
+      "Adresse incomplète."
+    );
+
+  }
+
+  if(
+    !/^\d{5}$/.test(postal)
+  ){
+
+    throw new Error(
+      "Code postal invalide."
+    );
+
+  }
+
+  const q =
+    encodeURIComponent(
+      `${address}, ${postal} ${city}, France`
+    );
+
+  const response =
+    await fetch(
+      `https://api-adresse.data.gouv.fr/search/?q=${q}&limit=5`
+    );
+
+  if(!response.ok){
+
+    throw new Error(
+      "Impossible de vérifier l'adresse."
+    );
+
+  }
+
+  const data =
+    await response.json();
+
+  if(
+    !data.features?.length
+  ){
+
+    throw new Error(
+      "Adresse introuvable."
+    );
+
+  }
+
+  const match =
+    data.features.some(
+      feature => {
+
+        const p =
+          feature.properties || {};
+
+        return (
+
+          String(
+            p.postcode || ""
+          ) === postal
+
+          &&
+
+          String(
+            p.city || ""
+          ).toLowerCase() ===
+          city.toLowerCase()
+
+        );
+
+      }
+    );
+
+  if(!match){
+
+    throw new Error(
+      "La ville et le code postal ne correspondent pas."
+    );
+
+  }
+
+  return true;
+
+}
+
+
+/* =========================================================
+   CRÉATION COMMANDE
+========================================================= */
+
+async function createOrder(){
+
+  if(!currentUser){
+
+    closeModal(
+      "checkoutModal"
+    );
+
+    openModal(
+      "authModal"
+    );
+
+    showToast(
+      "Connecte-toi avant de commander."
+    );
+
+    return;
+
+  }
+
+  const button =
+    $("payButton");
+
+  if(button){
+
+    button.disabled = true;
+
+    button.textContent =
+      "Vérification...";
+
+  }
+
+  try{
+
+    await validateFrenchAddress();
+
+    const totals =
+      updateCheckoutTotals();
+
+    const orderId =
+      "NS-" +
+      Date.now() +
+      "-" +
+      Math.random()
+        .toString(36)
+        .slice(2, 8)
+        .toUpperCase();
+
+    const order = {
+
+      id:
+        orderId,
+
+      userId:
+        currentUser.uid,
+
+      email:
+        currentUser.email || "",
+
+      customer: {
+
+        fullName:
+          $("fullName")
+            ?.value
+            .trim() || "",
+
+        country:
+          $("country")
+            ?.value || "",
+
+        address:
+          $("address")
+            ?.value
+            .trim() || "",
+
+        postalCode:
+          $("postalCode")
+            ?.value
+            .trim() || "",
+
+        city:
+          $("city")
+            ?.value
+            .trim() || ""
+
+      },
+
+      items:
+        getCartItems()
+          .map(item => ({
+
+            productId:
+              item.id,
+
+            name:
+              item.name,
+
+            price:
+              item.price,
+
+            quantity:
+              item.quantity
+
+          })),
+
+      subtotal:
+        totals.subtotal,
+
+      discount:
+        totals.discount,
+
+      total:
+        totals.total,
+
+      promoCode:
+        appliedPromo || null,
+
+      status:
+        "Préparation",
+
+      currentLocation:
+        "Entrepôt NovaShop",
+
+      destination:
+        $("city")
+          ?.value
+          .trim() || "",
+
+      tracking:
+        "NS" +
+        Math.random()
+          .toString(36)
+          .slice(2, 12)
+          .toUpperCase(),
+
+      deliveryDate:
+        Date.now() +
+        randomInt(2, 5) *
+        86400000,
+
+      createdAt:
+        Date.now(),
+
+      updatedAt:
+        Date.now()
+
+    };
+
+    await setDoc(
+      doc(
+        db,
+        "orders",
+        orderId
+      ),
+      order
     );
 
     cart = [];
 
     saveCart();
 
-    renderCart();
+    appliedPromo = null;
 
-    closeModal("checkoutModal");
+    if($("checkoutForm")){
 
-    showToast(
-      "Commande créée ✅"
-    );
+      $("checkoutForm")
+        .reset();
 
-  } catch (error) {
+    }
 
-    console.error(
-      "ERREUR COMMANDE :",
-      error
+    closeModal(
+      "checkoutModal"
     );
 
     showToast(
-      "Impossible de créer la commande."
+      "Commande enregistrée 📦"
     );
+
+    openOrders();
+
   }
+
+  catch(error){
+
+    console.error(error);
+
+    showToast(
+      error.message ||
+      "Erreur de commande."
+    );
+
+  }
+
+  finally{
+
+    if(button){
+
+      button.disabled = false;
+
+      button.textContent =
+        "💳 Payer";
+
+    }
+
+  }
+
 }
 
 
 /* =========================================================
-   AFFICHAGE COMMANDES
+   COMMANDES UTILISATEUR
 ========================================================= */
 
-function loadOrders() {
+function openOrders(){
 
-  const container =
-    document.getElementById(
-      "ordersContent"
+  if(!currentUser){
+
+    openModal(
+      "authModal"
     );
 
-  if (!container) return;
-
-  if (!currentUser) {
-
-    container.innerHTML = `
-      <div class="empty">
-        Connecte-toi pour voir tes commandes.
-      </div>
-    `;
+    showToast(
+      "Connecte-toi pour voir tes commandes."
+    );
 
     return;
+
+  }
+
+  openModal(
+    "ordersModal"
+  );
+
+  if(unsubscribeOrders){
+
+    unsubscribeOrders();
+
   }
 
   const q =
     query(
-      collection(db, "orders"),
+      collection(
+        db,
+        "orders"
+      ),
       where(
         "userId",
         "==",
@@ -2602,218 +2401,895 @@ function loadOrders() {
       )
     );
 
-  onSnapshot(
+  unsubscribeOrders =
+    onSnapshot(
+      q,
+      snapshot => {
 
-    q,
+        const orders =
+          snapshot.docs
+            .map(
+              item =>
+                item.data()
+            )
+            .sort(
+              (a, b) =>
+                (b.createdAt || 0) -
+                (a.createdAt || 0)
+            );
 
-    snapshot => {
+        renderOrders(
+          orders
+        );
 
-      const orders =
-        [...snapshot.docs];
+      },
+      error => {
 
-      orders.sort(
-        (a, b) => {
+        console.error(
+          "Erreur commandes :",
+          error
+        );
 
-          const dateA =
-            a.data()
-              .createdAt
-              ?.toMillis?.() || 0;
+        const content =
+          $("ordersContent");
 
-          const dateB =
-            b.data()
-              .createdAt
-              ?.toMillis?.() || 0;
+        if(content){
 
-          return dateB - dateA;
-        }
-      );
+          content.innerHTML = `
 
-      if (!orders.length) {
-
-        container.innerHTML = `
-          <div class="empty">
-            📦 Tu n'as encore aucune commande.
-          </div>
-        `;
-
-        return;
-      }
-
-      container.innerHTML =
-        orders.map(orderDoc => {
-
-          const order =
-            orderDoc.data();
-
-          return `
-
-            <div class="order-card">
-
-              <div
-                style="
-                  display:flex;
-                  justify-content:space-between;
-                  gap:10px;
-                "
-              >
-
-                <strong>
-                  Commande #${escapeHtml(
-                    orderDoc.id.slice(0, 8)
-                  )}
-                </strong>
-
-                <span class="order-status">
-                  ${escapeHtml(
-                    order.status ||
-                    "En préparation"
-                  )}
-                </span>
-
-              </div>
-
-              <div class="order-info">
-
-                📍 Position :
-                ${escapeHtml(
-                  order.currentLocation ||
-                  "En préparation"
-                )}
-
-                <br>
-
-                🏠 Destination :
-                ${escapeHtml(
-                  order.destination ||
-                  order.address ||
-                  ""
-                )}
-
-              </div>
-
-              <div class="order-items">
-
-                ${
-                  (order.items || [])
-                    .map(item => `
-                      <div>
-                        ${escapeHtml(
-                          item.name
-                        )}
-                        ×${item.quantity}
-                      </div>
-                    `)
-                    .join("")
-                }
-
-              </div>
-
-              <div class="order-total">
-                Total :
-                ${money(
-                  Number(order.total || 0)
-                )}
-              </div>
-
+            <div class="empty">
+              Impossible de charger les commandes.
             </div>
+
           `;
-        }).join("");
-    },
 
-    error => {
+        }
 
-      console.error(
-        "ERREUR COMMANDES :",
-        error
-      );
+      }
+    );
 
-      container.innerHTML = `
-        <div style="color:#ff7d7d">
-          ❌ Impossible de charger les commandes.
-        </div>
-      `;
-    }
-  );
 }
 
 
 /* =========================================================
-   ADMIN CODE
+   AFFICHAGE COMMANDES
 ========================================================= */
 
-function openAdminAccess() {
+function renderOrders(orders){
 
-  if (!currentUser) {
+  const content =
+    $("ordersContent");
 
-    openModal("authModal");
+  if(!content)
+    return;
 
-    showToast(
-      "Connecte-toi d'abord."
-    );
+  if(!orders.length){
+
+    content.innerHTML = `
+
+      <div class="empty">
+        Aucune commande.
+      </div>
+
+    `;
 
     return;
+
   }
 
-  if (
-    currentUser.email !== ADMIN_EMAIL
-  ) {
+  content.innerHTML =
+    orders.map(
+      order => {
 
-    showToast(
-      "Accès administrateur refusé."
-    );
+        const date =
+          order.deliveryDate
+            ? new Date(
+                order.deliveryDate
+              )
+            : null;
 
-    return;
-  }
+        return `
 
-  openModal("adminCodeModal");
+          <div class="order-card">
+
+            <div class="order-top">
+
+              <strong>
+                ${escapeHtml(order.id)}
+              </strong>
+
+              <span class="status">
+                ${escapeHtml(
+                  order.status ||
+                  "En cours"
+                )}
+              </span>
+
+            </div>
+
+            <br>
+
+            📍 Position :
+
+            <strong>
+              ${escapeHtml(
+                order.currentLocation ||
+                ""
+              )}
+            </strong>
+
+            <br>
+
+            🎯 Destination :
+
+            <strong>
+              ${escapeHtml(
+                order.destination ||
+                ""
+              )}
+            </strong>
+
+            <br>
+
+            🚚 Suivi :
+
+            <strong>
+              ${escapeHtml(
+                order.tracking ||
+                ""
+              )}
+            </strong>
+
+            <br>
+
+            📅 Livraison :
+
+            <strong>
+              ${
+                date
+                  ? date.toLocaleDateString(
+                      "fr-FR"
+                    )
+                  : "À définir"
+              }
+            </strong>
+
+            <br><br>
+
+            💰 Total :
+
+            <strong>
+              ${money(
+                order.total || 0
+              )}
+            </strong>
+
+          </div>
+
+        `;
+
+      }
+    ).join("");
+
 }
 
 
-function validateAdminCode() {
+/* =========================================================
+   ADMIN
+========================================================= */
 
-  const input =
-    document.getElementById(
-      "adminCodeInput"
-    );
+function isAdmin(){
 
-  const error =
-    document.getElementById(
-      "adminCodeError"
-    );
+  return (
 
-  if (!input) return;
+    currentUser &&
 
-  if (
-    input.value === ADMIN_CODE
-  ) {
+    currentUser.email ===
+      ADMIN_EMAIL
 
-    if (error)
-      error.textContent = "";
+  );
 
-    input.value = "";
+}
 
-    closeModal(
-      "adminCodeModal"
-    );
 
-    openModal(
-      "adminModal"
-    );
+async function openAdmin(){
 
-    loadAdminQuestions();
+  if(!isAdmin()){
 
     showToast(
-      "Dashboard administrateur ouvert 👑"
+      "Accès administrateur uniquement."
     );
 
-  } else {
+    return;
 
-    if (error) {
-
-      error.textContent =
-        "Code administrateur incorrect.";
-    }
   }
+
+  const code =
+    prompt(
+      "Code d'accès Dashboard :"
+    );
+
+  if(code !== ADMIN_CODE){
+
+    showToast(
+      "Code incorrect ❌"
+    );
+
+    return;
+
+  }
+
+  openModal(
+    "dashboardModal"
+  );
+
+  if(unsubscribeAdminOrders){
+
+    unsubscribeAdminOrders();
+
+  }
+
+  unsubscribeAdminOrders =
+    onSnapshot(
+      collection(
+        db,
+        "orders"
+      ),
+      snapshot => {
+
+        adminOrdersData =
+          snapshot.docs
+            .map(
+              item =>
+                item.data()
+            )
+            .sort(
+              (a, b) =>
+                (b.createdAt || 0) -
+                (a.createdAt || 0)
+            );
+
+        renderAdminDashboard();
+
+      },
+      error => {
+
+        console.error(
+          "Erreur admin :",
+          error
+        );
+
+        showToast(
+          "Impossible de charger les commandes admin."
+        );
+
+      }
+    );
+
+  renderAdminPromos();
+
+}
+
+
+/* =========================================================
+   DASHBOARD ADMIN
+========================================================= */
+
+function renderAdminDashboard(){
+
+  if($("statOrders")){
+
+    $("statOrders")
+      .textContent =
+      adminOrdersData.length;
+
+  }
+
+  if($("statFree")){
+
+    $("statFree")
+      .textContent =
+      adminOrdersData.filter(
+        order =>
+          Number(
+            order.total || 0
+          ) === 0
+      ).length;
+
+  }
+
+  if($("statCatalog")){
+
+    $("statCatalog")
+      .textContent =
+      products.length;
+
+  }
+
+  const container =
+    $("adminOrders");
+
+  if(!container)
+    return;
+
+  if(!adminOrdersData.length){
+
+    container.innerHTML = `
+
+      <div class="empty">
+        Aucune commande.
+      </div>
+
+    `;
+
+    return;
+
+  }
+
+  container.innerHTML =
+    adminOrdersData.map(
+      order => `
+
+        <div class="admin-order">
+
+          <strong>
+            ${escapeHtml(order.id)}
+          </strong>
+
+          <div>
+            ${escapeHtml(order.email || "")}
+          </div>
+
+          <br>
+
+          <div class="admin-fields">
+
+            <select
+              data-status="${escapeHtml(order.id)}"
+            >
+
+              <option
+                ${
+                  order.status ===
+                  "Préparation"
+                    ? "selected"
+                    : ""
+                }
+              >
+                Préparation
+              </option>
+
+              <option
+                ${
+                  order.status ===
+                  "Expédiée"
+                    ? "selected"
+                    : ""
+                }
+              >
+                Expédiée
+              </option>
+
+              <option
+                ${
+                  order.status ===
+                  "En transit"
+                    ? "selected"
+                    : ""
+                }
+              >
+                En transit
+              </option>
+
+              <option
+                ${
+                  order.status ===
+                  "Livrée"
+                    ? "selected"
+                    : ""
+                }
+              >
+                Livrée
+              </option>
+
+            </select>
+
+            <input
+              data-location="${escapeHtml(order.id)}"
+              value="${escapeHtml(
+                order.currentLocation || ""
+              )}"
+              placeholder="Position"
+            >
+
+            <input
+              data-destination="${escapeHtml(order.id)}"
+              value="${escapeHtml(
+                order.destination || ""
+              )}"
+              placeholder="Destination"
+            >
+
+            <input
+              type="date"
+              data-date="${escapeHtml(order.id)}"
+            >
+
+          </div>
+
+          <br>
+
+          <button
+            class="btn primary"
+            data-save-order="${escapeHtml(order.id)}"
+          >
+            💾 Enregistrer
+          </button>
+
+        </div>
+
+      `
+    ).join("");
+
+  document.querySelectorAll(
+    "[data-save-order]"
+  ).forEach(button => {
+
+    button.onclick =
+      async () => {
+
+        const id =
+          button.dataset.saveOrder;
+
+        const status =
+          document.querySelector(
+            `[data-status="${CSS.escape(id)}"]`
+          )?.value;
+
+        const location =
+          document.querySelector(
+            `[data-location="${CSS.escape(id)}"]`
+          )?.value;
+
+        const destination =
+          document.querySelector(
+            `[data-destination="${CSS.escape(id)}"]`
+          )?.value;
+
+        const date =
+          document.querySelector(
+            `[data-date="${CSS.escape(id)}"]`
+          )?.value;
+
+        const updates = {
+
+          status,
+
+          currentLocation:
+            location,
+
+          destination,
+
+          updatedAt:
+            Date.now()
+
+        };
+
+        if(date){
+
+          updates.deliveryDate =
+            new Date(
+              date +
+              "T12:00:00"
+            ).getTime();
+
+        }
+
+        try{
+
+          await updateDoc(
+            doc(
+              db,
+              "orders",
+              id
+            ),
+            updates
+          );
+
+          showToast(
+            "Commande mise à jour ✅"
+          );
+
+        }
+
+        catch(error){
+
+          console.error(
+            error
+          );
+
+          showToast(
+            "Erreur de mise à jour."
+          );
+
+        }
+
+      };
+
+  });
+
+}
+
+
+/* =========================================================
+   PROMOS ADMIN
+========================================================= */
+
+function renderAdminPromos(){
+
+  const container =
+    $("adminPromos");
+
+  if(!container)
+    return;
+
+  container.innerHTML =
+    Object.entries(
+      promos
+    ).map(
+      ([code, value]) => `
+
+        <div
+          class="info-card"
+          style="margin-bottom:8px;"
+        >
+
+          <strong>
+            ${escapeHtml(code)}
+          </strong>
+
+          ${value}% de réduction
+
+        </div>
+
+      `
+    ).join("");
+
+}
+
+
+/* =========================================================
+   FERMETURE
+========================================================= */
+
+document.querySelectorAll(
+  "[data-close]"
+).forEach(button => {
+
+  button.onclick = () => {
+
+    closeModal(
+      button.dataset.close
+    );
+
+  };
+
+});
+
+
+if($("overlay")){
+
+  $("overlay").onclick =
+    closeAllModals;
+
+}
+
+
+/* =========================================================
+   TABS AUTH
+========================================================= */
+
+if($("loginTab")){
+
+  $("loginTab").onclick = () => {
+
+    $("loginTab")
+      .classList
+      .add("active");
+
+    $("signupTab")
+      ?.classList
+      .remove("active");
+
+    $("loginForm")
+      ?.classList
+      .remove("hidden");
+
+    $("signupForm")
+      ?.classList
+      .add("hidden");
+
+  };
+
+}
+
+
+if($("signupTab")){
+
+  $("signupTab").onclick = () => {
+
+    $("signupTab")
+      .classList
+      .add("active");
+
+    $("loginTab")
+      ?.classList
+      .remove("active");
+
+    $("signupForm")
+      ?.classList
+      .remove("hidden");
+
+    $("loginForm")
+      ?.classList
+      .add("hidden");
+
+  };
+
+}
+
+
+/* =========================================================
+   FORM LOGIN
+========================================================= */
+
+if($("loginForm")){
+
+  $("loginForm").onsubmit =
+    async event => {
+
+      event.preventDefault();
+
+      await login(
+
+        $("loginEmail")
+          .value
+          .trim(),
+
+        $("loginPassword")
+          .value
+
+      );
+
+    };
+
+}
+
+
+/* =========================================================
+   FORM INSCRIPTION
+========================================================= */
+
+if($("signupForm")){
+
+  $("signupForm").onsubmit =
+    async event => {
+
+      event.preventDefault();
+
+      await signup();
+
+    };
+
+}
+
+
+/* =========================================================
+   GOOGLE
+========================================================= */
+
+if($("googleButton")){
+
+  $("googleButton").onclick =
+    googleLogin;
+
+}
+
+
+if($("googleSignupButton")){
+
+  $("googleSignupButton").onclick =
+    googleLogin;
+
+}
+
+
+/* =========================================================
+   COMPTE
+========================================================= */
+
+if($("accountButton")){
+
+  $("accountButton").onclick = () => {
+
+    renderAccount();
+
+    openModal(
+      "accountModal"
+    );
+
+  };
+
+}
+
+
+/* =========================================================
+   COMMANDES
+========================================================= */
+
+if($("ordersButton")){
+
+  $("ordersButton").onclick =
+    openOrders;
+
+}
+
+
+if($("heroOrders")){
+
+  $("heroOrders").onclick =
+    openOrders;
+
+}
+
+
+/* =========================================================
+   ADMIN
+========================================================= */
+
+if($("adminButton")){
+
+  $("adminButton").onclick =
+    openAdmin;
+
+}
+
+
+/* =========================================================
+   PANIER
+========================================================= */
+
+if($("cartButton")){
+
+  $("cartButton").onclick = () => {
+
+    renderCart();
+
+    openModal(
+      "cartModal"
+    );
+
+  };
+
+}
+
+
+/* =========================================================
+   CHECKOUT
+========================================================= */
+
+if($("checkoutButton")){
+
+  $("checkoutButton").onclick = () => {
+
+    if(
+      !getCartItems().length
+    ){
+
+      showToast(
+        "Ton panier est vide."
+      );
+
+      return;
+
+    }
+
+    if(!currentUser){
+
+      closeModal(
+        "cartModal"
+      );
+
+      openModal(
+        "authModal"
+      );
+
+      showToast(
+        "Connecte-toi avant de commander."
+      );
+
+      return;
+
+    }
+
+    updateCheckoutTotals();
+
+    openModal(
+      "checkoutModal"
+    );
+
+  };
+
+}
+
+
+if($("checkoutForm")){
+
+  $("checkoutForm").onsubmit =
+    async event => {
+
+      event.preventDefault();
+
+      await createOrder();
+
+    };
+
+}
+
+
+/* =========================================================
+   PROMO
+========================================================= */
+
+if($("applyPromo")){
+
+  $("applyPromo").onclick = () => {
+
+    const code =
+      $("promoCode")
+        .value
+        .trim()
+        .toUpperCase();
+
+    if(
+      promos[code] !==
+      undefined
+    ){
+
+      appliedPromo =
+        code;
+
+      if($("promoMessage")){
+
+        $("promoMessage")
+          .textContent =
+          `${code} appliqué : ${promos[code]}%`;
+
+      }
+
+      updateCheckoutTotals();
+
+    }
+
+    else{
+
+      appliedPromo =
+        null;
+
+      if($("promoMessage")){
+
+        $("promoMessage")
+          .textContent =
+          "Code invalide.";
+
+      }
+
+      updateCheckoutTotals();
+
+    }
+
+  };
+
 }
 
 
@@ -2821,251 +3297,239 @@ function validateAdminCode() {
    RECHERCHE
 ========================================================= */
 
-function setupSearch() {
+function search(){
 
-  const search =
-    document.getElementById(
-      "searchInput"
+  if(!$("searchInput"))
+    return;
+
+  currentSearch =
+    $("searchInput")
+      .value;
+
+  renderProducts();
+
+}
+
+
+if($("searchButton")){
+
+  $("searchButton")
+    .onclick =
+    search;
+
+}
+
+
+if($("searchInput")){
+
+  $("searchInput")
+    .addEventListener(
+      "input",
+      search
     );
 
-  if (!search) return;
-
-  search.addEventListener(
-    "input",
-    event => {
-
-      searchValue =
-        event.target.value;
-
-      renderProducts();
-    }
-  );
 }
 
 
 /* =========================================================
-   BOUTONS
+   TRI
 ========================================================= */
 
-function setupButtons() {
+if($("sortSelect")){
 
-  document
-    .querySelectorAll(
-      "[data-open-auth]"
-    )
-    .forEach(button => {
+  $("sortSelect").onchange = () => {
 
-      button.addEventListener(
-        "click",
-        () => {
+    currentSort =
+      $("sortSelect")
+        .value;
 
-          openModal(
-            "authModal"
-          );
-        }
-      );
-    });
+    renderProducts();
 
-  document
-    .querySelectorAll(
-      "[data-open-cart]"
-    )
-    .forEach(button => {
+  };
 
-      button.addEventListener(
-        "click",
-        () => {
-
-          renderCart();
-
-          openModal(
-            "cartModal"
-          );
-        }
-      );
-    });
-
-  document
-    .querySelectorAll(
-      "[data-open-orders]"
-    )
-    .forEach(button => {
-
-      button.addEventListener(
-        "click",
-        () => {
-
-          loadOrders();
-
-          openModal(
-            "ordersModal"
-          );
-        }
-      );
-    });
-
-  document
-    .querySelectorAll(
-      "[data-open-questions]"
-    )
-    .forEach(button => {
-
-      button.addEventListener(
-        "click",
-        () => {
-
-          loadUserQuestions();
-
-          openModal(
-            "questionsModal"
-          );
-        }
-      );
-    });
-
-  document
-    .querySelectorAll(
-      "[data-open-admin]"
-    )
-    .forEach(button => {
-
-      button.addEventListener(
-        "click",
-        openAdminAccess
-      );
-    });
-
-  document
-    .querySelectorAll(
-      "[data-close-modal]"
-    )
-    .forEach(button => {
-
-      button.addEventListener(
-        "click",
-        () => {
-
-          closeModal(
-            button.dataset.closeModal
-          );
-        }
-      );
-    });
-
-  document
-    .getElementById(
-      "authSubmit"
-    )
-    ?.addEventListener(
-      "click",
-      handleAuth
-    );
-
-  document
-    .getElementById(
-      "authSwitch"
-    )
-    ?.addEventListener(
-      "click",
-      switchAuthMode
-    );
-
-  document
-    .getElementById(
-      "logoutButton"
-    )
-    ?.addEventListener(
-      "click",
-      async () => {
-
-        await signOut(auth);
-
-        closeModal(
-          "accountModal"
-        );
-
-        showToast(
-          "Déconnexion réussie."
-        );
-      }
-    );
-
-  document
-    .getElementById(
-      "adminCodeSubmit"
-    )
-    ?.addEventListener(
-      "click",
-      validateAdminCode
-    );
-
-  document
-    .getElementById(
-      "createOrderButton"
-    )
-    ?.addEventListener(
-      "click",
-      createOrder
-    );
 }
 
 
 /* =========================================================
-   ETAT UTILISATEUR
+   CATÉGORIES
+========================================================= */
+
+document.querySelectorAll(
+  ".category-btn"
+).forEach(button => {
+
+  button.onclick = () => {
+
+    document.querySelectorAll(
+      ".category-btn"
+    ).forEach(btn => {
+
+      btn.classList.remove(
+        "active"
+      );
+
+    });
+
+    button.classList.add(
+      "active"
+    );
+
+    currentCategory =
+      button.dataset.category;
+
+    renderProducts();
+
+  };
+
+});
+
+
+/* =========================================================
+   HERO
+========================================================= */
+
+if($("heroProducts")){
+
+  $("heroProducts").onclick = () => {
+
+    const section =
+      document.querySelector(
+        ".section"
+      );
+
+    if(section){
+
+      section.scrollIntoView({
+        behavior: "smooth"
+      });
+
+    }
+
+  };
+
+}
+
+
+/* =========================================================
+   SETTINGS
+========================================================= */
+
+if($("settingsButton")){
+
+  $("settingsButton").onclick = () => {
+
+    openModal(
+      "settingsModal"
+    );
+
+  };
+
+}
+
+
+const savedSettings =
+  JSON.parse(
+    localStorage.getItem(
+      SETTINGS_KEY
+    ) || "{}"
+  );
+
+
+if($("darkSwitch")){
+
+  $("darkSwitch")
+    .checked =
+    savedSettings.dark !== false;
+
+}
+
+
+if($("soundSwitch")){
+
+  $("soundSwitch")
+    .checked =
+    savedSettings.sound === true;
+
+}
+
+
+function saveSettings(){
+
+  localStorage.setItem(
+    SETTINGS_KEY,
+
+    JSON.stringify({
+
+      dark:
+        $("darkSwitch")
+          ?.checked,
+
+      sound:
+        $("soundSwitch")
+          ?.checked
+
+    })
+
+  );
+
+}
+
+
+if($("darkSwitch")){
+
+  $("darkSwitch")
+    .onchange =
+    saveSettings;
+
+}
+
+
+if($("soundSwitch")){
+
+  $("soundSwitch")
+    .onchange =
+    saveSettings;
+
+}
+
+
+/* =========================================================
+   AUTH FIREBASE
 ========================================================= */
 
 onAuthStateChanged(
   auth,
   user => {
 
-    currentUser = user;
+    currentUser =
+      user;
 
-    const accountText =
-      document.getElementById(
-        "accountText"
-      );
+    if(
+      user &&
+      user.email ===
+      ADMIN_EMAIL
+    ){
 
-    const adminButton =
-      document.getElementById(
-        "adminButton"
-      );
+      $("adminButton")
+        ?.classList
+        .remove(
+          "hidden"
+        );
 
-    if (user) {
-
-      if (accountText) {
-
-        accountText.textContent =
-          user.email;
-      }
-
-      if (
-        adminButton &&
-        user.email === ADMIN_EMAIL
-      ) {
-
-        adminButton.style.display =
-          "inline-flex";
-
-      } else if (adminButton) {
-
-        adminButton.style.display =
-          "none";
-      }
-
-    } else {
-
-      if (accountText) {
-
-        accountText.textContent =
-          "Compte";
-      }
-
-      if (adminButton) {
-
-        adminButton.style.display =
-          "none";
-      }
     }
+
+    else{
+
+      $("adminButton")
+        ?.classList
+        .add(
+          "hidden"
+        );
+
+    }
+
+    renderAccount();
+
   }
 );
 
@@ -3074,44 +3538,22 @@ onAuthStateChanged(
    INITIALISATION
 ========================================================= */
 
-loadCart();
-
-renderCategories();
+updateCartCount();
 
 renderProducts();
 
-renderCart();
-
-setupSearch();
-
-setupButtons();
-
-
-/* =========================================================
-   FERMETURE MODALES EN CLIQUANT DEHORS
-========================================================= */
-
-document
-  .querySelectorAll(".modal")
-  .forEach(modal => {
-
-    modal.addEventListener(
-      "click",
-      event => {
-
-        if (
-          event.target === modal
-        ) {
-
-          modal.classList.remove(
-            "open"
-          );
-        }
-      }
-    );
-  });
-
+console.log(
+  "NovaShop chargé."
+);
 
 console.log(
-  "NovaShop chargé correctement 🚀"
+  "18 produits chargés."
+);
+
+console.log(
+  "Images avec système de secours activé."
+);
+
+console.log(
+  "Avis générés aléatoirement : 850 à 950 par produit."
 );
