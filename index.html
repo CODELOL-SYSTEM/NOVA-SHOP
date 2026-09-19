@@ -1,984 +1,1294 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#111827">
-<title>NovaShop | Marketplace</title>
-
-<style>
-:root{
-  --bg:#f5f6f8;
-  --card:#ffffff;
-  --text:#111827;
-  --muted:#6b7280;
-  --border:#e5e7eb;
-  --blue:#2563eb;
-  --blue-dark:#1d4ed8;
-  --green:#16a34a;
-  --red:#dc2626;
-  --shadow:0 8px 30px rgba(15,23,42,.07);
-  --radius:16px;
-}
-
-*{
-  box-sizing:border-box;
-  margin:0;
-  padding:0;
-}
-
-body{
-  font-family:Inter,Arial,Helvetica,sans-serif;
-  background:var(--bg);
-  color:var(--text);
-}
-
-button,
-input,
-select{
-  font:inherit;
-}
-
-button{
-  cursor:pointer;
-}
-
-.topbar{
-  background:#111827;
-  color:#fff;
-  padding:9px 20px;
-  font-size:13px;
-  text-align:center;
-}
-
-.header{
-  background:#fff;
-  border-bottom:1px solid var(--border);
-  position:sticky;
-  top:0;
-  z-index:50;
-}
-
-.header-inner{
-  max-width:1400px;
-  margin:auto;
-  min-height:74px;
-  display:flex;
-  align-items:center;
-  gap:20px;
-  padding:12px 20px;
-}
-
-.logo{
-  font-size:25px;
-  font-weight:900;
-  letter-spacing:-1px;
-  color:#111827;
-  white-space:nowrap;
-}
-
-.logo span{
-  color:var(--blue);
-}
-
-.search{
-  flex:1;
-  display:flex;
-  max-width:700px;
-  margin:auto;
-}
-
-.search input{
-  width:100%;
-  height:44px;
-  border:1px solid #d1d5db;
-  border-right:none;
-  border-radius:10px 0 0 10px;
-  padding:0 15px;
-  outline:none;
-}
-
-.search input:focus{
-  border-color:var(--blue);
-}
-
-.search button{
-  width:50px;
-  border:none;
-  border-radius:0 10px 10px 0;
-  background:var(--blue);
-  color:#fff;
-  font-size:19px;
-}
-
-.header-actions{
-  display:flex;
-  gap:8px;
-}
-
-.icon-btn{
-  height:42px;
-  padding:0 13px;
-  border:1px solid var(--border);
-  background:#fff;
-  border-radius:10px;
-  color:#111827;
-  font-weight:700;
-}
-
-.icon-btn:hover{
-  background:#f3f4f6;
-}
-
-.cart-count{
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  min-width:20px;
-  height:20px;
-  border-radius:99px;
-  background:var(--blue);
-  color:#fff;
-  font-size:11px;
-  margin-left:5px;
-}
-
-.categories{
-  background:#fff;
-  border-bottom:1px solid var(--border);
-  overflow-x:auto;
-}
-
-.categories-inner{
-  max-width:1400px;
-  margin:auto;
-  padding:10px 20px;
-  display:flex;
-  gap:8px;
-}
-
-.category{
-  border:1px solid var(--border);
-  background:#fff;
-  padding:9px 14px;
-  border-radius:999px;
-  white-space:nowrap;
-  font-weight:600;
-  color:#4b5563;
-}
-
-.category.active,
-.category:hover{
-  background:#111827;
-  border-color:#111827;
-  color:#fff;
-}
-
-main{
-  max-width:1400px;
-  margin:auto;
-  padding:30px 20px 70px;
-}
-
-.hero{
-  background:#111827;
-  color:#fff;
-  border-radius:22px;
-  padding:45px;
-  margin-bottom:30px;
-  position:relative;
-  overflow:hidden;
-}
-
-.hero h1{
-  font-size:clamp(30px,5vw,55px);
-  line-height:1;
-  letter-spacing:-2px;
-  max-width:700px;
-}
-
-.hero p{
-  margin-top:16px;
-  color:#cbd5e1;
-  max-width:650px;
-  line-height:1.6;
-}
-
-.hero-badges{
-  display:flex;
-  flex-wrap:wrap;
-  gap:10px;
-  margin-top:24px;
-}
-
-.badge{
-  background:#1f2937;
-  border:1px solid #374151;
-  padding:9px 13px;
-  border-radius:10px;
-  font-size:13px;
-}
-
-.products-head{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:15px;
-  margin-bottom:18px;
-}
-
-.products-head h2{
-  font-size:25px;
-}
-
-.result-count{
-  color:var(--muted);
-  margin-top:4px;
-  font-size:14px;
-}
-
-.sort{
-  border:1px solid var(--border);
-  background:#fff;
-  padding:10px 13px;
-  border-radius:10px;
-  outline:none;
-}
-
-.products-grid{
-  display:grid;
-  grid-template-columns:repeat(4,minmax(0,1fr));
-  gap:18px;
-}
-
-.product{
-  background:#fff;
-  border:1px solid var(--border);
-  border-radius:var(--radius);
-  overflow:hidden;
-  box-shadow:0 3px 15px rgba(0,0,0,.03);
-  transition:.2s;
-}
-
-.product:hover{
-  transform:translateY(-3px);
-  box-shadow:var(--shadow);
-}
-
-.product-image{
-  height:230px;
-  background:#f8fafc;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  padding:18px;
-  position:relative;
-}
-
-.product-image img{
-  width:100%;
-  height:100%;
-  object-fit:contain;
-}
-
-.image-error{
-  color:#9ca3af;
-  font-size:13px;
-}
-
-.favorite{
-  position:absolute;
-  top:12px;
-  right:12px;
-  width:36px;
-  height:36px;
-  border:1px solid var(--border);
-  background:#fff;
-  border-radius:50%;
-  font-size:19px;
-}
-
-.favorite.active{
-  color:#dc2626;
-}
-
-.product-info{
-  padding:17px;
-}
-
-.product-brand{
-  color:var(--muted);
-  font-size:12px;
-  text-transform:uppercase;
-  letter-spacing:.6px;
-  font-weight:800;
-}
-
-.product-name{
-  font-size:16px;
-  font-weight:800;
-  line-height:1.35;
-  margin-top:5px;
-  min-height:44px;
-}
-
-.product-category{
-  display:inline-block;
-  margin-top:10px;
-  padding:5px 8px;
-  background:#f3f4f6;
-  border-radius:6px;
-  color:#4b5563;
-  font-size:11px;
-  font-weight:700;
-}
-
-.product-bottom{
-  margin-top:15px;
-  display:flex;
-  align-items:end;
-  justify-content:space-between;
-  gap:8px;
-}
-
-.price{
-  font-size:21px;
-  font-weight:900;
-}
-
-.demo{
-  font-size:10px;
-  color:#9ca3af;
-  margin-top:2px;
-}
-
-.add-btn{
-  border:none;
-  background:var(--blue);
-  color:#fff;
-  padding:10px 12px;
-  border-radius:9px;
-  font-weight:800;
-}
-
-.add-btn:hover{
-  background:var(--blue-dark);
-}
-
-.empty{
-  display:none;
-  text-align:center;
-  padding:80px 20px;
-  background:#fff;
-  border:1px solid var(--border);
-  border-radius:16px;
-}
-
-.empty.show{
-  display:block;
-}
-
-.overlay{
-  display:none;
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,.45);
-  z-index:100;
-}
-
-.overlay.show{
-  display:block;
-}
-
-.drawer{
-  position:fixed;
-  top:0;
-  right:0;
-  height:100%;
-  width:min(470px,100%);
-  background:#fff;
-  z-index:110;
-  transform:translateX(100%);
-  transition:.25s;
-  display:flex;
-  flex-direction:column;
-}
-
-.drawer.open{
-  transform:translateX(0);
-}
-
-.drawer-head{
-  padding:20px;
-  border-bottom:1px solid var(--border);
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-}
-
-.close{
-  border:none;
-  background:#f3f4f6;
-  width:36px;
-  height:36px;
-  border-radius:9px;
-}
-
-.cart-items{
-  flex:1;
-  overflow:auto;
-  padding:15px;
-}
-
-.cart-item{
-  display:flex;
-  gap:12px;
-  padding:14px 0;
-  border-bottom:1px solid var(--border);
-}
-
-.cart-item img{
-  width:75px;
-  height:75px;
-  object-fit:contain;
-  background:#f8fafc;
-  border-radius:10px;
-}
-
-.cart-item-info{
-  flex:1;
-}
-
-.cart-item-name{
-  font-weight:800;
-  font-size:14px;
-}
-
-.cart-price{
-  margin-top:5px;
-  font-weight:800;
-}
-
-.qty{
-  display:flex;
-  align-items:center;
-  gap:7px;
-  margin-top:8px;
-}
-
-.qty button{
-  width:27px;
-  height:27px;
-  border:1px solid var(--border);
-  background:#fff;
-  border-radius:6px;
-}
-
-.remove{
-  color:var(--red);
-  border:none!important;
-  background:none!important;
-  width:auto!important;
-}
-
-.cart-foot{
-  border-top:1px solid var(--border);
-  padding:18px;
-}
-
-.total-line{
-  display:flex;
-  justify-content:space-between;
-  font-size:20px;
-  font-weight:900;
-  margin-bottom:14px;
-}
-
-.primary{
-  width:100%;
-  border:none;
-  background:var(--blue);
-  color:#fff;
-  padding:13px;
-  border-radius:10px;
-  font-weight:900;
-}
-
-.primary:hover{
-  background:var(--blue-dark);
-}
-
-.primary:disabled{
-  opacity:.5;
-  cursor:not-allowed;
-}
-
-.secondary{
-  border:1px solid var(--border);
-  background:#fff;
-  padding:11px 14px;
-  border-radius:9px;
-  font-weight:700;
-}
-
-.modal-wrap{
-  display:none;
-  position:fixed;
-  inset:0;
-  z-index:120;
-  align-items:center;
-  justify-content:center;
-  padding:20px;
-  background:rgba(0,0,0,.45);
-}
-
-.modal-wrap.show{
-  display:flex;
-}
-
-.modal{
-  width:min(720px,100%);
-  max-height:90vh;
-  overflow:auto;
-  background:#fff;
-  border-radius:18px;
-  box-shadow:0 20px 60px rgba(0,0,0,.2);
-}
-
-.modal-head{
-  padding:20px;
-  border-bottom:1px solid var(--border);
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-}
-
-.modal-body{
-  padding:20px;
-}
-
-.product-detail{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:25px;
-}
-
-.detail-image{
-  min-height:330px;
-  background:#f8fafc;
-  border-radius:12px;
-  padding:20px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-}
-
-.detail-image img{
-  width:100%;
-  height:300px;
-  object-fit:contain;
-}
-
-.detail-price{
-  font-size:32px;
-  font-weight:900;
-  margin:15px 0;
-}
-
-.code{
-  background:#f3f4f6;
-  padding:10px;
-  border-radius:8px;
-  font-family:monospace;
-  margin:15px 0;
-}
-
-.form-grid{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:13px;
-}
-
-.field{
-  display:flex;
-  flex-direction:column;
-  gap:6px;
-}
-
-.field.full{
-  grid-column:1/-1;
-}
-
-.field label{
-  font-size:13px;
-  font-weight:800;
-}
-
-.field input,
-.field select{
-  width:100%;
-  border:1px solid #d1d5db;
-  border-radius:9px;
-  padding:11px;
-  outline:none;
-}
-
-.field input:focus{
-  border-color:var(--blue);
-}
-
-.checkout-total{
-  background:#f8fafc;
-  border:1px solid var(--border);
-  border-radius:12px;
-  padding:15px;
-  margin-bottom:18px;
-}
-
-.promo{
-  margin:18px 0;
-  padding:15px;
-  background:#f8fafc;
-  border:1px solid var(--border);
-  border-radius:12px;
-}
-
-.promo-row{
-  display:flex;
-  gap:8px;
-  margin-top:9px;
-}
-
-.promo-row input{
-  flex:1;
-  border:1px solid #d1d5db;
-  border-radius:8px;
-  padding:11px;
-}
-
-.promo-row button{
-  border:none;
-  background:#111827;
-  color:#fff;
-  border-radius:8px;
-  padding:0 15px;
-  font-weight:800;
-}
-
-.promo-status{
-  margin-top:8px;
-  font-size:13px;
-  font-weight:700;
-}
-
-.success{
-  color:var(--green);
-}
-
-.error{
-  color:var(--red);
-}
-
-.pay-box{
-  margin-top:15px;
-  padding:14px;
-  border-radius:10px;
-  background:#fff7ed;
-  border:1px solid #fed7aa;
-  color:#9a3412;
-  font-size:13px;
-}
-
-.invoice{
-  border:1px solid var(--border);
-  padding:25px;
-  background:#fff;
-}
-
-.invoice-head{
-  display:flex;
-  justify-content:space-between;
-  gap:20px;
-  border-bottom:1px solid var(--border);
-  padding-bottom:18px;
-  margin-bottom:20px;
-}
-
-.invoice h2{
-  font-size:28px;
-}
-
-.invoice-items{
-  width:100%;
-  border-collapse:collapse;
-}
-
-.invoice-items th,
-.invoice-items td{
-  padding:10px 5px;
-  text-align:left;
-  border-bottom:1px solid var(--border);
-}
-
-.invoice-total{
-  margin-top:20px;
-  text-align:right;
-  font-size:25px;
-  font-weight:900;
-}
-
-.toast{
-  position:fixed;
-  left:50%;
-  bottom:25px;
-  transform:translate(-50%,120px);
-  background:#111827;
-  color:#fff;
-  padding:13px 18px;
-  border-radius:10px;
-  z-index:300;
-  opacity:0;
-  transition:.25s;
-  font-weight:700;
-}
-
-.toast.show{
-  opacity:1;
-  transform:translate(-50%,0);
-}
-
-.dashboard{
-  display:none;
-}
-
-.dashboard.show{
-  display:block;
-}
-
-.dashboard-head{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  margin-bottom:25px;
-}
-
-.stats{
-  display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:15px;
-  margin-bottom:25px;
-}
-
-.stat{
-  background:#fff;
-  border:1px solid var(--border);
-  border-radius:14px;
-  padding:20px;
-}
-
-.stat-label{
-  color:var(--muted);
-  font-size:13px;
-}
-
-.stat-value{
-  font-size:28px;
-  font-weight:900;
-  margin-top:6px;
-}
-
-.dashboard-grid{
-  display:grid;
-  grid-template-columns:1fr 1.5fr;
-  gap:20px;
-}
-
-.panel{
-  background:#fff;
-  border:1px solid var(--border);
-  border-radius:15px;
-  padding:20px;
-}
-
-.panel h3{
-  margin-bottom:15px;
-}
-
-.order{
-  border:1px solid var(--border);
-  border-radius:12px;
-  padding:15px;
-  margin-bottom:12px;
-}
-
-.order-top{
-  display:flex;
-  justify-content:space-between;
-  gap:10px;
-}
-
-.status{
-  display:inline-block;
-  background:#eff6ff;
-  color:#1d4ed8;
-  padding:5px 8px;
-  border-radius:6px;
-  font-size:11px;
-  font-weight:900;
-}
-
-.order-items{
-  margin-top:10px;
-  color:#4b5563;
-  font-size:13px;
-}
-
-.hidden{
-  display:none!important;
-}
-
-@media(max-width:1100px){
-  .products-grid{
-    grid-template-columns:repeat(3,1fr);
-  }
-
-  .stats{
-    grid-template-columns:repeat(2,1fr);
-  }
-}
-
-@media(max-width:800px){
-  .header-inner{
-    flex-wrap:wrap;
-  }
-
-  .logo{
-    width:100%;
-  }
-
-  .search{
-    order:3;
-    flex-basis:100%;
-  }
-
-  .products-grid{
-    grid-template-columns:repeat(2,1fr);
-  }
-
-  .dashboard-grid,
-  .product-detail{
-    grid-template-columns:1fr;
-  }
-
-  .hero{
-    padding:30px 22px;
-  }
-}
-
-@media(max-width:550px){
-  main{
-    padding:20px 12px 50px;
-  }
-
-  .header-inner{
-    padding:10px 12px;
-  }
-
-  .products-grid{
-    grid-template-columns:1fr;
-  }
-
-  .products-head{
-    align-items:flex-start;
-    flex-direction:column;
-  }
-
-  .stats{
-    grid-template-columns:1fr;
-  }
-
-  .form-grid{
-    grid-template-columns:1fr;
-  }
-
-  .field.full{
-    grid-column:auto;
-  }
-
-  .header-actions{
-    width:100%;
-  }
-
-  .icon-btn{
-    flex:1;
-  }
-}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#0b0d10">
+  <title>NovaShop | Marketplace Gaming</title>
+
+  <style>
+    :root{
+      --bg:#f5f6f8;
+      --surface:#ffffff;
+      --surface-2:#f0f2f5;
+      --text:#111318;
+      --muted:#69707d;
+      --border:#e2e5ea;
+      --blue:#2563eb;
+      --blue-dark:#1d4ed8;
+      --green:#16a34a;
+      --red:#dc2626;
+      --orange:#f59e0b;
+      --shadow:0 12px 35px rgba(15,23,42,.08);
+      --radius:18px;
+    }
+
+    *{
+      box-sizing:border-box;
+      margin:0;
+      padding:0;
+    }
+
+    html{
+      scroll-behavior:smooth;
+    }
+
+    body{
+      font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+      background:var(--bg);
+      color:var(--text);
+      min-height:100vh;
+    }
+
+    button,input,select{
+      font:inherit;
+    }
+
+    button{
+      cursor:pointer;
+    }
+
+    img{
+      max-width:100%;
+      display:block;
+    }
+
+    a{
+      color:inherit;
+      text-decoration:none;
+    }
+
+    .topbar{
+      background:#0b0d10;
+      color:#fff;
+      text-align:center;
+      font-size:13px;
+      padding:9px 16px;
+    }
+
+    header{
+      position:sticky;
+      top:0;
+      z-index:100;
+      background:rgba(255,255,255,.96);
+      backdrop-filter:blur(15px);
+      border-bottom:1px solid var(--border);
+    }
+
+    .header-main{
+      max-width:1450px;
+      margin:auto;
+      padding:16px 22px;
+      display:flex;
+      align-items:center;
+      gap:20px;
+    }
+
+    .logo{
+      font-size:25px;
+      font-weight:900;
+      letter-spacing:-1px;
+      white-space:nowrap;
+    }
+
+    .logo span{
+      color:var(--blue);
+    }
+
+    .search{
+      flex:1;
+      display:flex;
+      min-width:200px;
+      max-width:700px;
+      margin:auto;
+    }
+
+    .search input{
+      width:100%;
+      border:1px solid var(--border);
+      border-right:0;
+      background:#fff;
+      padding:12px 15px;
+      border-radius:12px 0 0 12px;
+      outline:none;
+    }
+
+    .search input:focus{
+      border-color:var(--blue);
+    }
+
+    .search button{
+      border:0;
+      background:var(--blue);
+      color:#fff;
+      width:52px;
+      border-radius:0 12px 12px 0;
+      font-size:18px;
+    }
+
+    .header-actions{
+      display:flex;
+      gap:9px;
+      align-items:center;
+    }
+
+    .icon-btn{
+      border:1px solid var(--border);
+      background:#fff;
+      padding:10px 13px;
+      border-radius:11px;
+      color:var(--text);
+      transition:.2s;
+      white-space:nowrap;
+    }
+
+    .icon-btn:hover{
+      border-color:#b9c0ca;
+      transform:translateY(-1px);
+    }
+
+    .admin-btn{
+      display:none;
+      background:#111827;
+      color:#fff;
+      border-color:#111827;
+    }
+
+    .cart-btn{
+      background:#111318;
+      color:#fff;
+      border-color:#111318;
+    }
+
+    .cart-count{
+      background:#fff;
+      color:#111;
+      border-radius:999px;
+      padding:1px 6px;
+      margin-left:4px;
+      font-size:12px;
+      font-weight:800;
+    }
+
+    .categories{
+      border-top:1px solid var(--border);
+      overflow-x:auto;
+    }
+
+    .categories-inner{
+      max-width:1450px;
+      margin:auto;
+      padding:10px 22px;
+      display:flex;
+      gap:8px;
+      white-space:nowrap;
+    }
+
+    .category{
+      border:1px solid var(--border);
+      background:#fff;
+      padding:8px 13px;
+      border-radius:999px;
+      font-size:13px;
+      color:#454b55;
+    }
+
+    .category.active{
+      background:#111318;
+      color:#fff;
+      border-color:#111318;
+    }
+
+    main{
+      max-width:1450px;
+      margin:auto;
+      padding:30px 22px 70px;
+    }
+
+    .hero{
+      background:#111318;
+      color:#fff;
+      border-radius:25px;
+      padding:48px;
+      margin-bottom:30px;
+      position:relative;
+      overflow:hidden;
+    }
+
+    .hero:after{
+      content:"";
+      position:absolute;
+      width:300px;
+      height:300px;
+      border-radius:50%;
+      right:-100px;
+      top:-130px;
+      background:rgba(37,99,235,.25);
+      filter:blur(10px);
+    }
+
+    .hero-content{
+      position:relative;
+      z-index:2;
+      max-width:750px;
+    }
+
+    .hero small{
+      color:#9ca3af;
+      font-weight:700;
+      letter-spacing:1px;
+    }
+
+    .hero h1{
+      margin-top:10px;
+      font-size:clamp(35px,5vw,62px);
+      line-height:1;
+      letter-spacing:-3px;
+    }
+
+    .hero p{
+      margin-top:17px;
+      color:#cbd0d8;
+      font-size:17px;
+      line-height:1.6;
+    }
+
+    .hero-btn{
+      margin-top:25px;
+      border:0;
+      background:#fff;
+      color:#111318;
+      padding:12px 18px;
+      border-radius:12px;
+      font-weight:800;
+    }
+
+    .section-head{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:15px;
+      margin-bottom:18px;
+    }
+
+    .section-head h2{
+      font-size:25px;
+    }
+
+    .result-info{
+      color:var(--muted);
+      font-size:14px;
+      margin-top:3px;
+    }
+
+    .sort{
+      border:1px solid var(--border);
+      background:#fff;
+      padding:10px 13px;
+      border-radius:11px;
+      outline:none;
+    }
+
+    .products{
+      display:grid;
+      grid-template-columns:repeat(4,minmax(0,1fr));
+      gap:18px;
+    }
+
+    .product-card{
+      background:#fff;
+      border:1px solid var(--border);
+      border-radius:18px;
+      overflow:hidden;
+      transition:.2s;
+      position:relative;
+    }
+
+    .product-card:hover{
+      transform:translateY(-3px);
+      box-shadow:var(--shadow);
+    }
+
+    .product-image{
+      height:235px;
+      background:#f7f8fa;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:20px;
+      position:relative;
+    }
+
+    .product-image img{
+      width:100%;
+      height:100%;
+      object-fit:contain;
+    }
+
+    .fav{
+      position:absolute;
+      top:12px;
+      right:12px;
+      width:37px;
+      height:37px;
+      border:1px solid var(--border);
+      background:#fff;
+      border-radius:50%;
+      z-index:3;
+    }
+
+    .fav.active{
+      color:#dc2626;
+    }
+
+    .product-body{
+      padding:16px;
+    }
+
+    .product-category{
+      color:var(--blue);
+      text-transform:uppercase;
+      font-size:10px;
+      letter-spacing:1px;
+      font-weight:900;
+    }
+
+    .product-name{
+      margin-top:6px;
+      font-size:16px;
+      font-weight:800;
+      line-height:1.3;
+      min-height:42px;
+    }
+
+    .product-code{
+      margin-top:6px;
+      color:#9298a3;
+      font-size:11px;
+    }
+
+    .product-bottom{
+      margin-top:15px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:8px;
+    }
+
+    .price{
+      font-size:19px;
+      font-weight:900;
+    }
+
+    .buy{
+      border:0;
+      background:#111318;
+      color:#fff;
+      padding:9px 12px;
+      border-radius:10px;
+      font-size:12px;
+      font-weight:800;
+    }
+
+    .empty{
+      display:none;
+      background:#fff;
+      border:1px solid var(--border);
+      border-radius:18px;
+      padding:60px 20px;
+      text-align:center;
+      color:var(--muted);
+    }
+
+    .empty strong{
+      display:block;
+      color:var(--text);
+      font-size:20px;
+      margin-bottom:6px;
+    }
+
+    .overlay{
+      display:none;
+      position:fixed;
+      inset:0;
+      background:rgba(0,0,0,.45);
+      z-index:500;
+    }
+
+    .overlay.show{
+      display:block;
+    }
+
+    .drawer{
+      position:fixed;
+      top:0;
+      right:-500px;
+      width:min(500px,100%);
+      height:100vh;
+      background:#fff;
+      z-index:600;
+      transition:.3s;
+      box-shadow:-15px 0 50px rgba(0,0,0,.15);
+      display:flex;
+      flex-direction:column;
+    }
+
+    .drawer.open{
+      right:0;
+    }
+
+    .drawer-head{
+      padding:20px;
+      border-bottom:1px solid var(--border);
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+    }
+
+    .close{
+      width:36px;
+      height:36px;
+      border:1px solid var(--border);
+      background:#fff;
+      border-radius:10px;
+    }
+
+    .drawer-content{
+      padding:18px;
+      overflow:auto;
+      flex:1;
+    }
+
+    .cart-item{
+      display:grid;
+      grid-template-columns:75px 1fr auto;
+      gap:12px;
+      align-items:center;
+      padding:13px 0;
+      border-bottom:1px solid var(--border);
+    }
+
+    .cart-item img{
+      width:75px;
+      height:65px;
+      object-fit:contain;
+      background:#f6f7f9;
+      border-radius:10px;
+    }
+
+    .cart-name{
+      font-weight:800;
+      font-size:14px;
+    }
+
+    .cart-price{
+      font-weight:900;
+      margin-top:4px;
+    }
+
+    .qty{
+      display:flex;
+      align-items:center;
+      gap:7px;
+      margin-top:8px;
+    }
+
+    .qty button{
+      width:25px;
+      height:25px;
+      border:1px solid var(--border);
+      background:#fff;
+      border-radius:6px;
+    }
+
+    .remove{
+      border:0;
+      background:transparent;
+      color:var(--red);
+      font-size:12px;
+      margin-top:7px;
+    }
+
+    .drawer-footer{
+      padding:18px;
+      border-top:1px solid var(--border);
+    }
+
+    .total-row{
+      display:flex;
+      justify-content:space-between;
+      font-size:18px;
+      font-weight:900;
+      margin-bottom:14px;
+    }
+
+    .primary{
+      width:100%;
+      border:0;
+      background:var(--blue);
+      color:#fff;
+      padding:13px;
+      border-radius:11px;
+      font-weight:900;
+    }
+
+    .primary:disabled{
+      background:#aeb5bf;
+      cursor:not-allowed;
+    }
+
+    .modal-wrap{
+      display:none;
+      position:fixed;
+      inset:0;
+      z-index:700;
+      align-items:center;
+      justify-content:center;
+      padding:20px;
+      background:rgba(0,0,0,.48);
+    }
+
+    .modal-wrap.show{
+      display:flex;
+    }
+
+    .modal{
+      width:min(900px,100%);
+      max-height:92vh;
+      overflow:auto;
+      background:#fff;
+      border-radius:20px;
+      box-shadow:0 30px 100px rgba(0,0,0,.25);
+    }
+
+    .modal.small{
+      width:min(480px,100%);
+    }
+
+    .modal-head{
+      padding:20px;
+      border-bottom:1px solid var(--border);
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      position:sticky;
+      top:0;
+      background:#fff;
+      z-index:2;
+    }
+
+    .modal-body{
+      padding:22px;
+    }
+
+    .tabs{
+      display:flex;
+      gap:5px;
+      background:#f0f2f5;
+      padding:5px;
+      border-radius:11px;
+      margin-bottom:18px;
+    }
+
+    .tab{
+      flex:1;
+      border:0;
+      background:transparent;
+      padding:10px;
+      border-radius:8px;
+      font-weight:800;
+    }
+
+    .tab.active{
+      background:#fff;
+      box-shadow:0 2px 8px rgba(0,0,0,.06);
+    }
+
+    .form{
+      display:grid;
+      gap:13px;
+    }
+
+    .field{
+      display:grid;
+      gap:6px;
+    }
+
+    .field label{
+      font-size:12px;
+      font-weight:800;
+      color:#4c535e;
+    }
+
+    .field input,
+    .field select{
+      border:1px solid var(--border);
+      background:#fff;
+      padding:12px;
+      border-radius:10px;
+      outline:none;
+    }
+
+    .field input:focus,
+    .field select:focus{
+      border-color:var(--blue);
+    }
+
+    .form-grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:13px;
+    }
+
+    .hidden{
+      display:none !important;
+    }
+
+    .account-box{
+      background:#f7f8fa;
+      border:1px solid var(--border);
+      padding:16px;
+      border-radius:14px;
+      margin-bottom:16px;
+    }
+
+    .account-name{
+      font-size:20px;
+      font-weight:900;
+    }
+
+    .account-email{
+      color:var(--muted);
+      margin-top:3px;
+    }
+
+    .account-actions{
+      display:grid;
+      gap:9px;
+      margin-top:15px;
+    }
+
+    .secondary{
+      border:1px solid var(--border);
+      background:#fff;
+      padding:11px;
+      border-radius:10px;
+      font-weight:800;
+    }
+
+    .danger{
+      border:1px solid #fecaca;
+      background:#fff;
+      color:#b91c1c;
+      padding:11px;
+      border-radius:10px;
+      font-weight:800;
+    }
+
+    .order-card{
+      border:1px solid var(--border);
+      border-radius:14px;
+      padding:15px;
+      margin-bottom:12px;
+    }
+
+    .order-top{
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      align-items:center;
+    }
+
+    .order-number{
+      font-weight:900;
+    }
+
+    .status{
+      display:inline-flex;
+      padding:5px 8px;
+      border-radius:999px;
+      font-size:11px;
+      font-weight:900;
+      background:#eef2ff;
+      color:#3730a3;
+    }
+
+    .order-meta{
+      margin-top:8px;
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.5;
+    }
+
+    .order-actions{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      margin-top:12px;
+    }
+
+    .order-actions button{
+      border:1px solid var(--border);
+      background:#fff;
+      padding:8px 11px;
+      border-radius:9px;
+      font-size:12px;
+      font-weight:800;
+    }
+
+    .product-detail{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:25px;
+    }
+
+    .detail-image{
+      height:400px;
+      background:#f7f8fa;
+      border-radius:16px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:30px;
+    }
+
+    .detail-image img{
+      width:100%;
+      height:100%;
+      object-fit:contain;
+    }
+
+    .detail-info h2{
+      font-size:30px;
+      line-height:1.1;
+    }
+
+    .detail-price{
+      font-size:29px;
+      font-weight:900;
+      margin:18px 0;
+    }
+
+    .detail-description{
+      color:var(--muted);
+      line-height:1.7;
+    }
+
+    .checkout-layout{
+      display:grid;
+      grid-template-columns:1.2fr .8fr;
+      gap:22px;
+    }
+
+    .checkout-card{
+      border:1px solid var(--border);
+      border-radius:15px;
+      padding:17px;
+    }
+
+    .checkout-card h3{
+      margin-bottom:14px;
+    }
+
+    .summary-line{
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      padding:8px 0;
+      color:#555b65;
+      font-size:14px;
+    }
+
+    .summary-line.total{
+      border-top:1px solid var(--border);
+      margin-top:8px;
+      padding-top:15px;
+      color:#111;
+      font-size:19px;
+      font-weight:900;
+    }
+
+    .promo{
+      display:flex;
+      gap:8px;
+      margin-top:12px;
+    }
+
+    .promo input{
+      flex:1;
+      border:1px solid var(--border);
+      padding:11px;
+      border-radius:9px;
+    }
+
+    .promo button{
+      border:0;
+      background:#111318;
+      color:#fff;
+      padding:0 13px;
+      border-radius:9px;
+      font-weight:800;
+    }
+
+    .promo-result{
+      font-size:12px;
+      margin-top:8px;
+      min-height:18px;
+    }
+
+    .success{
+      color:var(--green);
+    }
+
+    .error{
+      color:var(--red);
+    }
+
+    .demo-payment{
+      margin-top:15px;
+      padding:13px;
+      background:#f7f8fa;
+      border:1px solid var(--border);
+      border-radius:10px;
+      font-size:12px;
+      color:var(--muted);
+      line-height:1.5;
+    }
+
+    .dashboard{
+      display:none;
+      position:fixed;
+      inset:0;
+      z-index:800;
+      background:#f3f4f6;
+      overflow:auto;
+    }
+
+    .dashboard.open{
+      display:block;
+    }
+
+    .dash-head{
+      background:#111318;
+      color:#fff;
+      padding:18px 25px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:15px;
+      position:sticky;
+      top:0;
+      z-index:3;
+    }
+
+    .dash-close{
+      border:1px solid #363a42;
+      background:#20242c;
+      color:#fff;
+      padding:9px 12px;
+      border-radius:9px;
+    }
+
+    .dash-main{
+      max-width:1450px;
+      margin:auto;
+      padding:25px;
+    }
+
+    .dash-stats{
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:14px;
+    }
+
+    .stat{
+      background:#fff;
+      border:1px solid var(--border);
+      border-radius:15px;
+      padding:18px;
+    }
+
+    .stat-label{
+      color:var(--muted);
+      font-size:12px;
+      font-weight:700;
+    }
+
+    .stat-value{
+      font-size:27px;
+      font-weight:900;
+      margin-top:5px;
+    }
+
+    .dash-grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:18px;
+      margin-top:18px;
+    }
+
+    .dash-card{
+      background:#fff;
+      border:1px solid var(--border);
+      border-radius:15px;
+      padding:18px;
+    }
+
+    .dash-card.full{
+      grid-column:1 / -1;
+    }
+
+    .dash-card h3{
+      margin-bottom:14px;
+    }
+
+    .warehouse{
+      background:#f7f8fa;
+      border:1px solid var(--border);
+      padding:14px;
+      border-radius:11px;
+    }
+
+    .warehouse strong{
+      display:block;
+      font-size:18px;
+    }
+
+    .invoice{
+      padding:45px;
+      background:#fff;
+      color:#111318;
+    }
+
+    .invoice-header{
+      display:flex;
+      justify-content:space-between;
+      gap:30px;
+      border-bottom:2px solid #111318;
+      padding-bottom:25px;
+    }
+
+    .invoice-brand{
+      font-size:30px;
+      font-weight:950;
+      letter-spacing:-1px;
+    }
+
+    .invoice-brand span{
+      color:var(--blue);
+    }
+
+    .invoice-title{
+      text-align:right;
+    }
+
+    .invoice-title h1{
+      font-size:32px;
+    }
+
+    .invoice-title p{
+      color:#69707d;
+      margin-top:4px;
+    }
+
+    .invoice-info{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:30px;
+      margin:28px 0;
+    }
+
+    .invoice-info h4{
+      color:#6b7280;
+      text-transform:uppercase;
+      font-size:11px;
+      letter-spacing:1px;
+      margin-bottom:8px;
+    }
+
+    .invoice-info p{
+      line-height:1.55;
+    }
+
+    .invoice-table{
+      width:100%;
+      border-collapse:collapse;
+      margin-top:20px;
+    }
+
+    .invoice-table th,
+    .invoice-table td{
+      padding:12px 8px;
+      border-bottom:1px solid #e5e7eb;
+      text-align:left;
+      font-size:13px;
+    }
+
+    .invoice-table th:last-child,
+    .invoice-table td:last-child{
+      text-align:right;
+    }
+
+    .invoice-total{
+      margin-left:auto;
+      width:min(340px,100%);
+      margin-top:20px;
+    }
+
+    .invoice-total div{
+      display:flex;
+      justify-content:space-between;
+      padding:7px 0;
+    }
+
+    .invoice-total .grand{
+      border-top:2px solid #111318;
+      margin-top:7px;
+      padding-top:13px;
+      font-size:22px;
+      font-weight:900;
+    }
+
+    .paid{
+      display:inline-block;
+      margin-top:20px;
+      padding:7px 11px;
+      border-radius:999px;
+      background:#dcfce7;
+      color:#166534;
+      font-size:11px;
+      font-weight:900;
+      letter-spacing:.5px;
+    }
+
+    .invoice-footer{
+      margin-top:45px;
+      padding-top:20px;
+      border-top:1px solid #e5e7eb;
+      color:#69707d;
+      font-size:11px;
+      line-height:1.6;
+    }
+
+    .invoice-actions{
+      display:flex;
+      gap:10px;
+      padding:15px 20px;
+      border-top:1px solid var(--border);
+      background:#fff;
+    }
+
+    .toast{
+      position:fixed;
+      left:50%;
+      bottom:25px;
+      transform:translate(-50%,20px);
+      opacity:0;
+      pointer-events:none;
+      background:#111318;
+      color:#fff;
+      padding:12px 17px;
+      border-radius:10px;
+      font-size:13px;
+      font-weight:700;
+      z-index:1000;
+      transition:.25s;
+    }
+
+    .toast.show{
+      opacity:1;
+      transform:translate(-50%,0);
+    }
+
+    @media(max-width:1100px){
+      .products{
+        grid-template-columns:repeat(3,1fr);
+      }
+
+      .dash-stats{
+        grid-template-columns:repeat(2,1fr);
+      }
+    }
+
+    @media(max-width:800px){
+      .header-main{
+        flex-wrap:wrap;
+      }
+
+      .search{
+        order:3;
+        flex-basis:100%;
+      }
+
+      .products{
+        grid-template-columns:repeat(2,1fr);
+      }
+
+      .hero{
+        padding:32px 25px;
+      }
+
+      .checkout-layout,
+      .product-detail,
+      .dash-grid{
+        grid-template-columns:1fr;
+      }
+
+      .dash-card.full{
+        grid-column:auto;
+      }
+    }
+
+    @media(max-width:550px){
+      main{
+        padding:20px 13px 50px;
+      }
+
+      .header-main{
+        padding:12px;
+      }
+
+      .header-actions{
+        margin-left:auto;
+      }
+
+      .header-actions .icon-btn span.label{
+        display:none;
+      }
+
+      .products{
+        grid-template-columns:1fr;
+      }
+
+      .product-image{
+        height:260px;
+      }
+
+      .form-grid,
+      .invoice-info,
+      .dash-stats{
+        grid-template-columns:1fr;
+      }
+
+      .invoice{
+        padding:22px;
+      }
+
+      .invoice-header{
+        flex-direction:column;
+      }
+
+      .invoice-title{
+        text-align:left;
+      }
+
+      .invoice-table{
+        font-size:11px;
+      }
+
+      .invoice-table th,
+      .invoice-table td{
+        padding:8px 4px;
+      }
+    }
+
+    @media print{
+      body *{
+        visibility:hidden !important;
+      }
+
+      #invoiceModal,
+      #invoiceModal *{
+        visibility:visible !important;
+      }
+
+      #invoiceModal{
+        position:absolute !important;
+        inset:0 !important;
+        background:#fff !important;
+        display:block !important;
+      }
+
+      #invoiceModal .modal{
+        width:100% !important;
+        max-height:none !important;
+        box-shadow:none !important;
+        border-radius:0 !important;
+      }
+
+      #invoiceModal .modal-head,
+      #invoiceModal .invoice-actions{
+        display:none !important;
+      }
+
+      .invoice{
+        padding:25mm 20mm !important;
+      }
+    }
+  </style>
 </head>
 
 <body>
 
-<div class="topbar">
-  🚚 Marketplace NovaShop • Prix de démonstration • Aucun paiement bancaire réel
-</div>
-
-<header class="header">
-  <div class="header-inner">
-
-    <div class="logo">
-      NOVA<span>SHOP</span>
-    </div>
-
-    <div class="search">
-      <input
-        id="searchInput"
-        type="search"
-        placeholder="Rechercher un produit..."
-        autocomplete="off"
-      >
-      <button id="searchBtn" aria-label="Rechercher">⌕</button>
-    </div>
-
-    <div class="header-actions">
-      <button class="icon-btn" id="accountBtn">👤 Compte</button>
-      <button class="icon-btn" id="cartBtn">
-        🛒 Panier
-        <span class="cart-count" id="cartCount">0</span>
-      </button>
-    </div>
-
+  <div class="topbar">
+    🚚 NovaShop Marketplace • Livraison depuis l'Entrepôt
   </div>
-</header>
 
-<nav class="categories">
-  <div class="categories-inner" id="categories"></div>
-</nav>
+  <header>
+    <div class="header-main">
 
-<main>
+      <a class="logo" href="#">
+        NOVA<span>SHOP</span>
+      </a>
 
-  <section id="marketplaceView">
+      <form class="search" id="searchForm">
+        <input id="searchInput" type="search" placeholder="Rechercher un produit, une référence..." autocomplete="off">
+        <button type="submit">⌕</button>
+      </form>
+
+      <div class="header-actions">
+        <button class="icon-btn" id="accountButton">
+          👤 <span class="label">Compte</span>
+        </button>
+
+        <button class="icon-btn admin-btn" id="adminButton">
+          ⚙️ <span class="label">Dashboard</span>
+        </button>
+
+        <button class="icon-btn cart-btn" id="cartButton">
+          🛒 <span class="label">Panier</span>
+          <span class="cart-count" id="cartCount">0</span>
+        </button>
+      </div>
+    </div>
+
+    <nav class="categories">
+      <div class="categories-inner" id="categories"></div>
+    </nav>
+  </header>
+
+  <main>
 
     <section class="hero">
-      <h1>Le matériel gaming, simplement.</h1>
-      <p>
-        PC, composants, écrans et périphériques sélectionnés pour ton setup.
-        Ajoute tes produits au panier puis utilise ton code de réduction lors
-        de la commande.
-      </p>
-
-      <div class="hero-badges">
-        <div class="badge">✓ Commande locale</div>
-        <div class="badge">✓ Facture générée</div>
-        <div class="badge">✓ Panier sauvegardé</div>
-        <div class="badge">✓ Livraison simulée</div>
+      <div class="hero-content">
+        <small>NOVASHOP • GAMING & PC</small>
+        <h1>Le matériel gaming, simplement.</h1>
+        <p>
+          Composants, périphériques et accessoires sélectionnés
+          dans une interface marketplace rapide et claire.
+        </p>
+        <button class="hero-btn" id="heroShopButton">
+          Voir les produits
+        </button>
       </div>
     </section>
 
-    <section>
-      <div class="products-head">
+    <section id="catalog">
+
+      <div class="section-head">
         <div>
           <h2>Produits</h2>
-          <div class="result-count" id="resultCount">0 produit</div>
+          <div class="result-info" id="resultInfo">Chargement...</div>
         </div>
 
         <select class="sort" id="sortSelect">
@@ -989,350 +1299,360 @@ main{
         </select>
       </div>
 
-      <div class="products-grid" id="productsGrid"></div>
+      <div class="products" id="productsGrid"></div>
 
       <div class="empty" id="emptyState">
-        <h3>Aucun produit trouvé</h3>
-        <p style="margin-top:8px;color:#6b7280">
-          Essaie une autre recherche ou une autre catégorie.
-        </p>
+        <strong>Aucun produit trouvé</strong>
+        Essaie une autre recherche ou une autre catégorie.
       </div>
+
     </section>
+  </main>
 
-  </section>
+  <div class="overlay" id="overlay"></div>
 
-  <section id="dashboardView" class="dashboard">
+  <!-- PANIER -->
+  <aside class="drawer" id="cartDrawer">
 
-    <div class="dashboard-head">
-      <div>
-        <h1>Dashboard</h1>
-        <p style="color:#6b7280;margin-top:5px">
-          Gestion des commandes NovaShop
-        </p>
+    <div class="drawer-head">
+      <h2>Votre panier</h2>
+      <button class="close" data-close="cartDrawer">✕</button>
+    </div>
+
+    <div class="drawer-content" id="cartItems"></div>
+
+    <div class="drawer-footer">
+      <div class="total-row">
+        <span>Total</span>
+        <span id="cartTotal">0,00 €</span>
       </div>
 
-      <button class="secondary" id="backMarketplaceBtn">
-        ← Marketplace
+      <button class="primary" id="checkoutButton">
+        Passer commande
       </button>
     </div>
 
-    <div class="stats">
-      <div class="stat">
-        <div class="stat-label">Commandes</div>
-        <div class="stat-value" id="statOrders">0</div>
+  </aside>
+
+  <!-- AUTH -->
+  <div class="modal-wrap" id="authModal">
+
+    <div class="modal small">
+
+      <div class="modal-head">
+        <h2 id="authTitle">Connexion</h2>
+        <button class="close" data-close="authModal">✕</button>
       </div>
 
-      <div class="stat">
-        <div class="stat-label">En préparation</div>
-        <div class="stat-value" id="statPreparing">0</div>
-      </div>
+      <div class="modal-body">
 
-      <div class="stat">
-        <div class="stat-label">Livrées</div>
-        <div class="stat-value" id="statDelivered">0</div>
-      </div>
-
-      <div class="stat">
-        <div class="stat-label">Total commandes</div>
-        <div class="stat-value" id="statTotal">0 €</div>
-      </div>
-    </div>
-
-    <div class="dashboard-grid">
-
-      <div>
-
-        <div class="panel">
-          <h3>📦 Entrepôt</h3>
-
-          <p>
-            <strong>Entrepôt NovaShop</strong>
-          </p>
-
-          <p style="margin-top:6px;color:#6b7280">
-            Statut : opérationnel
-          </p>
-
-          <hr style="border:none;border-top:1px solid #e5e7eb;margin:18px 0">
-
-          <p style="font-size:13px;color:#6b7280">
-            Ville de livraison enregistrée
-          </p>
-
-          <strong id="dashboardCity">Non définie</strong>
+        <div class="tabs">
+          <button class="tab active" id="loginTab">Connexion</button>
+          <button class="tab" id="signupTab">Créer un compte</button>
         </div>
 
-        <div class="panel" style="margin-top:20px">
-          <h3>🔐 Accès</h3>
+        <form class="form" id="loginForm">
 
-          <p style="color:#6b7280;font-size:13px;line-height:1.5">
-            Le Dashboard est masqué sur la marketplace.
-            Son accès nécessite le code administrateur.
-          </p>
+          <div class="field">
+            <label>Email</label>
+            <input id="loginEmail" type="email" required>
+          </div>
 
-          <button
-            class="secondary"
-            id="deleteDataBtn"
-            style="margin-top:15px;color:#dc2626"
-          >
-            Supprimer les données locales
+          <div class="field">
+            <label>Mot de passe</label>
+            <input id="loginPassword" type="password" required>
+          </div>
+
+          <button class="primary" type="submit">
+            Se connecter
           </button>
-        </div>
 
-      </div>
+        </form>
 
-      <div class="panel">
-        <h3>📋 Commandes</h3>
-        <div id="ordersList"></div>
-      </div>
-
-    </div>
-
-  </section>
-
-</main>
-
-<!-- OVERLAY -->
-<div class="overlay" id="overlay"></div>
-
-<!-- PANIER -->
-<aside class="drawer" id="cartDrawer">
-
-  <div class="drawer-head">
-    <h2>Votre panier</h2>
-    <button class="close" id="closeCart">✕</button>
-  </div>
-
-  <div class="cart-items" id="cartItems"></div>
-
-  <div class="cart-foot">
-
-    <div class="total-line">
-      <span>Total</span>
-      <span id="cartTotal">0,00 €</span>
-    </div>
-
-    <button class="primary" id="checkoutBtn">
-      Continuer vers le paiement
-    </button>
-
-  </div>
-
-</aside>
-
-<!-- MODAL PRODUIT -->
-<div class="modal-wrap" id="productModal">
-
-  <div class="modal">
-
-    <div class="modal-head">
-      <h2>Détails du produit</h2>
-      <button class="close" data-close="productModal">✕</button>
-    </div>
-
-    <div class="modal-body" id="productModalBody"></div>
-
-  </div>
-
-</div>
-
-<!-- COMPTE -->
-<div class="modal-wrap" id="accountModal">
-
-  <div class="modal">
-
-    <div class="modal-head">
-      <h2>Mon compte</h2>
-      <button class="close" data-close="accountModal">✕</button>
-    </div>
-
-    <div class="modal-body">
-
-      <form id="accountForm">
-
-        <div class="form-grid">
+        <form class="form hidden" id="signupForm">
 
           <div class="field">
-            <label for="accountName">Nom</label>
-            <input id="accountName" type="text">
+            <label>Nom complet</label>
+            <input id="signupName" required>
           </div>
 
           <div class="field">
-            <label for="accountEmail">E-mail</label>
-            <input id="accountEmail" type="email">
+            <label>Email</label>
+            <input id="signupEmail" type="email" required>
           </div>
 
-        </div>
+          <div class="field">
+            <label>Mot de passe</label>
+            <input id="signupPassword" type="password" minlength="6" required>
+          </div>
 
-        <button class="primary" style="margin-top:18px">
-          Enregistrer
-        </button>
+          <div class="field">
+            <label>Confirmer le mot de passe</label>
+            <input id="signupConfirm" type="password" minlength="6" required>
+          </div>
 
-      </form>
-
-      <hr style="border:none;border-top:1px solid #e5e7eb;margin:22px 0">
-
-      <p style="font-size:13px;color:#6b7280;line-height:1.5">
-        Le Dashboard n'est pas affiché ici.
-        Pour l'ouvrir, utilise le code administrateur dans la recherche.
-      </p>
-
-    </div>
-
-  </div>
-
-</div>
-
-<!-- CHECKOUT -->
-<div class="modal-wrap" id="checkoutModal">
-
-  <div class="modal">
-
-    <div class="modal-head">
-      <h2>Finaliser la commande</h2>
-      <button class="close" data-close="checkoutModal">✕</button>
-    </div>
-
-    <div class="modal-body">
-
-      <div class="checkout-total">
-        <div style="color:#6b7280;font-size:13px">
-          Total actuel
-        </div>
-
-        <div
-          id="checkoutTotal"
-          style="font-size:28px;font-weight:900;margin-top:5px"
-        >
-          0,00 €
-        </div>
-      </div>
-
-      <div class="promo">
-
-        <strong>🎟️ Code de réduction</strong>
-
-        <div class="promo-row">
-          <input
-            id="promoInput"
-            type="text"
-            placeholder="Entrer votre code"
-            autocomplete="off"
-          >
-
-          <button id="promoBtn">
-            Appliquer
+          <button class="primary" type="submit">
+            Créer mon compte
           </button>
-        </div>
 
-        <div class="promo-status" id="promoStatus"></div>
+        </form>
 
       </div>
-
-      <form id="checkoutForm">
-
-        <h3 style="margin-bottom:15px">
-          📍 Adresse de livraison
-        </h3>
-
-        <div class="form-grid">
-
-          <div class="field full">
-            <label for="fullName">Nom complet *</label>
-            <input id="fullName" required>
-          </div>
-
-          <div class="field full">
-            <label for="address">Adresse *</label>
-            <input
-              id="address"
-              required
-              placeholder="12 rue Exemple"
-            >
-          </div>
-
-          <div class="field">
-            <label for="postalCode">Code postal *</label>
-            <input
-              id="postalCode"
-              required
-              pattern="[0-9]{5}"
-              maxlength="5"
-            >
-          </div>
-
-          <div class="field">
-            <label for="city">Ville *</label>
-            <input id="city" required>
-          </div>
-
-          <div class="field full">
-            <label for="country">Pays *</label>
-            <select id="country" required>
-              <option value="France">France</option>
-              <option value="Belgique">Belgique</option>
-              <option value="Luxembourg">Luxembourg</option>
-            </select>
-          </div>
-
-        </div>
-
-        <div class="pay-box">
-          🔒 Ceci est une démonstration locale. Aucun numéro de carte bancaire
-          n'est demandé et aucun paiement bancaire réel n'est effectué.
-          Le bouton Payer crée une commande uniquement après validation du
-          code gratuit.
-        </div>
-
-        <button
-          class="primary"
-          id="payBtn"
-          type="submit"
-          style="margin-top:15px"
-          disabled
-        >
-          🔒 Payer 0,00 €
-        </button>
-
-      </form>
-
     </div>
-
   </div>
 
-</div>
+  <!-- COMPTE -->
+  <div class="modal-wrap" id="accountModal">
 
-<!-- FACTURE -->
-<div class="modal-wrap" id="invoiceModal">
+    <div class="modal small">
 
-  <div class="modal">
+      <div class="modal-head">
+        <h2>Mon compte</h2>
+        <button class="close" data-close="accountModal">✕</button>
+      </div>
 
-    <div class="modal-head">
-      <h2>Facture</h2>
-      <button class="close" data-close="invoiceModal">✕</button>
+      <div class="modal-body" id="accountContent"></div>
+
     </div>
+  </div>
 
-    <div class="modal-body">
+  <!-- PRODUIT -->
+  <div class="modal-wrap" id="productModal">
+
+    <div class="modal">
+
+      <div class="modal-head">
+        <h2>Produit</h2>
+        <button class="close" data-close="productModal">✕</button>
+      </div>
+
+      <div class="modal-body" id="productDetail"></div>
+
+    </div>
+  </div>
+
+  <!-- CHECKOUT -->
+  <div class="modal-wrap" id="checkoutModal">
+
+    <div class="modal">
+
+      <div class="modal-head">
+        <h2>Finaliser la commande</h2>
+        <button class="close" data-close="checkoutModal">✕</button>
+      </div>
+
+      <div class="modal-body">
+
+        <div class="checkout-layout">
+
+          <div class="checkout-card">
+
+            <h3>📍 Adresse de livraison</h3>
+
+            <form class="form" id="checkoutForm">
+
+              <div class="field">
+                <label>Nom complet *</label>
+                <input id="fullName" required>
+              </div>
+
+              <div class="field">
+                <label>Adresse *</label>
+                <input id="address" placeholder="12 rue Exemple" required>
+              </div>
+
+              <div class="form-grid">
+
+                <div class="field">
+                  <label>Code postal *</label>
+                  <input id="postalCode" inputmode="numeric" required>
+                </div>
+
+                <div class="field">
+                  <label>Ville *</label>
+                  <input id="city" required>
+                </div>
+
+              </div>
+
+              <div class="field">
+                <label>Pays *</label>
+                <input id="country" value="France" required>
+              </div>
+
+              <div class="field">
+                <label>Code promo</label>
+
+                <div class="promo">
+                  <input id="promoCode" placeholder="Ex. NOVA100">
+                  <button type="button" id="applyPromo">Appliquer</button>
+                </div>
+
+                <div class="promo-result" id="promoResult"></div>
+              </div>
+
+              <div class="demo-payment">
+                🔒 <strong>Paiement de démonstration</strong><br>
+                Aucun paiement bancaire réel n'est connecté.
+                Pour finaliser actuellement la commande, un code promotionnel
+                à 100 % est nécessaire.
+              </div>
+
+              <button class="primary" id="payButton" type="submit" disabled>
+                🔒 Code gratuit requis
+              </button>
+
+            </form>
+          </div>
+
+          <div class="checkout-card">
+
+            <h3>Résumé</h3>
+
+            <div id="checkoutSummary"></div>
+
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- FACTURE -->
+  <div class="modal-wrap" id="invoiceModal">
+
+    <div class="modal">
+
+      <div class="modal-head">
+        <h2>Facture</h2>
+        <button class="close" data-close="invoiceModal">✕</button>
+      </div>
 
       <div id="invoiceContent"></div>
 
-      <button
-        class="primary"
-        id="printInvoiceBtn"
-        style="margin-top:15px"
-      >
-        🖨️ Imprimer / enregistrer la facture
+      <div class="invoice-actions">
+        <button class="secondary" id="printInvoice">
+          🖨️ Imprimer / PDF
+        </button>
+
+        <button class="primary" id="downloadInvoice">
+          ⬇️ Télécharger
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- DASHBOARD -->
+  <section class="dashboard" id="dashboard">
+
+    <div class="dash-head">
+
+      <div>
+        <strong>NovaShop Administration</strong>
+        <div style="font-size:12px;color:#9ca3af;margin-top:2px">
+          Espace réservé à l'administration
+        </div>
+      </div>
+
+      <button class="dash-close" id="closeDashboard">
+        Fermer
       </button>
 
     </div>
 
-  </div>
+    <div class="dash-main">
 
-</div>
+      <div class="dash-stats">
 
-<div class="toast" id="toast"></div>
+        <div class="stat">
+          <div class="stat-label">COMMANDES</div>
+          <div class="stat-value" id="statOrders">0</div>
+        </div>
 
-<script src="app.js" defer></script>
+        <div class="stat">
+          <div class="stat-label">COMMANDES GRATUITES</div>
+          <div class="stat-value" id="statFree">0</div>
+        </div>
+
+        <div class="stat">
+          <div class="stat-label">UTILISATEURS</div>
+          <div class="stat-value" id="statUsers">0</div>
+        </div>
+
+        <div class="stat">
+          <div class="stat-label">PRODUITS</div>
+          <div class="stat-value" id="statProducts">0</div>
+        </div>
+
+      </div>
+
+      <div class="dash-grid">
+
+        <div class="dash-card">
+
+          <h3>📦 Entrepôt</h3>
+
+          <div class="warehouse">
+            <strong>Entrepôt</strong>
+            France
+            <br>
+            <span style="color:#69707d;font-size:12px">
+              Centre logistique NovaShop
+            </span>
+          </div>
+
+        </div>
+
+        <div class="dash-card">
+
+          <h3>🎟️ Codes promotionnels</h3>
+
+          <div class="warehouse">
+            <strong>NOVA100</strong>
+            100 % de réduction
+            <br><br>
+            <strong>NOVA20</strong>
+            20 % de réduction
+            <br><br>
+            <strong>NOVA10</strong>
+            10 % de réduction
+          </div>
+
+        </div>
+
+        <div class="dash-card full">
+
+          <h3>📋 Toutes les commandes</h3>
+
+          <div id="adminOrders"></div>
+
+        </div>
+
+        <div class="dash-card full">
+
+          <h3>⚠️ Zone administration</h3>
+
+          <p style="font-size:13px;color:#69707d;line-height:1.5;margin-bottom:12px">
+            Les actions ci-dessous sont réservées au compte administrateur.
+          </p>
+
+          <button class="danger" id="resetDemo">
+            Réinitialiser les données de démonstration
+          </button>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </section>
+
+  <div class="toast" id="toast"></div>
+
+  <script src="app.js" defer></script>
 
 </body>
 </html>
