@@ -27,7 +27,7 @@ import {
 ========================================================= */
 
 const firebaseConfig = {
-  apiKey: "AIzaSyAZ5vAkAEfIBpfLyhxgO7uvNdJ67KYKWD0",
+  apiKey: "AIzaSy5vAkAEfIBpfLyhxgO7uvNdJ67KYKWD0",
   authDomain: "novashop-4ee63.firebaseapp.com",
   projectId: "novashop-4ee63",
   storageBucket: "novashop-4ee63.firebasestorage.app",
@@ -54,9 +54,14 @@ const FALLBACK_IMAGE =
 
 /* =========================================================
    PRODUITS
+   AUCUNE LIMITE DE PRODUITS
 ========================================================= */
 
 const products = [
+
+  /* =======================================================
+     ANCIENS PRODUITS
+  ======================================================= */
 
   {
     id: "p1",
@@ -200,6 +205,314 @@ const products = [
     category: "Composants",
     price: 189.90,
     image: "https://m.media-amazon.com/images/I/71TYAcZ4J8L._AC_SL1200_.jpg"
+  },
+
+
+  /* =======================================================
+     ÉCRANS GAMING
+  ======================================================= */
+
+  {
+    id: "p19",
+    name: "KOORUI Ecran PC Gamer 27 Pouces 200Hz IPS QHD HDR400 1ms HDMI 2.0/DP1.4",
+    category: "Écrans",
+    price: 74.99,
+    image: "https://m.media-amazon.com/images/I/71CJ1DF-8sL._AC_SL1500_.jpg"
+  },
+
+  {
+    id: "p20",
+    name: "iiyama 23.8 G-Master GB2471HS-B1 Red Eagle",
+    category: "Écrans",
+    price: 65.99,
+    image: "https://media.ldlc.com/r1600/ld/products/00/06/34/20/LD0006342033.jpg"
+  },
+
+
+  /* =======================================================
+     CHAISES GAMING
+  ======================================================= */
+
+  {
+    id: "p21",
+    name: "SONGMICS Chaise de jeu ergonomique avec repose-pieds 150 kg gris ardoise",
+    category: "Chaises gaming",
+    price: 129.99,
+    image: "https://static.songmics.fr/fit-in/1000x1000/image/Product/B34OBG077G01/B34OBG077G01-1.jpg"
+  },
+
+  {
+    id: "p22",
+    name: "Dowinx Série Luxe Suède LS-66D68E Blanc",
+    category: "Chaises gaming",
+    price: 79.99,
+    image: "https://eu.dowinx.com/cdn/shop/files/11_5f72b693-5f79-4d06-b48a-7cb2b2f0244a.png?v=1752139814&width=1220"
+  },
+
+  {
+    id: "p23",
+    name: "Chaise GTPLAYER Ergonomique Gaming Soutien Lombaire Repose-pieds",
+    category: "Chaises gaming",
+    price: 109.99,
+    image: "https://thumb.pccomponentes.com/w-530-530/articles/1118/11186247/167-silla-gaming-gtplayer-ergonomica-con-reposapies-y-soporte-lumbar-4d.jpg"
+  },
+
+
+  /* =======================================================
+     BUREAUX GAMING
+  ======================================================= */
+
+  {
+    id: "p24",
+    name: "Desk Lite - Height-Adjustable Desk",
+    category: "Bureaux gaming",
+    price: 110.99,
+    image: "https://yaasa.com/cdn/shop/files/yaasa-desk-lite_nr01_black_100_01-04545-01_1200x.jpg?v=1753169928"
+  },
+
+  {
+    id: "p25",
+    name: "EUREKA ERGONOMIC Bureau Gaming LED 182x76cm en Forme d'Aile, assis-debout électrique",
+    category: "Bureaux gaming",
+    price: 86.99,
+    image: "https://m.media-amazon.com/images/I/71Gd5G3wRsL._AC_SL1500_.jpg"
+  },
+
+  {
+    id: "p26",
+    name: "Bureau gaming d’angle HOMCOM réversible support écran, étagère maille réglable, noir",
+    category: "Bureaux gaming",
+    price: 44.99,
+    image: "https://cdn.manomano.com/pim-media/images/medium/74eca1cb1cefa063c8f600ee293ae6ee826794f8.jpg"
+  },
+
+
+  /* =======================================================
+     CASQUES
+  ======================================================= */
+
+  {
+    id: "p27",
+    name: "Logitech G Pro X 2 Lightspeed Noir + Repose casque",
+    category: "Casques",
+    price: 99.99,
+    image: "https://static.fnac-static.com/multimedia/Images/FR/MDMFR/MDM/6d/e9/6e/24045933/1540-1/tsp20260429154901/Casque-PC-gaming-sans-fil-Logitech-G-Pro-X-2-Lightspeed-Noir-Repose-casque.jpg"
+  },
+
+  {
+    id: "p28",
+    name: "Razer BlackShark V2 Pro 2023 Noir",
+    category: "Casques",
+    price: 75.99,
+    image: "https://media.ldlc.com/r1600/ld/products/00/06/07/71/LD0006077125.jpg"
+  },
+
+  {
+    id: "p29",
+    name: "beyerdynamic DT-990 Pro 250 Ohm",
+    category: "Casques",
+    price: 60.99,
+    image: "https://thumbs.static-thomann.de/thumb/padthumb600x600/pics/bdb/_10/106865/18443258_800.jpg"
+  },
+
+
+  /* =======================================================
+     CLAVIERS
+  ======================================================= */
+
+  {
+    id: "p30",
+    name: "Logitech PRO X TKL Rapid Noir, filaire AZERTY, sans pavé numérique",
+    category: "Claviers",
+    price: 78.99,
+    image: "https://static.fnac-static.com/multimedia/Images/FR/MDM/6a/89/8f/26184042/1540-1.jpg"
+  },
+
+  {
+    id: "p31",
+    name: "QwertyKey75 HE Striker, Magnetic Hall Effect, Rapid Trigger, Snap Tap, Full RGB",
+    category: "Claviers",
+    price: 56.99,
+    image: "https://cdn.shopify.com/s/files/1/0814/2530/1746/files/QK75-HE-STRIKER-qwertykey-tastatura-mecanica-gaming-hotswap-2025_1eee355b-72ca-46e6-a458-751384d0595c_1800x.webp?v=1771799537"
+  },
+
+  {
+    id: "p32",
+    name: "GravaStar Mercury K1 Clavier Gamer sans Fil en Aluminium, Noir Dégradé",
+    category: "Claviers",
+    price: 91.99,
+    image: "https://m.media-amazon.com/images/I/6144lt2l5JL._AC_SL1200_.jpg"
+  },
+
+
+  /* =======================================================
+     SOURIS
+  ======================================================= */
+
+  {
+    id: "p33",
+    name: "ATTACK SHARK R11 Ultra, fibre de carbone, 8000Hz, 49g, 42000 DPI, black forged",
+    category: "Souris",
+    price: 26.99,
+    image: "https://m.media-amazon.com/images/I/71bMz15SqcL._AC_SL1500_.jpg"
+  },
+
+
+  /* =======================================================
+     MICROPHONES
+  ======================================================= */
+
+  {
+    id: "p34",
+    name: "HyperX QuadCast 2 – Microphone USB – RGB",
+    category: "Microphones",
+    price: 98.99,
+    image: "https://fr.hyperx.com/cdn/shop/files/hyperx_quadcast_2_872v1aa_main_1_2d47a555-f537-457b-9002-8b9e9010dc00.jpg?v=1763067608"
+  },
+
+  {
+    id: "p35",
+    name: "Shure SM7 dB",
+    category: "Microphones",
+    price: 121.99,
+    image: "https://thumbs.static-thomann.de/thumb/padthumb600x600/pics/bdb/_57/573672/18492412_800.jpg"
+  },
+
+  {
+    id: "p36",
+    name: "Razer Seiren V3 Chroma Noir",
+    category: "Microphones",
+    price: 13.99,
+    image: "https://media.ldlc.com/r1600/ld/products/00/06/13/25/LD0006132588.jpg"
+  },
+
+
+  /* =======================================================
+     ÉCLAIRAGE LED / RGB
+  ======================================================= */
+
+  {
+    id: "p37",
+    name: "Stairville LED Pixel Rail 40 RGB MKII",
+    category: "Éclairage LED/RGB",
+    price: 18.90,
+    image: "https://thumbs.static-thomann.de/thumb/padthumb600x600/pics/bdb/_44/449739/14448905_800.jpg"
+  },
+
+  {
+    id: "p38",
+    name: "Govee LED Strip Light RGBIC Wi-Fi + Bluetooth 5m Matter",
+    category: "Éclairage LED/RGB",
+    price: null,
+    image: "https://static.fnac-static.com/multimedia/Images/FR/MDM/ab/7a/9d/27097771/1520-2/tsp20260429155350/Ruban-LED-Govee-LED-Strip-Light-RGBIC-Wi-Fi-avec-BT-5M-Matter.jpg"
+  },
+
+  {
+    id: "p39",
+    name: "Lampe de plafond hexagone nid d’abeille LED 2.4m x 4.8m contour bleu 550W 6500K 230V",
+    category: "Éclairage LED/RGB",
+    price: 91.10,
+    image: "https://www.discount-autosport.com/wp-content/webp-express/webp-images/uploads/2025/02/lampe-hexagone-plafond-led-4m80-contour-bleu-.jpg.webp"
+  },
+
+
+  /* =======================================================
+     WEBCAMS
+  ======================================================= */
+
+  {
+    id: "p40",
+    name: "Logitech Brio 4K",
+    category: "Webcams",
+    price: 32,
+    image: "https://resource.logitech.com/w_692,c_lpad,ar_4:3,q_auto,f_auto,dpr_2.0/d_transparent.gif/content/dam/logitech/en/products/webcams/brio/gallery/brio-gallery-1.png?v=1"
+  },
+
+  {
+    id: "p41",
+    name: "Elgato Facecam MK.2",
+    category: "Webcams",
+    price: 52.90,
+    image: "https://media.ldlc.com/r705/ld/products/00/06/12/29/LD0006122943.jpg"
+  },
+
+  {
+    id: "p42",
+    name: "Insta360 Link 2 C",
+    category: "Webcams",
+    price: 42.90,
+    image: "https://www.digit-photo.com/images/produits/INSTA360LINK2C01/1.jpg?v=d2e89aca097c819fe092262cbf426b587e3800d5"
+  },
+
+
+  /* =======================================================
+     TAPIS XXL
+  ======================================================= */
+
+  {
+    id: "p43",
+    name: "Grand tapis de souris étendu pour bureau S Vague",
+    category: "Tapis de souris XXL",
+    price: 12,
+    image: "https://cdn.prix.net/offer/fr/grand-tapis-de-souris-etendu-pour-bureau-s-vague-200t180b0277c89d6ef2a802d718c53317fc3a21ead284b.jpg"
+  },
+
+  {
+    id: "p44",
+    name: "Logitech G840 Extra Large 900×400×3 mm",
+    category: "Tapis de souris XXL",
+    price: 37.04,
+    image: "https://cdn.prix.net/offer/fr/tapis-de-souris-gaming-logitech-g840-extra-large-antiderapant-noir-noir-g-200t180671f02d4b2667cf608682e5d8b0ccc2ed0183165.jpg"
+  },
+
+  {
+    id: "p45",
+    name: "The G-Lab SAKURA XXL 900×400 mm",
+    category: "Tapis de souris XXL",
+    price: 14.99,
+    image: "https://content.pearl.fr/media/cache/default/article_ultralarge_high_nocrop/shared/images/articles/T/TG3/tapis-de-souris-gaming-xxl-900-x-400-mm-bords-cousus-modele-sakura-ref_TG3905_2.jpg"
+  },
+
+
+  /* =======================================================
+     MANETTES
+  ======================================================= */
+
+  {
+    id: "p46",
+    name: "Microsoft Xbox One Wireless Controller v3",
+    category: "Manettes",
+    price: 40,
+    image: "https://media.ldlc.com/r705/ld/products/00/06/02/75/LD0006027592.jpg"
+  },
+
+  {
+    id: "p47",
+    name: "Manette Xbox REVOLUTION X Unlimited",
+    category: "Manettes",
+    price: 112.90,
+    image: "https://media.nacongaming.com/media/catalog/product/x/b/xbxrevolutionxu_01_1.webp?width=1082&height=926&store=nacon_fr&image-type=image"
+  },
+
+
+  /* =======================================================
+     ENCEINTES
+  ======================================================= */
+
+  {
+    id: "p48",
+    name: "RAZER Leviathan V2 X",
+    category: "Enceintes gaming",
+    price: 31.90,
+    image: "https://boulanger.scene7.com/is/image/Boulanger/8886419379645_h_f_l_0?wid=677&hei=677&resMode=sharp2&op_usm=1.75,0.3,2,0&fmt=png-alpha"
+  },
+
+  {
+    id: "p49",
+    name: "SOULION C30 Enceintes PC Bluetooth Gamer",
+    category: "Enceintes gaming",
+    price: 24.99,
+    image: "https://m.media-amazon.com/images/I/712j-q7+jQL._AC_SL1500_.jpg"
   }
 
 ];
@@ -252,6 +565,16 @@ function randomItem(array) {
 
 
 function money(value) {
+
+  if (
+    value === null ||
+    value === undefined ||
+    Number.isNaN(Number(value))
+  ) {
+
+    return "Prix non renseigné";
+
+  }
 
   return Number(value).toLocaleString(
     "fr-FR",
@@ -487,6 +810,81 @@ const reviewTexts = {
 };
 
 
+/*
+   Le nombre d'avis est généré une seule fois par produit
+   puis conservé dans localStorage.
+
+   Plage :
+   134 à 1781 avis
+*/
+
+function getSavedReviewCounts() {
+
+  try {
+
+    return JSON.parse(
+      localStorage.getItem(
+        "novaReviewCounts"
+      ) || "{}"
+    );
+
+  }
+  catch {
+
+    return {};
+
+  }
+
+}
+
+
+function saveReviewCounts(
+  counts
+) {
+
+  localStorage.setItem(
+    "novaReviewCounts",
+    JSON.stringify(
+      counts
+    )
+  );
+
+}
+
+
+function getReviewCount(
+  product
+) {
+
+  const counts =
+    getSavedReviewCounts();
+
+
+  if (
+    typeof counts[product.id] !==
+    "number"
+  ) {
+
+    counts[product.id] =
+      randomInt(
+        134,
+        1781
+      );
+
+    saveReviewCounts(
+      counts
+    );
+
+  }
+
+
+  return counts[
+    product.id
+  ];
+
+}
+
+
 function generateReviews(
   product
 ) {
@@ -494,9 +892,8 @@ function generateReviews(
   const reviews = [];
 
   const reviewCount =
-    randomInt(
-      850,
-      950
+    getReviewCount(
+      product
     );
 
 
@@ -895,7 +1292,9 @@ function renderProducts() {
                   >
 
                     (
-                    ${stats.count}
+                    ${stats.count.toLocaleString(
+                      "fr-FR"
+                    )}
                     avis
                     )
 
@@ -948,6 +1347,11 @@ function renderProducts() {
                   <button
                     class="btn primary"
                     data-add-cart="${product.id}"
+                    ${
+                      product.price === null
+                        ? "disabled"
+                        : ""
+                    }
                   >
 
                     🛒
@@ -1223,6 +1627,8 @@ function showReviews(
         0,
         reviews.length -
         80
+      ).toLocaleString(
+        "fr-FR"
       )}
 
       autres avis
@@ -1258,6 +1664,31 @@ function saveCart() {
 function addToCart(
   productId
 ) {
+
+  const product =
+    products.find(
+      p =>
+        p.id ===
+        productId
+    );
+
+
+  if (!product) return;
+
+
+  if (
+    product.price === null ||
+    product.price === undefined
+  ) {
+
+    showToast(
+      "Prix non renseigné pour ce produit."
+    );
+
+    return;
+
+  }
+
 
   const existing =
     cart.find(
@@ -1408,8 +1839,9 @@ function getCartTotal() {
       return (
         sum +
         (
-          product?.price ||
-          0
+          Number(
+            product?.price
+          ) || 0
         ) *
         item.quantity
       );
@@ -2959,6 +3391,14 @@ console.log(
 console.log(
   "Produits :",
   products.length
+);
+
+console.log(
+  "Avis : 134 à 1781 par produit"
+);
+
+console.log(
+  "Limite produits par catégorie : AUCUNE"
 );
 
 console.log(
