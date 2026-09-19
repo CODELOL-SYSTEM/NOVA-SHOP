@@ -1,1482 +1,2704 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#111827">
-<meta name="description" content="NovaShop - Marketplace gaming">
-<title>NovaShop | Gaming & High-Tech</title>
-
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-
-<style>
-*{
-  box-sizing:border-box;
-  margin:0;
-  padding:0;
-}
-
-:root{
-  --blue:#2563eb;
-  --blue2:#1d4ed8;
-  --dark:#111827;
-  --dark2:#1f2937;
-  --text:#111827;
-  --muted:#6b7280;
-  --border:#e5e7eb;
-  --bg:#f6f7f9;
-  --white:#fff;
-  --green:#16a34a;
-  --red:#dc2626;
-  --shadow:0 8px 30px rgba(15,23,42,.08);
-}
-
-html{
-  scroll-behavior:smooth;
-}
-
-body{
-  font-family:Inter,Arial,sans-serif;
-  background:var(--bg);
-  color:var(--text);
-}
-
-button,
-input,
-select,
-textarea{
-  font:inherit;
-}
-
-button{
-  cursor:pointer;
-}
-
-a{
-  color:inherit;
-  text-decoration:none;
-}
-
-.topbar{
-  height:36px;
-  background:#111827;
-  color:white;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  font-size:12px;
-  font-weight:600;
-}
-
-.header{
-  background:#fff;
-  border-bottom:1px solid var(--border);
-  position:sticky;
-  top:0;
-  z-index:50;
-}
-
-.header-main{
-  max-width:1450px;
-  margin:auto;
-  padding:17px 24px;
-  display:flex;
-  align-items:center;
-  gap:22px;
-}
-
-.logo{
-  font-size:25px;
-  font-weight:900;
-  letter-spacing:-1px;
-  white-space:nowrap;
-}
-
-.logo span{
-  color:var(--blue);
-}
-
-.search{
-  flex:1;
-  display:flex;
-  max-width:680px;
-  margin:auto;
-}
-
-.search input{
-  width:100%;
-  height:44px;
-  border:1px solid #d1d5db;
-  border-right:none;
-  border-radius:8px 0 0 8px;
-  padding:0 15px;
-  outline:none;
-}
-
-.search input:focus{
-  border-color:var(--blue);
-}
-
-.search button{
-  width:55px;
-  border:none;
-  background:var(--blue);
-  color:white;
-  border-radius:0 8px 8px 0;
-}
-
-.header-actions{
-  display:flex;
-  gap:8px;
-  align-items:center;
-}
-
-.icon-btn{
-  border:1px solid var(--border);
-  background:white;
-  border-radius:8px;
-  height:42px;
-  padding:0 13px;
-  font-weight:700;
-  white-space:nowrap;
-}
-
-.icon-btn:hover{
-  border-color:#9ca3af;
-  background:#f9fafb;
-}
-
-.cart-btn{
-  position:relative;
-}
-
-.cart-count{
-  position:absolute;
-  top:-7px;
-  right:-7px;
-  background:var(--blue);
-  color:white;
-  min-width:19px;
-  height:19px;
-  border-radius:50%;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:10px;
-  font-weight:800;
-}
-
-.nav{
-  background:#fff;
-  border-top:1px solid #f3f4f6;
-  overflow:auto;
-}
-
-.nav-inner{
-  max-width:1450px;
-  margin:auto;
-  display:flex;
-  gap:6px;
-  padding:9px 24px;
-}
-
-.category{
-  border:none;
-  background:#f3f4f6;
-  padding:9px 14px;
-  border-radius:999px;
-  white-space:nowrap;
-  font-size:13px;
-  font-weight:700;
-}
-
-.category:hover,
-.category.active{
-  background:#111827;
-  color:white;
-}
-
-.hero{
-  max-width:1450px;
-  margin:24px auto;
-  padding:0 24px;
-}
-
-.hero-box{
-  min-height:300px;
-  border-radius:18px;
-  overflow:hidden;
-  background:
-    radial-gradient(circle at 80% 20%,rgba(37,99,235,.35),transparent 35%),
-    linear-gradient(110deg,#111827,#1e293b 60%,#0f172a);
-  color:white;
-  display:flex;
-  align-items:center;
-  padding:45px 55px;
-  position:relative;
-}
-
-.hero-content{
-  max-width:680px;
-  position:relative;
-  z-index:2;
-}
-
-.hero-label{
-  display:inline-flex;
-  padding:7px 12px;
-  background:rgba(255,255,255,.1);
-  border:1px solid rgba(255,255,255,.15);
-  border-radius:999px;
-  font-size:12px;
-  font-weight:700;
-  margin-bottom:18px;
-}
-
-.hero h1{
-  font-size:clamp(32px,5vw,58px);
-  line-height:1;
-  letter-spacing:-2px;
-  margin-bottom:18px;
-}
-
-.hero p{
-  color:#d1d5db;
-  line-height:1.6;
-  margin-bottom:25px;
-}
-
-.hero-button{
-  border:none;
-  background:white;
-  color:#111827;
-  border-radius:9px;
-  padding:13px 20px;
-  font-weight:800;
-}
-
-.hero-button:hover{
-  transform:translateY(-1px);
-}
-
-main{
-  max-width:1450px;
-  margin:auto;
-  padding:0 24px 70px;
-}
-
-.section-head{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  gap:20px;
-  margin:34px 0 18px;
-}
-
-.section-head h2{
-  font-size:25px;
-}
-
-.result-info{
-  color:var(--muted);
-  font-size:14px;
-}
-
-.sort{
-  height:40px;
-  border:1px solid var(--border);
-  background:white;
-  border-radius:8px;
-  padding:0 12px;
-}
-
-.products-grid{
-  display:grid;
-  grid-template-columns:repeat(4,minmax(0,1fr));
-  gap:18px;
-}
-
-.product-card{
-  background:white;
-  border:1px solid var(--border);
-  border-radius:13px;
-  overflow:hidden;
-  transition:.2s;
-  position:relative;
-}
-
-.product-card:hover{
-  transform:translateY(-3px);
-  box-shadow:var(--shadow);
-}
-
-.product-image{
-  height:245px;
-  background:#f8fafc;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  padding:20px;
-  position:relative;
-}
-
-.product-image img{
-  width:100%;
-  height:100%;
-  object-fit:contain;
-}
-
-.favorite{
-  position:absolute;
-  top:11px;
-  right:11px;
-  width:36px;
-  height:36px;
-  border:1px solid var(--border);
-  border-radius:50%;
-  background:white;
-  z-index:2;
-}
-
-.favorite.active{
-  color:#dc2626;
-}
-
-.product-body{
-  padding:16px;
-}
-
-.product-category{
-  color:#6b7280;
-  font-size:11px;
-  text-transform:uppercase;
-  font-weight:800;
-  margin-bottom:7px;
-}
-
-.product-name{
-  font-size:15px;
-  line-height:1.4;
-  min-height:43px;
-  font-weight:700;
-}
-
-.rating{
-  display:flex;
-  align-items:center;
-  gap:5px;
-  margin:9px 0;
-  font-size:12px;
-}
-
-.stars{
-  color:#f59e0b;
-  letter-spacing:1px;
-}
-
-.product-bottom{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  gap:8px;
-}
-
-.price{
-  font-size:19px;
-  font-weight:900;
-}
-
-.add{
-  border:none;
-  background:#111827;
-  color:white;
-  border-radius:7px;
-  padding:9px 11px;
-  font-size:12px;
-  font-weight:800;
-}
-
-.add:hover{
-  background:var(--blue);
-}
-
-.empty{
-  display:none;
-  background:white;
-  border:1px solid var(--border);
-  border-radius:14px;
-  padding:55px;
-  text-align:center;
-  color:var(--muted);
-}
-
-.features{
-  display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:15px;
-  margin:45px 0;
-}
-
-.feature{
-  background:white;
-  border:1px solid var(--border);
-  border-radius:12px;
-  padding:22px;
-}
-
-.feature-icon{
-  font-size:25px;
-  margin-bottom:12px;
-}
-
-.feature h3{
-  font-size:14px;
-  margin-bottom:7px;
-}
-
-.feature p{
-  color:var(--muted);
-  font-size:12px;
-  line-height:1.5;
-}
-
-.faq{
-  background:white;
-  border:1px solid var(--border);
-  border-radius:14px;
-  padding:25px;
-  margin-top:30px;
-}
-
-.faq h2{
-  margin-bottom:20px;
-}
-
-details{
-  border-top:1px solid var(--border);
-  padding:17px 0;
-}
-
-details:first-of-type{
-  border-top:none;
-}
-
-summary{
-  cursor:pointer;
-  font-weight:700;
-}
-
-details p{
-  color:var(--muted);
-  font-size:14px;
-  line-height:1.6;
-  padding-top:12px;
-}
-
-.footer{
-  background:#111827;
-  color:white;
-  margin-top:50px;
-}
-
-.footer-inner{
-  max-width:1450px;
-  margin:auto;
-  padding:50px 24px 25px;
-}
-
-.footer-grid{
-  display:grid;
-  grid-template-columns:2fr repeat(4,1fr);
-  gap:40px;
-}
-
-.footer h3{
-  font-size:14px;
-  margin-bottom:16px;
-}
-
-.footer p,
-.footer a{
-  color:#9ca3af;
-  font-size:13px;
-  line-height:2;
-}
-
-.footer a:hover{
-  color:white;
-}
-
-.footer-bottom{
-  border-top:1px solid #374151;
-  margin-top:35px;
-  padding-top:20px;
-  color:#9ca3af;
-  font-size:12px;
-  display:flex;
-  justify-content:space-between;
-}
-
-.overlay{
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,.5);
-  opacity:0;
-  pointer-events:none;
-  transition:.2s;
-  z-index:90;
-}
-
-.overlay.show{
-  opacity:1;
-  pointer-events:auto;
-}
-
-.drawer{
-  position:fixed;
-  right:-480px;
-  top:0;
-  bottom:0;
-  width:min(480px,100%);
-  background:white;
-  z-index:100;
-  transition:.25s;
-  box-shadow:-15px 0 40px rgba(0,0,0,.15);
-  display:flex;
-  flex-direction:column;
-}
-
-.drawer.show{
-  right:0;
-}
-
-.drawer-head{
-  padding:20px;
-  border-bottom:1px solid var(--border);
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-}
-
-.drawer-head button{
-  border:none;
-  background:#f3f4f6;
-  width:35px;
-  height:35px;
-  border-radius:7px;
-}
-
-.cart-items{
-  flex:1;
-  overflow:auto;
-  padding:15px;
-}
-
-.cart-item{
-  display:grid;
-  grid-template-columns:70px 1fr auto;
-  gap:12px;
-  padding:13px 0;
-  border-bottom:1px solid var(--border);
-}
-
-.cart-item img{
-  width:70px;
-  height:70px;
-  object-fit:contain;
-  background:#f8fafc;
-  border-radius:8px;
-}
-
-.cart-item-name{
-  font-size:13px;
-  font-weight:700;
-}
-
-.cart-item-price{
-  margin-top:7px;
-  font-weight:800;
-  font-size:13px;
-}
-
-.qty{
-  display:flex;
-  gap:5px;
-  align-items:center;
-  margin-top:8px;
-}
-
-.qty button{
-  width:25px;
-  height:25px;
-  border:1px solid var(--border);
-  background:white;
-  border-radius:5px;
-}
-
-.remove{
-  color:var(--red);
-  border:none;
-  background:none;
-  font-size:11px;
-  margin-top:5px;
-}
-
-.cart-footer{
-  border-top:1px solid var(--border);
-  padding:20px;
-}
-
-.total-line{
-  display:flex;
-  justify-content:space-between;
-  font-size:18px;
-  font-weight:900;
-  margin-bottom:15px;
-}
-
-.primary{
-  width:100%;
-  height:45px;
-  border:none;
-  border-radius:8px;
-  background:var(--blue);
-  color:white;
-  font-weight:800;
-}
-
-.primary:hover{
-  background:var(--blue2);
-}
-
-.primary:disabled{
-  opacity:.5;
-  cursor:not-allowed;
-}
-
-.modal{
-  position:fixed;
-  inset:0;
-  display:none;
-  align-items:center;
-  justify-content:center;
-  z-index:120;
-  padding:20px;
-}
-
-.modal.show{
-  display:flex;
-}
-
-.modal-box{
-  background:white;
-  width:min(620px,100%);
-  max-height:90vh;
-  overflow:auto;
-  border-radius:15px;
-  box-shadow:0 20px 60px rgba(0,0,0,.25);
-}
-
-.modal-wide{
-  width:min(1000px,100%);
-}
-
-.modal-head{
-  padding:18px 20px;
-  border-bottom:1px solid var(--border);
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-}
-
-.close{
-  border:none;
-  background:#f3f4f6;
-  width:35px;
-  height:35px;
-  border-radius:7px;
-}
-
-.modal-content{
-  padding:22px;
-}
-
-.form{
-  display:grid;
-  gap:12px;
-}
-
-.form input,
-.form textarea,
-.form select{
-  width:100%;
-  border:1px solid #d1d5db;
-  border-radius:8px;
-  padding:12px;
-  outline:none;
-}
-
-.form input:focus,
-.form textarea:focus,
-.form select:focus{
-  border-color:var(--blue);
-}
-
-.form label{
-  font-size:12px;
-  font-weight:800;
-  margin-bottom:-6px;
-}
-
-.tabs{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  margin-bottom:20px;
-  border-bottom:1px solid var(--border);
-}
-
-.tab{
-  padding:12px;
-  border:none;
-  background:white;
-  font-weight:800;
-  border-bottom:2px solid transparent;
-}
-
-.tab.active{
-  color:var(--blue);
-  border-bottom-color:var(--blue);
-}
-
-.auth-extra{
-  text-align:center;
-  color:#6b7280;
-  font-size:12px;
-  margin:13px 0;
-}
-
-.secondary{
-  width:100%;
-  height:43px;
-  background:white;
-  border:1px solid var(--border);
-  border-radius:8px;
-  font-weight:800;
-}
-
-.account-box{
-  display:grid;
-  gap:12px;
-}
-
-.info{
-  padding:15px;
-  background:#f8fafc;
-  border-radius:9px;
-}
-
-.info small{
-  display:block;
-  color:#6b7280;
-  margin-bottom:5px;
-}
-
-.product-detail{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:30px;
-}
-
-.detail-image{
-  min-height:390px;
-  background:#f8fafc;
-  border-radius:12px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  padding:30px;
-}
-
-.detail-image img{
-  max-width:100%;
-  max-height:390px;
-  object-fit:contain;
-}
-
-.detail-category{
-  color:#6b7280;
-  font-size:12px;
-  text-transform:uppercase;
-  font-weight:800;
-}
-
-.detail-title{
-  font-size:29px;
-  line-height:1.2;
-  margin:8px 0 15px;
-}
-
-.detail-price{
-  font-size:27px;
-  font-weight:900;
-  margin:18px 0;
-}
-
-.review{
-  border-top:1px solid var(--border);
-  padding:15px 0;
-}
-
-.review-head{
-  display:flex;
-  justify-content:space-between;
-  gap:10px;
-}
-
-.review-name{
-  font-weight:800;
-  font-size:13px;
-}
-
-.review-date{
-  color:#9ca3af;
-  font-size:11px;
-}
-
-.review p{
-  color:#4b5563;
-  font-size:13px;
-  margin-top:7px;
-  line-height:1.5;
-}
-
-.dashboard-stats{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:12px;
-  margin-bottom:20px;
-}
-
-.stat{
-  background:#f8fafc;
-  border-radius:10px;
-  padding:18px;
-}
-
-.stat small{
-  color:#6b7280;
-}
-
-.stat strong{
-  display:block;
-  font-size:24px;
-  margin-top:5px;
-}
-
-.table-wrap{
-  overflow:auto;
-}
-
-table{
-  width:100%;
-  border-collapse:collapse;
-  font-size:13px;
-}
-
-th,
-td{
-  text-align:left;
-  padding:12px;
-  border-bottom:1px solid var(--border);
-}
-
-.invoice{
-  background:white;
-  padding:35px;
-}
-
-.invoice-top{
-  display:flex;
-  justify-content:space-between;
-  margin-bottom:35px;
-}
-
-.invoice-logo{
-  font-size:25px;
-  font-weight:900;
-}
-
-.invoice-meta{
-  text-align:right;
-  font-size:12px;
-  color:#6b7280;
-}
-
-.invoice-customer{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:30px;
-  margin-bottom:30px;
-}
-
-.invoice h4{
-  margin-bottom:8px;
-}
-
-.invoice table{
-  margin-bottom:20px;
-}
-
-.invoice-total{
-  margin-left:auto;
-  width:300px;
-  max-width:100%;
-}
-
-.invoice-total div{
-  display:flex;
-  justify-content:space-between;
-  padding:7px 0;
-}
-
-.invoice-total .grand{
-  border-top:2px solid #111827;
-  margin-top:7px;
-  padding-top:12px;
-  font-size:20px;
-  font-weight:900;
-}
-
-.toast{
-  position:fixed;
-  bottom:25px;
-  left:50%;
-  transform:translateX(-50%) translateY(100px);
-  background:#111827;
-  color:white;
-  padding:13px 18px;
-  border-radius:9px;
-  font-size:13px;
-  font-weight:700;
-  z-index:300;
-  opacity:0;
-  transition:.25s;
-}
-
-.toast.show{
-  opacity:1;
-  transform:translateX(-50%) translateY(0);
-}
-
-.order-card{
-  border:1px solid var(--border);
-  border-radius:10px;
-  padding:15px;
-  margin-bottom:10px;
-}
-
-.order-head{
-  display:flex;
-  justify-content:space-between;
-  gap:15px;
-  margin-bottom:10px;
-}
-
-.status{
-  color:var(--green);
-  font-weight:800;
-}
-
-.admin-code{
-  display:flex;
-  gap:8px;
-}
-
-.admin-code input{
-  flex:1;
-  border:1px solid var(--border);
-  border-radius:7px;
-  padding:10px;
-}
-
-@media(max-width:1100px){
-  .products-grid{
-    grid-template-columns:repeat(3,1fr);
-  }
-
-  .footer-grid{
-    grid-template-columns:repeat(3,1fr);
-  }
-}
-
-@media(max-width:800px){
-  .header-main{
-    flex-wrap:wrap;
-  }
-
-  .logo{
-    order:1;
-  }
-
-  .header-actions{
-    order:2;
-    margin-left:auto;
-  }
-
-  .search{
-    order:3;
-    flex-basis:100%;
-  }
-
-  .products-grid{
-    grid-template-columns:repeat(2,1fr);
-  }
-
-  .features{
-    grid-template-columns:repeat(2,1fr);
-  }
-
-  .hero-box{
-    padding:35px 25px;
-  }
-
-  .product-detail{
-    grid-template-columns:1fr;
-  }
-
-  .footer-grid{
-    grid-template-columns:repeat(2,1fr);
-  }
-}
-
-@media(max-width:520px){
-  .header-main{
-    padding:12px;
-  }
-
-  main,
-  .hero{
-    padding-left:12px;
-    padding-right:12px;
-  }
-
-  .products-grid{
-    grid-template-columns:1fr;
-  }
-
-  .features{
-    grid-template-columns:1fr;
-  }
-
-  .footer-grid{
-    grid-template-columns:1fr;
-  }
-
-  .footer-bottom{
-    flex-direction:column;
-    gap:8px;
-  }
-
-  .hero h1{
-    font-size:34px;
-  }
-
-  .section-head{
-    align-items:flex-start;
-    flex-direction:column;
-  }
-
-  .dashboard-stats{
-    grid-template-columns:1fr;
-  }
-
-  .invoice-customer{
-    grid-template-columns:1fr;
-  }
-}
-
-@media print{
-  body *{
-    visibility:hidden;
-  }
-
-  #invoiceModal,
-  #invoiceModal *{
-    visibility:visible;
-  }
-
-  #invoiceModal{
-    position:absolute;
-    inset:0;
-    display:block!important;
-  }
-
-  .modal-head{
-    display:none;
-  }
-
-  .invoice{
-    box-shadow:none;
-  }
-}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#ffffff">
+  <meta name="description" content="NovaShop - Marketplace gaming et informatique">
+
+  <title>NovaShop | Marketplace Gaming</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --blue: #1466ff;
+      --blue-dark: #0b4dcc;
+      --blue-light: #eef5ff;
+      --text: #111827;
+      --muted: #667085;
+      --border: #e5e7eb;
+      --bg: #f6f7f9;
+      --white: #ffffff;
+      --green: #16a34a;
+      --red: #dc2626;
+      --orange: #f97316;
+      --shadow: 0 8px 30px rgba(15, 23, 42, .08);
+      --radius: 14px;
+    }
+
+    body {
+      font-family:
+        Inter,
+        ui-sans-serif,
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    button,
+    input,
+    select,
+    textarea {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    img {
+      max-width: 100%;
+      display: block;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    /* =========================
+       TOP BAR
+    ========================= */
+
+    .topbar {
+      background: #101828;
+      color: #fff;
+      min-height: 36px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 8px 20px;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    /* =========================
+       HEADER
+    ========================= */
+
+    .header {
+      background: #fff;
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .header-main {
+      max-width: 1500px;
+      margin: auto;
+      min-height: 76px;
+      padding: 12px 22px;
+      display: flex;
+      align-items: center;
+      gap: 22px;
+    }
+
+    .logo {
+      min-width: 170px;
+      font-size: 27px;
+      font-weight: 950;
+      letter-spacing: -1.5px;
+      color: #111827;
+    }
+
+    .logo span {
+      color: var(--blue);
+    }
+
+    .search-wrap {
+      flex: 1;
+      max-width: 760px;
+      display: flex;
+      align-items: center;
+      border: 1px solid #d0d5dd;
+      border-radius: 9px;
+      overflow: hidden;
+      background: #fff;
+    }
+
+    .search-wrap:focus-within {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 3px rgba(20, 102, 255, .1);
+    }
+
+    .search-wrap input {
+      width: 100%;
+      border: 0;
+      outline: 0;
+      padding: 13px 15px;
+      color: var(--text);
+      background: transparent;
+    }
+
+    .search-wrap button {
+      width: 50px;
+      height: 48px;
+      border: 0;
+      background: var(--blue);
+      color: #fff;
+      font-size: 19px;
+    }
+
+    .search-wrap button:hover {
+      background: var(--blue-dark);
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .header-btn {
+      min-height: 44px;
+      padding: 0 13px;
+      border: 1px solid var(--border);
+      background: #fff;
+      border-radius: 9px;
+      color: #344054;
+      font-weight: 700;
+      transition: .15s ease;
+      white-space: nowrap;
+    }
+
+    .header-btn:hover {
+      border-color: #b9c3d0;
+      background: #f9fafb;
+    }
+
+    .header-btn.primary {
+      background: var(--blue);
+      color: #fff;
+      border-color: var(--blue);
+    }
+
+    .header-btn.primary:hover {
+      background: var(--blue-dark);
+    }
+
+    .cart-button {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .cart-count {
+      min-width: 21px;
+      height: 21px;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: #111827;
+      color: #fff;
+      font-size: 11px;
+      font-weight: 900;
+      padding: 0 5px;
+    }
+
+    /* =========================
+       CATEGORY NAV
+    ========================= */
+
+    .category-nav {
+      max-width: 1500px;
+      margin: auto;
+      padding: 0 22px 12px;
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+
+    .category-nav::-webkit-scrollbar {
+      display: none;
+    }
+
+    .category-pill {
+      flex: 0 0 auto;
+      padding: 8px 14px;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      background: #fff;
+      color: #475467;
+      font-size: 13px;
+      font-weight: 750;
+      transition: .15s ease;
+    }
+
+    .category-pill:hover,
+    .category-pill.active {
+      background: var(--blue);
+      color: #fff;
+      border-color: var(--blue);
+    }
+
+    /* =========================
+       HERO
+    ========================= */
+
+    .hero {
+      max-width: 1500px;
+      margin: 24px auto 0;
+      padding: 0 22px;
+    }
+
+    .hero-card {
+      min-height: 300px;
+      border-radius: 20px;
+      background:
+        linear-gradient(
+          110deg,
+          #0d1b35 0%,
+          #123f83 48%,
+          #1466ff 100%
+        );
+      color: #fff;
+      padding: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .hero-card::after {
+      content: "";
+      position: absolute;
+      width: 430px;
+      height: 430px;
+      border-radius: 50%;
+      right: -100px;
+      top: -170px;
+      border: 65px solid rgba(255,255,255,.08);
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 2;
+      max-width: 720px;
+    }
+
+    .hero-label {
+      display: inline-flex;
+      padding: 7px 11px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.13);
+      border: 1px solid rgba(255,255,255,.2);
+      font-size: 12px;
+      font-weight: 800;
+      margin-bottom: 15px;
+    }
+
+    .hero h1 {
+      font-size: clamp(34px, 5vw, 60px);
+      line-height: 1;
+      letter-spacing: -2.8px;
+      margin-bottom: 18px;
+    }
+
+    .hero p {
+      color: rgba(255,255,255,.84);
+      font-size: 16px;
+      line-height: 1.65;
+      max-width: 600px;
+    }
+
+    .hero-actions {
+      margin-top: 25px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .hero-btn {
+      border: 0;
+      border-radius: 9px;
+      padding: 12px 17px;
+      font-weight: 850;
+    }
+
+    .hero-btn.white {
+      background: #fff;
+      color: #123a78;
+    }
+
+    .hero-btn.transparent {
+      background: rgba(255,255,255,.1);
+      color: #fff;
+      border: 1px solid rgba(255,255,255,.25);
+    }
+
+    /* =========================
+       FEATURES
+    ========================= */
+
+    .features {
+      max-width: 1500px;
+      margin: 18px auto;
+      padding: 0 22px;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+    }
+
+    .feature {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 17px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .feature-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      background: var(--blue-light);
+      color: var(--blue);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 19px;
+      flex: 0 0 auto;
+    }
+
+    .feature strong {
+      display: block;
+      font-size: 13px;
+      margin-bottom: 3px;
+    }
+
+    .feature span {
+      display: block;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    /* =========================
+       PRODUCTS
+    ========================= */
+
+    .products-section {
+      max-width: 1500px;
+      margin: 30px auto;
+      padding: 0 22px;
+    }
+
+    .section-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 18px;
+    }
+
+    .section-title h2 {
+      font-size: 26px;
+      letter-spacing: -.8px;
+    }
+
+    .section-title p {
+      color: var(--muted);
+      margin-top: 4px;
+      font-size: 13px;
+    }
+
+    .sort-select {
+      border: 1px solid var(--border);
+      background: #fff;
+      border-radius: 9px;
+      padding: 10px 13px;
+      outline: none;
+      color: #344054;
+      font-weight: 650;
+    }
+
+    .products-grid {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .product-card {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 13px;
+      overflow: hidden;
+      position: relative;
+      transition: transform .16s ease, box-shadow .16s ease;
+      min-width: 0;
+    }
+
+    .product-card:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow);
+    }
+
+    .product-image-wrap {
+      height: 235px;
+      padding: 16px;
+      background: #fff;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-bottom: 1px solid #f0f1f3;
+    }
+
+    .product-image {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    .favorite-btn {
+      position: absolute;
+      right: 11px;
+      top: 11px;
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,.96);
+      color: #667085;
+      font-size: 17px;
+      z-index: 3;
+    }
+
+    .favorite-btn.active {
+      color: #e11d48;
+    }
+
+    .product-body {
+      padding: 14px;
+    }
+
+    .product-category {
+      color: var(--blue);
+      font-size: 11px;
+      font-weight: 850;
+      text-transform: uppercase;
+      letter-spacing: .4px;
+      margin-bottom: 7px;
+    }
+
+    .product-name {
+      font-size: 14px;
+      line-height: 1.4;
+      font-weight: 780;
+      min-height: 40px;
+    }
+
+    .rating-line {
+      min-height: 23px;
+      margin-top: 7px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      color: #f59e0b;
+      font-size: 13px;
+    }
+
+    .rating-count {
+      color: #98a2b3;
+      font-size: 11px;
+    }
+
+    .product-price {
+      font-size: 21px;
+      font-weight: 950;
+      letter-spacing: -.5px;
+      margin-top: 9px;
+    }
+
+    .product-actions {
+      display: grid;
+      grid-template-columns: 1fr 1.15fr;
+      gap: 7px;
+      margin-top: 12px;
+    }
+
+    .product-action {
+      min-height: 39px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 850;
+      border: 1px solid var(--border);
+      background: #fff;
+      color: #344054;
+    }
+
+    .product-action:hover {
+      background: #f8fafc;
+    }
+
+    .product-action.add {
+      background: var(--blue);
+      border-color: var(--blue);
+      color: #fff;
+    }
+
+    .product-action.add:hover {
+      background: var(--blue-dark);
+    }
+
+    /* =========================
+       EMPTY STATE
+    ========================= */
+
+    .empty-state {
+      background: #fff;
+      border: 1px dashed #cbd5e1;
+      border-radius: 14px;
+      padding: 55px 20px;
+      text-align: center;
+    }
+
+    .empty-state-icon {
+      font-size: 42px;
+      margin-bottom: 12px;
+    }
+
+    .empty-state h3 {
+      font-size: 19px;
+      margin-bottom: 6px;
+    }
+
+    .empty-state p {
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    /* =========================
+       FAQ
+    ========================= */
+
+    .faq-section {
+      max-width: 1000px;
+      margin: 60px auto;
+      padding: 0 22px;
+    }
+
+    .faq-section h2 {
+      font-size: 28px;
+      margin-bottom: 18px;
+    }
+
+    .faq {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 17px 19px;
+      margin-bottom: 9px;
+    }
+
+    .faq summary {
+      cursor: pointer;
+      font-weight: 800;
+      font-size: 14px;
+    }
+
+    .faq p {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.65;
+      margin-top: 10px;
+    }
+
+    /* =========================
+       FOOTER
+    ========================= */
+
+    footer {
+      margin-top: 60px;
+      background: #101828;
+      color: #fff;
+    }
+
+    .footer-inner {
+      max-width: 1500px;
+      margin: auto;
+      padding: 45px 22px;
+      display: grid;
+      grid-template-columns: 2fr repeat(3, 1fr);
+      gap: 35px;
+    }
+
+    .footer-logo {
+      font-size: 24px;
+      font-weight: 950;
+      margin-bottom: 12px;
+    }
+
+    .footer-logo span {
+      color: #67a3ff;
+    }
+
+    .footer-text {
+      color: #98a2b3;
+      max-width: 370px;
+      font-size: 13px;
+      line-height: 1.7;
+    }
+
+    .footer-col h4 {
+      font-size: 13px;
+      margin-bottom: 12px;
+    }
+
+    .footer-col a {
+      display: block;
+      color: #98a2b3;
+      font-size: 13px;
+      margin: 8px 0;
+    }
+
+    .footer-col a:hover {
+      color: #fff;
+    }
+
+    .footer-bottom {
+      border-top: 1px solid rgba(255,255,255,.1);
+      padding: 16px 22px;
+      text-align: center;
+      color: #98a2b3;
+      font-size: 12px;
+    }
+
+    /* =========================
+       OVERLAY
+    ========================= */
+
+    .overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(15,23,42,.52);
+      z-index: 300;
+      opacity: 1;
+    }
+
+    /* =========================
+       DRAWER
+    ========================= */
+
+    .drawer {
+      position: fixed;
+      right: 0;
+      top: 0;
+      height: 100vh;
+      width: min(470px, 100vw);
+      background: #fff;
+      z-index: 350;
+      box-shadow: -12px 0 40px rgba(0,0,0,.14);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .drawer-head {
+      padding: 18px 20px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .drawer-head h3 {
+      font-size: 20px;
+    }
+
+    .close-btn {
+      width: 36px;
+      height: 36px;
+      border: 1px solid var(--border);
+      background: #fff;
+      border-radius: 8px;
+      font-size: 18px;
+    }
+
+    .drawer-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 15px;
+    }
+
+    .cart-item {
+      display: grid;
+      grid-template-columns: 74px 1fr auto;
+      gap: 12px;
+      padding: 13px 0;
+      border-bottom: 1px solid #eef0f3;
+    }
+
+    .cart-item-image {
+      width: 74px;
+      height: 74px;
+      object-fit: contain;
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      background: #fff;
+    }
+
+    .cart-item-name {
+      font-size: 13px;
+      font-weight: 800;
+      line-height: 1.35;
+    }
+
+    .cart-item-price {
+      font-size: 14px;
+      font-weight: 900;
+      margin-top: 6px;
+    }
+
+    .qty-controls {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      margin-top: 9px;
+    }
+
+    .qty-btn {
+      width: 26px;
+      height: 26px;
+      border: 1px solid var(--border);
+      background: #fff;
+      border-radius: 6px;
+      font-weight: 900;
+    }
+
+    .remove-cart {
+      border: 0;
+      background: transparent;
+      color: var(--red);
+      font-size: 12px;
+      margin-top: 8px;
+    }
+
+    .drawer-foot {
+      border-top: 1px solid var(--border);
+      padding: 17px;
+    }
+
+    .summary-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 8px;
+      font-size: 14px;
+    }
+
+    .summary-row.total {
+      font-size: 19px;
+      font-weight: 950;
+      padding-top: 8px;
+      margin-top: 8px;
+      border-top: 1px solid var(--border);
+    }
+
+    .checkout-btn {
+      width: 100%;
+      margin-top: 13px;
+      min-height: 46px;
+      border: 0;
+      border-radius: 9px;
+      background: var(--blue);
+      color: #fff;
+      font-weight: 900;
+    }
+
+    .checkout-btn:hover {
+      background: var(--blue-dark);
+    }
+
+    .checkout-btn:disabled {
+      background: #cbd5e1;
+      cursor: not-allowed;
+    }
+
+    /* =========================
+       MODALS
+    ========================= */
+
+    .modal {
+      position: fixed;
+      inset: 0;
+      z-index: 400;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .modal-box {
+      width: min(700px, 100%);
+      max-height: calc(100vh - 40px);
+      overflow-y: auto;
+      background: #fff;
+      border-radius: 15px;
+      box-shadow: 0 25px 70px rgba(0,0,0,.22);
+    }
+
+    .modal-box.large {
+      width: min(1050px, 100%);
+    }
+
+    .modal-box.invoice {
+      width: min(850px, 100%);
+    }
+
+    .modal-head {
+      padding: 17px 20px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      background: #fff;
+      z-index: 5;
+    }
+
+    .modal-head h3 {
+      font-size: 19px;
+    }
+
+    .modal-body {
+      padding: 20px;
+    }
+
+    /* =========================
+       AUTH
+    ========================= */
+
+    .auth-tabs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+      padding: 5px;
+      background: #f2f4f7;
+      border-radius: 9px;
+      margin-bottom: 17px;
+    }
+
+    .auth-tab {
+      border: 0;
+      border-radius: 7px;
+      background: transparent;
+      padding: 10px;
+      font-weight: 800;
+      color: #667085;
+    }
+
+    .auth-tab.active {
+      background: #fff;
+      color: var(--text);
+      box-shadow: 0 1px 4px rgba(0,0,0,.08);
+    }
+
+    .form-group {
+      margin-bottom: 13px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 12px;
+      font-weight: 800;
+      margin-bottom: 6px;
+      color: #344054;
+    }
+
+    .form-input {
+      width: 100%;
+      min-height: 44px;
+      border: 1px solid #d0d5dd;
+      border-radius: 8px;
+      padding: 10px 12px;
+      outline: none;
+      color: var(--text);
+      background: #fff;
+    }
+
+    .form-input:focus {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 3px rgba(20,102,255,.09);
+    }
+
+    .form-help {
+      color: #98a2b3;
+      font-size: 11px;
+      margin-top: 5px;
+    }
+
+    .main-submit {
+      width: 100%;
+      min-height: 45px;
+      border: 0;
+      border-radius: 8px;
+      background: var(--blue);
+      color: #fff;
+      font-weight: 900;
+      margin-top: 4px;
+    }
+
+    .google-btn {
+      width: 100%;
+      min-height: 45px;
+      border: 1px solid #d0d5dd;
+      border-radius: 8px;
+      background: #fff;
+      font-weight: 850;
+      color: #344054;
+      margin-top: 10px;
+    }
+
+    .separator {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 15px 0;
+      color: #98a2b3;
+      font-size: 11px;
+    }
+
+    .separator::before,
+    .separator::after {
+      content: "";
+      flex: 1;
+      height: 1px;
+      background: #eaecf0;
+    }
+
+    /* =========================
+       ACCOUNT
+    ========================= */
+
+    .account-card {
+      border: 1px solid var(--border);
+      border-radius: 11px;
+      padding: 15px;
+      background: #f9fafb;
+      margin-bottom: 14px;
+    }
+
+    .account-name {
+      font-size: 18px;
+      font-weight: 900;
+    }
+
+    .account-info {
+      margin-top: 5px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .modal-actions {
+      display: grid;
+      gap: 8px;
+    }
+
+    .modal-action-btn {
+      width: 100%;
+      min-height: 44px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: #fff;
+      font-weight: 800;
+      text-align: left;
+      padding: 0 13px;
+    }
+
+    .modal-action-btn:hover {
+      background: #f8fafc;
+    }
+
+    .modal-action-btn.danger {
+      color: var(--red);
+    }
+
+    /* =========================
+       PRODUCT DETAILS
+    ========================= */
+
+    .product-detail {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 28px;
+    }
+
+    .product-detail-image {
+      min-height: 390px;
+      border: 1px solid var(--border);
+      border-radius: 13px;
+      padding: 25px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #fff;
+    }
+
+    .product-detail-image img {
+      width: 100%;
+      height: 350px;
+      object-fit: contain;
+    }
+
+    .detail-category {
+      color: var(--blue);
+      font-size: 12px;
+      font-weight: 900;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .detail-title {
+      font-size: 30px;
+      line-height: 1.15;
+      letter-spacing: -1px;
+      margin-bottom: 10px;
+    }
+
+    .detail-rating {
+      color: #f59e0b;
+      margin-bottom: 15px;
+    }
+
+    .detail-price {
+      font-size: 31px;
+      font-weight: 950;
+      margin-bottom: 17px;
+    }
+
+    .detail-description {
+      color: var(--muted);
+      line-height: 1.7;
+      font-size: 14px;
+      margin-bottom: 18px;
+    }
+
+    .detail-add {
+      width: 100%;
+      min-height: 48px;
+      border: 0;
+      border-radius: 9px;
+      background: var(--blue);
+      color: #fff;
+      font-weight: 900;
+    }
+
+    /* =========================
+       REVIEWS
+    ========================= */
+
+    .reviews-section {
+      margin-top: 25px;
+      border-top: 1px solid var(--border);
+      padding-top: 22px;
+    }
+
+    .reviews-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 13px;
+    }
+
+    .reviews-head h4 {
+      font-size: 18px;
+    }
+
+    .review-form {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 14px;
+      margin-bottom: 15px;
+    }
+
+    .stars-input {
+      display: flex;
+      gap: 5px;
+      margin-bottom: 10px;
+    }
+
+    .star-choice {
+      border: 0;
+      background: transparent;
+      font-size: 23px;
+      color: #d0d5dd;
+    }
+
+    .star-choice.selected {
+      color: #f59e0b;
+    }
+
+    .review-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .review-item {
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 13px;
+    }
+
+    .review-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .review-user {
+      font-weight: 850;
+      font-size: 13px;
+    }
+
+    .review-stars {
+      color: #f59e0b;
+      font-size: 12px;
+    }
+
+    .review-date {
+      color: #98a2b3;
+      font-size: 10px;
+    }
+
+    .review-comment {
+      color: #475467;
+      font-size: 13px;
+      line-height: 1.55;
+      margin-top: 7px;
+    }
+
+    /* =========================
+       CHECKOUT
+    ========================= */
+
+    .checkout-grid {
+      display: grid;
+      grid-template-columns: 1.25fr .75fr;
+      gap: 22px;
+    }
+
+    .checkout-section {
+      border: 1px solid var(--border);
+      border-radius: 11px;
+      padding: 15px;
+      margin-bottom: 13px;
+    }
+
+    .checkout-section h4 {
+      font-size: 15px;
+      margin-bottom: 14px;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .form-grid .full {
+      grid-column: 1 / -1;
+    }
+
+    .checkout-summary {
+      border: 1px solid var(--border);
+      border-radius: 11px;
+      padding: 15px;
+      height: fit-content;
+      position: sticky;
+      top: 70px;
+    }
+
+    .checkout-summary h4 {
+      font-size: 16px;
+      margin-bottom: 14px;
+    }
+
+    .checkout-items {
+      display: grid;
+      gap: 9px;
+      max-height: 240px;
+      overflow-y: auto;
+      margin-bottom: 14px;
+    }
+
+    .checkout-item {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      font-size: 12px;
+    }
+
+    .promo-row {
+      display: flex;
+      gap: 7px;
+    }
+
+    .promo-row .form-input {
+      flex: 1;
+    }
+
+    .promo-btn {
+      min-width: 90px;
+      border: 0;
+      border-radius: 8px;
+      background: #111827;
+      color: #fff;
+      font-weight: 800;
+    }
+
+    .promo-message {
+      font-size: 11px;
+      margin-top: 6px;
+    }
+
+    .promo-message.success {
+      color: var(--green);
+    }
+
+    .promo-message.error {
+      color: var(--red);
+    }
+
+    .payment-note {
+      border-radius: 9px;
+      background: #f2f4f7;
+      color: #667085;
+      padding: 11px;
+      font-size: 11px;
+      line-height: 1.5;
+      margin-bottom: 10px;
+    }
+
+    /* =========================
+       ORDERS
+    ========================= */
+
+    .orders-list {
+      display: grid;
+      gap: 11px;
+    }
+
+    .order-card {
+      border: 1px solid var(--border);
+      border-radius: 11px;
+      padding: 15px;
+    }
+
+    .order-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 15px;
+      align-items: center;
+    }
+
+    .order-number {
+      font-weight: 900;
+      font-size: 14px;
+    }
+
+    .order-date {
+      color: #98a2b3;
+      font-size: 11px;
+      margin-top: 3px;
+    }
+
+    .order-status {
+      background: #ecfdf3;
+      color: #027a48;
+      border-radius: 999px;
+      padding: 5px 9px;
+      font-size: 10px;
+      font-weight: 900;
+    }
+
+    .order-items {
+      border-top: 1px solid #eef0f3;
+      margin-top: 12px;
+      padding-top: 11px;
+      display: grid;
+      gap: 7px;
+    }
+
+    .order-item-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+    }
+
+    .order-bottom {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 12px;
+      padding-top: 11px;
+      border-top: 1px solid #eef0f3;
+      font-weight: 900;
+    }
+
+    /* =========================
+       DASHBOARD
+    ========================= */
+
+    .admin-warning {
+      border: 1px solid #fed7aa;
+      background: #fff7ed;
+      color: #9a3412;
+      border-radius: 9px;
+      padding: 11px;
+      font-size: 12px;
+      margin-bottom: 15px;
+    }
+
+    .admin-login {
+      max-width: 430px;
+      margin: auto;
+    }
+
+    .dashboard-stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 11px;
+      margin-bottom: 20px;
+    }
+
+    .stat-card {
+      border: 1px solid var(--border);
+      border-radius: 11px;
+      padding: 15px;
+      background: #fff;
+    }
+
+    .stat-label {
+      color: #667085;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .stat-value {
+      font-size: 25px;
+      font-weight: 950;
+      margin-top: 5px;
+    }
+
+    .dashboard-block {
+      border: 1px solid var(--border);
+      border-radius: 11px;
+      margin-bottom: 15px;
+      overflow: hidden;
+    }
+
+    .dashboard-block-head {
+      padding: 13px 15px;
+      background: #f8fafc;
+      border-bottom: 1px solid var(--border);
+      font-weight: 900;
+      font-size: 14px;
+    }
+
+    .dashboard-table-wrap {
+      overflow-x: auto;
+    }
+
+    .dashboard-table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 650px;
+    }
+
+    .dashboard-table th,
+    .dashboard-table td {
+      text-align: left;
+      padding: 11px 13px;
+      border-bottom: 1px solid #eef0f3;
+      font-size: 12px;
+    }
+
+    .dashboard-table th {
+      color: #667085;
+      background: #fff;
+      font-size: 11px;
+    }
+
+    .code-list {
+      display: grid;
+      gap: 8px;
+      padding: 13px;
+    }
+
+    .promo-code-card {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 12px;
+    }
+
+    .promo-code {
+      font-weight: 950;
+      letter-spacing: .5px;
+    }
+
+    .promo-value {
+      color: var(--green);
+      font-weight: 850;
+    }
+
+    /* =========================
+       INVOICE
+    ========================= */
+
+    .invoice-paper {
+      background: #fff;
+      padding: 35px;
+      color: #111827;
+    }
+
+    .invoice-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+      padding-bottom: 25px;
+      border-bottom: 2px solid #111827;
+    }
+
+    .invoice-logo {
+      font-size: 28px;
+      font-weight: 950;
+    }
+
+    .invoice-logo span {
+      color: var(--blue);
+    }
+
+    .invoice-title {
+      text-align: right;
+    }
+
+    .invoice-title h1 {
+      font-size: 28px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .invoice-title p {
+      color: #667085;
+      font-size: 11px;
+      margin-top: 4px;
+    }
+
+    .invoice-info-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 30px;
+      padding: 25px 0;
+    }
+
+    .invoice-info h4 {
+      font-size: 11px;
+      text-transform: uppercase;
+      color: #667085;
+      margin-bottom: 7px;
+    }
+
+    .invoice-info p {
+      font-size: 12px;
+      line-height: 1.6;
+    }
+
+    .invoice-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 5px;
+    }
+
+    .invoice-table th,
+    .invoice-table td {
+      padding: 11px 8px;
+      border-bottom: 1px solid #eaecf0;
+      text-align: left;
+      font-size: 12px;
+    }
+
+    .invoice-table th {
+      font-size: 10px;
+      color: #667085;
+      text-transform: uppercase;
+    }
+
+    .invoice-table th:last-child,
+    .invoice-table td:last-child {
+      text-align: right;
+    }
+
+    .invoice-total {
+      margin-left: auto;
+      width: min(330px, 100%);
+      margin-top: 18px;
+    }
+
+    .invoice-total-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 6px 0;
+      font-size: 12px;
+    }
+
+    .invoice-total-row.final {
+      border-top: 2px solid #111827;
+      margin-top: 7px;
+      padding-top: 11px;
+      font-size: 19px;
+      font-weight: 950;
+    }
+
+    .invoice-payment {
+      margin-top: 25px;
+      padding: 13px;
+      background: #f8fafc;
+      border-radius: 8px;
+      font-size: 11px;
+      line-height: 1.6;
+    }
+
+    .print-invoice-btn {
+      margin: 15px 20px 20px;
+      min-height: 43px;
+      padding: 0 16px;
+      border: 0;
+      border-radius: 8px;
+      background: #111827;
+      color: #fff;
+      font-weight: 850;
+    }
+
+    /* =========================
+       TOAST
+    ========================= */
+
+    .toast {
+      position: fixed;
+      right: 20px;
+      bottom: 20px;
+      z-index: 800;
+      max-width: 370px;
+      background: #111827;
+      color: #fff;
+      border-radius: 10px;
+      padding: 13px 16px;
+      box-shadow: 0 12px 35px rgba(0,0,0,.2);
+      font-size: 13px;
+      font-weight: 750;
+      transform: translateY(15px);
+      opacity: 0;
+      pointer-events: none;
+      transition: .2s ease;
+    }
+
+    .toast.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    .toast.success {
+      background: #027a48;
+    }
+
+    .toast.error {
+      background: #b42318;
+    }
+
+    /* =========================
+       MOBILE
+    ========================= */
+
+    @media (max-width: 1250px) {
+      .products-grid {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 1000px) {
+      .header-main {
+        flex-wrap: wrap;
+      }
+
+      .logo {
+        min-width: auto;
+      }
+
+      .search-wrap {
+        order: 3;
+        flex-basis: 100%;
+        max-width: none;
+      }
+
+      .features {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .products-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .footer-inner {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .checkout-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .checkout-summary {
+        position: static;
+      }
+
+      .product-detail {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 700px) {
+      .topbar {
+        font-size: 11px;
+      }
+
+      .header-main {
+        padding: 11px 13px;
+        gap: 10px;
+      }
+
+      .logo {
+        font-size: 23px;
+      }
+
+      .header-actions {
+        margin-left: auto;
+      }
+
+      .header-btn {
+        padding: 0 9px;
+        font-size: 11px;
+      }
+
+      .header-btn.orders-btn,
+      .header-btn.admin-btn {
+        display: none;
+      }
+
+      .category-nav,
+      .hero,
+      .features,
+      .products-section {
+        padding-left: 13px;
+        padding-right: 13px;
+      }
+
+      .hero-card {
+        padding: 30px 24px;
+        min-height: 350px;
+      }
+
+      .hero h1 {
+        font-size: 38px;
+        letter-spacing: -1.8px;
+      }
+
+      .features {
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+      }
+
+      .feature {
+        padding: 12px;
+      }
+
+      .feature span {
+        display: none;
+      }
+
+      .section-head {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .products-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 9px;
+      }
+
+      .product-image-wrap {
+        height: 180px;
+        padding: 10px;
+      }
+
+      .product-body {
+        padding: 11px;
+      }
+
+      .product-name {
+        font-size: 12px;
+      }
+
+      .product-price {
+        font-size: 18px;
+      }
+
+      .product-actions {
+        grid-template-columns: 1fr;
+      }
+
+      .product-action {
+        min-height: 36px;
+      }
+
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .form-grid .full {
+        grid-column: auto;
+      }
+
+      .dashboard-stats {
+        grid-template-columns: 1fr;
+      }
+
+      .invoice-paper {
+        padding: 20px 15px;
+      }
+
+      .invoice-head {
+        flex-direction: column;
+      }
+
+      .invoice-title {
+        text-align: left;
+      }
+
+      .invoice-info-grid {
+        grid-template-columns: 1fr;
+        gap: 17px;
+      }
+
+      .footer-inner {
+        grid-template-columns: 1fr;
+        gap: 25px;
+      }
+    }
+
+    @media (max-width: 430px) {
+      .products-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .product-image-wrap {
+        height: 150px;
+      }
+
+      .hero-card {
+        padding: 25px 18px;
+      }
+
+      .hero h1 {
+        font-size: 32px;
+      }
+
+      .header-btn.account-btn {
+        font-size: 0;
+        width: 40px;
+        padding: 0;
+      }
+
+      .header-btn.account-btn::before {
+        content: "👤";
+        font-size: 16px;
+      }
+
+      .cart-button {
+        font-size: 0;
+        width: 42px;
+        padding: 0;
+        justify-content: center;
+      }
+
+      .cart-button::before {
+        content: "🛒";
+        font-size: 16px;
+      }
+    }
+
+    /* =========================
+       PRINT
+    ========================= */
+
+    @media print {
+      body * {
+        visibility: hidden !important;
+      }
+
+      #invoiceModal,
+      #invoiceModal * {
+        visibility: visible !important;
+      }
+
+      #invoiceModal {
+        position: static !important;
+        padding: 0 !important;
+      }
+
+      #invoiceModal .modal-box {
+        box-shadow: none !important;
+        max-height: none !important;
+        width: 100% !important;
+      }
+
+      #invoiceModal .modal-head,
+      #invoiceModal .print-invoice-btn {
+        display: none !important;
+      }
+
+      .invoice-paper {
+        padding: 0 !important;
+      }
+    }
+  </style>
 </head>
 
 <body>
 
-<div class="topbar">
-  🚚 Livraison • Marketplace gaming NovaShop
-</div>
+  <!-- =========================
+       TOP BAR
+  ========================= -->
 
-<header class="header">
-
-  <div class="header-main">
-
-    <a href="#" class="logo">
-      NOVA<span>SHOP</span>
-    </a>
-
-    <div class="search">
-      <input id="searchInput" type="search" placeholder="Rechercher un produit, une catégorie...">
-      <button id="searchButton">⌕</button>
-    </div>
-
-    <div class="header-actions">
-
-      <button class="icon-btn" id="accountButton">
-        👤 Compte
-      </button>
-
-      <button class="icon-btn" id="ordersButton" style="display:none">
-        📦 Commandes
-      </button>
-
-      <button class="icon-btn" id="adminButton" style="display:none">
-        ⚙️ Admin
-      </button>
-
-      <button class="icon-btn cart-btn" id="cartButton">
-        🛒 Panier
-        <span class="cart-count" id="cartCount">0</span>
-      </button>
-
-    </div>
+  <div class="topbar">
+    🚚 Livraison • Marketplace NovaShop
   </div>
 
-  <nav class="nav">
-    <div class="nav-inner">
+  <!-- =========================
+       HEADER
+  ========================= -->
 
-      <button class="category active" data-category="Tous">Tous</button>
-      <button class="category" data-category="PC Gamer">PC Gamer</button>
-      <button class="category" data-category="Composants">Composants</button>
-      <button class="category" data-category="Claviers">Claviers</button>
-      <button class="category" data-category="Souris">Souris</button>
-      <button class="category" data-category="Casques">Casques</button>
-      <button class="category" data-category="Écrans">Écrans</button>
-      <button class="category" data-category="Stockage">Stockage</button>
-      <button class="category" data-category="Alimentations">Alimentations</button>
-      <button class="category" data-category="Boîtiers">Boîtiers</button>
-      <button class="category" data-category="Refroidissement">Refroidissement</button>
-      <button class="category" data-category="Streaming">Streaming</button>
-      <button class="category" data-category="Manettes">Manettes</button>
+  <header class="header">
 
-    </div>
-  </nav>
+    <div class="header-main">
 
-</header>
+      <a href="#" class="logo">
+        NOVA<span>SHOP</span>
+      </a>
 
-<section class="hero">
-
-  <div class="hero-box">
-
-    <div class="hero-content">
-
-      <div class="hero-label">
-        NOVASHOP • GAMING & HIGH-TECH
+      <div class="search-wrap">
+        <input
+          id="searchInput"
+          type="search"
+          placeholder="Rechercher un produit, une marque..."
+          autocomplete="off"
+        >
+        <button id="searchButton" type="button" aria-label="Rechercher">
+          🔎
+        </button>
       </div>
 
-      <h1>
-        Le matériel gaming,<br>
-        simplement.
-      </h1>
+      <div class="header-actions">
 
-      <p>
-        PC, composants, écrans, périphériques et accessoires.
-        Une expérience marketplace claire, rapide et pensée pour les joueurs.
-      </p>
+        <button
+          id="accountButton"
+          class="header-btn account-btn"
+          type="button"
+        >
+          👤 Compte
+        </button>
 
-      <button class="hero-button" id="heroButton">
-        Découvrir les produits
+        <button
+          id="ordersButton"
+          class="header-btn orders-btn hidden"
+          type="button"
+        >
+          📦 Commandes
+        </button>
+
+        <button
+          id="adminButton"
+          class="header-btn admin-btn hidden"
+          type="button"
+        >
+          ⚙️ Dashboard
+        </button>
+
+        <button
+          id="cartButton"
+          class="header-btn cart-button"
+          type="button"
+        >
+          🛒 Panier
+          <span id="cartCount" class="cart-count">0</span>
+        </button>
+
+      </div>
+
+    </div>
+
+    <nav class="category-nav" id="categoryNav">
+
+      <button
+        class="category-pill active"
+        data-category="Tous"
+        type="button"
+      >
+        Tous
       </button>
 
-    </div>
+      <button
+        class="category-pill"
+        data-category="PC Gamer"
+        type="button"
+      >
+        PC Gamer
+      </button>
 
-  </div>
+      <button
+        class="category-pill"
+        data-category="Composants"
+        type="button"
+      >
+        Composants
+      </button>
 
-</section>
+      <button
+        class="category-pill"
+        data-category="Claviers"
+        type="button"
+      >
+        Claviers
+      </button>
 
-<main id="catalogue">
+      <button
+        class="category-pill"
+        data-category="Souris"
+        type="button"
+      >
+        Souris
+      </button>
 
-  <div class="section-head">
+      <button
+        class="category-pill"
+        data-category="Casques"
+        type="button"
+      >
+        Casques
+      </button>
 
-    <div>
-      <h2>Nos produits</h2>
-      <div class="result-info" id="resultCount">
-        Chargement...
+      <button
+        class="category-pill"
+        data-category="Stockage"
+        type="button"
+      >
+        Stockage
+      </button>
+
+      <button
+        class="category-pill"
+        data-category="Alimentations"
+        type="button"
+      >
+        Alimentations
+      </button>
+
+      <button
+        class="category-pill"
+        data-category="Boîtiers"
+        type="button"
+      >
+        Boîtiers
+      </button>
+
+      <button
+        class="category-pill"
+        data-category="Refroidissement"
+        type="button"
+      >
+        Refroidissement
+      </button>
+
+      <button
+        class="category-pill"
+        data-category="Écrans"
+        type="button"
+      >
+        Écrans
+      </button>
+
+      <button
+        class="category-pill"
+        data-category="Streaming"
+        type="button"
+      >
+        Streaming
+      </button>
+
+      <button
+        class="category-pill"
+        data-category="Manettes"
+        type="button"
+      >
+        Manettes
+      </button>
+
+    </nav>
+
+  </header>
+
+  <!-- =========================
+       HERO
+  ========================= -->
+
+  <main>
+
+    <section class="hero">
+
+      <div class="hero-card">
+
+        <div class="hero-content">
+
+          <span class="hero-label">
+            NOVASHOP MARKETPLACE
+          </span>
+
+          <h1>
+            Le matériel gaming,<br>
+            simplement.
+          </h1>
+
+          <p>
+            PC gaming, composants, périphériques, écrans et accessoires.
+            Une marketplace pensée pour trouver rapidement ton matériel.
+          </p>
+
+          <div class="hero-actions">
+
+            <button
+              id="heroShopButton"
+              class="hero-btn white"
+              type="button"
+            >
+              Voir les produits
+            </button>
+
+            <button
+              id="heroCategoryButton"
+              class="hero-btn transparent"
+              type="button"
+            >
+              Explorer les catégories
+            </button>
+
+          </div>
+
+        </div>
+
       </div>
-    </div>
 
-    <select class="sort" id="sortSelect">
-      <option value="relevance">Pertinence</option>
-      <option value="priceAsc">Prix croissant</option>
-      <option value="priceDesc">Prix décroissant</option>
-      <option value="name">Nom A-Z</option>
-    </select>
+    </section>
 
-  </div>
+    <!-- =========================
+         FEATURES
+    ========================= -->
 
-  <div class="products-grid" id="productsGrid"></div>
+    <section class="features">
 
-  <div class="empty" id="emptyState">
-    <h3>Aucun produit trouvé</h3>
-    <p>Essaie une autre recherche ou une autre catégorie.</p>
-  </div>
+      <div class="feature">
+        <div class="feature-icon">🚚</div>
+        <div>
+          <strong>Livraison</strong>
+          <span>Suivi de commande</span>
+        </div>
+      </div>
 
-  <section class="features">
+      <div class="feature">
+        <div class="feature-icon">🔒</div>
+        <div>
+          <strong>Paiement sécurisé</strong>
+          <span>Protection des données</span>
+        </div>
+      </div>
 
-    <div class="feature">
-      <div class="feature-icon">🚚</div>
-      <h3>Livraison</h3>
-      <p>Informations de livraison affichées avant la validation de commande.</p>
-    </div>
+      <div class="feature">
+        <div class="feature-icon">⭐</div>
+        <div>
+          <strong>Avis clients</strong>
+          <span>Notes et commentaires</span>
+        </div>
+      </div>
 
-    <div class="feature">
-      <div class="feature-icon">🔒</div>
-      <h3>Compte sécurisé</h3>
-      <p>Connexion gérée par Firebase Authentication.</p>
-    </div>
+      <div class="feature">
+        <div class="feature-icon">💬</div>
+        <div>
+          <strong>Assistance</strong>
+          <span>Support NovaShop</span>
+        </div>
+      </div>
 
-    <div class="feature">
-      <div class="feature-icon">↩️</div>
-      <h3>Retours</h3>
-      <p>Consulte les conditions de retour dans notre espace support.</p>
-    </div>
+    </section>
 
-    <div class="feature">
-      <div class="feature-icon">💬</div>
-      <h3>Support</h3>
-      <p>Une FAQ et des informations d'assistance sont disponibles en bas de page.</p>
-    </div>
+    <!-- =========================
+         PRODUCTS
+    ========================= -->
 
-  </section>
+    <section class="products-section" id="productsSection">
 
-  <section class="faq" id="faq">
+      <div class="section-head">
 
-    <h2>Questions fréquentes</h2>
+        <div class="section-title">
 
-    <details>
-      <summary>Comment créer un compte ?</summary>
-      <p>
-        Clique sur Compte puis inscris-toi avec une adresse e-mail,
-        un numéro de téléphone et un mot de passe.
-      </p>
-    </details>
+          <h2>
+            Produits
+          </h2>
 
-    <details>
-      <summary>Est-ce que Gmail fonctionne ?</summary>
-      <p>
-        Oui. Gmail est simplement une adresse e-mail.
-      </p>
-    </details>
+          <p id="resultCount">
+            Chargement des produits...
+          </p>
 
-    <details>
-      <summary>Comment fonctionne le panier ?</summary>
-      <p>
-        Ajoute les produits au panier puis ouvre le panier pour modifier
-        les quantités ou commencer la commande.
-      </p>
-    </details>
+        </div>
 
-    <details>
-      <summary>Comment fonctionne le code promo ?</summary>
-      <p>
-        Les codes disponibles dans cette version sont des codes de démonstration.
-        Le code NOVA100 permet de simuler une commande gratuite.
-      </p>
-    </details>
+        <select
+          id="sortSelect"
+          class="sort-select"
+          aria-label="Trier les produits"
+        >
+          <option value="relevance">
+            Pertinence
+          </option>
 
-    <details>
-      <summary>Comment contacter NovaShop ?</summary>
-      <p>
-        Cette version affiche les informations de support directement
-        dans le pied de page.
-      </p>
-    </details>
+          <option value="priceAsc">
+            Prix : croissant
+          </option>
 
-  </section>
+          <option value="priceDesc">
+            Prix : décroissant
+          </option>
 
-</main>
+          <option value="nameAsc">
+            Nom : A-Z
+          </option>
+        </select>
 
-<footer class="footer">
+      </div>
 
-  <div class="footer-inner">
+      <div
+        id="productsGrid"
+        class="products-grid"
+      ></div>
 
-    <div class="footer-grid">
+      <div
+        id="emptyState"
+        class="empty-state hidden"
+      >
 
-      <div>
-        <div class="logo">NOVA<span>SHOP</span></div>
+        <div class="empty-state-icon">
+          🔎
+        </div>
+
+        <h3>
+          Aucun produit trouvé
+        </h3>
+
         <p>
-          Marketplace gaming et high-tech.
-          Une interface pensée pour trouver rapidement son matériel.
+          Essaie une autre recherche ou une autre catégorie.
         </p>
+
       </div>
 
-      <div>
-        <h3>Shop</h3>
-        <a href="#catalogue">Produits</a><br>
-        <a href="#catalogue">PC Gamer</a><br>
-        <a href="#catalogue">Composants</a><br>
-        <a href="#catalogue">Périphériques</a>
-      </div>
+    </section>
+
+    <!-- =========================
+         FAQ
+    ========================= -->
+
+    <section class="faq-section">
+
+      <h2>
+        Questions fréquentes
+      </h2>
+
+      <details class="faq">
+        <summary>
+          Comment fonctionne NovaShop ?
+        </summary>
+
+        <p>
+          NovaShop présente des produits gaming et informatique.
+          Tu peux rechercher un produit, l'ajouter au panier,
+          puis passer une commande depuis ton compte.
+        </p>
+      </details>
+
+      <details class="faq">
+        <summary>
+          Puis-je retrouver mes commandes ?
+        </summary>
+
+        <p>
+          Oui. Une fois connecté, la section Commandes permet
+          d'afficher les commandes enregistrées sur ton compte.
+        </p>
+      </details>
+
+      <details class="faq">
+        <summary>
+          Comment fonctionnent les codes promotionnels ?
+        </summary>
+
+        <p>
+          Un code promotionnel peut être appliqué pendant le
+          passage de commande. Les conditions du code sont affichées
+          directement lors de sa validation.
+        </p>
+      </details>
+
+      <details class="faq">
+        <summary>
+          Comment laisser un avis ?
+        </summary>
+
+        <p>
+          Connecte-toi, ouvre la fiche d'un produit et utilise
+          la zone d'avis pour attribuer une note et écrire un commentaire.
+        </p>
+      </details>
+
+    </section>
+
+  </main>
+
+  <!-- =========================
+       FOOTER
+  ========================= -->
+
+  <footer>
+
+    <div class="footer-inner">
 
       <div>
-        <h3>Assistance</h3>
-        <a href="#faq">FAQ</a><br>
-        <a href="#faq">Support</a><br>
-        <a href="#faq">Livraison</a><br>
-        <a href="#faq">Retours</a>
+
+        <div class="footer-logo">
+          NOVA<span>SHOP</span>
+        </div>
+
+        <p class="footer-text">
+          Marketplace dédiée au matériel gaming, informatique
+          et aux périphériques. NovaShop centralise les produits
+          dans une interface simple et rapide.
+        </p>
+
       </div>
 
-      <div>
-        <h3>Compte</h3>
-        <a href="#" id="footerAccount">Mon compte</a><br>
-        <a href="#" id="footerOrders">Mes commandes</a><br>
-        <a href="#" id="footerCart">Mon panier</a>
+      <div class="footer-col">
+
+        <h4>
+          Boutique
+        </h4>
+
+        <a href="#productsSection">
+          Produits
+        </a>
+
+        <a href="#productsSection">
+          PC Gamer
+        </a>
+
+        <a href="#productsSection">
+          Composants
+        </a>
+
+        <a href="#productsSection">
+          Périphériques
+        </a>
+
       </div>
 
-      <div>
-        <h3>Informations</h3>
-        <a href="#faq">Confidentialité</a><br>
-        <a href="#faq">Conditions</a><br>
-        <a href="#faq">Contact</a><br>
-        <a href="#faq">À propos</a>
+      <div class="footer-col">
+
+        <h4>
+          Assistance
+        </h4>
+
+        <a href="#faq">
+          FAQ
+        </a>
+
+        <a href="#faq">
+          Livraison
+        </a>
+
+        <a href="#faq">
+          Paiement
+        </a>
+
+        <a href="#faq">
+          Commandes
+        </a>
+
+      </div>
+
+      <div class="footer-col">
+
+        <h4>
+          Compte
+        </h4>
+
+        <a
+          href="#"
+          id="footerAccountButton"
+        >
+          Mon compte
+        </a>
+
+        <a
+          href="#"
+          id="footerOrdersButton"
+        >
+          Mes commandes
+        </a>
+
+        <a
+          href="#"
+          id="footerCartButton"
+        >
+          Mon panier
+        </a>
+
       </div>
 
     </div>
 
     <div class="footer-bottom">
-      <span>© 2026 NovaShop</span>
-      <span>Marketplace de démonstration</span>
+      © 2026 NovaShop • Marketplace gaming
     </div>
 
-  </div>
+  </footer>
 
-</footer>
+  <!-- =========================
+       OVERLAY
+  ========================= -->
 
-<div class="overlay" id="overlay"></div>
+  <div
+    id="overlay"
+    class="overlay hidden"
+  ></div>
 
-<!-- PANIER -->
+  <!-- =========================
+       CART DRAWER
+  ========================= -->
 
-<aside class="drawer" id="cartDrawer">
+  <aside
+    id="cartDrawer"
+    class="drawer hidden"
+    aria-label="Panier"
+  >
 
-  <div class="drawer-head">
-    <strong>Votre panier</strong>
-    <button id="closeCart">✕</button>
-  </div>
+    <div class="drawer-head">
 
-  <div class="cart-items" id="cartItems"></div>
+      <h3>
+        🛒 Ton panier
+      </h3>
 
-  <div class="cart-footer">
+      <button
+        id="closeCartButton"
+        class="close-btn"
+        type="button"
+      >
+        ×
+      </button>
 
-    <div class="total-line">
-      <span>Total</span>
-      <span id="cartTotal">0,00 €</span>
     </div>
 
-    <button class="primary" id="checkoutButton">
-      Passer la commande
-    </button>
+    <div
+      id="cartItems"
+      class="drawer-body"
+    ></div>
 
-  </div>
+    <div class="drawer-foot">
 
-</aside>
+      <div class="summary-row">
+        <span>
+          Sous-total
+        </span>
 
-<!-- COMPTE -->
+        <strong id="cartSubtotal">
+          0,00 €
+        </strong>
+      </div>
 
-<div class="modal" id="authModal">
+      <div class="summary-row">
+        <span>
+          Livraison
+        </span>
 
-  <div class="modal-box">
+        <strong>
+          Calculée à la commande
+        </strong>
+      </div>
 
-    <div class="modal-head">
-      <strong>Votre compte</strong>
-      <button class="close" data-close="authModal">✕</button>
+      <div class="summary-row total">
+        <span>
+          Total
+        </span>
+
+        <strong id="cartTotal">
+          0,00 €
+        </strong>
+      </div>
+
+      <button
+        id="checkoutButton"
+        class="checkout-btn"
+        type="button"
+      >
+        Passer la commande
+      </button>
+
     </div>
 
-    <div class="modal-content">
+  </aside>
 
-      <div class="tabs">
+  <!-- =========================
+       AUTH MODAL
+  ========================= -->
 
-        <button class="tab active" id="loginTab">
-          Connexion
-        </button>
+  <div
+    id="authModal"
+    class="modal hidden"
+  >
 
-        <button class="tab" id="signupTab">
-          Créer un compte
+    <div class="modal-box">
+
+      <div class="modal-head">
+
+        <h3>
+          Compte NovaShop
+        </h3>
+
+        <button
+          id="closeAuthButton"
+          class="close-btn"
+          type="button"
+        >
+          ×
         </button>
 
       </div>
 
-      <div id="loginPanel">
+      <div class="modal-body">
 
-        <form class="form" id="loginForm">
+        <div class="auth-tabs">
 
-          <label>E-mail / Gmail</label>
-          <input id="loginEmail" type="email" required>
+          <button
+            id="loginTab"
+            class="auth-tab active"
+            type="button"
+          >
+            Connexion
+          </button>
 
-          <label>Mot de passe</label>
-          <input id="loginPassword" type="password" required>
+          <button
+            id="signupTab"
+            class="auth-tab"
+            type="button"
+          >
+            Créer un compte
+          </button>
 
-          <button class="primary" type="submit">
+        </div>
+
+        <!-- LOGIN -->
+
+        <form
+          id="loginForm"
+        >
+
+          <div class="form-group">
+
+            <label for="loginEmail">
+              E-mail / Gmail
+            </label>
+
+            <input
+              id="loginEmail"
+              class="form-input"
+              type="email"
+              autocomplete="email"
+              placeholder="exemple@gmail.com"
+              required
+            >
+
+          </div>
+
+          <div class="form-group">
+
+            <label for="loginPassword">
+              Mot de passe
+            </label>
+
+            <input
+              id="loginPassword"
+              class="form-input"
+              type="password"
+              autocomplete="current-password"
+              placeholder="••••••••"
+              required
+            >
+
+          </div>
+
+          <button
+            class="main-submit"
+            type="submit"
+          >
             Se connecter
           </button>
 
-        </form>
+          <div class="separator">
+            OU
+          </div>
 
-        <div class="auth-extra">ou</div>
-
-        <button class="secondary" id="googleButton">
-          🔵 Continuer avec Google
-        </button>
-
-      </div>
-
-      <div id="signupPanel" style="display:none">
-
-        <form class="form" id="signupForm">
-
-          <label>E-mail / Gmail *</label>
-          <input id="signupEmail" type="email" placeholder="exemple@gmail.com" required>
-
-          <label>Téléphone *</label>
-          <input id="signupPhone" type="tel" placeholder="+33 6..." required>
-
-          <label>Mot de passe *</label>
-          <input id="signupPassword" type="password" minlength="6" required>
-
-          <label>Confirmer le mot de passe *</label>
-          <input id="signupPasswordConfirm" type="password" minlength="6" required>
-
-          <button class="primary" type="submit">
-            Créer mon compte
+          <button
+            id="googleLoginButton"
+            class="google-btn"
+            type="button"
+          >
+            🔵 Continuer avec Google
           </button>
 
         </form>
 
-        <p style="font-size:11px;color:#6b7280;margin-top:12px">
-          L'e-mail et le téléphone sont obligatoires pour créer un compte.
-        </p>
+        <!-- SIGNUP -->
+
+        <form
+          id="signupForm"
+          class="hidden"
+        >
+
+          <div class="form-group">
+
+            <label for="signupEmail">
+              E-mail / Gmail *
+            </label>
+
+            <input
+              id="signupEmail"
+              class="form-input"
+              type="email"
+              autocomplete="email"
+              placeholder="exemple@gmail.com"
+              required
+            >
+
+            <div class="form-help">
+              Adresse e-mail obligatoire.
+            </div>
+
+          </div>
+
+          <div class="form-group">
+
+            <label for="signupPhone">
+              Téléphone *
+            </label>
+
+            <input
+              id="signupPhone"
+              class="form-input"
+              type="tel"
+              autocomplete="tel"
+              placeholder="+33 6 12 34 56 78"
+              required
+            >
+
+            <div class="form-help">
+              Numéro de téléphone obligatoire.
+            </div>
+
+          </div>
+
+          <div class="form-group">
+
+            <label for="signupPassword">
+              Mot de passe *
+            </label>
+
+            <input
+              id="signupPassword"
+              class="form-input"
+              type="password"
+              autocomplete="new-password"
+              placeholder="••••••••"
+              minlength="6"
+              required
+            >
+
+          </div>
+
+          <div class="form-group">
+
+            <label for="signupPasswordConfirm">
+              Confirmation du mot de passe *
+            </label>
+
+            <input
+              id="signupPasswordConfirm"
+              class="form-input"
+              type="password"
+              autocomplete="new-password"
+              placeholder="••••••••"
+              minlength="6"
+              required
+            >
+
+          </div>
+
+          <button
+            class="main-submit"
+            type="submit"
+          >
+            Créer mon compte
+          </button>
+
+          <div class="separator">
+            OU
+          </div>
+
+          <button
+            id="googleSignupButton"
+            class="google-btn"
+            type="button"
+          >
+            🔵 Continuer avec Google
+          </button>
+
+        </form>
 
       </div>
 
@@ -1484,40 +2706,397 @@ td{
 
   </div>
 
-</div>
+  <!-- =========================
+       ACCOUNT MODAL
+  ========================= -->
 
-<!-- COMPTE CONNECTÉ -->
+  <div
+    id="accountModal"
+    class="modal hidden"
+  >
 
-<div class="modal" id="accountModal">
+    <div class="modal-box">
 
-  <div class="modal-box">
+      <div class="modal-head">
 
-    <div class="modal-head">
-      <strong>Mon compte</strong>
-      <button class="close" data-close="accountModal">✕</button>
+        <h3>
+          Mon compte
+        </h3>
+
+        <button
+          id="closeAccountButton"
+          class="close-btn"
+          type="button"
+        >
+          ×
+        </button>
+
+      </div>
+
+      <div class="modal-body">
+
+        <div
+          id="accountInfo"
+          class="account-card"
+        ></div>
+
+        <div class="modal-actions">
+
+          <button
+            id="accountOrdersButton"
+            class="modal-action-btn"
+            type="button"
+          >
+            📦 Mes commandes
+          </button>
+
+          <button
+            id="accountFavoritesButton"
+            class="modal-action-btn"
+            type="button"
+          >
+            ❤️ Mes favoris
+          </button>
+
+          <button
+            id="logoutButton"
+            class="modal-action-btn danger"
+            type="button"
+          >
+            🚪 Se déconnecter
+          </button>
+
+        </div>
+
+      </div>
+
     </div>
 
-    <div class="modal-content">
+  </div>
 
-      <div class="account-box">
+  <!-- =========================
+       PRODUCT MODAL
+  ========================= -->
 
-        <div class="info">
-          <small>E-mail</small>
-          <strong id="accountEmail">-</strong>
+  <div
+    id="productModal"
+    class="modal hidden"
+  >
+
+    <div class="modal-box large">
+
+      <div class="modal-head">
+
+        <h3>
+          Produit
+        </h3>
+
+        <button
+          id="closeProductButton"
+          class="close-btn"
+          type="button"
+        >
+          ×
+        </button>
+
+      </div>
+
+      <div class="modal-body">
+
+        <div
+          id="productDetail"
+          class="product-detail"
+        ></div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- =========================
+       CHECKOUT MODAL
+  ========================= -->
+
+  <div
+    id="checkoutModal"
+    class="modal hidden"
+  >
+
+    <div class="modal-box large">
+
+      <div class="modal-head">
+
+        <h3>
+          Finaliser la commande
+        </h3>
+
+        <button
+          id="closeCheckoutButton"
+          class="close-btn"
+          type="button"
+        >
+          ×
+        </button>
+
+      </div>
+
+      <div class="modal-body">
+
+        <div class="checkout-grid">
+
+          <div>
+
+            <!-- DELIVERY -->
+
+            <div class="checkout-section">
+
+              <h4>
+                📍 Adresse de livraison
+              </h4>
+
+              <div class="form-grid">
+
+                <div class="form-group">
+
+                  <label for="fullName">
+                    Nom complet *
+                  </label>
+
+                  <input
+                    id="fullName"
+                    class="form-input"
+                    type="text"
+                    autocomplete="name"
+                    required
+                  >
+
+                </div>
+
+                <div class="form-group">
+
+                  <label for="country">
+                    Pays *
+                  </label>
+
+                  <input
+                    id="country"
+                    class="form-input"
+                    type="text"
+                    value="France"
+                    required
+                  >
+
+                </div>
+
+                <div class="form-group full">
+
+                  <label for="address">
+                    Adresse *
+                  </label>
+
+                  <input
+                    id="address"
+                    class="form-input"
+                    type="text"
+                    autocomplete="street-address"
+                    placeholder="Numéro et rue"
+                    required
+                  >
+
+                </div>
+
+                <div class="form-group">
+
+                  <label for="postalCode">
+                    Code postal *
+                  </label>
+
+                  <input
+                    id="postalCode"
+                    class="form-input"
+                    type="text"
+                    inputmode="numeric"
+                    autocomplete="postal-code"
+                    required
+                  >
+
+                </div>
+
+                <div class="form-group">
+
+                  <label for="city">
+                    Ville *
+                  </label>
+
+                  <input
+                    id="city"
+                    class="form-input"
+                    type="text"
+                    autocomplete="address-level2"
+                    required
+                  >
+
+                </div>
+
+              </div>
+
+            </div>
+
+            <!-- PROMO -->
+
+            <div class="checkout-section">
+
+              <h4>
+                🎟️ Code promotionnel
+              </h4>
+
+              <div class="promo-row">
+
+                <input
+                  id="promoCode"
+                  class="form-input"
+                  type="text"
+                  placeholder="Ex : NOVA100"
+                  autocomplete="off"
+                >
+
+                <button
+                  id="applyPromoButton"
+                  class="promo-btn"
+                  type="button"
+                >
+                  Appliquer
+                </button>
+
+              </div>
+
+              <div
+                id="promoMessage"
+                class="promo-message"
+              ></div>
+
+            </div>
+
+            <!-- PAYMENT -->
+
+            <div class="checkout-section">
+
+              <h4>
+                💳 Paiement
+              </h4>
+
+              <div class="payment-note">
+                Le bouton de paiement du prototype ne débite aucune
+                carte bancaire. Une vraie intégration PayPal ou carte
+                nécessite un serveur/backend sécurisé.
+              </div>
+
+              <button
+                id="payButton"
+                class="main-submit"
+                type="button"
+                disabled
+              >
+                Payer
+              </button>
+
+            </div>
+
+          </div>
+
+          <!-- SUMMARY -->
+
+          <aside class="checkout-summary">
+
+            <h4>
+              Résumé
+            </h4>
+
+            <div
+              id="checkoutItems"
+              class="checkout-items"
+            ></div>
+
+            <div class="summary-row">
+
+              <span>
+                Sous-total
+              </span>
+
+              <strong id="checkoutSubtotal">
+                0,00 €
+              </strong>
+
+            </div>
+
+            <div class="summary-row">
+
+              <span>
+                Réduction
+              </span>
+
+              <strong id="checkoutDiscount">
+                - 0,00 €
+              </strong>
+
+            </div>
+
+            <div class="summary-row total">
+
+              <span>
+                Total
+              </span>
+
+              <strong id="checkoutTotal">
+                0,00 €
+              </strong>
+
+            </div>
+
+          </aside>
+
         </div>
 
-        <div class="info">
-          <small>Téléphone</small>
-          <strong id="accountPhone">-</strong>
-        </div>
+      </div>
 
-        <button class="primary" id="accountOrders">
+    </div>
+
+  </div>
+
+  <!-- =========================
+       ORDERS MODAL
+  ========================= -->
+
+  <div
+    id="ordersModal"
+    class="modal hidden"
+  >
+
+    <div class="modal-box large">
+
+      <div class="modal-head">
+
+        <h3>
           📦 Mes commandes
+        </h3>
+
+        <button
+          id="closeOrdersButton"
+          class="close-btn"
+          type="button"
+        >
+          ×
         </button>
 
-        <button class="secondary" id="logoutButton">
-          Se déconnecter
-        </button>
+      </div>
+
+      <div class="modal-body">
+
+        <div
+          id="ordersList"
+          class="orders-list"
+        ></div>
 
       </div>
 
@@ -1525,192 +3104,265 @@ td{
 
   </div>
 
-</div>
+  <!-- =========================
+       ADMIN DASHBOARD
+  ========================= -->
 
-<!-- PRODUIT -->
+  <div
+    id="dashboardModal"
+    class="modal hidden"
+  >
 
-<div class="modal" id="productModal">
+    <div class="modal-box large">
 
-  <div class="modal-box modal-wide">
+      <div class="modal-head">
 
-    <div class="modal-head">
-      <strong>Détails du produit</strong>
-      <button class="close" data-close="productModal">✕</button>
-    </div>
+        <h3>
+          ⚙️ Dashboard NovaShop
+        </h3>
 
-    <div class="modal-content" id="productDetail"></div>
-
-  </div>
-
-</div>
-
-<!-- CHECKOUT -->
-
-<div class="modal" id="checkoutModal">
-
-  <div class="modal-box">
-
-    <div class="modal-head">
-      <strong>Finaliser la commande</strong>
-      <button class="close" data-close="checkoutModal">✕</button>
-    </div>
-
-    <div class="modal-content">
-
-      <form class="form" id="checkoutForm">
-
-        <label>Nom complet *</label>
-        <input id="fullName" required>
-
-        <label>Adresse *</label>
-        <input id="address" required>
-
-        <label>Code postal *</label>
-        <input id="postalCode" required>
-
-        <label>Ville *</label>
-        <input id="city" required>
-
-        <label>Pays *</label>
-        <input id="country" value="France" required>
-
-        <label>Code promo</label>
-        <input id="promoCode" placeholder="Ex : NOVA100">
-
-        <button type="button" class="secondary" id="checkPromo">
-          Vérifier le code
+        <button
+          id="closeDashboardButton"
+          class="close-btn"
+          type="button"
+        >
+          ×
         </button>
 
-        <div id="promoResult" style="font-size:12px"></div>
+      </div>
 
-        <div class="info">
-          <small>Résumé</small>
-          <div id="checkoutSummary"></div>
+      <div class="modal-body">
+
+        <div
+          id="adminLoginPanel"
+          class="admin-login"
+        >
+
+          <div class="admin-warning">
+            🔐 Accès administrateur requis.
+          </div>
+
+          <div class="form-group">
+
+            <label for="adminCode">
+              Code Dashboard
+            </label>
+
+            <input
+              id="adminCode"
+              class="form-input"
+              type="password"
+              placeholder="Entrer le code"
+              autocomplete="off"
+            >
+
+          </div>
+
+          <button
+            id="adminLoginButton"
+            class="main-submit"
+            type="button"
+          >
+            Accéder au Dashboard
+          </button>
+
         </div>
 
-        <button class="primary" id="payButton" type="submit" disabled>
-          Commander
+        <div
+          id="adminPanel"
+          class="hidden"
+        >
+
+          <div class="admin-warning">
+            ⚠️ Le dashboard de cette version est un panneau
+            de démonstration côté navigateur. Pour une vraie
+            administration sécurisée, les permissions doivent être
+            vérifiées côté serveur.
+          </div>
+
+          <!-- STATS -->
+
+          <div class="dashboard-stats">
+
+            <div class="stat-card">
+
+              <div class="stat-label">
+                Commandes
+              </div>
+
+              <div
+                id="adminOrdersCount"
+                class="stat-value"
+              >
+                0
+              </div>
+
+            </div>
+
+            <div class="stat-card">
+
+              <div class="stat-label">
+                Commandes gratuites
+              </div>
+
+              <div
+                id="adminFreeOrders"
+                class="stat-value"
+              >
+                0
+              </div>
+
+            </div>
+
+            <div class="stat-card">
+
+              <div class="stat-label">
+                Valeur catalogue
+              </div>
+
+              <div
+                id="adminCatalogValue"
+                class="stat-value"
+              >
+                0 €
+              </div>
+
+            </div>
+
+          </div>
+
+          <!-- WAREHOUSE -->
+
+          <div class="dashboard-block">
+
+            <div class="dashboard-block-head">
+              🏪 Entrepôt
+            </div>
+
+            <div style="padding:15px;font-size:13px;color:#475467;">
+              Emplacement par défaut :
+              <strong>Entrepôt</strong>
+            </div>
+
+          </div>
+
+          <!-- ORDERS -->
+
+          <div class="dashboard-block">
+
+            <div class="dashboard-block-head">
+              📦 Commandes récentes
+            </div>
+
+            <div class="dashboard-table-wrap">
+
+              <table class="dashboard-table">
+
+                <thead>
+
+                  <tr>
+                    <th>Commande</th>
+                    <th>Date</th>
+                    <th>Client</th>
+                    <th>Total</th>
+                    <th>Paiement</th>
+                  </tr>
+
+                </thead>
+
+                <tbody id="adminOrdersTable">
+                </tbody>
+
+              </table>
+
+            </div>
+
+          </div>
+
+          <!-- PROMOS -->
+
+          <div class="dashboard-block">
+
+            <div class="dashboard-block-head">
+              🎟️ Codes promotionnels
+            </div>
+
+            <div
+              id="adminPromoCodes"
+              class="code-list"
+            ></div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- =========================
+       INVOICE MODAL
+  ========================= -->
+
+  <div
+    id="invoiceModal"
+    class="modal hidden"
+  >
+
+    <div class="modal-box invoice">
+
+      <div class="modal-head">
+
+        <h3>
+          🧾 Facture
+        </h3>
+
+        <button
+          id="closeInvoiceButton"
+          class="close-btn"
+          type="button"
+        >
+          ×
         </button>
 
-      </form>
+      </div>
+
+      <div
+        id="invoiceContent"
+        class="invoice-paper"
+      ></div>
+
+      <button
+        id="printInvoiceButton"
+        class="print-invoice-btn"
+        type="button"
+      >
+        🖨️ Imprimer la facture
+      </button>
 
     </div>
 
   </div>
 
-</div>
+  <!-- =========================
+       TOAST
+  ========================= -->
 
-<!-- COMMANDES -->
+  <div
+    id="toast"
+    class="toast"
+  ></div>
 
-<div class="modal" id="ordersModal">
+  <!-- =========================
+       APP JS
+  ========================= -->
 
-  <div class="modal-box modal-wide">
-
-    <div class="modal-head">
-      <strong>Mes commandes</strong>
-      <button class="close" data-close="ordersModal">✕</button>
-    </div>
-
-    <div class="modal-content" id="ordersList"></div>
-
-  </div>
-
-</div>
-
-<!-- ADMIN -->
-
-<div class="modal" id="dashboardModal">
-
-  <div class="modal-box modal-wide">
-
-    <div class="modal-head">
-      <strong>Dashboard NovaShop</strong>
-      <button class="close" data-close="dashboardModal">✕</button>
-    </div>
-
-    <div class="modal-content">
-
-      <div class="dashboard-stats">
-
-        <div class="stat">
-          <small>Commandes</small>
-          <strong id="adminOrders">0</strong>
-        </div>
-
-        <div class="stat">
-          <small>Commandes gratuites</small>
-          <strong id="adminFreeOrders">0</strong>
-        </div>
-
-        <div class="stat">
-          <small>Valeur catalogue</small>
-          <strong id="adminCatalogValue">0 €</strong>
-        </div>
-
-      </div>
-
-      <div class="info" style="margin-bottom:15px">
-        <small>Entrepôt</small>
-        <strong>Entrepôt</strong>
-      </div>
-
-      <h3 style="margin-bottom:12px">Codes promo</h3>
-
-      <div class="info" style="margin-bottom:20px">
-        <div><strong>NOVA100</strong> • 100 %</div>
-        <div><strong>NOVA20</strong> • 20 %</div>
-        <div><strong>NOVA10</strong> • 10 %</div>
-      </div>
-
-      <h3 style="margin-bottom:12px">Commandes</h3>
-
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>Commande</th>
-              <th>Client</th>
-              <th>Total</th>
-              <th>Code</th>
-            </tr>
-          </thead>
-
-          <tbody id="adminOrdersTable"></tbody>
-
-        </table>
-      </div>
-
-    </div>
-
-  </div>
-
-</div>
-
-<!-- FACTURE -->
-
-<div class="modal" id="invoiceModal">
-
-  <div class="modal-box modal-wide">
-
-    <div class="modal-head">
-      <strong>Facture</strong>
-      <div>
-        <button class="secondary" id="printInvoice" style="width:auto;padding:0 14px">
-          🖨️ Imprimer
-        </button>
-        <button class="close" data-close="invoiceModal">✕</button>
-      </div>
-    </div>
-
-    <div class="invoice" id="invoiceContent"></div>
-
-  </div>
-
-</div>
-
-<div class="toast" id="toast"></div>
-
-<script type="module" src="app.js"></script>
+  <script
+    type="module"
+    src="app.js"
+  ></script>
 
 </body>
 </html>
