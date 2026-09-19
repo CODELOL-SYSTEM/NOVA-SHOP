@@ -1,1099 +1,574 @@
-/* =========================================================
-   NOVASHOP - PARTIE 2
-   Recherche avancée + filtres + promos + avis + stock
-   ========================================================= */
-
-"use strict";
-
-const NS_PRODUCTS = [
+const PRODUCTS = [
   {
-    id:"gpu-003",
-    category:"Cartes graphiques",
-    brand:"AMD",
-    name:"Radeon RX 7800 XT",
-    price:499.99,
-    rating:4.8,
-    reviews:389,
-    stock:6,
-    image:"https://images.unsplash.com/photo-1591488320449-011701bb6704?auto=format&fit=crop&w=1000&q=90"
+    id:"cpu9600x",
+    cat:"Processeur",
+    name:"AMD Ryzen 5 9600X",
+    price:249.99,
+    stock:12,
+    image:"https://cdn.idealo.com/folder/Product/204581/7/204581794/s4_produktbild_gross/amd-ryzen-5-9600x-boxed.jpg"
   },
   {
-    id:"gpu-004",
-    category:"Cartes graphiques",
-    brand:"AMD",
-    name:"Radeon RX 7900 GRE",
-    price:649.99,
-    rating:4.8,
-    reviews:247,
-    stock:4,
-    image:"https://images.unsplash.com/photo-1592664474505-51c549ad15c5?auto=format&fit=crop&w=1000&q=90"
-  },
-  {
-    id:"cpu-004",
-    category:"Processeurs",
-    brand:"AMD",
-    name:"Ryzen 5 7600X",
-    price:199.99,
-    rating:4.8,
-    reviews:512,
-    stock:11,
-    image:"https://images.unsplash.com/photo-1591799264318-7e6ef8ddb7ea?auto=format&fit=crop&w=1000&q=90"
-  },
-  {
-    id:"cpu-005",
-    category:"Processeurs",
-    brand:"AMD",
-    name:"Ryzen 9 7900X",
-    price:399.99,
-    rating:4.8,
-    reviews:294,
-    stock:5,
-    image:"https://images.unsplash.com/photo-1555617981-dac3880eac6e?auto=format&fit=crop&w=1000&q=90"
-  },
-  {
-    id:"ram-003",
-    category:"RAM",
-    brand:"Corsair",
-    name:"Vengeance RGB 32GB DDR5 6000 CL30",
-    price:129.99,
-    rating:4.9,
-    reviews:312,
-    stock:13,
+    id:"ramcorsair32",
+    cat:"RAM",
+    name:"Corsair Vengeance RGB 32 Go DDR5 6000",
+    price:119.99,
+    stock:8,
     image:"https://cdn.idealo.com/folder/Product/212257/2/212257224/s4_produktbild_gross/corsair-vengeance-rgb-kit-32go-ddr5-6000-cl38-gris-cmh32gx5m2d6000z38.jpg"
   },
   {
-    id:"ssd-003",
-    category:"SSD",
-    brand:"Samsung",
-    name:"990 EVO Plus 2TB",
-    price:139.99,
-    rating:4.8,
-    reviews:274,
-    stock:15,
-    image:"https://images.samsung.com/is/image/samsung/p6pim/fr/mz-v9s2t0bw/gallery/fr-990-evo-plus-nvme-ssd-mz-v9s2t0bw-544438492?$650_519_PNG$"
+    id:"ramkingston32",
+    cat:"RAM",
+    name:"Kingston Fury Beast RGB 32 Go DDR5 5600",
+    price:104.99,
+    stock:9,
+    image:"https://cdn.idealo.com/folder/Product/202133/2/202133232/s4_produktbild_gross/kingston-fury-beast-rgb-32-go-kit-ddr5-5600-cl36-kf556c36bbeak2-32.jpg"
   },
   {
-    id:"case-003",
-    category:"Boîtiers",
-    brand:"Corsair",
-    name:"4000D Airflow",
-    price:99.99,
-    rating:4.8,
-    reviews:683,
-    stock:14,
-    image:"https://images.unsplash.com/photo-1587202372583-49330a15584d?auto=format&fit=crop&w=1000&q=90"
-  },
-  {
-    id:"cool-002",
-    category:"Refroidissement",
-    brand:"ARCTIC",
-    name:"Liquid Freezer III 240",
+    id:"ssd9901",
+    cat:"SSD",
+    name:"Samsung 990 PRO 1 To",
     price:89.99,
-    rating:4.8,
-    reviews:201,
+    stock:15,
+    image:"https://images.samsung.com/is/image/samsung/p6pim/fr/mz-v9p1t0bw/gallery/fr-990-pro-nvme-ssd-mz-v9p1t0bw-538116922?$650_519_PNG$"
+  },
+  {
+    id:"ssd9902",
+    cat:"SSD",
+    name:"Samsung 990 PRO 2 To",
+    price:159.99,
+    stock:7,
+    image:"https://images.samsung.com/is/image/samsung/p6pim/fr/mz-v9p2t0bw/gallery/fr-990-pro-nvme-ssd-mz-v9p2t0bw-538116939?$650_519_PNG$"
+  },
+  {
+    id:"psurm850",
+    cat:"Alimentation",
+    name:"Corsair RM850x",
+    price:139.99,
+    stock:6,
+    image:"https://assets.corsair.com/image/upload/c_pad,q_auto,h_1024,w_1024/products/PSUs/CP-9020270-NA/Gallery/RM850x_01.webp"
+  },
+  {
+    id:"case5000d",
+    cat:"Boîtier",
+    name:"Corsair 5000D Airflow White",
+    price:149.99,
+    stock:5,
+    image:"https://assets.corsair.com/image/upload/c_pad,q_auto,h_1024,w_1024/products/Cases/CC-9011210-WW/Gallery/5000D_AF_WHITE_01.webp"
+  },
+  {
+    id:"lf360",
+    cat:"Refroidissement",
+    name:"ARCTIC Liquid Freezer III 360",
+    price:109.99,
     stock:10,
     image:"https://www.arctic.de/media/17/9c/4f/1712927838/liquid-freezer-III-360-black-gallery-1.png"
   },
   {
-    id:"screen-002",
-    category:"Écrans",
-    brand:"Samsung",
-    name:"Odyssey G6 27 Gaming",
-    price:429.99,
-    rating:4.8,
-    reviews:218,
-    stock:6,
+    id:"odysseyg6",
+    cat:"Écran",
+    name:"Samsung Odyssey OLED G6 27 pouces",
+    price:599.99,
+    stock:4,
     image:"https://images.samsung.com/is/image/samsung/p6pim/fr/ls27dg602suxen/gallery/fr-odyssey-oled-g6-g60sd-ls27dg602suxen-541415717?$650_519_PNG$"
   },
   {
-    id:"key-003",
-    category:"Claviers",
-    brand:"Logitech",
-    name:"G PRO X TKL Lightspeed",
-    price:179.99,
-    rating:4.8,
-    reviews:421,
-    stock:8,
+    id:"proxtkl",
+    cat:"Clavier",
+    name:"Logitech G PRO X TKL Wireless",
+    price:189.99,
+    stock:6,
     image:"https://resource.logitech.com/w_800,c_limit,q_auto,f_auto,dpr_auto/d_transparent.gif/content/dam/logitech/en/products/keyboards/pro-x-tkl-wireless/gallery/pro-x-tkl-wireless-black-gallery-1.png"
   },
   {
-    id:"mouse-003",
-    category:"Souris",
-    brand:"Logitech",
-    name:"G PRO X SUPERLIGHT 2",
+    id:"superlight2",
+    cat:"Souris",
+    name:"Logitech G PRO X SUPERLIGHT 2",
     price:129.99,
-    rating:4.9,
-    reviews:824,
-    stock:12,
+    stock:11,
     image:"https://resource.logitech.com/w_800,c_limit,q_auto,f_auto,dpr_auto/d_transparent.gif/content/dam/logitech/en/products/mice/pro-x2-superlight-wireless-mouse/gallery/pro-x2-superlight-black-gallery-1.png"
   },
   {
-    id:"mic-002",
-    category:"Micros",
-    brand:"Elgato",
-    name:"Wave:3 USB",
+    id:"wave3",
+    cat:"Micro",
+    name:"Elgato Wave:3",
     price:129.99,
-    rating:4.8,
-    reviews:471,
-    stock:9,
+    stock:5,
     image:"https://help.elgato.com/hc/article_attachments/360093559172/Wave_3.png"
   },
   {
-    id:"controller-002",
-    category:"Manettes",
-    brand:"Sony",
-    name:"DualSense Wireless",
+    id:"dualsense",
+    cat:"Manette",
+    name:"Sony DualSense PS5",
     price:69.99,
-    rating:4.8,
-    reviews:1290,
-    stock:20,
+    stock:14,
     image:"https://gmedia.playstation.com/is/image/SIEPDC/dualsense-ps5-controller-product-thumbnail-01-en-14sep21?$1600px$"
   }
 ];
 
+let currentCategory="Tous";
+let query="";
+let cart=JSON.parse(localStorage.getItem("nova_cart")||"[]");
 
-/* =========================================================
-   AJOUT DES PRODUITS
-   ========================================================= */
+function money(n){
+  return n.toLocaleString("fr-FR",{style:"currency",currency:"EUR"});
+}
 
-if(typeof PRODUCTS !== "undefined"){
+function saveCart(){
+  localStorage.setItem("nova_cart",JSON.stringify(cart));
+  updateCartCount();
+}
 
-  NS_PRODUCTS.forEach(newProduct=>{
+function updateCartCount(){
+  document.getElementById("cartCount").textContent =
+    cart.reduce((a,b)=>a+b.qty,0);
+}
 
-    const exists=PRODUCTS.some(
-      p=>p.id===newProduct.id
-    );
+function filterCat(cat){
+  currentCategory=cat;
+  renderProducts();
+  document.getElementById("products").scrollIntoView({behavior:"smooth"});
+}
 
-    if(!exists){
-      PRODUCTS.push(newProduct);
-    }
+function searchProducts(){
+  query=document.getElementById("search").value.trim().toLowerCase();
+  renderProducts();
+  document.getElementById("products").scrollIntoView({behavior:"smooth"});
+}
 
+document.getElementById("search").addEventListener("keydown",e=>{
+  if(e.key==="Enter")searchProducts();
+});
+
+function getProducts(){
+  let list=PRODUCTS.filter(p=>{
+    const category=currentCategory==="Tous"||p.cat===currentCategory;
+    const text=!query ||
+      p.name.toLowerCase().includes(query) ||
+      p.cat.toLowerCase().includes(query);
+    return category&&text;
   });
 
+  const sort=document.getElementById("sort").value;
+
+  if(sort==="low")list.sort((a,b)=>a.price-b.price);
+  if(sort==="high")list.sort((a,b)=>b.price-a.price);
+  if(sort==="name")list.sort((a,b)=>a.name.localeCompare(b.name));
+
+  return list;
 }
 
+function renderProducts(){
+  const list=getProducts();
+  document.getElementById("productTotal").textContent=list.length;
 
-/* =========================================================
-   PROMOTIONS
-   ========================================================= */
+  document.getElementById("products").innerHTML=list.map(p=>`
+    <article class="product">
+      <div class="productImg">
+        <img src="${p.image}" alt="${p.name}">
+      </div>
 
-const NS_PROMOTIONS={
-  "cpu-001":229.99,
-  "ssd-002":149.99,
-  "mouse-001":119.99,
-  "controller-001":59.99,
-  "case-001":129.99
-};
+      <div class="productInfo">
+        <div class="productCat">${p.cat}</div>
+        <h3>${p.name}</h3>
+        <div class="stock">● ${p.stock} en stock</div>
+        <div class="price">${money(p.price)}</div>
 
-
-function getNovaPrice(product){
-
-  if(NS_PROMOTIONS[product.id]){
-    return NS_PROMOTIONS[product.id];
-  }
-
-  return product.price;
-}
-
-
-function getOldPrice(product){
-
-  if(NS_PROMOTIONS[product.id]){
-    return product.price;
-  }
-
-  return null;
-}
-
-
-/* =========================================================
-   RECHERCHE INTELLIGENTE
-   ========================================================= */
-
-function novaSearchProducts(query){
-
-  const q=String(query || "")
-    .trim()
-    .toLowerCase();
-
-  if(!q){
-
-    return typeof PRODUCTS!=="undefined"
-      ? [...PRODUCTS]
-      : [];
-
-  }
-
-  const words=q.split(/\s+/);
-
-  return PRODUCTS
-    .map(product=>{
-
-      let score=0;
-
-      const name=product.name.toLowerCase();
-      const brand=product.brand.toLowerCase();
-      const category=product.category.toLowerCase();
-
-      words.forEach(word=>{
-
-        if(name.includes(word)) score+=10;
-        if(brand.includes(word)) score+=7;
-        if(category.includes(word)) score+=5;
-
-      });
-
-      return {
-        product,
-        score
-      };
-
-    })
-    .filter(x=>x.score>0)
-    .sort((a,b)=>b.score-a.score)
-    .map(x=>x.product);
-}
-
-
-/* =========================================================
-   SUGGESTIONS DE RECHERCHE
-   ========================================================= */
-
-function novaSearchSuggestions(query){
-
-  const results=novaSearchProducts(query)
-    .slice(0,6);
-
-  let box=document.getElementById(
-    "novaSearchSuggestions"
-  );
-
-  if(!box){
-
-    const search=document.querySelector(".search");
-
-    if(!search) return;
-
-    box=document.createElement("div");
-
-    box.id="novaSearchSuggestions";
-
-    box.style.cssText=`
-      position:absolute;
-      top:52px;
-      left:0;
-      right:0;
-      background:#fff;
-      border:1px solid #e5e7eb;
-      border-radius:12px;
-      box-shadow:0 15px 35px rgba(0,0,0,.12);
-      overflow:hidden;
-      z-index:1000;
-    `;
-
-    search.appendChild(box);
-
-  }
-
-  if(!query || !results.length){
-
-    box.innerHTML="";
-    box.style.display="none";
-    return;
-
-  }
-
-  box.style.display="block";
-
-  box.innerHTML=results.map(product=>`
-
-    <button
-      onclick="novaOpenSuggestion('${product.id}')"
-      style="
-        width:100%;
-        display:flex;
-        align-items:center;
-        gap:12px;
-        padding:10px 13px;
-        background:#fff;
-        border:0;
-        border-bottom:1px solid #f0f0f0;
-        text-align:left;
-      "
-    >
-
-      <img
-        src="${product.image}"
-        style="
-          width:42px;
-          height:42px;
-          object-fit:contain;
-          background:#f7f7f7;
-          border-radius:7px;
-        "
-      >
-
-      <span>
-
-        <b style="display:block;font-size:12px">
-          ${escapeHTML(product.name)}
-        </b>
-
-        <small style="color:#777">
-          ${escapeHTML(product.brand)}
-          • ${money(getNovaPrice(product))}
-        </small>
-
-      </span>
-
-    </button>
-
+        <div class="productActions">
+          <button class="buy" onclick="addToCart('${p.id}')">
+            Ajouter au panier
+          </button>
+          <button class="fav" onclick="favorite('${p.id}')">♡</button>
+        </div>
+      </div>
+    </article>
   `).join("");
 }
 
+function addToCart(id){
+  const p=PRODUCTS.find(x=>x.id===id);
+  if(!p)return;
 
-function novaOpenSuggestion(id){
+  const found=cart.find(x=>x.id===id);
 
-  const product=PRODUCTS.find(
-    p=>p.id===id
-  );
-
-  const box=document.getElementById(
-    "novaSearchSuggestions"
-  );
-
-  if(box){
-    box.style.display="none";
+  if(found){
+    if(found.qty<p.stock)found.qty++;
+  }else{
+    cart.push({id,qty:1});
   }
 
-  if(product){
-
-    if(typeof openProduct==="function"){
-      openProduct(id);
-    }
-
-  }
+  saveCart();
+  openCart();
 }
 
+function removeFromCart(id){
+  cart=cart.filter(x=>x.id!==id);
+  saveCart();
+  renderCart();
+}
 
-/* =========================================================
-   MODIFICATION DE L'AFFICHAGE DES PRIX
-   ========================================================= */
+function changeQty(id,value){
+  const row=cart.find(x=>x.id===id);
+  const p=PRODUCTS.find(x=>x.id===id);
 
-function novaFormatPrice(product){
+  if(!row||!p)return;
 
-  const current=getNovaPrice(product);
-  const old=getOldPrice(product);
+  row.qty=Math.max(1,Math.min(p.stock,row.qty+value));
 
-  if(old){
+  saveCart();
+  renderCart();
+}
+
+function renderCart(){
+  const box=document.getElementById("cartItems");
+
+  if(!cart.length){
+    box.innerHTML="<p>Votre panier est vide.</p>";
+    document.getElementById("cartTotal").textContent=money(0);
+    return;
+  }
+
+  let total=0;
+
+  box.innerHTML=cart.map(row=>{
+    const p=PRODUCTS.find(x=>x.id===row.id);
+    if(!p)return"";
+
+    total+=p.price*row.qty;
 
     return `
-
-      <div>
-
-        <div
-          class="old-price"
-          style="
-            font-size:12px;
-            color:#999;
-            text-decoration:line-through;
-          "
-        >
-          ${money(old)}
+      <div class="cartRow">
+        <img src="${p.image}">
+        <div style="flex:1">
+          <h4>${p.name}</h4>
+          <b>${money(p.price*row.qty)}</b>
+          <div>
+            <button onclick="changeQty('${p.id}',-1)">−</button>
+            ${row.qty}
+            <button onclick="changeQty('${p.id}',1)">+</button>
+            <button onclick="removeFromCart('${p.id}')">Supprimer</button>
+          </div>
         </div>
-
-        <div
-          class="price"
-          style="color:#dc2626"
-        >
-          ${money(current)}
-        </div>
-
       </div>
-
     `;
+  }).join("");
 
-  }
-
-  return `
-    <div class="price">
-      ${money(current)}
-    </div>
-  `;
+  document.getElementById("cartTotal").textContent=money(total);
 }
 
-
-/* =========================================================
-   BADGE PROMO
-   ========================================================= */
-
-function novaPromoBadge(product){
-
-  if(!NS_PROMOTIONS[product.id]){
-    return "";
-  }
-
-  const reduction=
-    Math.round(
-      (1-getNovaPrice(product)/product.price)*100
-    );
-
-  return `
-
-    <span
-      style="
-        position:absolute;
-        left:12px;
-        top:12px;
-        background:#dc2626;
-        color:#fff;
-        padding:5px 8px;
-        border-radius:7px;
-        font-size:10px;
-        font-weight:900;
-        z-index:2;
-      "
-    >
-      -${reduction}%
-    </span>
-
-  `;
+function openCart(){
+  renderCart();
+  document.getElementById("cartDrawer").classList.add("open");
+  document.getElementById("overlay").classList.add("show");
 }
 
+function closeCart(){
+  document.getElementById("cartDrawer").classList.remove("open");
+  document.getElementById("overlay").classList.remove("show");
+}
 
-/* =========================================================
-   STOCK DYNAMIQUE
-   ========================================================= */
+function favorite(id){
+  let fav=JSON.parse(localStorage.getItem("nova_favorites")||"[]");
 
-const NS_STOCK_KEY="novashop_stock_v2";
+  if(fav.includes(id)){
+    fav=fav.filter(x=>x!==id);
+  }else{
+    fav.push(id);
+  }
 
-let NS_STOCK=
-  JSON.parse(
-    localStorage.getItem(NS_STOCK_KEY) || "{}"
-  );
+  localStorage.setItem("nova_favorites",JSON.stringify(fav));
+}
 
+function openAccount(){
+  const account=JSON.parse(localStorage.getItem("nova_account")||"{}");
 
-function initializeNovaStock(){
+  document.getElementById("clientName").value=account.name||"";
+  document.getElementById("clientEmail").value=account.email||"";
 
-  if(typeof PRODUCTS==="undefined"){
+  document.getElementById("accountModal").classList.add("show");
+  document.getElementById("overlay").classList.add("show");
+}
+
+function closeAccount(){
+  document.getElementById("accountModal").classList.remove("show");
+  document.getElementById("overlay").classList.remove("show");
+}
+
+function saveAccount(){
+  const name=document.getElementById("clientName").value.trim();
+  const email=document.getElementById("clientEmail").value.trim();
+
+  if(!name||!email){
+    alert("Remplis ton nom et ton email.");
     return;
   }
 
-  PRODUCTS.forEach(product=>{
+  localStorage.setItem("nova_account",JSON.stringify({name,email}));
+  closeAccount();
+}
 
-    if(
-      typeof NS_STOCK[product.id]!=="number"
-    ){
+function closeAll(){
+  closeCart();
+  closeAccount();
+}
 
-      NS_STOCK[product.id]=product.stock;
+function checkout(){
+  if(!cart.length){
+    alert("Votre panier est vide.");
+    return;
+  }
 
-    }
+  location.href="checkout.html";
+}
 
+updateCartCount();
+renderProducts();let orders=JSON.parse(localStorage.getItem("nova_orders")||"[]");
+
+const STATUSES=[
+  "Commande reçue",
+  "Préparation",
+  "Expédiée",
+  "En livraison",
+  "Livrée"
+];
+
+function money(n){
+  return n.toLocaleString("fr-FR",{
+    style:"currency",
+    currency:"EUR"
   });
-
-  localStorage.setItem(
-    NS_STOCK_KEY,
-    JSON.stringify(NS_STOCK)
-  );
 }
 
-
-function getNovaStock(product){
-
-  if(
-    typeof NS_STOCK[product.id]==="number"
-  ){
-
-    return NS_STOCK[product.id];
-
-  }
-
-  return product.stock;
+function save(){
+  localStorage.setItem("nova_orders",JSON.stringify(orders));
 }
 
+function render(){
+  document.getElementById("orderCount").textContent=orders.length;
 
-function setNovaStock(id,value){
+  document.getElementById("prepCount").textContent=
+    orders.filter(o=>o.status==="Préparation").length;
 
-  NS_STOCK[id]=Math.max(
-    0,
-    Number(value)||0
-  );
+  document.getElementById("shipCount").textContent=
+    orders.filter(o=>
+      o.status==="Expédiée"||
+      o.status==="En livraison"
+    ).length;
 
-  localStorage.setItem(
-    NS_STOCK_KEY,
-    JSON.stringify(NS_STOCK)
-  );
-}
+  document.getElementById("revenue").textContent=
+    money(orders.reduce((a,o)=>a+o.total,0));
 
-
-function decreaseNovaStock(id,quantity){
-
-  const product=PRODUCTS.find(
-    p=>p.id===id
-  );
-
-  if(!product) return false;
-
-  const stock=getNovaStock(product);
-
-  if(stock<quantity){
-    return false;
-  }
-
-  setNovaStock(
-    id,
-    stock-quantity
-  );
-
-  return true;
-}
-
-
-/* =========================================================
-   AVIS
-   ========================================================= */
-
-const NS_REVIEWS_KEY=
-  "novashop_product_reviews_v2";
-
-let NS_REVIEWS=
-  JSON.parse(
-    localStorage.getItem(NS_REVIEWS_KEY) || "{}"
-  );
-
-
-function saveNovaReviews(){
-
-  localStorage.setItem(
-    NS_REVIEWS_KEY,
-    JSON.stringify(NS_REVIEWS)
-  );
-
-}
-
-
-function getNovaReviews(id){
-
-  return NS_REVIEWS[id] || [];
-
-}
-
-
-function addNovaReview(id,rating,text){
-
-  const value=Math.max(
-    1,
-    Math.min(5,Number(rating)||5)
-  );
-
-  const review={
-    rating:value,
-    text:String(text||"").trim(),
-    date:new Date().toLocaleDateString("fr-FR")
-  };
-
-  if(!review.text){
-    return;
-  }
-
-  if(!NS_REVIEWS[id]){
-    NS_REVIEWS[id]=[];
-  }
-
-  NS_REVIEWS[id].unshift(review);
-
-  saveNovaReviews();
-
-  if(typeof openProduct==="function"){
-    openProduct(id);
-  }
-
-  toast("Avis ajouté ⭐");
-}
-
-
-/* =========================================================
-   MODALE D'AVIS
-   ========================================================= */
-
-function novaReviewBox(product){
-
-  const reviews=getNovaReviews(
-    product.id
-  );
-
-  return `
-
-    <div
-      style="
-        margin-top:28px;
-        padding-top:22px;
-        border-top:1px solid #e5e7eb;
-      "
-    >
-
-      <h3 style="margin-bottom:12px">
-        Avis clients
-      </h3>
-
-      <div>
-
-        ${
-          reviews.length
-          ?
-          reviews.slice(0,8).map(review=>`
-
-            <div
-              style="
-                padding:12px 0;
-                border-bottom:1px solid #f0f0f0;
-              "
-            >
-
-              <div style="font-size:13px">
-                ${"★".repeat(review.rating)}
-                ${"☆".repeat(5-review.rating)}
-              </div>
-
-              <div
-                style="
-                  margin-top:5px;
-                  font-size:13px;
-                  color:#555;
-                "
-              >
-                ${escapeHTML(review.text)}
-              </div>
-
-              <small style="color:#999">
-                ${escapeHTML(review.date)}
-              </small>
-
-            </div>
-
-          `).join("")
-          :
-          `
-            <p style="color:#777;font-size:13px">
-              Aucun avis ajouté pour le moment.
-            </p>
-          `
-        }
-
-      </div>
-
-      <div
-        style="
-          margin-top:18px;
-          display:grid;
-          gap:8px;
-        "
-      >
-
-        <select
-          id="novaReviewRating"
-          style="
-            height:42px;
-            border:1px solid #e5e7eb;
-            border-radius:8px;
-            padding:0 10px;
-          "
-        >
-          <option value="5">★★★★★</option>
-          <option value="4">★★★★☆</option>
-          <option value="3">★★★☆☆</option>
-          <option value="2">★★☆☆☆</option>
-          <option value="1">★☆☆☆☆</option>
-        </select>
-
-        <textarea
-          id="novaReviewText"
-          placeholder="Écris ton avis..."
-          style="
-            min-height:80px;
-            resize:vertical;
-            border:1px solid #e5e7eb;
-            border-radius:8px;
-            padding:10px;
-            font-family:inherit;
-          "
-        ></textarea>
-
-        <button
-          onclick="novaSubmitReview('${product.id}')"
-          style="
-            height:43px;
-            background:#111318;
-            color:#fff;
-            border-radius:9px;
-            font-weight:800;
-          "
-        >
-          Publier l'avis
-        </button>
-
-      </div>
-
+  document.getElementById("content").innerHTML=`
+    <div class="panel">
+      <h2>Toutes les commandes</h2>
+      ${
+        orders.length
+        ? orders.slice().reverse().map(order=>orderHTML(order)).join("")
+        : "<p>Aucune commande pour le moment.</p>"
+      }
     </div>
 
+    <div class="panel">
+      <h2>Gestion des données</h2>
+      <p>
+        Cette zone permet de supprimer les données locales
+        associées à cette boutique sur cet appareil.
+      </p>
+      <button class="danger" onclick="deleteAllData()">
+        Supprimer toutes les données
+      </button>
+    </div>
   `;
 }
 
+function orderHTML(order){
+  return `
+    <div class="order">
 
-function novaSubmitReview(id){
+      <div class="orderTop">
+        <div>
+          <h3>${order.id}</h3>
+          <small>${order.date}</small>
+        </div>
 
-  const rating=
-    document.getElementById(
-      "novaReviewRating"
-    ).value;
+        <span class="status">${order.status}</span>
+      </div>
 
-  const text=
-    document.getElementById(
-      "novaReviewText"
-    ).value;
+      <hr>
 
-  addNovaReview(
-    id,
-    rating,
-    text
-  );
+      <p>
+        <b>Client :</b>
+        ${order.customer.name}
+      </p>
 
+      <p>
+        <b>Adresse :</b><br>
+        ${order.customer.address}
+        ${order.customer.address2
+          ? "<br>"+order.customer.address2
+          : ""}
+        <br>
+        ${order.customer.zip} ${order.customer.city}
+        <br>
+        ${order.customer.country}
+      </p>
+
+      <p>
+        <b>Entrepôt :</b> ${order.warehouseCity}
+      </p>
+
+      <h4>Articles</h4>
+
+      ${order.items.map(item=>`
+        <div style="
+          display:flex;
+          justify-content:space-between;
+          padding:7px 0;
+          border-bottom:1px solid #eee
+        ">
+          <span>${item.name} × ${item.qty}</span>
+          <b>${money(item.price*item.qty)}</b>
+        </div>
+      `).join("")}
+
+      <h3>Total : ${money(order.total)}</h3>
+
+      <label>
+        Statut :
+        <select onchange="changeStatus('${order.id}',this.value)">
+          ${STATUSES.map(s=>`
+            <option
+              value="${s}"
+              ${s===order.status?"selected":""}
+            >${s}</option>
+          `).join("")}
+        </select>
+      </label>
+
+      <br><br>
+
+      <label>
+        Ville de l'entrepôt :
+        <input
+          value="${order.warehouseCity}"
+          onchange="changeWarehouse('${order.id}',this.value)"
+        >
+      </label>
+
+    </div>
+  `;
 }
 
+function changeStatus(id,status){
+  const order=orders.find(o=>o.id===id);
 
-/* =========================================================
-   PRIX + STOCK DANS LES CARTES
-   ========================================================= */
+  if(!order)return;
 
-function novaRenderEnhancedProducts(){
+  order.status=status;
+  save();
+  render();
+}
 
-  if(typeof getProducts!=="function"){
+function changeWarehouse(id,city){
+  const order=orders.find(o=>o.id===id);
+
+  if(!order)return;
+
+  order.warehouseCity=city.trim()||"Entrepôt";
+  save();
+  render();
+}
+
+function showProducts(){
+  document.getElementById("content").innerHTML=`
+    <div class="panel">
+      <h2>Produits</h2>
+      <p>
+        Les produits actuellement disponibles dans la marketplace
+        sont gérés depuis le catalogue JavaScript.
+      </p>
+      <a href="index.html">← Retour au catalogue</a>
+    </div>
+  `;
+}
+
+function showWarehouse(){
+  const cities=[
+    ...new Set(
+      orders.map(o=>o.warehouseCity).filter(Boolean)
+    )
+  ];
+
+  document.getElementById("content").innerHTML=`
+    <div class="panel">
+      <h2>🏢 Entrepôt</h2>
+      <p>Ville utilisée pour les commandes :</p>
+
+      <input id="warehouseCity"
+        placeholder="Ex : Lille"
+        value="${cities[0]||"Entrepôt"}">
+
+      <button
+        class="primary"
+        onclick="changeAllWarehouse()">
+        Enregistrer la ville
+      </button>
+    </div>
+  `;
+}
+
+function changeAllWarehouse(){
+  const city=document.getElementById("warehouseCity").value.trim();
+
+  if(!city){
+    alert("Indique une ville.");
     return;
   }
 
-  const grid=
-    document.getElementById(
-      "productGrid"
-    );
+  orders.forEach(o=>o.warehouseCity=city);
 
-  if(!grid){
-    return;
-  }
-
-  const products=getProducts();
-
-  const totalPages=
-    Math.max(
-      1,
-      Math.ceil(products.length/perPage)
-    );
-
-  if(currentPage>totalPages){
-    currentPage=totalPages;
-  }
-
-  const start=
-    (currentPage-1)*perPage;
-
-  const visible=
-    products.slice(
-      start,
-      start+perPage
-    );
-
-  grid.innerHTML=
-    visible.map(product=>{
-
-      const stock=
-        getNovaStock(product);
-
-      const favorite=
-        favorites.includes(product.id);
-
-      let stockText="En stock";
-      let stockClass="";
-
-      if(stock===0){
-
-        stockText="Rupture";
-        stockClass="out";
-
-      }else if(stock<=3){
-
-        stockText=`Plus que ${stock}`;
-        stockClass="low";
-
-      }
-
-      return `
-
-        <article class="product">
-
-          ${novaPromoBadge(product)}
-
-          <button
-            class="favorite ${favorite?"active":""}"
-            onclick="toggleFavorite('${product.id}')"
-          >
-            ${favorite?"♥":"♡"}
-          </button>
-
-          <div
-            class="product-img"
-            onclick="openProduct('${product.id}')"
-            style="cursor:pointer"
-          >
-
-            <img
-              src="${product.image}"
-              alt="${escapeHTML(product.name)}"
-              loading="lazy"
-              onerror="
-                this.src='https://placehold.co/700x500/f7f7f7/222?text=Produit'
-              "
-            >
-
-          </div>
-
-          <div class="product-body">
-
-            <div class="product-brand">
-              ${escapeHTML(product.brand)}
-            </div>
-
-            <div
-              class="product-name"
-              onclick="openProduct('${product.id}')"
-              style="cursor:pointer"
-            >
-              ${escapeHTML(product.name)}
-            </div>
-
-            <div class="rating">
-
-              <span class="stars">
-                ★★★★★
-              </span>
-
-              <span class="reviews">
-                ${product.rating}
-                (${product.reviews})
-              </span>
-
-            </div>
-
-            <div class="product-bottom">
-
-              <div>
-
-                ${novaFormatPrice(product)}
-
-                <div
-                  class="stock ${stockClass}"
-                >
-                  ${stockText}
-                </div>
-
-              </div>
-
-              <button
-                class="add"
-                onclick="addToCart('${product.id}')"
-                ${stock===0?"disabled":""}
-              >
-                +
-              </button>
-
-            </div>
-
-          </div>
-
-        </article>
-
-      `;
-
-    }).join("");
-
-  renderNovaPagination(
-    totalPages
-  );
+  save();
+  render();
 }
 
-
-/* =========================================================
-   PAGINATION
-   ========================================================= */
-
-function renderNovaPagination(totalPages){
-
-  const pagination=
-    document.getElementById(
-      "pagination"
-    );
-
-  if(!pagination){
-    return;
-  }
-
-  pagination.innerHTML="";
-
-  for(
-    let page=1;
-    page<=totalPages;
-    page++
-  ){
-
-    const button=
-      document.createElement("button");
-
-    button.className=
-      "page"+
-      (page===currentPage
-        ? " active"
-        : "");
-
-    button.textContent=page;
-
-    button.onclick=()=>{
-
-      currentPage=page;
-
-      novaRenderEnhancedProducts();
-
-      scrollToProducts();
-
-    };
-
-    pagination.appendChild(button);
-
-  }
-
-}
-
-
-/* =========================================================
-   PRIX DU PANIER
-   ========================================================= */
-
-function novaCartPrice(product){
-
-  return getNovaPrice(product);
-
-}
-
-
-/* =========================================================
-   INITIALISATION
-   ========================================================= */
-
-initializeNovaStock();
-
-
-/* =========================================================
-   RECHERCHE
-   ========================================================= */
-
-const novaSearchInput=
-  document.getElementById(
-    "searchInput"
+function showAccount(){
+  const account=JSON.parse(
+    localStorage.getItem("nova_account")||"{}"
   );
 
-if(novaSearchInput){
+  document.getElementById("content").innerHTML=`
+    <div class="panel">
+      <h2>👤 Compte</h2>
 
-  novaSearchInput.addEventListener(
-    "input",
-    event=>{
+      <p>
+        <b>Nom :</b> ${account.name||"Non renseigné"}
+      </p>
 
-      searchValue=
-        event.target.value;
+      <p>
+        <b>Email :</b> ${account.email||"Non renseigné"}
+      </p>
 
-      currentPage=1;
-
-      novaSearchSuggestions(
-        searchValue
-      );
-
-      novaRenderEnhancedProducts();
-
-    }
-  );
-
+      <h3>Commandes de ce compte</h3>
+      <p>${orders.length} commande(s)</p>
+    </div>
+  `;
 }
 
+function deleteAllData(){
+  const ok=confirm(
+    "Supprimer toutes les commandes, le compte, le panier et les favoris ?"
+  );
 
-/* =========================================================
-   FERMETURE SUGGESTIONS
-   ========================================================= */
+  if(!ok)return;
 
-document.addEventListener(
-  "click",
-  event=>{
+  localStorage.removeItem("nova_orders");
+  localStorage.removeItem("nova_account");
+  localStorage.removeItem("nova_cart");
+  localStorage.removeItem("nova_favorites");
 
-    const search=
-      document.querySelector(".search");
+  orders=[];
+  render();
 
-    const suggestions=
-      document.getElementById(
-        "novaSearchSuggestions"
-      );
+  alert("Toutes les données locales ont été supprimées.");
+}
 
-    if(
-      suggestions &&
-      search &&
-      !search.contains(event.target)
-    ){
-
-      suggestions.style.display="none";
-
-    }
-
-  }
-);
-
-
-/* =========================================================
-   REMPLACEMENT DU RENDER
-   ========================================================= */
-
-setTimeout(()=>{
-
-  if(
-    typeof novaRenderEnhancedProducts==="function"
-  ){
-
-    novaRenderEnhancedProducts();
-
-  }
-
-},0);
-
-
-/* =========================================================
-   API NOVASHOP
-   ========================================================= */
-
-window.NovaShop={
-  ...(window.NovaShop || {}),
-
-  products:PRODUCTS,
-
-  getPrice:getNovaPrice,
-
-  getStock:getNovaStock,
-
-  setStock:setNovaStock,
-
-  decreaseStock:decreaseNovaStock,
-
-  search:novaSearchProducts,
-
-  reviews:NS_REVIEWS,
-
-  promotions:NS_PROMOTIONS
-};
-
-console.log(
-  "NovaShop Partie 2 chargée ✓",
-  PRODUCTS.length,
-  "produits"
-);
+render();
