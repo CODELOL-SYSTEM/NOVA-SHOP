@@ -12,149 +12,149 @@ const ADMIN_EMAIL = "pc2alex.les@gmail.com";
 const ADMIN_CODE = "NOVA-ADMIN-2026";
 
 const STORAGE = {
-  cart:"nova_cart",
-  favorites:"nova_favorites",
-  orders:"nova_orders",
-  reviews:"nova_reviews",
-  admin:"nova_admin_unlocked",
-  dark:"nova_dark",
-  sound:"nova_sound",
-  profiles:"nova_profiles"
+  cart: "nova_cart",
+  favorites: "nova_favorites",
+  orders: "nova_orders",
+  reviews: "nova_reviews",
+  admin: "nova_admin_unlocked",
+  dark: "nova_dark",
+  sound: "nova_sound",
+  profiles: "nova_profiles"
 };
 
 const products = [
   {
-    id:"p1",
-    name:"Gigabyte B650 AORUS Elite AX",
-    category:"Composants",
-    price:189.99,
-    image:"https://m.media-amazon.com/images/I/81JFKzNyl+L._AC_SL1500_.jpg"
+    id: "p1",
+    name: "Gigabyte B650 AORUS Elite AX",
+    category: "Composants",
+    price: 189.99,
+    image: "https://m.media-amazon.com/images/I/81JFKzNyl+L._AC_SL1500_.jpg"
   },
   {
-    id:"p2",
-    name:"PC Gamer AMD Ryzen 7 7800X3D | RX 9070 XT | 32 Go DDR5",
-    category:"PC Gamer",
-    price:2237.65,
-    image:"https://www.memorypc.fr/thumbnail/53/79/73/1786604635/019f8f1c2c6972a8a3ea1ee9516a0652_1784812416_800x800.png"
+    id: "p2",
+    name: "PC Gamer AMD Ryzen 7 7800X3D | RX 9070 XT | 32 Go DDR5",
+    category: "PC Gamer",
+    price: 2237.65,
+    image: "https://www.memorypc.fr/thumbnail/53/79/73/1786604635/019f8f1c2c6972a8a3ea1ee9516a0652_1784812416_800x800.png"
   },
   {
-    id:"p3",
-    name:"HyperX Cloud II",
-    category:"Casques",
-    price:49.99,
-    image:"https://cdn.shopify.com/s/files/1/0551/0548/6979/files/hyperx_cloud_ii_red_1_main_64x64.jpg?v=1764129756"
+    id: "p3",
+    name: "HyperX Cloud II",
+    category: "Casques",
+    price: 49.99,
+    image: "https://cdn.shopify.com/s/files/1/0551/0548/6979/files/hyperx_cloud_ii_red_1_main_64x64.jpg?v=1764129756"
   },
   {
-    id:"p4",
-    name:"TECORS Clavier Gamer Mécanique 60% AZERTY",
-    category:"Claviers",
-    price:30,
-    image:"https://m.media-amazon.com/images/I/71-lhAU97VL._AC_SL1500_.jpg"
+    id: "p4",
+    name: "TECORS Clavier Gamer Mécanique 60% AZERTY",
+    category: "Claviers",
+    price: 30,
+    image: "https://m.media-amazon.com/images/I/71-lhAU97VL._AC_SL1500_.jpg"
   },
   {
-    id:"p5",
-    name:"Clavier Magnétique 65% Celshading Noir",
-    category:"Claviers",
-    price:120.90,
-    image:"https://tryhard-gear.com/cdn/shop/files/TestCelshadingnoirV2.webp?v=1762273866&width=832"
+    id: "p5",
+    name: "Clavier Magnétique 65% Celshading Noir",
+    category: "Claviers",
+    price: 120.90,
+    image: "https://tryhard-gear.com/cdn/shop/files/TestCelshadingnoirV2.webp?v=1762273866&width=832"
   },
   {
-    id:"p6",
-    name:"Ajazz AJ199 MAX Carbon Fiber Wireless Gaming Mouse",
-    category:"Souris",
-    price:49.99,
-    image:"https://ae-pic-a1.aliexpress-media.com/kf/S1e981b53ccfe4e1391cd5b5deb4fce87o.png_960x960.png_.avif"
+    id: "p6",
+    name: "Ajazz AJ199 MAX Carbon Fiber Wireless Gaming Mouse",
+    category: "Souris",
+    price: 49.99,
+    image: "https://ae-pic-a1.aliexpress-media.com/kf/S1e981b53ccfe4e1391cd5b5deb4fce87o.png_960x960.png_.avif"
   },
   {
-    id:"p7",
-    name:"Logitech G PRO X2 Superstrike Blanc et Noir",
-    category:"Souris",
-    price:150.99,
-    image:"https://static.fnac-static.com/multimedia/Images/FR/MDM/7a/34/bc/29111418/1540-1.jpg"
+    id: "p7",
+    name: "Logitech G PRO X2 Superstrike Blanc et Noir",
+    category: "Souris",
+    price: 150.99,
+    image: "https://static.fnac-static.com/multimedia/Images/FR/MDM/7a/34/bc/29111418/1540-1.jpg"
   },
   {
-    id:"p8",
-    name:"Samsung 990 PRO 1TB",
-    category:"Stockage",
-    price:249.99,
-    image:"https://content.pearl.fr/media/cache/default/article_ultralarge_high_nocrop/shared/images/articles/M/MW1/disque-dur-interne-ssd-990-pro-pcie-nvme-m-2-2280-1-to-ref_MW1148_2.jpg"
+    id: "p8",
+    name: "Samsung 990 PRO 1TB",
+    category: "Stockage",
+    price: 249.99,
+    image: "https://content.pearl.fr/media/cache/default/article_ultralarge_high_nocrop/shared/images/articles/M/MW1/disque-dur-interne-ssd-990-pro-pcie-nvme-m-2-2280-1-to-ref_MW1148_2.jpg"
   },
   {
-    id:"p9",
-    name:"Samsung 990 PRO 2TB",
-    category:"Stockage",
-    price:199.93,
-    image:"https://pc.comparer.fr/500x500/310191422.webp"
+    id: "p9",
+    name: "Samsung 990 PRO 2TB",
+    category: "Stockage",
+    price: 199.93,
+    image: "https://pc.comparer.fr/500x500/310191422.webp"
   },
   {
-    id:"p10",
-    name:"CORSAIR RM1000x EU",
-    category:"Alimentations",
-    price:159.90,
-    image:"https://assets.corsair.com/image/upload/c_pad,q_85,h_608,w_608,f_auto/products/Power-Supply-Units/base-rmx-2024-config/gallery/black/1000/RM1000x_2024_01.webp"
+    id: "p10",
+    name: "CORSAIR RM1000x EU",
+    category: "Alimentations",
+    price: 159.90,
+    image: "https://assets.corsair.com/image/upload/c_pad,q_85,h_608,w_608,f_auto/products/Power-Supply-Units/base-rmx-2024-config/gallery/black/1000/RM1000x_2024_01.webp"
   },
   {
-    id:"p11",
-    name:"CORSAIR RM850x EU",
-    category:"Alimentations",
-    price:134.90,
-    image:"https://assets.corsair.com/image/upload/c_pad,q_85,h_608,w_608,f_auto/products/Power-Supply-Units/base-rmx-2024-config/gallery/black/850/RM850x_2024_01.webp"
+    id: "p11",
+    name: "CORSAIR RM850x EU",
+    category: "Alimentations",
+    price: 134.90,
+    image: "https://assets.corsair.com/image/upload/c_pad,q_85,h_608,w_608,f_auto/products/Power-Supply-Units/base-rmx-2024-config/gallery/black/850/RM850x_2024_01.webp"
   },
   {
-    id:"p12",
-    name:"Corsair Frame 5000D RS ARGB Noir",
-    category:"Boîtiers",
-    price:159.90,
-    image:"https://media.ldlc.com/r1600/ld/products/00/06/26/05/LD0006260502.jpg"
+    id: "p12",
+    name: "Corsair Frame 5000D RS ARGB Noir",
+    category: "Boîtiers",
+    price: 159.90,
+    image: "https://media.ldlc.com/r1600/ld/products/00/06/26/05/LD0006260502.jpg"
   },
   {
-    id:"p13",
-    name:"ARCTIC Liquid Freezer III Pro 360 A-RGB Black",
-    category:"Refroidissement",
-    price:129.90,
-    image:"https://cdn.idealo.com/folder/Product/206182/0/206182034/s4_produktbild_gross/arctic-liquid-freezer-iii-pro-360-a-rgb-black.jpg"
+    id: "p13",
+    name: "ARCTIC Liquid Freezer III Pro 360 A-RGB Black",
+    category: "Refroidissement",
+    price: 129.90,
+    image: "https://cdn.idealo.com/folder/Product/206182/0/206182034/s4_produktbild_gross/arctic-liquid-freezer-iii-pro-360-a-rgb-black.jpg"
   },
   {
-    id:"p14",
-    name:"Samsung 27 QD-OLED Odyssey G6",
-    category:"Écrans",
-    price:399.95,
-    image:"https://media.ldlc.com/r705/ld/products/00/06/32/99/LD0006329977.jpg"
+    id: "p14",
+    name: "Samsung 27 QD-OLED Odyssey G6",
+    category: "Écrans",
+    price: 399.95,
+    image: "https://media.ldlc.com/r705/ld/products/00/06/32/99/LD0006329977.jpg"
   },
   {
-    id:"p15",
-    name:"ELGATO Wave Mic Arm Pro",
-    category:"Streaming",
-    price:229.90,
-    image:"https://www.digit-photo.com/images/produits/ELGATO10AAT9901/1.jpg"
+    id: "p15",
+    name: "ELGATO Wave Mic Arm Pro",
+    category: "Streaming",
+    price: 229.90,
+    image: "https://www.digit-photo.com/images/produits/ELGATO10AAT9901/1.jpg"
   },
   {
-    id:"p16",
-    name:"Sony DualSense Cosmic Red PS5/PC",
-    category:"Manettes",
-    price:74.90,
-    image:"https://media.carrefour.fr/media/referential/media/cc07d7de4b9e4bea8c063e8f9bb46d94/p_200x200/0711719023005_0.jpg"
+    id: "p16",
+    name: "Sony DualSense Cosmic Red PS5/PC",
+    category: "Manettes",
+    price: 74.90,
+    image: "https://media.carrefour.fr/media/referential/media/cc07d7de4b9e4bea8c063e8f9bb46d94/p_200x200/0711719023005_0.jpg"
   },
   {
-    id:"p17",
-    name:"ASUS TUF Gaming B650-PLUS",
-    category:"Composants",
-    price:179.90,
-    image:"https://media.materiel.net/r550/products/MN0005986139.jpg"
+    id: "p17",
+    name: "ASUS TUF Gaming B650-PLUS",
+    category: "Composants",
+    price: 179.90,
+    image: "https://media.materiel.net/r550/products/MN0005986139.jpg"
   },
   {
-    id:"p18",
-    name:"MSI MAG B650 Tomahawk WiFi",
-    category:"Composants",
-    price:189.90,
-    image:"https://m.media-amazon.com/images/I/71TYAcZ4J8L._AC_SL1200_.jpg"
+    id: "p18",
+    name: "MSI MAG B650 Tomahawk WiFi",
+    category: "Composants",
+    price: 189.90,
+    image: "https://m.media-amazon.com/images/I/71TYAcZ4J8L._AC_SL1200_.jpg"
   }
 ];
 
 const promos = {
-  NOVA100:100,
-  NOVA20:20,
-  NOVA10:10
+  NOVA100: 100,
+  NOVA20: 20,
+  NOVA10: 10
 };
 
 let currentUser = null;
@@ -170,6 +170,8 @@ let firestore = null;
 let firestoreTools = null;
 
 let unsubscribeOrders = null;
+let unsubscribeAdminOrders = null;
+
 let liveOrders = [];
 
 let addressVerified = false;
@@ -177,291 +179,310 @@ let verifiedAddress = null;
 
 const $ = id => document.getElementById(id);
 
-function load(key,fallback){
-  try{
+function load(key, fallback) {
+  try {
     const value = localStorage.getItem(key);
     return value ? JSON.parse(value) : fallback;
-  }catch{
+  } catch {
     return fallback;
   }
 }
 
-function save(key,value){
-  localStorage.setItem(key,JSON.stringify(value));
+function save(key, value) {
+  localStorage.setItem(key, JSON.stringify(value));
 }
 
-function money(value){
-  return new Intl.NumberFormat("fr-FR",{
-    style:"currency",
-    currency:"EUR"
-  }).format(Number(value)||0);
+function money(value) {
+  return new Intl.NumberFormat("fr-FR", {
+    style: "currency",
+    currency: "EUR"
+  }).format(Number(value) || 0);
 }
 
-function dateFR(value){
-  if(!value)return "Date inconnue";
+function dateFR(value) {
+  if (!value) return "Date inconnue";
 
-  try{
-    return new Intl.DateTimeFormat("fr-FR",{
-      dateStyle:"medium",
-      timeStyle:"short"
-    }).format(new Date(value));
-  }catch{
+  try {
+    let date = value;
+
+    if (value?.toDate) {
+      date = value.toDate();
+    }
+
+    return new Intl.DateTimeFormat("fr-FR", {
+      dateStyle: "medium",
+      timeStyle: "short"
+    }).format(new Date(date));
+  } catch {
     return "Date inconnue";
   }
 }
 
-function toast(message){
-  const el=$("toast");
+function toast(message) {
+  const el = $("toast");
 
-  if(!el)return;
+  if (!el) return;
 
-  el.textContent=message;
+  el.textContent = message;
   el.classList.add("show");
 
   clearTimeout(window.__toastTimer);
 
-  window.__toastTimer=setTimeout(()=>{
+  window.__toastTimer = setTimeout(() => {
     el.classList.remove("show");
-  },2800);
+  }, 2800);
 }
 
-function openModal(id){
+function openModal(id) {
   closeAllModals();
 
-  const modal=$(id);
+  const modal = $(id);
 
-  if(!modal)return;
+  if (!modal) return;
 
   modal.classList.add("open");
 
-  $("overlay").style.display="block";
+  if ($("overlay")) {
+    $("overlay").style.display = "block";
+  }
 }
 
-function closeModal(id){
-  const modal=$(id);
+function closeModal(id) {
+  const modal = $(id);
 
-  if(modal){
+  if (modal) {
     modal.classList.remove("open");
   }
 
-  if(!document.querySelector(".modal.open")){
-    $("overlay").style.display="none";
+  if (!document.querySelector(".modal.open")) {
+    if ($("overlay")) {
+      $("overlay").style.display = "none";
+    }
   }
 }
 
-function closeAllModals(){
+function closeAllModals() {
   document.querySelectorAll(".modal.open")
-    .forEach(m=>m.classList.remove("open"));
+    .forEach(m => m.classList.remove("open"));
 
-  $("overlay").style.display="none";
+  if ($("overlay")) {
+    $("overlay").style.display = "none";
+  }
 }
 
-function playBop(){
-  if(localStorage.getItem(STORAGE.sound)==="false")return;
+function playBop() {
+  if (localStorage.getItem(STORAGE.sound) === "false") return;
 
-  try{
-    const AudioCtx=window.AudioContext||window.webkitAudioContext;
+  try {
+    const AudioCtx =
+      window.AudioContext ||
+      window.webkitAudioContext;
 
-    if(!AudioCtx)return;
+    if (!AudioCtx) return;
 
-    const ctx=new AudioCtx();
-    const osc=ctx.createOscillator();
-    const gain=ctx.createGain();
+    const ctx = new AudioCtx();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
 
-    osc.frequency.value=650;
-    gain.gain.value=.035;
+    osc.frequency.value = 650;
+    gain.gain.value = 0.035;
 
     osc.connect(gain);
     gain.connect(ctx.destination);
 
     osc.start();
-    osc.stop(ctx.currentTime+.06);
-  }catch{}
+    osc.stop(ctx.currentTime + 0.06);
+  } catch {}
 }
 
-function escapeHTML(value){
-  return String(value??"")
-    .replaceAll("&","&amp;")
-    .replaceAll("<","&lt;")
-    .replaceAll(">","&gt;")
-    .replaceAll('"',"&quot;")
-    .replaceAll("'","&#039;");
+function escapeHTML(value) {
+  return String(value ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
 }
 
-function cart(){
-  return load(STORAGE.cart,[]);
+function cart() {
+  return load(STORAGE.cart, []);
 }
 
-function setCart(items){
-  save(STORAGE.cart,items);
-
+function setCart(items) {
+  save(STORAGE.cart, items);
   renderCart();
   updateCartCount();
 }
 
-function favorites(){
-  return load(STORAGE.favorites,[]);
+function favorites() {
+  return load(STORAGE.favorites, []);
 }
 
-function isFavorite(id){
+function isFavorite(id) {
   return favorites().includes(id);
 }
 
-function toggleFavorite(id){
-  const list=favorites();
-  const index=list.indexOf(id);
+function toggleFavorite(id) {
+  const list = favorites();
+  const index = list.indexOf(id);
 
-  if(index>=0){
-    list.splice(index,1);
+  if (index >= 0) {
+    list.splice(index, 1);
     toast("Retiré des favoris");
-  }else{
+  } else {
     list.push(id);
     toast("Ajouté aux favoris");
   }
 
-  save(STORAGE.favorites,list);
-
+  save(STORAGE.favorites, list);
   renderProducts();
 }
 
-function addToCart(id){
-  const items=cart();
+function addToCart(id) {
+  const items = cart();
+  const found = items.find(x => x.id === id);
 
-  const found=items.find(x=>x.id===id);
-
-  if(found){
+  if (found) {
     found.qty++;
-  }else{
+  } else {
     items.push({
       id,
-      qty:1
+      qty: 1
     });
   }
 
   setCart(items);
-
   playBop();
-
   toast("Produit ajouté au panier");
 }
 
-function changeQty(id,delta){
-  const items=cart();
+function changeQty(id, delta) {
+  const items = cart();
+  const found = items.find(x => x.id === id);
 
-  const found=items.find(x=>x.id===id);
+  if (!found) return;
 
-  if(!found)return;
+  found.qty += delta;
 
-  found.qty+=delta;
-
-  if(found.qty<=0){
-    const index=items.indexOf(found);
-    items.splice(index,1);
+  if (found.qty <= 0) {
+    const index = items.indexOf(found);
+    items.splice(index, 1);
   }
 
   setCart(items);
 }
 
-function cartTotal(){
-  return cart().reduce((total,item)=>{
-    const product=products.find(p=>p.id===item.id);
+function cartTotal() {
+  return cart().reduce((total, item) => {
+    const product = products.find(p => p.id === item.id);
 
-    return total+
-      (product ? product.price*item.qty : 0);
-  },0);
+    return total +
+      (product ? product.price * item.qty : 0);
+  }, 0);
 }
 
-function updateCartCount(){
-  $("cartCount").textContent=
-    cart().reduce((a,b)=>a+b.qty,0);
+function updateCartCount() {
+  if (!$("cartCount")) return;
+
+  $("cartCount").textContent =
+    cart().reduce((a, b) => a + b.qty, 0);
 }
 
-function ratingData(productId){
-  const reviews=load(STORAGE.reviews,[])
-    .filter(r=>r.productId===productId);
+function ratingData(productId) {
+  const reviews = load(STORAGE.reviews, [])
+    .filter(r => r.productId === productId);
 
-  if(!reviews.length){
+  if (!reviews.length) {
     return {
-      average:0,
-      count:0,
-      reviews:[]
+      average: 0,
+      count: 0,
+      reviews: []
     };
   }
 
-  const average=
-    reviews.reduce((sum,r)=>sum+Number(r.rating),0)/
-    reviews.length;
+  const average =
+    reviews.reduce(
+      (sum, r) => sum + Number(r.rating),
+      0
+    ) / reviews.length;
 
   return {
     average,
-    count:reviews.length,
+    count: reviews.length,
     reviews
   };
 }
 
-function stars(value){
-  const rounded=Math.round(Number(value)||0);
+function stars(value) {
+  const rounded = Math.max(
+    0,
+    Math.min(5, Math.round(Number(value) || 0))
+  );
 
-  return "★".repeat(rounded)+
-    "☆".repeat(5-rounded);
+  return "★".repeat(rounded) +
+    "☆".repeat(5 - rounded);
 }
 
-function renderProducts(){
-  const grid=$("productsGrid");
+function renderProducts() {
+  const grid = $("productsGrid");
 
-  if(!grid)return;
+  if (!grid) return;
 
-  let list=products.filter(p=>{
+  let list = products.filter(product => {
+    const categoryOk =
+      currentCategory === "Tous" ||
+      product.category === currentCategory;
 
-    const categoryOk=
-      currentCategory==="Tous" ||
-      p.category===currentCategory;
-
-    const searchOk=
+    const searchOk =
       !searchTerm ||
-      `${p.name} ${p.category}`
+      `${product.name} ${product.category}`
         .toLowerCase()
         .includes(searchTerm.toLowerCase());
 
-    return categoryOk&&searchOk;
+    return categoryOk && searchOk;
   });
 
-  const sort=$("sortSelect").value;
+  const sort = $("sortSelect")?.value;
 
-  if(sort==="priceAsc"){
-    list.sort((a,b)=>a.price-b.price);
+  if (sort === "priceAsc") {
+    list.sort((a, b) => a.price - b.price);
   }
 
-  if(sort==="priceDesc"){
-    list.sort((a,b)=>b.price-a.price);
+  if (sort === "priceDesc") {
+    list.sort((a, b) => b.price - a.price);
   }
 
-  if(sort==="name"){
-    list.sort((a,b)=>a.name.localeCompare(b.name));
+  if (sort === "name") {
+    list.sort((a, b) =>
+      a.name.localeCompare(b.name)
+    );
   }
 
-  $("resultsCount").textContent=
-    `${list.length} produit${list.length>1?"s":""}`;
+  if ($("resultsCount")) {
+    $("resultsCount").textContent =
+      `${list.length} produit${list.length > 1 ? "s" : ""}`;
+  }
 
-  $("emptyState").style.display=
-    list.length ? "none" : "block";
+  if ($("emptyState")) {
+    $("emptyState").style.display =
+      list.length ? "none" : "block";
+  }
 
-  grid.innerHTML="";
+  grid.innerHTML = "";
 
-  list.forEach(product=>{
+  list.forEach(product => {
+    const rating = ratingData(product.id);
 
-    const rating=ratingData(product.id);
+    const card = document.createElement("article");
 
-    const card=document.createElement("article");
+    card.className = "card";
 
-    card.className="card";
-
-    card.innerHTML=`
+    card.innerHTML = `
       <button
         class="favorite"
         data-favorite="${escapeHTML(product.id)}"
       >
-        ${isFavorite(product.id)?"❤️":"♡"}
+        ${isFavorite(product.id) ? "❤️" : "♡"}
       </button>
 
       <img
@@ -483,8 +504,8 @@ function renderProducts(){
         <div class="rating">
           ${
             rating.count
-            ? `${stars(rating.average)} ${rating.average.toFixed(1)} (${rating.count})`
-            : "☆☆☆☆☆ Aucun avis"
+              ? `${stars(rating.average)} ${rating.average.toFixed(1)} (${rating.count})`
+              : "☆☆☆☆☆ Aucun avis"
           }
         </div>
 
@@ -513,30 +534,30 @@ function renderProducts(){
       </div>
     `;
 
-    const img=card.querySelector("img");
+    const img = card.querySelector("img");
 
-    img.addEventListener("error",()=>{
-      img.style.visibility="hidden";
+    img.addEventListener("error", () => {
+      img.style.visibility = "hidden";
     });
 
     grid.appendChild(card);
   });
 }
 
-function openProduct(id){
-  const product=products.find(p=>p.id===id);
+function openProduct(id) {
+  const product = products.find(p => p.id === id);
 
-  if(!product)return;
+  if (!product) return;
 
-  currentProductId=id;
+  currentProductId = id;
 
-  const data=ratingData(id);
+  const data = ratingData(id);
 
-  $("productContent").innerHTML=`
-
+  $("productContent").innerHTML = `
     <img
       src="${escapeHTML(product.image)}"
       style="width:100%;height:280px;object-fit:contain;background:white;border-radius:12px"
+      alt=""
     >
 
     <h2 style="margin-top:18px">
@@ -574,92 +595,88 @@ function openProduct(id){
     >
       ${
         data.reviews.length
-        ? data.reviews.map(r=>`
+          ? data.reviews.map(r => `
+              <div class="cart-item">
 
-          <div class="cart-item">
+                <strong>
+                  ${escapeHTML(r.name)}
+                </strong>
 
-            <strong>
-              ${escapeHTML(r.name)}
-            </strong>
+                <div>
+                  ${stars(r.rating)}
+                </div>
 
-            <div>
-              ${stars(r.rating)}
-            </div>
+                <p style="margin-top:5px">
+                  ${escapeHTML(r.comment)}
+                </p>
 
-            <p style="margin-top:5px">
-              ${escapeHTML(r.comment)}
-            </p>
+                <small style="color:var(--muted)">
+                  ${dateFR(r.date)}
+                </small>
 
-            <small style="color:var(--muted)">
-              ${dateFR(r.date)}
-            </small>
-
-          </div>
-
-        `).join("")
-        : `
-          <p style="color:var(--muted);margin-top:10px">
-            Aucun avis.
-          </p>
-        `
+              </div>
+            `).join("")
+          : `
+              <p style="color:var(--muted);margin-top:10px">
+                Aucun avis.
+              </p>
+            `
       }
     </div>
 
     ${
       currentUser
-      ? `
+        ? `
+          <h3 style="margin-top:20px">
+            Laisser un avis
+          </h3>
 
-        <h3 style="margin-top:20px">
-          Laisser un avis
-        </h3>
-
-        <form
-          class="form"
-          id="reviewForm"
-          style="margin-top:10px"
-        >
-
-          <label>Note</label>
-
-          <select id="reviewRating">
-            <option value="5">★★★★★</option>
-            <option value="4">★★★★☆</option>
-            <option value="3">★★★☆☆</option>
-            <option value="2">★★☆☆☆</option>
-            <option value="1">★☆☆☆☆</option>
-          </select>
-
-          <label>Commentaire</label>
-
-          <input
-            id="reviewComment"
-            maxlength="300"
-            required
+          <form
+            class="form"
+            id="reviewForm"
+            style="margin-top:10px"
           >
 
-          <button class="primary">
-            Publier
-          </button>
+            <label>Note</label>
 
-        </form>
+            <select id="reviewRating">
+              <option value="5">★★★★★</option>
+              <option value="4">★★★★☆</option>
+              <option value="3">★★★☆☆</option>
+              <option value="2">★★☆☆☆</option>
+              <option value="1">★☆☆☆☆</option>
+            </select>
 
-      `
-      : `
-        <p style="margin-top:20px;color:var(--muted)">
-          Connecte-toi pour laisser un avis.
-        </p>
-      `
+            <label>Commentaire</label>
+
+            <input
+              id="reviewComment"
+              maxlength="300"
+              required
+            >
+
+            <button class="primary">
+              Publier
+            </button>
+
+          </form>
+        `
+        : `
+          <p style="margin-top:20px;color:var(--muted)">
+            Connecte-toi pour laisser un avis.
+          </p>
+        `
     }
   `;
 
-  $("modalAdd").addEventListener("click",()=>{
+  $("modalAdd")?.addEventListener("click", () => {
     addToCart(id);
   });
 
-  const form=$("reviewForm");
+  const form = $("reviewForm");
 
-  if(form){
-    form.addEventListener("submit",e=>{
+  if (form) {
+    form.addEventListener("submit", e => {
       e.preventDefault();
       submitReview(id);
     });
@@ -668,71 +685,69 @@ function openProduct(id){
   openModal("productModal");
 }
 
-function submitReview(productId){
-  if(!currentUser)return;
+function submitReview(productId) {
+  if (!currentUser) return;
 
-  const reviews=load(STORAGE.reviews,[]);
+  const reviews = load(STORAGE.reviews, []);
 
-  const already=reviews.some(
-    r=>r.productId===productId &&
-       r.userId===currentUser.uid
+  const already = reviews.some(
+    r =>
+      r.productId === productId &&
+      r.userId === currentUser.uid
   );
 
-  if(already){
+  if (already) {
     toast("Tu as déjà noté ce produit.");
     return;
   }
 
-  const rawName=
+  const rawName =
     currentUser.displayName ||
     currentUser.email?.split("@")[0] ||
     "Client";
 
-  const name=
-    rawName.slice(0,3)+"***";
+  const name =
+    rawName.slice(0, 3) + "***";
 
   reviews.push({
-    id:crypto.randomUUID(),
+    id: crypto.randomUUID(),
     productId,
-    userId:currentUser.uid,
+    userId: currentUser.uid,
     name,
-    rating:Number($("reviewRating").value),
-    comment:$("reviewComment").value.trim(),
-    date:new Date().toISOString()
+    rating: Number($("reviewRating").value),
+    comment: $("reviewComment").value.trim(),
+    date: new Date().toISOString()
   });
 
-  save(STORAGE.reviews,reviews);
+  save(STORAGE.reviews, reviews);
 
   toast("Avis publié");
 
   openProduct(productId);
 }
 
-function renderCart(){
-  const items=cart();
+function renderCart() {
+  const items = cart();
 
-  if(!items.length){
-
-    $("cartContent").innerHTML=`
+  if (!items.length) {
+    $("cartContent").innerHTML = `
       <p style="color:var(--muted)">
         Ton panier est vide.
       </p>
     `;
 
-    $("cartTotal").textContent=money(0);
+    $("cartTotal").textContent = money(0);
 
     return;
   }
 
-  $("cartContent").innerHTML=
-    items.map(item=>{
+  $("cartContent").innerHTML =
+    items.map(item => {
+      const p = products.find(x => x.id === item.id);
 
-      const p=products.find(x=>x.id===item.id);
-
-      if(!p)return"";
+      if (!p) return "";
 
       return `
-
         <div class="cart-item">
 
           <div class="cart-row">
@@ -770,48 +785,47 @@ function renderCart(){
           </div>
 
         </div>
-
       `;
     }).join("");
 
-  $("cartTotal").textContent=
+  $("cartTotal").textContent =
     money(cartTotal());
 }
 
-function renderCheckout(){
-  const subtotal=cartTotal();
+function renderCheckout() {
+  const subtotal = cartTotal();
 
-  const discount=currentPromo
-    ? subtotal*(currentPromo.discount/100)
+  const discount = currentPromo
+    ? subtotal * (currentPromo.discount / 100)
     : 0;
 
-  const total=Math.max(
+  const total = Math.max(
     0,
-    subtotal-discount
+    subtotal - discount
   );
 
-  $("checkoutSubtotal").textContent=
+  $("checkoutSubtotal").textContent =
     money(subtotal);
 
-  $("checkoutDiscount").textContent=
-    "- "+money(discount);
+  $("checkoutDiscount").textContent =
+    "- " + money(discount);
 
-  $("checkoutTotal").textContent=
+  $("checkoutTotal").textContent =
     money(total);
 
   updatePayButton();
 }
 
-function applyPromo(){
-  const code=$("promoCode").value
-    .trim()
-    .toUpperCase();
+function applyPromo() {
+  const code =
+    $("promoCode").value
+      .trim()
+      .toUpperCase();
 
-  if(!promos[code]){
+  if (!promos[code]) {
+    currentPromo = null;
 
-    currentPromo=null;
-
-    $("promoMessage").textContent=
+    $("promoMessage").textContent =
       "❌ Code invalide.";
 
     renderCheckout();
@@ -819,63 +833,65 @@ function applyPromo(){
     return;
   }
 
-  currentPromo={
+  currentPromo = {
     code,
-    discount:promos[code]
+    discount: promos[code]
   };
 
-  $("promoMessage").textContent=
+  $("promoMessage").textContent =
     `✅ ${code} appliqué : ${promos[code]}%`;
 
   renderCheckout();
 }
 
-function updatePayButton(){
-  const button=$("payButton");
+function updatePayButton() {
+  const button = $("payButton");
 
-  if(!button)return;
+  if (!button) return;
 
-  if(!addressVerified){
+  if (!addressVerified) {
+    button.disabled = true;
 
-    button.disabled=true;
-
-    button.textContent=
+    button.textContent =
       "🔒 Vérifie ton adresse pour continuer";
 
     return;
   }
 
-  if(!currentPromo){
+  if (!currentPromo) {
+    button.disabled = true;
 
-    button.disabled=true;
-
-    button.textContent=
+    button.textContent =
       "🎟️ Applique un code promotionnel";
 
     return;
   }
 
-  button.disabled=false;
+  button.disabled = false;
 
-  button.textContent=
+  button.textContent =
     "💳 Continuer vers le paiement";
 }
 
-function setAddressStatus(type,message){
-  const el=$("addressStatus");
+function setAddressStatus(type, message) {
+  const el = $("addressStatus");
 
-  el.className=
+  if (!el) return;
+
+  el.className =
     `address-status show ${type}`;
 
-  el.textContent=message;
+  el.textContent = message;
 }
 
-function resetAddressVerification(){
-  addressVerified=false;
-  verifiedAddress=null;
+function resetAddressVerification() {
+  addressVerified = false;
+  verifiedAddress = null;
 
-  $("addressResult").classList.remove("show");
-  $("addressResult").innerHTML="";
+  if ($("addressResult")) {
+    $("addressResult").classList.remove("show");
+    $("addressResult").innerHTML = "";
+  }
 
   setAddressStatus(
     "error",
@@ -885,20 +901,31 @@ function resetAddressVerification(){
   updatePayButton();
 }
 
-async function verifyAddress(){
-  const country=$("country").value
+function normalizeText(value) {
+  return String(value || "")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
     .trim()
-    .toLowerCase();
+    .replace(/\s+/g, " ");
+}
 
-  const address=$("address").value.trim();
-  const postalCode=$("postalCode").value.trim();
-  const city=$("city").value.trim();
+async function verifyAddress() {
+  const country =
+    $("country").value
+      .trim()
+      .toLowerCase();
 
-  if(
-    !address ||
-    !postalCode ||
-    !city
-  ){
+  const address =
+    $("address").value.trim();
+
+  const postalCode =
+    $("postalCode").value.trim();
+
+  const city =
+    $("city").value.trim();
+
+  if (!address || !postalCode || !city) {
     resetAddressVerification();
 
     setAddressStatus(
@@ -909,20 +936,18 @@ async function verifyAddress(){
     return;
   }
 
-  if(country!=="france"){
-
+  if (country !== "france") {
     resetAddressVerification();
 
     setAddressStatus(
       "error",
-      "❌ La vérification automatique est actuellement disponible pour la France."
+      "❌ La vérification automatique est disponible pour la France."
     );
 
     return;
   }
 
-  if(!/^[0-9]{5}$/.test(postalCode)){
-
+  if (!/^[0-9]{5}$/.test(postalCode)) {
     resetAddressVerification();
 
     setAddressStatus(
@@ -940,49 +965,57 @@ async function verifyAddress(){
 
   $("addressResult").classList.remove("show");
 
-  try{
-
-    const query=
+  try {
+    const query =
       `${address}, ${postalCode} ${city}`;
 
-    const url=
-      "https://api-adresse.data.gouv.fr/search/"+
-      "?q="+encodeURIComponent(query)+
+    const url =
+      "https://api-adresse.data.gouv.fr/search/" +
+      "?q=" + encodeURIComponent(query) +
+      "&postcode=" + encodeURIComponent(postalCode) +
+      "&city=" + encodeURIComponent(city) +
       "&limit=5";
 
-    const response=
+    const response =
       await fetch(url);
 
-    if(!response.ok){
-      throw new Error("API address error");
+    if (!response.ok) {
+      throw new Error("Address API error");
     }
 
-    const data=await response.json();
+    const data =
+      await response.json();
 
-    const features=
+    const features =
       Array.isArray(data.features)
-      ? data.features
-      : [];
+        ? data.features
+        : [];
 
-    const exact=features.find(feature=>{
+    const normalizedCity =
+      normalizeText(city);
 
-      const props=feature.properties||{};
+    const exact =
+      features.find(feature => {
+        const props =
+          feature.properties || {};
 
-      const cp=
-        String(props.postcode||"");
+        const cp =
+          String(props.postcode || "");
 
-      const ville=
-        String(props.city||"")
-          .toLowerCase();
+        const resultCity =
+          normalizeText(props.city);
 
-      return cp===postalCode &&
-        ville===city.toLowerCase();
-    });
+        const score =
+          Number(props.score || 0);
 
-    const result=exact||features[0];
+        return (
+          cp === postalCode &&
+          resultCity === normalizedCity &&
+          score >= 0.70
+        );
+      });
 
-    if(!result){
-
+    if (!exact) {
       resetAddressVerification();
 
       setAddressStatus(
@@ -993,49 +1026,47 @@ async function verifyAddress(){
       return;
     }
 
-    const props=result.properties||{};
+    const props =
+      exact.properties || {};
 
-    const verifiedCity=
-      props.city ||
-      city;
-
-    const verifiedPostcode=
-      props.postcode ||
-      postalCode;
-
-    const verifiedLabel=
+    const label =
       props.label ||
       `${address}, ${postalCode} ${city}`;
 
-    verifiedAddress={
-      address:verifiedLabel,
-      street:props.name||address,
-      postalCode:verifiedPostcode,
-      city:verifiedCity,
-      latitude:result.geometry?.coordinates?.[1]??null,
-      longitude:result.geometry?.coordinates?.[0]??null
+    verifiedAddress = {
+      address: label,
+      street: props.name || address,
+      postalCode:
+        props.postcode || postalCode,
+      city:
+        props.city || city,
+      latitude:
+        exact.geometry?.coordinates?.[1] ?? null,
+      longitude:
+        exact.geometry?.coordinates?.[0] ?? null
     };
 
-    addressVerified=true;
+    addressVerified = true;
 
-    $("address").value=
-      props.name ||
-      address;
+    $("address").value =
+      props.name || address;
 
-    $("postalCode").value=
-      verifiedPostcode;
+    $("postalCode").value =
+      verifiedAddress.postalCode;
 
-    $("city").value=
-      verifiedCity;
+    $("city").value =
+      verifiedAddress.city;
 
-    $("addressResult").innerHTML=`
+    $("addressResult").innerHTML = `
       <strong>📍 Adresse reconnue</strong>
       <div style="margin-top:5px">
-        ${escapeHTML(verifiedLabel)}
+        ${escapeHTML(label)}
       </div>
     `;
 
-    $("addressResult").classList.add("show");
+    $("addressResult")
+      .classList
+      .add("show");
 
     setAddressStatus(
       "success",
@@ -1044,46 +1075,44 @@ async function verifyAddress(){
 
     updatePayButton();
 
-  }catch(error){
-
+  } catch (error) {
     console.error(error);
 
     resetAddressVerification();
 
     setAddressStatus(
       "error",
-      "❌ Impossible de vérifier l'adresse pour le moment. Le paiement reste bloqué."
+      "❌ Impossible de vérifier l'adresse. Le paiement reste bloqué."
     );
   }
 }
 
-function getDelivery(order){
+function getDelivery(order) {
+  const updatedAt =
+    Number(order.deliveryUpdatedAt) ||
+    new Date(
+      order.createdAt || Date.now()
+    ).getTime();
 
-  const updatedAt=
-    Number(order.deliveryUpdatedAt)||
-    new Date(order.createdAt||Date.now()).getTime();
-
-  const duration=
-    Number(order.deliveryDurationSeconds)||
-    0;
+  const duration =
+    Number(order.deliveryDurationSeconds) || 0;
 
   return {
-
     status:
-      order.status||
+      order.status ||
       "Préparation",
 
     truckLocation:
-      order.truckLocation||
+      order.truckLocation ||
       "Entrepôt",
 
     destination:
-      order.destination||
-      order.address?.city||
+      order.destination ||
+      order.address?.city ||
       "France",
 
     tracking:
-      order.tracking||
+      order.tracking ||
       "NOVA-TRK-N/A",
 
     durationSeconds:
@@ -1092,99 +1121,100 @@ function getDelivery(order){
     updatedAt,
 
     deliveryDate:
-      order.deliveryDate||
+      order.deliveryDate ||
       new Date(
-        updatedAt+
-        duration*1000
+        updatedAt +
+        duration * 1000
       ).toISOString()
-
   };
 }
 
-function remaining(order){
+function remaining(order) {
+  const d = getDelivery(order);
 
-  const d=getDelivery(order);
+  if (d.status === "Livrée") {
+    return 0;
+  }
 
-  if(d.status==="Livrée"){
+  if (!d.durationSeconds) {
     return 0;
   }
 
   return Math.max(
     0,
-    d.durationSeconds-
+    d.durationSeconds -
     Math.floor(
-      (Date.now()-d.updatedAt)/1000
+      (Date.now() - d.updatedAt) / 1000
     )
   );
 }
 
-function durationText(seconds){
+function durationText(seconds) {
+  seconds =
+    Math.max(
+      0,
+      Math.floor(seconds)
+    );
 
-  seconds=Math.max(
-    0,
-    Math.floor(seconds)
+  const days =
+    Math.floor(seconds / 86400);
+
+  seconds %= 86400;
+
+  const hours =
+    Math.floor(seconds / 3600);
+
+  seconds %= 3600;
+
+  const minutes =
+    Math.floor(seconds / 60);
+
+  const secs =
+    seconds % 60;
+
+  return (
+    `${days}j ` +
+    `${String(hours).padStart(2, "0")}h ` +
+    `${String(minutes).padStart(2, "0")}m ` +
+    `${String(secs).padStart(2, "0")}s`
   );
-
-  const days=
-    Math.floor(seconds/86400);
-
-  seconds%=86400;
-
-  const hours=
-    Math.floor(seconds/3600);
-
-  seconds%=3600;
-
-  const minutes=
-    Math.floor(seconds/60);
-
-  const secs=
-    seconds%60;
-
-  return `${days}j ${String(hours).padStart(2,"0")}h ${String(minutes).padStart(2,"0")}m ${String(secs).padStart(2,"0")}s`;
 }
 
-function statusClass(status){
-
-  if(status==="Préparation"){
+function statusClass(status) {
+  if (status === "Préparation") {
     return "status-prep";
   }
 
-  if(status==="En transit"){
+  if (status === "En transit") {
     return "status-transit";
   }
 
-  if(status==="Arrivée imminente"){
+  if (status === "Arrivée imminente") {
     return "status-imminent";
   }
 
-  if(status==="Livrée"){
+  if (status === "Livrée") {
     return "status-delivered";
   }
 
   return "";
 }
 
-function ordersForUser(){
-
-  if(!currentUser){
+function ordersForUser() {
+  if (!currentUser) {
     return [];
   }
 
-  return liveOrders.filter(order=>
-    order.userId===currentUser.uid ||
-    (
-      currentUser.email &&
-      order.email===currentUser.email
-    )
+  return liveOrders.filter(order =>
+    order.userId === currentUser.uid
   );
 }
 
-function renderOrders(){
+function renderOrders() {
+  if (!$("ordersContent")) return;
 
-  if(!currentUser){
-
-    $("ordersContent").innerHTML=`
+  if (!currentUser) {
+    $("ordersContent").innerHTML = `
       <p>
         Connecte-toi pour voir tes commandes.
       </p>
@@ -1193,11 +1223,11 @@ function renderOrders(){
     return;
   }
 
-  const orders=ordersForUser();
+  const orders =
+    ordersForUser();
 
-  if(!orders.length){
-
-    $("ordersContent").innerHTML=`
+  if (!orders.length) {
+    $("ordersContent").innerHTML = `
       <p style="color:var(--muted)">
         Aucune commande.
       </p>
@@ -1206,29 +1236,30 @@ function renderOrders(){
     return;
   }
 
-  $("ordersContent").innerHTML=
-    orders.map(order=>{
+  $("ordersContent").innerHTML =
+    orders.map(order => {
+      const d = getDelivery(order);
+      const left = remaining(order);
 
-      const d=getDelivery(order);
-
-      const left=remaining(order);
-
-      const progress=
-        d.durationSeconds
-        ? Math.max(
-            5,
-            Math.min(
-              100,
-              100-
-              (left/
-              d.durationSeconds*
-              100)
-            )
-          )
-        : 100;
+      const progress =
+        d.status === "Livrée"
+          ? 100
+          : d.durationSeconds
+            ? Math.max(
+                5,
+                Math.min(
+                  100,
+                  100 -
+                  (
+                    left /
+                    d.durationSeconds *
+                    100
+                  )
+                )
+              )
+            : 5;
 
       return `
-
         <div class="order">
 
           <strong>
@@ -1270,15 +1301,13 @@ function renderOrders(){
             </div>
 
             <div class="countdown">
-
               ${
-                d.status==="Livrée"
-                ? "✅ Livrée"
-                : left>0
-                  ? "⏱️ "+durationText(left)
-                  : "🚚 Arrivée imminente"
+                d.status === "Livrée"
+                  ? "✅ Livrée"
+                  : left > 0
+                    ? "⏱️ " + durationText(left)
+                    : "🚚 Arrivée imminente"
               }
-
             </div>
 
             <div>
@@ -1289,7 +1318,9 @@ function renderOrders(){
             </div>
 
             <div class="progress">
-              <span style="width:${progress}%"></span>
+              <span
+                style="width:${progress}%"
+              ></span>
             </div>
 
           </div>
@@ -1303,54 +1334,51 @@ function renderOrders(){
           </button>
 
         </div>
-
       `;
-
     }).join("");
 }
 
-function isAdminEmail(){
-
-  return currentUser?.email
-    ?.trim()
-    .toLowerCase()===
-    ADMIN_EMAIL.toLowerCase();
-
+function isAdminEmail() {
+  return (
+    currentUser?.email
+      ?.trim()
+      .toLowerCase() ===
+    ADMIN_EMAIL.toLowerCase()
+  );
 }
 
-function isAdminUnlocked(){
-
+function isAdminUnlocked() {
   return localStorage.getItem(
     STORAGE.admin
-  )==="true";
-
+  ) === "true";
 }
 
-function updateAccountUI(){
+function updateAccountUI() {
+  if ($("accountButton")) {
+    $("accountButton").textContent =
+      currentUser ? "👤" : "🔐";
+  }
 
-  $("accountButton").textContent=
-    currentUser
-    ? "👤"
-    : "🔐";
+  if ($("ordersButton")) {
+    $("ordersButton").style.display =
+      currentUser
+        ? "inline-flex"
+        : "none";
+  }
 
-  $("ordersButton").style.display=
-    currentUser
-    ? "inline-flex"
-    : "none";
-
-  $("adminButton").style.display=
-    isAdminEmail()
-    ? "inline-flex"
-    : "none";
-
+  if ($("adminButton")) {
+    $("adminButton").style.display =
+      isAdminEmail()
+        ? "inline-flex"
+        : "none";
+  }
 }
 
-function renderAccount(){
+function renderAccount() {
+  if (!$("accountContent")) return;
 
-  if(!currentUser){
-
-    $("accountContent").innerHTML=`
-
+  if (!currentUser) {
+    $("accountContent").innerHTML = `
       <p>
         Tu n'es pas connecté.
       </p>
@@ -1362,21 +1390,17 @@ function renderAccount(){
       >
         Se connecter
       </button>
-
     `;
 
-    $("accountLogin").addEventListener(
+    $("accountLogin")?.addEventListener(
       "click",
-      ()=>{
-        openModal("authModal");
-      }
+      () => openModal("authModal")
     );
 
     return;
   }
 
-  $("accountContent").innerHTML=`
-
+  $("accountContent").innerHTML = `
     <h3>
       👤 ${escapeHTML(
         currentUser.displayName ||
@@ -1385,7 +1409,9 @@ function renderAccount(){
     </h3>
 
     <p style="margin-top:10px">
-      ${escapeHTML(currentUser.email||"")}
+      ${escapeHTML(
+        currentUser.email || ""
+      )}
     </p>
 
     <button
@@ -1398,16 +1424,16 @@ function renderAccount(){
 
     ${
       isAdminEmail()
-      ? `
-        <button
-          class="primary"
-          style="width:100%;margin-top:10px"
-          id="accountDashboard"
-        >
-          👑 Ouvrir le dashboard
-        </button>
-      `
-      : ""
+        ? `
+          <button
+            class="primary"
+            style="width:100%;margin-top:10px"
+            id="accountDashboard"
+          >
+            👑 Ouvrir le dashboard
+          </button>
+        `
+        : ""
     }
 
     <button
@@ -1417,48 +1443,38 @@ function renderAccount(){
     >
       Se déconnecter
     </button>
-
   `;
 
-  $("accountOrders").addEventListener(
+  $("accountOrders")?.addEventListener(
     "click",
-    ()=>{
+    () => {
       renderOrders();
       openModal("ordersModal");
     }
   );
 
-  const dashboard=
-    $("accountDashboard");
-
-  if(dashboard){
-
-    dashboard.addEventListener(
-      "click",
-      openAdminDashboard
-    );
-
-  }
-
-  $("logoutButton").addEventListener(
+  $("accountDashboard")?.addEventListener(
     "click",
-    async()=>{
+    openAdminDashboard
+  );
 
-      try{
+  $("logoutButton")?.addEventListener(
+    "click",
+    async () => {
 
-        if(firebaseAuth){
+      try {
+        if (firebaseAuth) {
           await firebaseTools.signOut(
             firebaseAuth
           );
         }
+      } catch {}
 
-      }catch{}
-
-      currentUser=null;
-
-      liveOrders=[];
+      currentUser = null;
+      liveOrders = [];
 
       stopOrdersListener();
+      stopAdminOrdersListener();
 
       localStorage.removeItem(
         STORAGE.admin
@@ -1469,51 +1485,53 @@ function renderAccount(){
       closeAllModals();
 
       toast("Déconnecté.");
-
     }
   );
-
 }
 
-function renderDashboard(){
-
-  if(
+function renderDashboard() {
+  if (
     !isAdminEmail() ||
     !isAdminUnlocked()
-  ){
+  ) {
     return;
   }
 
-  const orders=liveOrders;
+  const orders = liveOrders;
 
-  $("statOrders").textContent=
-    orders.length;
+  if ($("statOrders")) {
+    $("statOrders").textContent =
+      orders.length;
+  }
 
-  $("statFree").textContent=
-    orders.filter(
-      o=>Number(o.discount)===100
-    ).length;
+  if ($("statFree")) {
+    $("statFree").textContent =
+      orders.filter(
+        o => Number(o.discount) === 100
+      ).length;
+  }
 
-  $("statCatalog").textContent=
-    money(
-      products.reduce(
-        (a,p)=>a+p.price,
-        0
-      )
-    );
+  if ($("statCatalog")) {
+    $("statCatalog").textContent =
+      money(
+        products.reduce(
+          (a, p) => a + p.price,
+          0
+        )
+      );
+  }
 
   renderAdminOrders();
   renderAdminPromos();
-
 }
 
-function renderAdminOrders(){
+function renderAdminOrders() {
+  if (!$("adminOrders")) return;
 
-  const orders=liveOrders;
+  const orders = liveOrders;
 
-  if(!orders.length){
-
-    $("adminOrders").innerHTML=`
+  if (!orders.length) {
+    $("adminOrders").innerHTML = `
       <p style="color:var(--muted);margin-top:10px">
         Aucune commande.
       </p>
@@ -1522,28 +1540,26 @@ function renderAdminOrders(){
     return;
   }
 
-  $("adminOrders").innerHTML=
-    orders.map(order=>{
+  $("adminOrders").innerHTML =
+    orders.map(order => {
 
-      const d=getDelivery(order);
+      const d = getDelivery(order);
+      const left = remaining(order);
 
-      const left=remaining(order);
+      const days =
+        Math.floor(left / 86400);
 
-      const days=
-        Math.floor(left/86400);
-
-      const hours=
+      const hours =
         Math.floor(
-          (left%86400)/3600
+          (left % 86400) / 3600
         );
 
-      const minutes=
+      const minutes =
         Math.floor(
-          (left%3600)/60
+          (left % 3600) / 60
         );
 
       return `
-
         <div class="order">
 
           <strong>
@@ -1552,26 +1568,26 @@ function renderAdminOrders(){
 
           <p style="margin-top:7px">
             👤 ${escapeHTML(
-              order.customer?.name||
+              order.customer?.name ||
               "Client"
             )}
           </p>
 
           <p style="margin-top:4px">
             ✉️ ${escapeHTML(
-              order.email||""
+              order.email || ""
             )}
           </p>
 
           <p style="margin-top:4px">
             📍 ${escapeHTML(
-              order.address?.address||""
+              order.address?.address || ""
             )},
             ${escapeHTML(
-              order.address?.postalCode||""
+              order.address?.postalCode || ""
             )}
             ${escapeHTML(
-              order.address?.city||""
+              order.address?.city || ""
             )}
           </p>
 
@@ -1585,25 +1601,21 @@ function renderAdminOrders(){
                 data-field="status"
                 data-order="${escapeHTML(order.id)}"
               >
-
                 ${
                   [
                     "Préparation",
                     "En transit",
                     "Arrivée imminente",
                     "Livrée"
-                  ].map(x=>`
-
+                  ].map(x => `
                     <option
                       value="${escapeHTML(x)}"
-                      ${x===d.status?"selected":""}
+                      ${x === d.status ? "selected" : ""}
                     >
                       ${escapeHTML(x)}
                     </option>
-
                   `).join("")
                 }
-
               </select>
 
             </div>
@@ -1724,19 +1736,16 @@ function renderAdminOrders(){
           </div>
 
         </div>
-
       `;
-
     }).join("");
-
 }
 
-function renderAdminPromos(){
+function renderAdminPromos() {
+  if (!$("adminPromos")) return;
 
-  $("adminPromos").innerHTML=
+  $("adminPromos").innerHTML =
     Object.entries(promos)
-      .map(([code,discount])=>`
-
+      .map(([code, discount]) => `
         <div class="cart-item">
 
           <strong>
@@ -1748,152 +1757,176 @@ function renderAdminPromos(){
           </span>
 
         </div>
-
       `).join("");
-
 }
 
-function saveDelivery(orderId){
+function getAdminField(field, orderId) {
+  const selector =
+    `[data-field="${field}"][data-order="${CSS.escape(orderId)}"]`;
 
-  if(
+  return document.querySelector(selector);
+}
+
+async function saveDelivery(orderId) {
+  if (
     !isAdminEmail() ||
     !isAdminUnlocked()
-  ){
+  ) {
     return;
   }
 
-  if(!firestore){
+  if (!firestore) {
     toast("Firestore n'est pas disponible.");
     return;
   }
 
-  const order=
+  const order =
     liveOrders.find(
-      o=>o.id===orderId
+      o => o.id === orderId
     );
 
-  if(!order)return;
+  if (!order) return;
 
-  const getField=field=>
-    document.querySelector(
-      `[data-field="${field}"][data-order="${CSS.escape(orderId)}"]`
-    );
+  const status =
+    getAdminField("status", orderId)?.value ||
+    "Préparation";
 
-  const status=
-    getField("status").value;
-
-  const truckLocation=
-    getField("truckLocation")
-      .value
-      .trim() ||
+  const truckLocation =
+    getAdminField(
+      "truckLocation",
+      orderId
+    )?.value.trim() ||
     "Entrepôt";
 
-  const destination=
-    getField("destination")
-      .value
-      .trim() ||
+  const destination =
+    getAdminField(
+      "destination",
+      orderId
+    )?.value.trim() ||
     order.address?.city ||
     "France";
 
-  const tracking=
-    getField("tracking")
-      .value
-      .trim() ||
+  const tracking =
+    getAdminField(
+      "tracking",
+      orderId
+    )?.value.trim() ||
     `NOVA-TRK-${orderId}`;
 
-  const days=Math.max(
-    0,
-    Number(getField("days").value)||0
-  );
-
-  const hours=Math.min(
-    23,
+  const days =
     Math.max(
       0,
-      Number(getField("hours").value)||0
-    )
-  );
+      Number(
+        getAdminField(
+          "days",
+          orderId
+        )?.value
+      ) || 0
+    );
 
-  const minutes=Math.min(
-    59,
-    Math.max(
-      0,
-      Number(getField("minutes").value)||0
-    )
-  );
+  const hours =
+    Math.min(
+      23,
+      Math.max(
+        0,
+        Number(
+          getAdminField(
+            "hours",
+            orderId
+          )?.value
+        ) || 0
+      )
+    );
 
-  let duration=
-    days*86400+
-    hours*3600+
-    minutes*60;
+  const minutes =
+    Math.min(
+      59,
+      Math.max(
+        0,
+        Number(
+          getAdminField(
+            "minutes",
+            orderId
+          )?.value
+        ) || 0
+      )
+    );
 
-  if(status==="Livrée"){
-    duration=0;
+  let duration =
+    days * 86400 +
+    hours * 3600 +
+    minutes * 60;
+
+  if (status === "Livrée") {
+    duration = 0;
   }
 
-  const now=Date.now();
+  const now = Date.now();
 
-  const update={
+  const update = {
     status,
     truckLocation,
     destination,
     tracking,
-    deliveryDurationSeconds:duration,
-    deliveryUpdatedAt:now,
+
+    deliveryDurationSeconds:
+      duration,
+
+    deliveryUpdatedAt:
+      now,
+
     deliveryDate:
       new Date(
-        now+
-        duration*1000
+        now +
+        duration * 1000
       ).toISOString(),
+
     updatedAt:
       new Date().toISOString()
   };
 
-  firestoreTools.updateDoc(
-    firestoreTools.doc(
-      firestore,
-      "orders",
-      orderId
-    ),
-    update
-  )
-  .then(()=>{
+  try {
+
+    await firestoreTools.updateDoc(
+      firestoreTools.doc(
+        firestore,
+        "orders",
+        orderId
+      ),
+      update
+    );
 
     toast(
       "🚚 Livraison synchronisée"
     );
 
-  })
-  .catch(error=>{
+  } catch (error) {
 
     console.error(error);
 
     toast(
       "❌ Impossible de modifier la commande"
     );
-
-  });
-
+  }
 }
 
-async function deleteOrder(orderId){
-
-  if(
+async function deleteOrder(orderId) {
+  if (
     !isAdminEmail() ||
     !isAdminUnlocked() ||
     !firestore
-  ){
+  ) {
     return;
   }
 
-  const confirmed=
+  const confirmed =
     confirm(
       `Supprimer définitivement la commande #${orderId} ?`
     );
 
-  if(!confirmed)return;
+  if (!confirmed) return;
 
-  try{
+  try {
 
     await firestoreTools.deleteDoc(
       firestoreTools.doc(
@@ -1907,32 +1940,26 @@ async function deleteOrder(orderId){
       "Commande supprimée"
     );
 
-  }catch(error){
+  } catch (error) {
 
     console.error(error);
 
     toast(
       "❌ Suppression impossible"
     );
-
   }
-
 }
 
-function createOrder(){
-
-  if(!currentUser){
-
+function createOrder() {
+  if (!currentUser) {
     openModal("authModal");
-
     return;
   }
 
-  if(
+  if (
     !currentPromo ||
-    currentPromo.discount!==100
-  ){
-
+    currentPromo.discount !== 100
+  ) {
     toast(
       "Pour la démo, utilise NOVA100."
     );
@@ -1940,8 +1967,10 @@ function createOrder(){
     return;
   }
 
-  if(!addressVerified || !verifiedAddress){
-
+  if (
+    !addressVerified ||
+    !verifiedAddress
+  ) {
     setAddressStatus(
       "error",
       "❌ Adresse incorrecte. Paiement impossible."
@@ -1952,68 +1981,75 @@ function createOrder(){
     return;
   }
 
-  const fullName=
+  const fullName =
     $("fullName").value.trim();
 
-  const country=
+  const country =
     $("country").value.trim();
 
-  const items=cart();
+  const items = cart();
 
-  if(!fullName){
-
-    toast(
-      "Complète ton nom."
-    );
-
+  if (!fullName) {
+    toast("Complète ton nom.");
     return;
   }
 
-  if(!items.length){
-
-    toast(
-      "Panier vide."
-    );
-
+  if (!items.length) {
+    toast("Panier vide.");
     return;
   }
 
-  const subtotal=cartTotal();
+  const subtotal =
+    cartTotal();
 
-  const orderId=
-    Math.random()
-      .toString(36)
-      .slice(2,8)
+  const orderId =
+    crypto.randomUUID()
+      .replaceAll("-", "")
+      .slice(0, 10)
       .toUpperCase();
 
-  const order={
+  const now =
+    Date.now();
 
-    id:orderId,
+  const deliveryDuration =
+    259200;
+
+  const order = {
+
+    id: orderId,
 
     userId:
       currentUser.uid,
 
     email:
-      currentUser.email||"",
+      currentUser.email || "",
 
-    customer:{
-      name:fullName
+    customer: {
+      name: fullName
     },
 
-    address:{
+    address: {
       country,
+
       address:
         verifiedAddress.address,
+
       street:
         verifiedAddress.street,
+
       postalCode:
         verifiedAddress.postalCode,
+
       city:
         verifiedAddress.city,
+
       latitude:
         verifiedAddress.latitude,
+
       longitude:
-        verifiedAddress.longitude
+        verifiedAddress.longitude,
+
+      verified: true
     },
 
     items,
@@ -2026,9 +2062,9 @@ function createOrder(){
     total:
       Math.max(
         0,
-        subtotal-
-        subtotal*
-        (currentPromo.discount/100)
+        subtotal -
+        subtotal *
+        (currentPromo.discount / 100)
       ),
 
     promoCode:
@@ -2047,22 +2083,22 @@ function createOrder(){
       verifiedAddress.city,
 
     tracking:
-      "NOVA-TRK-"+
+      "NOVA-TRK-" +
       Math.random()
         .toString(36)
-        .slice(2,8)
+        .slice(2, 8)
         .toUpperCase(),
 
     deliveryDurationSeconds:
-      259200,
+      deliveryDuration,
 
     deliveryUpdatedAt:
-      Date.now(),
+      now,
 
     deliveryDate:
       new Date(
-        Date.now()+
-        259200000
+        now +
+        deliveryDuration * 1000
       ).toISOString(),
 
     createdAt:
@@ -2070,17 +2106,13 @@ function createOrder(){
 
     updatedAt:
       new Date().toISOString()
-
   };
 
   saveOrderToFirestore(order);
-
 }
 
-async function saveOrderToFirestore(order){
-
-  if(!firestore){
-
+async function saveOrderToFirestore(order) {
+  if (!firestore) {
     toast(
       "❌ Service de commande indisponible."
     );
@@ -2088,7 +2120,7 @@ async function saveOrderToFirestore(order){
     return;
   }
 
-  try{
+  try {
 
     await firestoreTools.setDoc(
       firestoreTools.doc(
@@ -2101,45 +2133,54 @@ async function saveOrderToFirestore(order){
 
     setCart([]);
 
-    currentPromo=null;
+    currentPromo = null;
 
-    addressVerified=false;
-    verifiedAddress=null;
+    addressVerified = false;
+    verifiedAddress = null;
 
-    $("promoCode").value="";
-    $("promoMessage").textContent="";
+    if ($("promoCode")) {
+      $("promoCode").value = "";
+    }
+
+    if ($("promoMessage")) {
+      $("promoMessage").textContent = "";
+    }
 
     closeModal("checkoutModal");
 
-    showInvoice(order.id);
+    /*
+      Le listener Firestore va récupérer
+      automatiquement la commande.
+    */
+
+    setTimeout(() => {
+      showInvoice(order.id);
+    }, 250);
 
     toast(
-      "🎉 Commande créée"
+      "🎉 Commande enregistrée dans Cloud Firestore"
     );
 
-  }catch(error){
+  } catch (error) {
 
-    console.error(error);
+    console.error(
+      "Firestore create order:",
+      error
+    );
 
     toast(
       "❌ Impossible d'enregistrer la commande"
     );
-
   }
-
 }
 
-async function startPaypal(){
-
-  if(!currentUser){
-
+async function startPaypal() {
+  if (!currentUser) {
     openModal("authModal");
-
     return;
   }
 
-  if(!addressVerified){
-
+  if (!addressVerified) {
     toast(
       "❌ Adresse incorrecte. Paiement bloqué."
     );
@@ -2147,11 +2188,10 @@ async function startPaypal(){
     return;
   }
 
-  if(
+  if (
     !currentPromo ||
-    currentPromo.discount!==100
-  ){
-
+    currentPromo.discount !== 100
+  ) {
     toast(
       "Utilise NOVA100 pour la démo gratuite."
     );
@@ -2160,24 +2200,24 @@ async function startPaypal(){
   }
 
   /*
-    Ici tu peux brancher ton vrai système PayPal.
-    La commande n'est enregistrée qu'après
-    validation de l'adresse.
+    Ceci est actuellement une simulation.
+    Aucun paiement PayPal réel n'est effectué.
   */
 
-  createOrder();
-
+  await createOrder();
 }
 
-function showInvoice(orderId){
+function findLiveOrder(orderId) {
+  return liveOrders.find(
+    order => order.id === orderId
+  );
+}
 
-  const order=
-    liveOrders.find(
-      o=>o.id===orderId
-    );
+function showInvoice(orderId) {
+  const order =
+    findLiveOrder(orderId);
 
-  if(!order){
-
+  if (!order) {
     toast(
       "Facture introuvable."
     );
@@ -2185,30 +2225,23 @@ function showInvoice(orderId){
     return;
   }
 
-  $("invoiceContent").innerHTML=`
-
+  $("invoiceContent").innerHTML = `
     <div class="invoice">
 
       <div class="invoice-head">
 
         <div>
-
           <h2>NOVASHOP</h2>
-
           <p>
             Matériel gaming
           </p>
-
         </div>
 
         <div>
-
           <strong>FACTURE</strong>
-
           <p>
             #${escapeHTML(order.id)}
           </p>
-
         </div>
 
       </div>
@@ -2223,11 +2256,12 @@ function showInvoice(orderId){
         <strong>Client :</strong><br>
 
         ${escapeHTML(
-          order.customer?.name||"Client"
+          order.customer?.name ||
+          "Client"
         )}<br>
 
         ${escapeHTML(
-          order.email||""
+          order.email || ""
         )}
 
       </p>
@@ -2237,18 +2271,19 @@ function showInvoice(orderId){
         <strong>Livraison :</strong><br>
 
         ${escapeHTML(
-          order.address?.address||""
+          order.address?.address || ""
         )}<br>
 
         ${escapeHTML(
-          order.address?.postalCode||""
+          order.address?.postalCode || ""
         )}
         ${escapeHTML(
-          order.address?.city||""
+          order.address?.city || ""
         )}<br>
 
         ${escapeHTML(
-          order.address?.country||"France"
+          order.address?.country ||
+          "France"
         )}
 
       </p>
@@ -2256,33 +2291,30 @@ function showInvoice(orderId){
       <table class="invoice-table">
 
         <thead>
-
           <tr>
             <th>Produit</th>
             <th>Qté</th>
             <th>Prix</th>
           </tr>
-
         </thead>
 
         <tbody>
 
           ${
-            (order.items||[])
-              .map(item=>{
+            (order.items || [])
+              .map(item => {
 
-                const p=
+                const p =
                   products.find(
-                    x=>x.id===item.id
+                    x => x.id === item.id
                   );
 
                 return `
-
                   <tr>
 
                     <td>
                       ${escapeHTML(
-                        p?.name||
+                        p?.name ||
                         "Produit"
                       )}
                     </td>
@@ -2293,16 +2325,16 @@ function showInvoice(orderId){
 
                     <td>
                       ${money(
-                        (p?.price||0)*
+                        (p?.price || 0) *
                         item.qty
                       )}
                     </td>
 
                   </tr>
-
                 `;
 
-              }).join("")
+              })
+              .join("")
           }
 
         </tbody>
@@ -2319,7 +2351,7 @@ function showInvoice(orderId){
       <div class="total">
         <span>Réduction</span>
         <span>
-          -${Number(order.discount)||0}%
+          -${Number(order.discount) || 0}%
         </span>
       </div>
 
@@ -2333,26 +2365,22 @@ function showInvoice(orderId){
       <p>
         <strong>Paiement :</strong>
         ${escapeHTML(
-          order.paymentStatus||
+          order.paymentStatus ||
           "pending"
         )}
       </p>
 
     </div>
-
   `;
 
   openModal("invoiceModal");
-
 }
 
-function showAuthError(error){
+function showAuthError(error) {
+  const code =
+    error?.code || "";
 
-  const code=
-    error?.code||
-    "";
-
-  const messages={
+  const messages = {
 
     "auth/invalid-credential":
       "E-mail ou mot de passe incorrect.",
@@ -2384,90 +2412,89 @@ function showAuthError(error){
   };
 
   toast(
-    messages[code]||
+    messages[code] ||
     "Erreur de connexion."
   );
-
 }
 
-async function initFirebase(){
+async function initFirebase() {
+  try {
 
-  try{
-
-    const appModule=
+    const appModule =
       await import(
         "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js"
       );
 
-    const authModule=
+    const authModule =
       await import(
         "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js"
       );
 
-    const firestoreModule=
+    const firestoreModule =
       await import(
         "https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js"
       );
 
-    const app=
+    const app =
       appModule.initializeApp(
         FIREBASE_CONFIG
       );
 
-    firebaseAuth=
+    firebaseAuth =
       authModule.getAuth(app);
 
-    firebaseTools=
+    firebaseTools =
       authModule;
 
-    firestore=
+    firestore =
       firestoreModule.getFirestore(app);
 
-    firestoreTools=
+    firestoreTools =
       firestoreModule;
 
     authModule.onAuthStateChanged(
       firebaseAuth,
-      user=>{
+      user => {
 
-        currentUser=user;
+        currentUser = user;
 
         updateAccountUI();
 
-        if(user){
-
+        if (user) {
           startOrdersListener();
-
-        }else{
-
+        } else {
           stopOrdersListener();
+          stopAdminOrdersListener();
 
+          liveOrders = [];
         }
 
-        if(
+        if (
           $("accountModal")
-            .classList
+            ?.classList
             .contains("open")
-        ){
-
+        ) {
           renderAccount();
-
         }
 
-        if(
+        if (
           $("ordersModal")
-            .classList
+            ?.classList
             .contains("open")
-        ){
-
+        ) {
           renderOrders();
-
         }
 
+        if (
+          isAdminEmail() &&
+          isAdminUnlocked()
+        ) {
+          startAdminOrdersListener();
+        }
       }
     );
 
-  }catch(error){
+  } catch (error) {
 
     console.error(
       "Firebase non disponible",
@@ -2477,95 +2504,26 @@ async function initFirebase(){
     toast(
       "⚠️ Firebase non disponible"
     );
-
   }
-
 }
 
-function startOrdersListener(){
-
-  if(
+function startOrdersListener() {
+  if (
     !firestore ||
     !currentUser
-  ){
+  ) {
     return;
   }
 
   stopOrdersListener();
 
-  const query=
-    firestoreTools.query(
-      firestoreTools.collection(
-        firestore,
-        "orders"
-      ),
-      firestoreTools.where(
-        "userId",
-        "==",
-        currentUser.uid
-      ),
-      firestoreTools.orderBy(
-        "createdAt",
-        "desc"
-      )
-    );
+  /*
+    Pas de orderBy ici.
+    Cela évite d'avoir besoin
+    d'un index composite.
+  */
 
-  unsubscribeOrders=
-    firestoreTools.onSnapshot(
-      query,
-      snapshot=>{
-
-        const mine=
-          snapshot.docs.map(
-            doc=>({
-              ...doc.data(),
-              id:doc.id
-            })
-          );
-
-        liveOrders=mine;
-
-        renderOrders();
-
-        if(
-          isAdminEmail() &&
-          isAdminUnlocked()
-        ){
-          renderDashboard();
-        }
-
-      },
-      error=>{
-
-        console.error(
-          "Orders listener",
-          error
-        );
-
-        /*
-          Fallback si la requête composite
-          Firestore nécessite un index.
-        */
-
-        startSimpleOrdersListener();
-
-      }
-    );
-
-}
-
-function startSimpleOrdersListener(){
-
-  if(
-    !firestore ||
-    !currentUser
-  ){
-    return;
-  }
-
-  stopOrdersListener();
-
-  const query=
+  const query =
     firestoreTools.query(
       firestoreTools.collection(
         firestore,
@@ -2578,133 +2536,136 @@ function startSimpleOrdersListener(){
       )
     );
 
-  unsubscribeOrders=
+  unsubscribeOrders =
     firestoreTools.onSnapshot(
       query,
-      snapshot=>{
+      snapshot => {
 
-        liveOrders=
+        liveOrders =
           snapshot.docs
-            .map(doc=>({
+            .map(doc => ({
               ...doc.data(),
-              id:doc.id
+              id: doc.id
             }))
             .sort(
-              (a,b)=>
+              (a, b) =>
                 new Date(
-                  b.createdAt||0
-                )-
+                  b.createdAt || 0
+                ) -
                 new Date(
-                  a.createdAt||0
+                  a.createdAt || 0
                 )
             );
 
         renderOrders();
 
+        if (
+          isAdminEmail() &&
+          isAdminUnlocked()
+        ) {
+          renderDashboard();
+        }
+
       },
-      error=>{
-        console.error(error);
+      error => {
+
+        console.error(
+          "Orders listener:",
+          error
+        );
+
+        toast(
+          "❌ Impossible de charger tes commandes"
+        );
       }
     );
-
 }
 
-function stopOrdersListener(){
-
-  if(unsubscribeOrders){
-
+function stopOrdersListener() {
+  if (unsubscribeOrders) {
     unsubscribeOrders();
-
-    unsubscribeOrders=null;
-
+    unsubscribeOrders = null;
   }
-
 }
 
-function startAdminOrdersListener(){
-
-  if(
+function startAdminOrdersListener() {
+  if (
     !firestore ||
     !isAdminEmail() ||
     !isAdminUnlocked()
-  ){
+  ) {
     return;
   }
 
-  if(
-    window.__adminOrdersUnsubscribe
-  ){
-    window.__adminOrdersUnsubscribe();
-    window.__adminOrdersUnsubscribe=null;
-  }
+  stopAdminOrdersListener();
 
-  const query=
+  const query =
     firestoreTools.collection(
       firestore,
       "orders"
     );
 
-  window.__adminOrdersUnsubscribe=
+  unsubscribeAdminOrders =
     firestoreTools.onSnapshot(
       query,
-      snapshot=>{
+      snapshot => {
 
-        const orders=
+        const orders =
           snapshot.docs
-            .map(doc=>({
+            .map(doc => ({
               ...doc.data(),
-              id:doc.id
+              id: doc.id
             }))
             .sort(
-              (a,b)=>
+              (a, b) =>
                 new Date(
-                  b.createdAt||0
-                )-
+                  b.createdAt || 0
+                ) -
                 new Date(
-                  a.createdAt||0
+                  a.createdAt || 0
                 )
             );
 
-        liveOrders=orders;
+        liveOrders = orders;
 
         renderDashboard();
 
-        if(
+        if (
           $("ordersModal")
-            .classList
+            ?.classList
             .contains("open")
-        ){
+        ) {
           renderOrders();
         }
-
       },
-      error=>{
+      error => {
 
         console.error(
-          "Admin orders listener",
+          "Admin orders listener:",
           error
         );
 
         toast(
           "❌ Accès Firestore refusé"
         );
-
       }
     );
-
 }
 
-function openAdminDashboard(){
+function stopAdminOrdersListener() {
+  if (unsubscribeAdminOrders) {
+    unsubscribeAdminOrders();
+    unsubscribeAdminOrders = null;
+  }
+}
 
-  if(!currentUser){
-
+function openAdminDashboard() {
+  if (!currentUser) {
     openModal("authModal");
-
     return;
   }
 
-  if(!isAdminEmail()){
-
+  if (!isAdminEmail()) {
     toast(
       "Compte non autorisé."
     );
@@ -2712,15 +2673,14 @@ function openAdminDashboard(){
     return;
   }
 
-  if(!isAdminUnlocked()){
+  if (!isAdminUnlocked()) {
 
-    const code=
+    const code =
       prompt(
         "Code Dashboard NovaShop :"
       );
 
-    if(code!==ADMIN_CODE){
-
+    if (code !== ADMIN_CODE) {
       toast(
         "Code incorrect."
       );
@@ -2732,7 +2692,6 @@ function openAdminDashboard(){
       STORAGE.admin,
       "true"
     );
-
   }
 
   startAdminOrdersListener();
@@ -2740,15 +2699,12 @@ function openAdminDashboard(){
   renderDashboard();
 
   openModal("dashboardModal");
-
 }
 
-async function loginEmail(e){
-
+async function loginEmail(e) {
   e.preventDefault();
 
-  if(!firebaseAuth){
-
+  if (!firebaseAuth) {
     toast(
       "Firebase n'est pas disponible."
     );
@@ -2756,7 +2712,7 @@ async function loginEmail(e){
     return;
   }
 
-  try{
+  try {
 
     await firebaseTools
       .signInWithEmailAndPassword(
@@ -2771,20 +2727,15 @@ async function loginEmail(e){
       "Connexion réussie"
     );
 
-  }catch(error){
-
+  } catch (error) {
     showAuthError(error);
-
   }
-
 }
 
-async function signupEmail(e){
-
+async function signupEmail(e) {
   e.preventDefault();
 
-  if(!firebaseAuth){
-
+  if (!firebaseAuth) {
     toast(
       "Firebase n'est pas disponible."
     );
@@ -2792,20 +2743,25 @@ async function signupEmail(e){
     return;
   }
 
-  const email=
-    $("signupEmail").value.trim();
+  const email =
+    $("signupEmail")
+      .value
+      .trim();
 
-  const phone=
-    $("signupPhone").value.trim();
+  const phone =
+    $("signupPhone")
+      .value
+      .trim();
 
-  const password=
-    $("signupPassword").value;
+  const password =
+    $("signupPassword")
+      .value;
 
-  const confirm=
-    $("signupConfirm").value;
+  const confirm =
+    $("signupConfirm")
+      .value;
 
-  if(password!==confirm){
-
+  if (password !== confirm) {
     toast(
       "Les mots de passe ne correspondent pas."
     );
@@ -2813,8 +2769,7 @@ async function signupEmail(e){
     return;
   }
 
-  if(phone.length<8){
-
+  if (phone.length < 8) {
     toast(
       "Numéro de téléphone invalide."
     );
@@ -2822,9 +2777,9 @@ async function signupEmail(e){
     return;
   }
 
-  try{
+  try {
 
-    const result=
+    const result =
       await firebaseTools
         .createUserWithEmailAndPassword(
           firebaseAuth,
@@ -2832,13 +2787,13 @@ async function signupEmail(e){
           password
         );
 
-    const profiles=
+    const profiles =
       load(
         STORAGE.profiles,
         {}
       );
 
-    profiles[result.user.uid]={
+    profiles[result.user.uid] = {
       phone
     };
 
@@ -2847,24 +2802,39 @@ async function signupEmail(e){
       profiles
     );
 
+    /*
+      Création du profil Firestore.
+    */
+
+    if (firestore) {
+      await firestoreTools.setDoc(
+        firestoreTools.doc(
+          firestore,
+          "users",
+          result.user.uid
+        ),
+        {
+          email,
+          phone,
+          createdAt:
+            new Date().toISOString()
+        }
+      );
+    }
+
     closeModal("authModal");
 
     toast(
       "Compte créé"
     );
 
-  }catch(error){
-
+  } catch (error) {
     showAuthError(error);
-
   }
-
 }
 
-async function googleLogin(){
-
-  if(!firebaseAuth){
-
+async function googleLogin() {
+  if (!firebaseAuth) {
     toast(
       "Firebase n'est pas disponible."
     );
@@ -2872,10 +2842,11 @@ async function googleLogin(){
     return;
   }
 
-  try{
+  try {
 
-    const provider=
-      new firebaseTools.GoogleAuthProvider();
+    const provider =
+      new firebaseTools
+        .GoogleAuthProvider();
 
     await firebaseTools
       .signInWithPopup(
@@ -2889,64 +2860,57 @@ async function googleLogin(){
       "Connexion Google réussie."
     );
 
-  }catch(error){
-
+  } catch (error) {
     showAuthError(error);
-
   }
-
 }
 
-function setupEvents(){
+function setupEvents() {
 
-  $("searchButton")
-    .addEventListener(
-      "click",
-      ()=>{
-        searchTerm=
-          $("searchInput")
-            .value
+  $("searchButton")?.addEventListener(
+    "click",
+    () => {
+
+      searchTerm =
+        $("searchInput")
+          .value
+          .trim();
+
+      renderProducts();
+    }
+  );
+
+  $("searchInput")?.addEventListener(
+    "keydown",
+    e => {
+
+      if (e.key === "Enter") {
+
+        searchTerm =
+          e.target.value
             .trim();
 
         renderProducts();
       }
-    );
+    }
+  );
 
-  $("searchInput")
-    .addEventListener(
-      "keydown",
-      e=>{
-
-        if(e.key==="Enter"){
-
-          searchTerm=
-            e.target.value
-              .trim();
-
-          renderProducts();
-
-        }
-
-      }
-    );
-
-  $("sortSelect")
-    .addEventListener(
-      "change",
-      renderProducts
-    );
+  $("sortSelect")?.addEventListener(
+    "change",
+    renderProducts
+  );
 
   document
     .querySelectorAll(".category")
-    .forEach(button=>{
+    .forEach(button => {
 
       button.addEventListener(
         "click",
-        ()=>{
+        () => {
 
           document
             .querySelectorAll(".category")
-            .forEach(x=>
+            .forEach(x =>
               x.classList
                 .remove("active")
             );
@@ -2954,495 +2918,425 @@ function setupEvents(){
           button.classList
             .add("active");
 
-          currentCategory=
+          currentCategory =
             button.dataset.category;
 
           renderProducts();
-
         }
       );
-
     });
 
-  $("productsGrid")
-    .addEventListener(
-      "click",
-      e=>{
+  $("productsGrid")?.addEventListener(
+    "click",
+    e => {
 
-        const favorite=
-          e.target.closest(
-            "[data-favorite]"
-          );
+      const favorite =
+        e.target.closest(
+          "[data-favorite]"
+        );
 
-        const view=
-          e.target.closest(
-            "[data-view]"
-          );
+      const view =
+        e.target.closest(
+          "[data-view]"
+        );
 
-        const add=
-          e.target.closest(
-            "[data-add]"
-          );
+      const add =
+        e.target.closest(
+          "[data-add]"
+        );
 
-        if(favorite){
-
-          toggleFavorite(
-            favorite.dataset.favorite
-          );
-
-        }
-
-        if(view){
-
-          openProduct(
-            view.dataset.view
-          );
-
-        }
-
-        if(add){
-
-          addToCart(
-            add.dataset.add
-          );
-
-        }
-
+      if (favorite) {
+        toggleFavorite(
+          favorite.dataset.favorite
+        );
       }
-    );
 
-  $("cartContent")
-    .addEventListener(
-      "click",
-      e=>{
-
-        const plus=
-          e.target.closest(
-            "[data-plus]"
-          );
-
-        const minus=
-          e.target.closest(
-            "[data-minus]"
-          );
-
-        if(plus){
-
-          changeQty(
-            plus.dataset.plus,
-            1
-          );
-
-        }
-
-        if(minus){
-
-          changeQty(
-            minus.dataset.minus,
-            -1
-          );
-
-        }
-
+      if (view) {
+        openProduct(
+          view.dataset.view
+        );
       }
-    );
 
-  $("cartButton")
-    .addEventListener(
-      "click",
-      ()=>{
-
-        renderCart();
-
-        openModal("cartModal");
-
+      if (add) {
+        addToCart(
+          add.dataset.add
+        );
       }
-    );
+    }
+  );
 
-  $("accountButton")
-    .addEventListener(
-      "click",
-      ()=>{
+  $("cartContent")?.addEventListener(
+    "click",
+    e => {
 
-        renderAccount();
+      const plus =
+        e.target.closest(
+          "[data-plus]"
+        );
 
-        openModal("accountModal");
+      const minus =
+        e.target.closest(
+          "[data-minus]"
+        );
 
+      if (plus) {
+        changeQty(
+          plus.dataset.plus,
+          1
+        );
       }
-    );
 
-  $("ordersButton")
-    .addEventListener(
-      "click",
-      ()=>{
-
-        renderOrders();
-
-        openModal("ordersModal");
-
+      if (minus) {
+        changeQty(
+          minus.dataset.minus,
+          -1
+        );
       }
-    );
+    }
+  );
 
-  $("heroOrders")
-    .addEventListener(
-      "click",
-      ()=>{
+  $("cartButton")?.addEventListener(
+    "click",
+    () => {
 
-        if(!currentUser){
+      renderCart();
+      openModal("cartModal");
+    }
+  );
 
-          openModal("authModal");
+  $("accountButton")?.addEventListener(
+    "click",
+    () => {
 
-          return;
-        }
+      renderAccount();
+      openModal("accountModal");
+    }
+  );
 
-        renderOrders();
+  $("ordersButton")?.addEventListener(
+    "click",
+    () => {
 
-        openModal("ordersModal");
+      renderOrders();
+      openModal("ordersModal");
+    }
+  );
 
+  $("heroOrders")?.addEventListener(
+    "click",
+    () => {
+
+      if (!currentUser) {
+        openModal("authModal");
+        return;
       }
-    );
 
-  $("heroProducts")
-    .addEventListener(
-      "click",
-      ()=>{
+      renderOrders();
+      openModal("ordersModal");
+    }
+  );
 
-        document
-          .querySelector(".products-head")
-          ?.scrollIntoView({
-            behavior:"smooth"
-          });
+  $("heroProducts")?.addEventListener(
+    "click",
+    () => {
 
+      document
+        .querySelector(".products-head")
+        ?.scrollIntoView({
+          behavior: "smooth"
+        });
+    }
+  );
+
+  $("checkoutButton")?.addEventListener(
+    "click",
+    () => {
+
+      if (!currentUser) {
+        openModal("authModal");
+        return;
       }
-    );
 
-  $("checkoutButton")
-    .addEventListener(
-      "click",
-      ()=>{
+      if (!cart().length) {
+        toast(
+          "Ton panier est vide."
+        );
 
-        if(!currentUser){
+        return;
+      }
 
-          openModal("authModal");
+      addressVerified = false;
+      verifiedAddress = null;
 
-          return;
-        }
-
-        if(!cart().length){
-
-          toast(
-            "Ton panier est vide."
-          );
-
-          return;
-        }
-
-        addressVerified=false;
-        verifiedAddress=null;
-
+      if ($("addressStatus")) {
         $("addressStatus")
-          .className=
+          .className =
           "address-status";
+      }
 
+      if ($("addressResult")) {
         $("addressResult")
           .classList
           .remove("show");
-
-        renderCheckout();
-
-        openModal(
-          "checkoutModal"
-        );
-
       }
-    );
 
-  $("verifyAddressButton")
-    .addEventListener(
-      "click",
-      verifyAddress
-    );
+      renderCheckout();
+
+      openModal(
+        "checkoutModal"
+      );
+    }
+  );
+
+  $("verifyAddressButton")?.addEventListener(
+    "click",
+    verifyAddress
+  );
 
   [
     "address",
     "postalCode",
     "city",
     "country"
-  ].forEach(id=>{
+  ].forEach(id => {
 
-    $(id).addEventListener(
+    $(id)?.addEventListener(
       "input",
-      ()=>{
+      () => {
 
-        if(addressVerified){
-
+        if (addressVerified) {
           resetAddressVerification();
-
         }
-
       }
     );
-
   });
 
-  $("applyPromo")
-    .addEventListener(
-      "click",
-      applyPromo
-    );
+  $("applyPromo")?.addEventListener(
+    "click",
+    applyPromo
+  );
 
-  $("checkoutForm")
-    .addEventListener(
-      "submit",
-      e=>{
+  $("checkoutForm")?.addEventListener(
+    "submit",
+    e => {
 
-        e.preventDefault();
+      e.preventDefault();
 
-        startPaypal();
+      startPaypal();
+    }
+  );
 
+  $("loginForm")?.addEventListener(
+    "submit",
+    loginEmail
+  );
+
+  $("signupForm")?.addEventListener(
+    "submit",
+    signupEmail
+  );
+
+  $("googleButton")?.addEventListener(
+    "click",
+    googleLogin
+  );
+
+  $("googleSignupButton")?.addEventListener(
+    "click",
+    googleLogin
+  );
+
+  $("loginTab")?.addEventListener(
+    "click",
+    () => {
+
+      $("loginTab")
+        .classList
+        .add("active");
+
+      $("signupTab")
+        .classList
+        .remove("active");
+
+      $("loginForm")
+        .classList
+        .remove("hidden");
+
+      $("signupForm")
+        .classList
+        .add("hidden");
+    }
+  );
+
+  $("signupTab")?.addEventListener(
+    "click",
+    () => {
+
+      $("signupTab")
+        .classList
+        .add("active");
+
+      $("loginTab")
+        .classList
+        .remove("active");
+
+      $("signupForm")
+        .classList
+        .remove("hidden");
+
+      $("loginForm")
+        .classList
+        .add("hidden");
+    }
+  );
+
+  $("adminButton")?.addEventListener(
+    "click",
+    openAdminDashboard
+  );
+
+  $("adminOrders")?.addEventListener(
+    "click",
+    e => {
+
+      const saveButton =
+        e.target.closest(
+          "[data-save-delivery]"
+        );
+
+      const deleteButton =
+        e.target.closest(
+          "[data-delete-order]"
+        );
+
+      if (saveButton) {
+        saveDelivery(
+          saveButton
+            .dataset
+            .saveDelivery
+        );
       }
-    );
 
-  $("loginForm")
-    .addEventListener(
-      "submit",
-      loginEmail
-    );
-
-  $("signupForm")
-    .addEventListener(
-      "submit",
-      signupEmail
-    );
-
-  $("googleButton")
-    .addEventListener(
-      "click",
-      googleLogin
-    );
-
-  $("googleSignupButton")
-    .addEventListener(
-      "click",
-      googleLogin
-    );
-
-  $("loginTab")
-    .addEventListener(
-      "click",
-      ()=>{
-
-        $("loginTab")
-          .classList
-          .add("active");
-
-        $("signupTab")
-          .classList
-          .remove("active");
-
-        $("loginForm")
-          .classList
-          .remove("hidden");
-
-        $("signupForm")
-          .classList
-          .add("hidden");
-
+      if (deleteButton) {
+        deleteOrder(
+          deleteButton
+            .dataset
+            .deleteOrder
+        );
       }
-    );
+    }
+  );
 
-  $("signupTab")
-    .addEventListener(
-      "click",
-      ()=>{
+  $("ordersContent")?.addEventListener(
+    "click",
+    e => {
 
-        $("signupTab")
-          .classList
-          .add("active");
+      const button =
+        e.target.closest(
+          "[data-invoice]"
+        );
 
-        $("loginTab")
-          .classList
-          .remove("active");
-
-        $("signupForm")
-          .classList
-          .remove("hidden");
-
-        $("loginForm")
-          .classList
-          .add("hidden");
-
+      if (button) {
+        showInvoice(
+          button.dataset.invoice
+        );
       }
-    );
+    }
+  );
 
-  $("adminButton")
-    .addEventListener(
-      "click",
-      openAdminDashboard
-    );
+  $("settingsButton")?.addEventListener(
+    "click",
+    () => {
 
-  $("adminOrders")
-    .addEventListener(
-      "click",
-      e=>{
-
-        const saveButton=
-          e.target.closest(
-            "[data-save-delivery]"
-          );
-
-        const deleteButton=
-          e.target.closest(
-            "[data-delete-order]"
-          );
-
-        if(saveButton){
-
-          saveDelivery(
-            saveButton
-              .dataset
-              .saveDelivery
-          );
-
-        }
-
-        if(deleteButton){
-
-          deleteOrder(
-            deleteButton
-              .dataset
-              .deleteOrder
-          );
-
-        }
-
-      }
-    );
-
-  $("ordersContent")
-    .addEventListener(
-      "click",
-      e=>{
-
-        const button=
-          e.target.closest(
-            "[data-invoice]"
-          );
-
-        if(button){
-
-          showInvoice(
-            button.dataset.invoice
-          );
-
-        }
-
-      }
-    );
-
-  $("settingsButton")
-    .addEventListener(
-      "click",
-      ()=>{
-
-        $("darkSwitch")
-          .checked=
+      if ($("darkSwitch")) {
+        $("darkSwitch").checked =
           localStorage.getItem(
             STORAGE.dark
-          )==="true";
+          ) === "true";
+      }
 
-        $("soundSwitch")
-          .checked=
+      if ($("soundSwitch")) {
+        $("soundSwitch").checked =
           localStorage.getItem(
             STORAGE.sound
-          )!=="false";
+          ) !== "false";
+      }
 
-        openModal(
-          "settingsModal"
+      openModal(
+        "settingsModal"
+      );
+    }
+  );
+
+  $("darkSwitch")?.addEventListener(
+    "change",
+    e => {
+
+      document.body
+        .classList
+        .toggle(
+          "dark",
+          e.target.checked
         );
 
-      }
-    );
+      localStorage.setItem(
+        STORAGE.dark,
+        String(
+          e.target.checked
+        )
+      );
+    }
+  );
 
-  $("darkSwitch")
-    .addEventListener(
-      "change",
-      e=>{
+  $("soundSwitch")?.addEventListener(
+    "change",
+    e => {
 
-        document.body
-          .classList
-          .toggle(
-            "dark",
-            e.target.checked
-          );
+      localStorage.setItem(
+        STORAGE.sound,
+        String(
+          e.target.checked
+        )
+      );
+    }
+  );
 
-        localStorage.setItem(
-          STORAGE.dark,
-          String(
-            e.target.checked
-          )
-        );
-
-      }
-    );
-
-  $("soundSwitch")
-    .addEventListener(
-      "change",
-      e=>{
-
-        localStorage.setItem(
-          STORAGE.sound,
-          String(
-            e.target.checked
-          )
-        );
-
-      }
-    );
-
-  $("printInvoice")
-    .addEventListener(
-      "click",
-      ()=>window.print()
-    );
+  $("printInvoice")?.addEventListener(
+    "click",
+    () => window.print()
+  );
 
   document
     .querySelectorAll("[data-close]")
-    .forEach(button=>{
+    .forEach(button => {
 
       button.addEventListener(
         "click",
-        ()=>{
+        () => {
           closeModal(
             button.dataset.close
           );
         }
       );
-
     });
 
-  $("overlay")
-    .addEventListener(
-      "click",
-      closeAllModals
-    );
+  $("overlay")?.addEventListener(
+    "click",
+    closeAllModals
+  );
 
-  document
-    .addEventListener(
-      "keydown",
-      e=>{
+  document.addEventListener(
+    "keydown",
+    e => {
 
-        if(e.key==="Escape"){
-          closeAllModals();
-        }
-
+      if (e.key === "Escape") {
+        closeAllModals();
       }
-    );
-
+    }
+  );
 }
 
-function boot(){
+function boot() {
 
   document.body
     .classList
@@ -3450,7 +3344,7 @@ function boot(){
       "dark",
       localStorage.getItem(
         STORAGE.dark
-      )==="true"
+      ) === "true"
     );
 
   setupEvents();
@@ -3464,26 +3358,29 @@ function boot(){
   updateAccountUI();
 
   setInterval(
-    ()=>{
+    () => {
 
-      renderOrders();
+      if (
+        $("ordersModal")
+          ?.classList
+          .contains("open")
+      ) {
+        renderOrders();
+      }
 
-      if(
+      if (
         isAdminEmail() &&
         isAdminUnlocked() &&
         $("dashboardModal")
-          .classList
+          ?.classList
           .contains("open")
-      ){
-
+      ) {
         renderAdminOrders();
-
       }
 
     },
     1000
   );
-
 }
 
 boot();
