@@ -1,5804 +1,1101 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>NovaShop</title>
-
-<style>
-
-*{
-    box-sizing:border-box;
-    margin:0;
-    padding:0;
-}
-
-html{
-    scroll-behavior:smooth;
-}
-
-body{
-    font-family:Arial,Helvetica,sans-serif;
-    background:#f4f5f7;
-    color:#111318;
-}
-
-
-/* HEADER */
-
-header{
-    height:72px;
-    background:#ffffff;
-    border-bottom:1px solid #e2e4e8;
-
-    display:flex;
-    align-items:center;
-    gap:25px;
-
-    padding:0 35px;
-
-    position:sticky;
-    top:0;
-    z-index:100;
-}
-
-.logo{
-    display:flex;
-    align-items:center;
-    gap:10px;
-
-    font-size:21px;
-    font-weight:900;
-
-    white-space:nowrap;
-}
-
-.logo-box{
-    width:35px;
-    height:35px;
-
-    display:flex;
-    align-items:center;
-    justify-content:center;
-
-    background:#111318;
-    color:white;
-
-    border-radius:9px;
-}
-
-.search{
-    height:43px;
-    flex:1;
-
-    max-width:650px;
-
-    background:#f3f4f6;
-    border:1px solid #e0e2e6;
-
-    border-radius:9px;
-
-    display:flex;
-    align-items:center;
-
-    padding:0 13px;
-}
-
-.search span{
-    font-size:21px;
-    color:#777;
-}
-
-.search input{
-    border:0;
-    outline:0;
-    background:transparent;
-
-    width:100%;
-    height:100%;
-
-    padding-left:10px;
-
-    font-size:14px;
-}
-
-.header-buttons{
-    display:flex;
-    gap:7px;
-    margin-left:auto;
-}
-
-.header-buttons button{
-    border:1px solid #dddfe3;
-    background:white;
-
-    height:40px;
-
-    padding:0 12px;
-
-    border-radius:8px;
-
-    cursor:pointer;
-
-    font-size:12px;
-    font-weight:700;
-}
-
-.header-buttons button:hover{
-    background:#f3f4f6;
-}
-
-.cart-button{
-    background:#111318 !important;
-    color:white;
-    border-color:#111318 !important;
-}
-
-
-/* NAV */
-
-nav{
-    height:52px;
-
-    background:white;
-    border-bottom:1px solid #e2e4e8;
-
-    display:flex;
-    align-items:center;
-
-    gap:5px;
-
-    padding:0 35px;
-
-    overflow-x:auto;
-}
-
-nav button{
-    border:0;
-    background:transparent;
-
-    padding:8px 11px;
-
-    border-radius:7px;
-
-    white-space:nowrap;
-
-    cursor:pointer;
-
-    font-size:12px;
-    color:#666;
-}
-
-nav button:hover{
-    background:#f1f2f4;
-}
-
-nav button.active{
-    background:#111318;
-    color:white;
-}
-
-
-/* MAIN */
-
-main{
-    max-width:1450px;
-    margin:auto;
-}
-
-
-/* HERO */
-
-.hero{
-    margin:28px 35px;
-
-    min-height:390px;
-
-    background:#181a1f;
-
-    border-radius:20px;
-
-    padding:60px;
-
-    color:white;
-
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-
-    overflow:hidden;
-}
-
-.hero-content{
-    max-width:700px;
-}
-
-.hero-label{
-    display:inline-block;
-
-    padding:7px 10px;
-
-    border:1px solid #34373e;
-    border-radius:6px;
-
-    font-size:10px;
-    letter-spacing:1.5px;
-    font-weight:800;
-
-    margin-bottom:18px;
-}
-
-.hero h1{
-    font-size:64px;
-    line-height:.98;
-
-    letter-spacing:-3px;
-}
-
-.hero h1 span{
-    color:#719aff;
-}
-
-.hero p{
-    color:#b4b7be;
-
-    max-width:550px;
-
-    line-height:1.7;
-
-    margin-top:20px;
-
-    font-size:15px;
-}
-
-.hero button{
-    margin-top:25px;
-
-    border:0;
-
-    background:white;
-    color:#111318;
-
-    border-radius:8px;
-
-    padding:14px 18px;
-
-    font-weight:800;
-
-    cursor:pointer;
-}
-
-.hero-cards{
-    width:300px;
-
-    display:flex;
-    flex-direction:column;
-
-    gap:10px;
-}
-
-.hero-card{
-    height:82px;
-
-    border:1px solid #30333a;
-
-    background:#202228;
-
-    border-radius:12px;
-
-    padding:18px;
-
-    display:flex;
-    flex-direction:column;
-    justify-content:center;
-}
-
-.hero-card strong{
-    font-size:16px;
-}
-
-.hero-card small{
-    color:#888d96;
-    margin-top:5px;
-}
-
-
-/* PRODUCTS */
-
-.products{
-    padding:35px;
-}
-
-.products-top{
-    display:flex;
-    align-items:end;
-    justify-content:space-between;
-
-    margin-bottom:25px;
-}
-
-.products-title small{
-    color:#2864e8;
-
-    font-size:10px;
-    font-weight:900;
-
-    letter-spacing:1.5px;
-}
-
-.products-title h2{
-    font-size:34px;
-
-    margin-top:5px;
-
-    letter-spacing:-1px;
-}
-
-.products-title p{
-    color:#777c85;
-
-    margin-top:5px;
-
-    font-size:13px;
-}
-
-.filters{
-    display:flex;
-    gap:8px;
-}
-
-.filters select{
-    height:40px;
-
-    background:white;
-
-    border:1px solid #dddfe3;
-
-    border-radius:8px;
-
-    padding:0 10px;
-
-    min-width:160px;
-
-    outline:none;
-}
-
-
-/* GRID */
-
-.grid{
-    display:grid;
-
-    grid-template-columns:
-        repeat(4,minmax(0,1fr));
-
-    gap:16px;
-}
-
-
-/* CARD */
-
-.card{
-    background:white;
-
-    border:1px solid #e0e2e6;
-
-    border-radius:14px;
-
-    overflow:hidden;
-
-    transition:.18s;
-
-    cursor:pointer;
-}
-
-.card:hover{
-    transform:translateY(-3px);
-
-    box-shadow:
-        0 12px 30px rgba(0,0,0,.07);
-}
-
-.image{
-    height:225px;
-
-    background:#f5f6f8;
-
-    display:flex;
-    align-items:center;
-    justify-content:center;
-
-    padding:20px;
-}
-
-.image img{
-    max-width:100%;
-    max-height:100%;
-
-    object-fit:contain;
-}
-
-.fake-image{
-    width:145px;
-    height:145px;
-
-    border-radius:20px;
-
-    background:#202228;
-
-    color:white;
-
-    display:flex;
-    align-items:center;
-    justify-content:center;
-
-    font-size:45px;
-    font-weight:900;
-}
-
-.info{
-    padding:16px;
-}
-
-.brand{
-    color:#858992;
-
-    font-size:10px;
-
-    font-weight:800;
-
-    text-transform:uppercase;
-
-    letter-spacing:1px;
-}
-
-.name{
-    font-size:15px;
-
-    font-weight:800;
-
-    line-height:1.35;
-
-    min-height:40px;
-
-    margin-top:7px;
-}
-
-.category{
-    color:#888c94;
-
-    font-size:11px;
-
-    margin-top:5px;
-}
-
-.bottom{
-    margin-top:17px;
-
-    display:flex;
-
-    justify-content:space-between;
-
-    align-items:center;
-}
-
-.price{
-    font-size:18px;
-
-    font-weight:900;
-}
-
-.add{
-    border:0;
-
-    background:#111318;
-    color:white;
-
-    border-radius:7px;
-
-    padding:10px 12px;
-
-    font-size:11px;
-
-    font-weight:800;
-
-    cursor:pointer;
-}
-
-.add:hover{
-    background:#2864e8;
-}
-
-
-/* EMPTY */
-
-.empty{
-    text-align:center;
-
-    background:white;
-
-    border:1px solid #dddfe3;
-
-    border-radius:14px;
-
-    padding:70px 20px;
-
-    display:none;
-}
-
-.empty h3{
-    margin-top:10px;
-}
-
-.empty p{
-    color:#777;
-
-    margin-top:7px;
-}
-
-
-/* CART */
-
-.cart{
-    position:fixed;
-
-    right:0;
-    top:0;
-
-    width:430px;
-    max-width:95vw;
-
-    height:100vh;
-
-    background:white;
-
-    z-index:500;
-
-    box-shadow:
-        -15px 0 40px rgba(0,0,0,.15);
-
-    transform:translateX(110%);
-
-    transition:.25s;
-
-    display:flex;
-    flex-direction:column;
-}
-
-.cart.open{
-    transform:translateX(0);
-}
-
-.cart-header{
-    height:78px;
-
-    border-bottom:1px solid #e1e3e6;
-
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-
-    padding:0 20px;
-}
-
-.cart-header h2{
-    font-size:23px;
-}
-
-.close{
-    width:36px;
-    height:36px;
-
-    border:1px solid #dddfe3;
-
-    background:white;
-
-    border-radius:8px;
-
-    font-size:22px;
-
-    cursor:pointer;
-}
-
-.cart-content{
-    flex:1;
-
-    overflow-y:auto;
-
-    padding:20px;
-}
-
-.cart-item{
-    display:flex;
-
-    gap:12px;
-
-    padding:12px 0;
-
-    border-bottom:1px solid #e5e6e8;
-}
-
-.cart-img{
-    width:70px;
-    height:70px;
-
-    background:#f4f5f6;
-
-    border-radius:8px;
-
-    display:flex;
-    align-items:center;
-    justify-content:center;
-
-    padding:7px;
-
-    flex-shrink:0;
-}
-
-.cart-img img{
-    max-width:100%;
-    max-height:100%;
-
-    object-fit:contain;
-}
-
-.cart-info{
-    flex:1;
-}
-
-.cart-info strong{
-    font-size:13px;
-
-    line-height:1.4;
-}
-
-.cart-info p{
-    font-size:13px;
-
-    font-weight:800;
-
-    margin-top:5px;
-}
-
-.qty{
-    display:flex;
-
-    align-items:center;
-
-    gap:7px;
-
-    margin-top:8px;
-}
-
-.qty button{
-    width:25px;
-    height:25px;
-
-    border:1px solid #dddfe3;
-
-    background:white;
-
-    border-radius:5px;
-
-    cursor:pointer;
-}
-
-.remove{
-    border:0;
-
-    background:none;
-
-    color:#d93232;
-
-    font-size:10px;
-
-    margin-top:5px;
-
-    cursor:pointer;
-}
-
-.cart-footer{
-    border-top:1px solid #e1e3e6;
-
-    padding:20px;
-}
-
-.total{
-    display:flex;
-
-    justify-content:space-between;
-
-    margin-bottom:13px;
-}
-
-.total strong{
-    font-size:21px;
-}
-
-.checkout{
-    width:100%;
-
-    height:46px;
-
-    background:#111318;
-
-    color:white;
-
-    border:0;
-
-    border-radius:8px;
-
-    font-weight:800;
-
-    cursor:pointer;
-}
-
-
-/* OVERLAY */
-
-.overlay{
-    position:fixed;
-
-    inset:0;
-
-    background:rgba(0,0,0,.42);
-
-    z-index:400;
-
-    display:none;
-}
-
-.overlay.open{
-    display:block;
-}
-
-
-/* TOAST */
-
-.toast{
-    position:fixed;
-
-    left:50%;
-    bottom:25px;
-
-    transform:translate(-50%,20px);
-
-    background:#111318;
-
-    color:white;
-
-    padding:12px 17px;
-
-    border-radius:8px;
-
-    font-size:12px;
-
-    opacity:0;
-
-    pointer-events:none;
-
-    transition:.2s;
-
-    z-index:1000;
-}
-
-.toast.show{
-    opacity:1;
-
-    transform:translate(-50%,0);
-}
-
-
-/* RESPONSIVE */
-
-@media(max-width:1100px){
-
-    .grid{
-        grid-template-columns:
-            repeat(3,1fr);
-    }
-
-    .hero{
-        margin-left:20px;
-        margin-right:20px;
-    }
-
-    .products{
-        padding:25px 20px;
-    }
-
-}
-
-@media(max-width:800px){
-
-    header{
-        flex-wrap:wrap;
-        height:auto;
-        padding:12px 15px;
-    }
-
-    .search{
-        order:3;
-        flex-basis:100%;
-    }
-
-    nav{
-        padding:0 15px;
-    }
-
-    .hero{
-        flex-direction:column;
-        align-items:flex-start;
-
-        padding:40px 28px;
-    }
-
-    .hero h1{
-        font-size:45px;
-    }
-
-    .hero-cards{
-        width:100%;
-    }
-
-    .grid{
-        grid-template-columns:
-            repeat(2,1fr);
-    }
-
-    .products-top{
-        flex-direction:column;
-        align-items:flex-start;
-        gap:20px;
-    }
-
-}
-
-@media(max-width:550px){
-
-    .grid{
-        grid-template-columns:1fr;
-    }
-
-    .header-buttons button span{
-        display:none;
-    }
-
-    .filters{
-        width:100%;
-        flex-direction:column;
-    }
-
-    .filters select{
-        width:100%;
-    }
-
-    .hero{
-        margin:15px;
-    }
-
-}
-
-</style>
-</head>
-
-
-<body>
-
-
-<header>
-
-    <div class="logo">
-        <div class="logo-box">N</div>
-        NovaShop
-    </div>
-
-
-    <div class="search">
-        <span>⌕</span>
-
-        <input
-            id="search"
-            type="text"
-            placeholder="Rechercher un produit..."
-        >
-    </div>
-
-
-    <div class="header-buttons">
-
-        <button onclick="showMessage('Les favoris arrivent bientôt')">
-            ♡ <span>Favoris</span>
-        </button>
-
-        <button onclick="showMessage('Le compte arrive bientôt')">
-            👤 <span>Compte</span>
-        </button>
-
-        <button
-            class="cart-button"
-            onclick="openCart()"
-        >
-            🛒 <span>Panier</span>
-            <b id="cartCount">0</b>
-        </button>
-
-    </div>
-
-</header>
-
-
-<nav>
-
-    <button
-        class="active"
-        onclick="filterCategory('Tous',this)"
-    >
-        Tous
-    </button>
-
-    <button onclick="filterCategory('Cartes graphiques',this)">
-        Cartes graphiques
-    </button>
-
-    <button onclick="filterCategory('Processeurs',this)">
-        Processeurs
-    </button>
-
-    <button onclick="filterCategory('RAM',this)">
-        RAM
-    </button>
-
-    <button onclick="filterCategory('SSD',this)">
-        SSD
-    </button>
-
-    <button onclick="filterCategory('Cartes mères',this)">
-        Cartes mères
-    </button>
-
-    <button onclick="filterCategory('Boîtiers',this)">
-        Boîtiers
-    </button>
-
-    <button onclick="filterCategory('Alimentations',this)">
-        Alimentations
-    </button>
-
-    <button onclick="filterCategory('Refroidissement',this)">
-        Refroidissement
-    </button>
-
-    <button onclick="filterCategory('Écrans',this)">
-        Écrans
-    </button>
-
-    <button onclick="filterCategory('Claviers',this)">
-        Claviers
-    </button>
-
-    <button onclick="filterCategory('Souris',this)">
-        Souris
-    </button>
-
-    <button onclick="filterCategory('Casques',this)">
-        Casques
-    </button>
-
-</nav>
-
-
-<main>
-
-
-<section class="hero">
-
-    <div class="hero-content">
-
-        <div class="hero-label">
-            NOVASHOP
-        </div>
-
-        <h1>
-            Le matériel<br>
-            <span>qui fait la différence.</span>
-        </h1>
-
-        <p>
-            Composants PC, matériel gaming et accessoires
-            pour construire un setup propre et performant.
-        </p>
-
-        <button onclick="scrollToProducts()">
-            Découvrir les produits →
-        </button>
-
-    </div>
-
-
-    <div class="hero-cards">
-
-        <div class="hero-card">
-            <strong>PC</strong>
-            <small>Composants & hardware</small>
-        </div>
-
-        <div class="hero-card">
-            <strong>GAMING</strong>
-            <small>Périphériques gaming</small>
-        </div>
-
-        <div class="hero-card">
-            <strong>SETUP</strong>
-            <small>Accessoires & équipement</small>
-        </div>
-
-    </div>
-
-</section>
-
-
-<section
-    class="products"
-    id="productsSection"
->
-
-    <div class="products-top">
-
-        <div class="products-title">
-
-            <small>NOVASHOP</small>
-
-            <h2>Produits</h2>
-
-            <p id="result">
-                0 produits
-            </p>
-
-        </div>
-
-
-        <div class="filters">
-
-            <select id="brand">
-                <option value="Tous">
-                    Toutes les marques
-                </option>
-            </select>
-
-
-            <select id="sort">
-
-                <option value="default">
-                    Pertinence
-                </option>
-
-                <option value="asc">
-                    Prix croissant
-                </option>
-
-                <option value="desc">
-                    Prix décroissant
-                </option>
-
-                <option value="name">
-                    Nom A-Z
-                </option>
-
-            </select>
-
-        </div>
-
-    </div>
-
-
-    <div
-        id="grid"
-        class="grid"
-    ></div>
-
-
-    <div
-        id="empty"
-        class="empty"
-    >
-
-        <div style="font-size:40px;">
-            🔎
-        </div>
-
-        <h3>
-            Aucun produit trouvé
-        </h3>
-
-        <p>
-            Essaie une autre recherche.
-        </p>
-
-    </div>
-
-</section>
-
-</main>
-
-
-<div
-    id="overlay"
-    class="overlay"
-    onclick="closeCart()"
-></div>
-
-
-<aside
-    id="cart"
-    class="cart"
->
-
-    <div class="cart-header">
-
-        <h2>Mon panier</h2>
-
-        <button
-            class="close"
-            onclick="closeCart()"
-        >
-            ×
-        </button>
-
-    </div>
-
-
-    <div
-        id="cartContent"
-        class="cart-content"
-    ></div>
-
-
-    <div class="cart-footer">
-
-        <div class="total">
-
-            <span>Total</span>
-
-            <strong id="total">
-                0,00 €
-            </strong>
-
-        </div>
-
-        <button
-            class="checkout"
-            onclick="checkout()"
-        >
-            Continuer
-        </button>
-
-    </div>
-
-</aside>
-
-
-<div
-    id="toast"
-    class="toast"
-></div>
-
-
-<script>
-
-
-/* =========================
-   PRODUITS
-========================= */
-
-const products = [
-
-    {
-        id:1,
-        name:"Ryzen 5 9600X",
-        brand:"AMD",
-        category:"Processeurs",
-        price:279.99,
-        image:"https://cdn.idealo.com/folder/Product/204581/7/204581794/s4_produktbild_gross/amd-ryzen-5-9600x-boxed.jpg"
-    },
-
-    {
-        id:2,
-        name:"Vengeance RGB 32 Go DDR5 6000",
-        brand:"Corsair",
-        category:"RAM",
-        price:109.99,
-        image:"https://cdn.idealo.com/folder/Product/212257/2/212257224/s4_produktbild_gross/corsair-vengeance-rgb-kit-32go-ddr5-6000-cl38-gris-cmh32gx5m2d6000z38.jpg"
-    },
-
-    {
-        id:3,
-        name:"FURY Beast RGB 32 Go DDR5 5600",
-        brand:"Kingston",
-        category:"RAM",
-        price:104.99,
-        image:"https://cdn.idealo.com/folder/Product/202133/2/202133232/s4_produktbild_gross/kingston-fury-beast-rgb-32-go-kit-ddr5-5600-cl36-kf556c36bbeak2-32.jpg"
-    },
-
-    {
-        id:4,
-        name:"990 PRO 1 To",
-        brand:"Samsung",
-        category:"SSD",
-        price:99.99,
-        image:"https://images.samsung.com/is/image/samsung/p6pim/fr/mz-v9p1t0bw/gallery/fr-990-pro-nvme-ssd-mz-v9p1t0bw-538116922?$650_519_PNG$"
-    },
-
-    {
-        id:5,
-        name:"990 PRO 2 To",
-        brand:"Samsung",
-        category:"SSD",
-        price:179.99,
-        image:"https://images.samsung.com/is/image/samsung/p6pim/fr/mz-v9p2t0bw/gallery/fr-990-pro-nvme-ssd-mz-v9p2t0bw-538116939?$650_519_PNG$"
-    },
-
-    {
-        id:6,
-        name:"RM850x",
-        brand:"Corsair",
-        category:"Alimentations",
-        price:149.99,
-        image:"https://assets.corsair.com/image/upload/c_pad,q_auto,h_1024,w_1024/products/PSUs/CP-9020270-NA/Gallery/RM850x_01.webp"
-    },
-
-    {
-        id:7,
-        name:"5000D Airflow",
-        brand:"Corsair",
-        category:"Boîtiers",
-        price:149.99,
-        image:"https://assets.corsair.com/image/upload/c_pad,q_auto,h_1024,w_1024/products/Cases/CC-9011210-WW/Gallery/5000D_AF_WHITE_01.webp"
-    },
-
-    {
-        id:8,
-        name:"Liquid Freezer III 360",
-        brand:"ARCTIC",
-        category:"Refroidissement",
-        price:119.99,
-        image:"https://www.arctic.de/media/17/9c/4f/1712927838/liquid-freezer-III-360-black-gallery-1.png"
-    },
-
-    {
-        id:9,
-        name:"G PRO X TKL",
-        brand:"Logitech",
-        category:"Claviers",
-        price:189.99,
-        image:"https://resource.logitech.com/w_800,c_limit,q_auto,f_auto,dpr_auto/content/dam/logitech/en/products/keyboards/pro-x-tkl-wireless/gallery/pro-x-tkl-wireless-black-gallery-1.png"
-    },
-
-    {
-        id:10,
-        name:"G PRO X SUPERLIGHT 2",
-        brand:"Logitech",
-        category:"Souris",
-        price:159.99,
-        image:"https://resource.logitech.com/w_800,c_limit,q_auto,f_auto,dpr_auto/content/dam/logitech/en/products/mice/pro-x2-superlight-wireless-mouse/gallery/pro-x2-superlight-black-gallery-1.png"
-    },
-
-    {
-        id:11,
-        name:"Wave:3",
-        brand:"Elgato",
-        category:"Microphones",
-        price:159.99,
-        image:"https://help.elgato.com/hc/article_attachments/360093559172/Wave_3.png"
-    },
-
-    {
-        id:12,
-        name:"DualSense Wireless Controller",
-        brand:"Sony",
-        category:"Manettes",
-        price:74.99,
-        image:"https://gmedia.playstation.com/is/image/SIEPDC/dualsense-ps5-controller-product-thumbnail-01-en-14sep21?$1600px$"
-    }
-
-];
-
-
-/* =========================
-   VARIABLES
-========================= */
-
-let currentCategory = "Tous";
-
-let cart = [];
-
-
-/* =========================
-   ELEMENTS
-========================= */
-
-const grid =
-    document.getElementById("grid");
-
-const result =
-    document.getElementById("result");
-
-const search =
-    document.getElementById("search");
-
-const brand =
-    document.getElementById("brand");
-
-const sort =
-    document.getElementById("sort");
-
-const empty =
-    document.getElementById("empty");
-
-const cartElement =
-    document.getElementById("cart");
-
-const overlay =
-    document.getElementById("overlay");
-
-const cartContent =
-    document.getElementById("cartContent");
-
-const cartCount =
-    document.getElementById("cartCount");
-
-const totalElement =
-    document.getElementById("total");
-
-const toast =
-    document.getElementById("toast");
-
-
-/* =========================
-   FORMAT PRIX
-========================= */
-
-function money(value){
-
-    return new Intl.NumberFormat(
-        "fr-FR",
-        {
-            style:"currency",
-            currency:"EUR"
-        }
-    ).format(value);
-
-}
-
-
-/* =========================
-   BRANDS
-========================= */
-
-function loadBrands(){
-
-    const brands = [
-        ...new Set(
-            products.map(
-                product => product.brand
-            )
-        )
-    ].sort();
-
-    brands.forEach(name => {
-
-        const option =
-            document.createElement("option");
-
-        option.value = name;
-        option.textContent = name;
-
-        brand.appendChild(option);
-
-    });
-
-}
-
-
-/* =========================
-   FILTER
-========================= */
-
-function getProducts(){
-
-    let list = [...products];
-
-
-    const text =
-        search.value
-        .toLowerCase()
-        .trim();
-
-
-    if(text){
-
-        list =
-            list.filter(product =>
-
-                product.name
-                    .toLowerCase()
-                    .includes(text)
-
-                ||
-
-                product.brand
-                    .toLowerCase()
-                    .includes(text)
-
-                ||
-
-                product.category
-                    .toLowerCase()
-                    .includes(text)
-
-            );
-
-    }
-
-
-    if(
-        currentCategory !== "Tous"
-    ){
-
-        list =
-            list.filter(
-                product =>
-                    product.category ===
-                    currentCategory
-            );
-
-    }
-
-
-    if(
-        brand.value !== "Tous"
-    ){
-
-        list =
-            list.filter(
-                product =>
-                    product.brand ===
-                    brand.value
-            );
-
-    }
-
-
-    if(sort.value === "asc"){
-
-        list.sort(
-            (a,b) =>
-                a.price-b.price
-        );
-
-    }
-
-
-    if(sort.value === "desc"){
-
-        list.sort(
-            (a,b) =>
-                b.price-a.price
-        );
-
-    }
-
-
-    if(sort.value === "name"){
-
-        list.sort(
-            (a,b) =>
-                a.name.localeCompare(
-                    b.name,
-                    "fr"
-                )
-        );
-
-    }
-
-
-    return list;
-
-}
-
-
-/* =========================
-   AFFICHER PRODUITS
-========================= */
-
-function render(){
-
-    const list =
-        getProducts();
-
-
-    grid.innerHTML = "";
-
-
-    result.textContent =
-        list.length +
-        " produit" +
-        (list.length > 1 ? "s" : "");
-
-
-    if(list.length === 0){
-
-        empty.style.display =
-            "block";
-
-        return;
-
-    }
-
-
-    empty.style.display =
-        "none";
-
-
-    list.forEach(product => {
-
-        const card =
-            document.createElement("div");
-
-        card.className =
-            "card";
-
-
-        card.innerHTML = `
-
-            <div class="image">
-
-                <img
-                    src="${product.image}"
-                    alt="${product.name}"
-                    onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"
-                >
-
-                <div
-                    class="fake-image"
-                    style="display:none"
-                >
-                    N
-                </div>
-
-            </div>
-
-
-            <div class="info">
-
-                <div class="brand">
-                    ${product.brand}
-                </div>
-
-                <div class="name">
-                    ${product.name}
-                </div>
-
-                <div class="category">
-                    ${product.category}
-                </div>
-
-
-                <div class="bottom">
-
-                    <div class="price">
-                        ${money(product.price)}
-                    </div>
-
-                    <button
-                        class="add"
-                        onclick="addToCart(${product.id});event.stopPropagation()"
-                    >
-                        Ajouter
-                    </button>
-
-                </div>
-
-            </div>
-
-        `;
-
-
-        card.onclick = () => {
-
-            showMessage(
-                product.name
-            );
-
-        };
-
-
-        grid.appendChild(card);
-
-    });
-
-}
-
-
-/* =========================
-   CATEGORIE
-========================= */
-
-function filterCategory(
-    category,
-    button
-){
-
-    currentCategory =
-        category;
-
-
-    document
-        .querySelectorAll("nav button")
-        .forEach(
-            b =>
-                b.classList.remove(
-                    "active"
-                )
-        );
-
-
-    button.classList.add(
-        "active"
-    );
-
-
-    render();
-
-}
-
-
-/* =========================
-   PANIER
-========================= */
-
-function addToCart(id){
-
-    const product =
-        products.find(
-            p => p.id === id
-        );
-
-
-    if(!product) return;
-
-
-    const existing =
-        cart.find(
-            item => item.id === id
-        );
-
-
-    if(existing){
-
-        existing.quantity++;
-
-    }else{
-
-        cart.push({
-
-            id:id,
-
-            quantity:1
-
-        });
-
-    }
-
-
-    renderCart();
-
-
-    showMessage(
-        "Produit ajouté au panier"
-    );
-
-}
-
-
-function removeFromCart(id){
-
-    cart =
-        cart.filter(
-            item =>
-                item.id !== id
-        );
-
-
-    renderCart();
-
-}
-
-
-function changeQuantity(
-    id,
-    amount
-){
-
-    const item =
-        cart.find(
-            item =>
-                item.id === id
-        );
-
-
-    if(!item) return;
-
-
-    item.quantity += amount;
-
-
-    if(item.quantity <= 0){
-
-        removeFromCart(id);
-
-        return;
-
-    }
-
-
-    renderCart();
-
-}
-
-
-function renderCart(){
-
-    cartContent.innerHTML = "";
-
-
-    let total = 0;
-
-    let count = 0;
-
-
-    if(cart.length === 0){
-
-        cartContent.innerHTML = `
-
-            <div style="
-                text-align:center;
-                padding:60px 10px;
-                color:#777;
-            ">
-
-                <div style="
-                    font-size:42px;
-                    margin-bottom:12px;
-                ">
-                    🛒
-                </div>
-
-                <strong>
-                    Ton panier est vide
-                </strong>
-
-                <p style="
-                    margin-top:7px;
-                    font-size:13px;
-                ">
-                    Ajoute un produit pour commencer.
-                </p>
-
-            </div>
-
-        `;
-
-    }
-
-
-    cart.forEach(item => {
-
-        const product =
-            products.find(
-                p =>
-                    p.id === item.id
-            );
-
-
-        if(!product) return;
-
-
-        total +=
-            product.price *
-            item.quantity;
-
-
-        count +=
-            item.quantity;
-
-
-        const div =
-            document.createElement(
-                "div"
-            );
-
-
-        div.className =
-            "cart-item";
-
-
-        div.innerHTML = `
-
-            <div class="cart-img">
-
-                <img
-                    src="${product.image}"
-                    alt="${product.name}"
-                >
-
-            </div>
-
-
-            <div class="cart-info">
-
-                <strong>
-                    ${product.name}
-                </strong>
-
-                <p>
-                    ${money(product.price)}
-                </p>
-
-
-                <div class="qty">
-
-                    <button
-                        onclick="changeQuantity(${product.id},-1)"
-                    >
-                        −
-                    </button>
-
-                    <span>
-                        ${item.quantity}
-                    </span>
-
-                    <button
-                        onclick="changeQuantity(${product.id},1)"
-                    >
-                        +
-                    </button>
-
-                </div>
-
-
-                <button
-                    class="remove"
-                    onclick="removeFromCart(${product.id})"
-                >
-                    Supprimer
-                </button>
-
-            </div>
-
-        `;
-
-
-        cartContent.appendChild(
-            div
-        );
-
-    });
-
-
-    cartCount.textContent =
-        count;
-
-
-    totalElement.textContent =
-        money(total);
-
-}
-
-
-function openCart(){
-
-    renderCart();
-
-    cartElement.classList.add(
-        "open"
-    );
-
-    overlay.classList.add(
-        "open"
-    );
-
-}
-
-
-function closeCart(){
-
-    cartElement.classList.remove(
-        "open"
-    );
-
-    overlay.classList.remove(
-        "open"
-    );
-
-}
-
-
-/* =========================
-   CHECKOUT
-========================= */
-
-function checkout(){
-
-    if(cart.length === 0){
-
-        showMessage(
-            "Ton panier est vide"
-        );
-
-        return;
-
-    }
-
-
-    showMessage(
-        "Le paiement sera ajouté plus tard"
-    );
-
-}
-
-
-/* =========================
-   MESSAGE
-========================= */
-
-let toastTimer;
-
-
-function showMessage(message){
-
-    toast.textContent =
-        message;
-
-
-    toast.classList.add(
-        "show"
-    );
-
-
-    clearTimeout(
-        toastTimer
-    );
-
-
-    toastTimer =
-        setTimeout(
-            () => {
-
-                toast.classList.remove(
-                    "show"
-                );
-
-            },
-            2000
-        );
-
-}
-
-
-/* =========================
-   RECHERCHE
-========================= */
-
-search.addEventListener(
-    "input",
-    render
-);
-
-
-brand.addEventListener(
-    "change",
-    render
-);
-
-
-sort.addEventListener(
-    "change",
-    render
-);
-
-
-/* =========================
-   HERO
-========================= */
-
-function scrollToProducts(){
-
-    document
-        .getElementById(
-            "productsSection"
-        )
-        .scrollIntoView({
-            behavior:"smooth"
-        });
-
-}
-
-
-/* =========================
-   START
-========================= */
-
-loadBrands();
-
-render();
-
-renderCart();
-
-</script>
-
-</body>
-</html>const products = [
-  {
-    id: 1,
-    name: "AMD Ryzen 5 9600X",
-    brand: "AMD",
-    category: "Processeurs",
-    price: 279.99,
-    image: "https://cdn.idealo.com/folder/Product/204581/7/204581794/s4_produktbild_gross/amd-ryzen-5-9600x-boxed.jpg"
-  },
-
-  {
-    id: 2,
-    name: "Corsair Vengeance RGB 32 Go DDR5-6000",
-    brand: "Corsair",
-    category: "RAM",
-    price: 109.99,
-    image: "https://cdn.idealo.com/folder/Product/212257/2/212257224/s4_produktbild_gross/corsair-vengeance-rgb-kit-32go-ddr5-6000-cl38-gris-cmh32gx5m2d6000z38.jpg"
-  },
-
-  {
-    id: 3,
-    name: "Kingston FURY Beast RGB 32 Go DDR5-5600",
-    brand: "Kingston",
-    category: "RAM",
-    price: 104.99,
-    image: "https://cdn.idealo.com/folder/Product/202133/2/202133232/s4_produktbild_gross/kingston-fury-beast-rgb-32-go-kit-ddr5-5600-cl36-kf556c36bbeak2-32.jpg"
-  },
-
-  {
-    id: 4,
-    name: "Samsung 990 PRO 1 To",
-    brand: "Samsung",
-    category: "SSD",
-    price: 99.99,
-    image: "https://images.samsung.com/is/image/samsung/p6pim/fr/mz-v9p1t0bw/gallery/fr-990-pro-nvme-ssd-mz-v9p1t0bw-538116922?$650_519_PNG$"
-  },
-
-  {
-    id: 5,
-    name: "Samsung 990 PRO 2 To",
-    brand: "Samsung",
-    category: "SSD",
-    price: 179.99,
-    image: "https://images.samsung.com/is/image/samsung/p6pim/fr/mz-v9p2t0bw/gallery/fr-990-pro-nvme-ssd-mz-v9p2t0bw-538116939?$650_519_PNG$"
-  },
-
-  {
-    id: 6,
-    name: "Corsair RM850x",
-    brand: "Corsair",
-    category: "Alimentations",
-    price: 149.99,
-    image: "https://assets.corsair.com/image/upload/c_pad,q_auto,h_1024,w_1024/products/PSUs/CP-9020270-NA/Gallery/RM850x_01.webp"
-  },
-
-  {
-    id: 7,
-    name: "Corsair 5000D Airflow",
-    brand: "Corsair",
-    category: "Boîtiers",
-    price: 149.99,
-    image: "https://assets.corsair.com/image/upload/c_pad,q_auto,h_1024,w_1024/products/Cases/CC-9011210-WW/Gallery/5000D_AF_WHITE_01.webp"
-  },
-
-  {
-    id: 8,
-    name: "ARCTIC Liquid Freezer III 360",
-    brand: "ARCTIC",
-    category: "Refroidissement",
-    price: 119.99,
-    image: "https://www.arctic.de/media/17/9c/4f/1712927838/liquid-freezer-III-360-black-gallery-1.png"
-  },
-
-  {
-    id: 9,
-    name: "Logitech G PRO X TKL",
-    brand: "Logitech",
-    category: "Claviers",
-    price: 189.99,
-    image: "https://resource.logitech.com/w_800,c_limit,q_auto,f_auto,dpr_auto/content/dam/logitech/en/products/keyboards/pro-x-tkl-wireless/gallery/pro-x-tkl-wireless-black-gallery-1.png"
-  },
-
-  {
-    id: 10,
-    name: "Logitech G PRO X SUPERLIGHT 2",
-    brand: "Logitech",
-    category: "Souris",
-    price: 159.99,
-    image: "https://resource.logitech.com/w_800,c_limit,q_auto,f_auto,dpr_auto/content/dam/logitech/en/products/mice/pro-x2-superlight-wireless-mouse/gallery/pro-x2-superlight-black-gallery-1.png"
-  },
-
-  {
-    id: 11,
-    name: "Elgato Wave:3",
-    brand: "Elgato",
-    category: "Microphones",
-    price: 159.99,
-    image: "https://help.elgato.com/hc/article_attachments/360093559172/Wave_3.png"
-  },
-
-  {
-    id: 12,
-    name: "Sony DualSense Wireless Controller",
-    brand: "Sony",
-    category: "Manettes",
-    price: 74.99,
-    image: "https://gmedia.playstation.com/is/image/SIEPDC/dualsense-ps5-controller-product-thumbnail-01-en-14sep21?$1600px$"
-  }
-];
-
-window.NovaShopCatalog = {
-  getAll() {
-    return products;
-  },
-
-  getById(id) {
-    return products.find(product => product.id === id);
-  },
-
-  getBrands() {
-    return [...new Set(products.map(product => product.brand))].sort();
-  }
-};const products = window.NovaShopCatalog.getAll();
-
-let state = {
-    search: "",
-    category: "Tous",
-    brand: "Tous",
-    sort: "default",
-    cart: JSON.parse(localStorage.getItem("novashop_cart") || "[]")
-};
-
-const grid = document.getElementById("grid");
-const result = document.getElementById("result");
-const search = document.getElementById("search");
-const brand = document.getElementById("brand");
-const sort = document.getElementById("sort");
-
-const cartElement = document.getElementById("cart");
-const overlay = document.getElementById("overlay");
-const cartContent = document.getElementById("cartContent");
-const cartCount = document.getElementById("cartCount");
-const totalElement = document.getElementById("total");
-
-const toast = document.getElementById("toast");
-
-
-/* =========================
-   PRIX
-========================= */
-
-function money(value) {
-    return new Intl.NumberFormat("fr-FR", {
-        style: "currency",
-        currency: "EUR"
-    }).format(value);
-}
-
-
-/* =========================
-   SAUVEGARDE
-========================= */
-
-function saveCart() {
-    localStorage.setItem(
-        "novashop_cart",
-        JSON.stringify(state.cart)
-    );
-}
-
-
-/* =========================
-   FILTRES
-========================= */
-
-function getFilteredProducts() {
-
-    let list = [...products];
-
-    const text = state.search
-        .toLowerCase()
-        .trim();
-
-    if (text) {
-        list = list.filter(product =>
-            product.name.toLowerCase().includes(text) ||
-            product.brand.toLowerCase().includes(text) ||
-            product.category.toLowerCase().includes(text)
-        );
-    }
-
-    if (state.category !== "Tous") {
-        list = list.filter(
-            product =>
-                product.category === state.category
-        );
-    }
-
-    if (state.brand !== "Tous") {
-        list = list.filter(
-            product =>
-                product.brand === state.brand
-        );
-    }
-
-    if (state.sort === "asc") {
-        list.sort(
-            (a, b) => a.price - b.price
-        );
-    }
-
-    if (state.sort === "desc") {
-        list.sort(
-            (a, b) => b.price - a.price
-        );
-    }
-
-    if (state.sort === "name") {
-        list.sort(
-            (a, b) =>
-                a.name.localeCompare(b.name, "fr")
-        );
-    }
-
-    return list;
-}
-
-
-/* =========================
-   AFFICHAGE PRODUITS
-========================= */
-
-function renderProducts() {
-
-    const list = getFilteredProducts();
-
-    grid.innerHTML = "";
-
-    result.textContent =
-        `${list.length} produit${list.length > 1 ? "s" : ""}`;
-
-
-    const empty = document.getElementById("empty");
-
-    if (list.length === 0) {
-
-        empty.style.display = "block";
-
-        return;
-    }
-
-    empty.style.display = "none";
-
-
-    list.forEach(product => {
-
-        const card =
-            document.createElement("div");
-
-        card.className = "card";
-
-
-        card.innerHTML = `
-
-            <div class="image">
-
-                <img
-                    src="${product.image}"
-                    alt="${product.name}"
-                    loading="lazy"
-                    onerror="
-                        this.style.display='none';
-                        this.parentElement.innerHTML +=
-                        '<div class=&quot;fake-image&quot;>N</div>';
-                    "
-                >
-
-            </div>
-
-
-            <div class="info">
-
-                <div class="brand">
-                    ${product.brand}
-                </div>
-
-                <div class="name">
-                    ${product.name}
-                </div>
-
-                <div class="category">
-                    ${product.category}
-                </div>
-
-
-                <div class="bottom">
-
-                    <div class="price">
-                        ${money(product.price)}
-                    </div>
-
-                    <button
-                        class="add"
-                        data-add="${product.id}"
-                    >
-                        Ajouter
-                    </button>
-
-                </div>
-
-            </div>
-        `;
-
-
-        const addButton =
-            card.querySelector("[data-add]");
-
-
-        addButton.addEventListener(
-            "click",
-            event => {
-
-                event.stopPropagation();
-
-                addToCart(product.id);
-
-            }
-        );
-
-
-        grid.appendChild(card);
-
-    });
-}
-
-
-/* =========================
-   CATEGORIES
-========================= */
-
-function filterCategory(category, button) {
-
-    state.category = category;
-
-    document
-        .querySelectorAll("nav button")
-        .forEach(item => {
-            item.classList.remove("active");
-        });
-
-    button.classList.add("active");
-
-    renderProducts();
-}
-
-
-/* =========================
-   MARQUES
-========================= */
-
-function loadBrands() {
-
-    const brands =
-        NovaShopCatalog.getBrands();
-
-
-    brands.forEach(name => {
-
-        const option =
-            document.createElement("option");
-
-        option.value = name;
-
-        option.textContent = name;
-
-        brand.appendChild(option);
-
-    });
-}
-
-
-/* =========================
-   PANIER
-========================= */
-
-function addToCart(id) {
-
-    const product =
-        NovaShopCatalog.getById(id);
-
-    if (!product) return;
-
-
-    const existing =
-        state.cart.find(
-            item => item.id === id
-        );
-
-
-    if (existing) {
-
-        existing.quantity++;
-
-    } else {
-
-        state.cart.push({
-            id: id,
-            quantity: 1
-        });
-
-    }
-
-
-    saveCart();
-
-    renderCart();
-
-    showToast(
-        `${product.name} ajouté au panier`
-    );
-}
-
-
-function removeFromCart(id) {
-
-    state.cart =
-        state.cart.filter(
-            item => item.id !== id
-        );
-
-    saveCart();
-
-    renderCart();
-}
-
-
-function changeQuantity(id, amount) {
-
-    const item =
-        state.cart.find(
-            item => item.id === id
-        );
-
-    if (!item) return;
-
-
-    item.quantity += amount;
-
-
-    if (item.quantity <= 0) {
-
-        removeFromCart(id);
-
-        return;
-    }
-
-
-    saveCart();
-
-    renderCart();
-}
-
-
-/* =========================
-   AFFICHAGE PANIER
-========================= */
-
-function renderCart() {
-
-    cartContent.innerHTML = "";
-
-    let total = 0;
-
-    let count = 0;
-
-
-    if (state.cart.length === 0) {
-
-        cartContent.innerHTML = `
-
-            <div style="
-                text-align:center;
-                padding:60px 10px;
-                color:#777;
-            ">
-
-                <div style="
-                    font-size:42px;
-                    margin-bottom:12px;
-                ">
-                    🛒
-                </div>
-
-                <strong>
-                    Ton panier est vide
-                </strong>
-
-                <p style="
-                    margin-top:7px;
-                    font-size:13px;
-                ">
-                    Ajoute un produit pour commencer.
-                </p>
-
-            </div>
-        `;
-
-    }
-
-
-    state.cart.forEach(item => {
-
-        const product =
-            NovaShopCatalog.getById(item.id);
-
-
-        if (!product) return;
-
-
-        total +=
-            product.price *
-            item.quantity;
-
-        count += item.quantity;
-
-
-        const element =
-            document.createElement("div");
-
-        element.className = "cart-item";
-
-
-        element.innerHTML = `
-
-            <div class="cart-img">
-
-                <img
-                    src="${product.image}"
-                    alt="${product.name}"
-                >
-
-            </div>
-
-
-            <div class="cart-info">
-
-                <strong>
-                    ${product.name}
-                </strong>
-
-                <p>
-                    ${money(product.price)}
-                </p>
-
-
-                <div class="qty">
-
-                    <button
-                        data-minus="${product.id}"
-                    >
-                        −
-                    </button>
-
-                    <span>
-                        ${item.quantity}
-                    </span>
-
-                    <button
-                        data-plus="${product.id}"
-                    >
-                        +
-                    </button>
-
-                </div>
-
-
-                <button
-                    class="remove"
-                    data-remove="${product.id}"
-                >
-                    Supprimer
-                </button>
-
-            </div>
-        `;
-
-
-        cartContent.appendChild(element);
-
-    });
-
-
-    cartCount.textContent = count;
-
-    totalElement.textContent =
-        money(total);
-}
-
-
-/* =========================
-   ACTIONS PANIER
-========================= */
-
-cartContent.addEventListener(
-    "click",
-    event => {
-
-        const plus =
-            event.target.closest(
-                "[data-plus]"
-            );
-
-
-        if (plus) {
-
-            changeQuantity(
-                Number(plus.dataset.plus),
-                1
-            );
-
-            return;
-        }
-
-
-        const minus =
-            event.target.closest(
-                "[data-minus]"
-            );
-
-
-        if (minus) {
-
-            changeQuantity(
-                Number(minus.dataset.minus),
-                -1
-            );
-
-            return;
-        }
-
-
-        const remove =
-            event.target.closest(
-                "[data-remove]"
-            );
-
-
-        if (remove) {
-
-            removeFromCart(
-                Number(remove.dataset.remove)
-            );
-
-        }
-
-    }
-);
-
-
-/* =========================
-   OUVRIR PANIER
-========================= */
-
-function openCart() {
-
-    renderCart();
-
-    cartElement.classList.add("open");
-
-    overlay.classList.add("open");
-}
-
-
-function closeCart() {
-
-    cartElement.classList.remove("open");
-
-    overlay.classList.remove("open");
-}
-
-
-/* =========================
-   RECHERCHE
-========================= */
-
-search.addEventListener(
-    "input",
-    () => {
-
-        state.search =
-            search.value;
-
-        renderProducts();
-
-    }
-);
-
-
-/* =========================
-   MARQUE
-========================= */
-
-brand.addEventListener(
-    "change",
-    () => {
-
-        state.brand =
-            brand.value;
-
-        renderProducts();
-
-    }
-);
-
-
-/* =========================
-   TRI
-========================= */
-
-sort.addEventListener(
-    "change",
-    () => {
-
-        state.sort =
-            sort.value;
-
-        renderProducts();
-
-    }
-);
-
-
-/* =========================
-   HERO
-========================= */
-
-function scrollToProducts() {
-
-    document
-        .getElementById("productsSection")
-        .scrollIntoView({
-            behavior: "smooth"
-        });
-}
-
-
-/* =========================
-   CHECKOUT
-========================= */
-
-function checkout() {
-
-    if (state.cart.length === 0) {
-
-        showToast(
-            "Ton panier est vide"
-        );
-
-        return;
-    }
-
-
-    showToast(
-        "La commande sera disponible prochainement"
-    );
-}
-
-
-/* =========================
-   TOAST
-========================= */
-
-let toastTimer;
-
-function showToast(message) {
-
-    toast.textContent = message;
-
-    toast.classList.add("show");
-
-
-    clearTimeout(toastTimer);
-
-
-    toastTimer =
-        setTimeout(() => {
-
-            toast.classList.remove("show");
-
-        }, 2200);
-}
-
-
-/* =========================
-   INITIALISATION
-========================= */
-
-loadBrands();
-
-renderProducts();
-
-renderCart();
-
-
-/* =========================
-   EXPORT
-========================= */
-
-window.NovaShop = {
-
-    products,
-
-    state,
-
-    addToCart,
-
-    removeFromCart,
-
-    changeQuantity,
-
-    openCart,
-
-    closeCart,
-
-    renderProducts,
-
-    renderCart
-
-};<!DOCTYPE html>
-<html lang="fr">
-<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>NovaShop | Mon compte</title>
-
-    <link rel="stylesheet" href="style.css">
-
-    <style>
-        body {
-            margin: 0;
-            background: #f6f7f9;
-            color: #111827;
-            font-family: Arial, Helvetica, sans-serif;
-        }
-
-        .account-page {
-            max-width: 1180px;
-            margin: auto;
-            padding: 40px 20px 70px;
-        }
-
-        .account-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-
-        .account-header h1 {
-            margin: 0;
-            font-size: 32px;
-        }
-
-        .account-header p {
-            margin: 8px 0 0;
-            color: #6b7280;
-        }
-
-        .back-home {
-            text-decoration: none;
-            color: #111827;
-            font-weight: 700;
-        }
-
-        .account-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-        }
-
-        .account-card {
-            background: #fff;
-            border: 1px solid #e5e7eb;
-            border-radius: 18px;
-            padding: 24px;
-            box-shadow: 0 8px 30px rgba(0,0,0,.04);
-        }
-
-        .account-card h2 {
-            margin: 0 0 18px;
-            font-size: 19px;
-        }
-
-        .account-card label {
-            display: block;
-            margin: 0 0 7px;
-            font-size: 13px;
-            font-weight: 700;
-        }
-
-        .account-card input {
-            width: 100%;
-            box-sizing: border-box;
-            padding: 13px 14px;
-            border: 1px solid #d1d5db;
-            border-radius: 10px;
-            outline: none;
-            font-size: 14px;
-            margin-bottom: 14px;
-        }
-
-        .account-card input:focus {
-            border-color: #111827;
-        }
-
-        .primary-btn,
-        .secondary-btn,
-        .danger-btn {
-            border: 0;
-            border-radius: 10px;
-            padding: 12px 16px;
-            cursor: pointer;
-            font-weight: 700;
-        }
-
-        .primary-btn {
-            background: #111827;
-            color: white;
-        }
-
-        .secondary-btn {
-            background: #eef0f3;
-            color: #111827;
-        }
-
-        .danger-btn {
-            background: #fee2e2;
-            color: #b91c1c;
-        }
-
-        .buttons {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-
-        .status {
-            padding: 12px 14px;
-            background: #f3f4f6;
-            border-radius: 10px;
-            color: #4b5563;
-            font-size: 14px;
-            margin-bottom: 18px;
-        }
-
-        .orders {
-            grid-column: 1 / -1;
-        }
-
-        .order {
-            border: 1px solid #e5e7eb;
-            border-radius: 14px;
-            padding: 18px;
-            margin-bottom: 12px;
-        }
-
-        .order-top {
-            display: flex;
-            justify-content: space-between;
-            gap: 15px;
-            flex-wrap: wrap;
-        }
-
-        .order-id {
-            font-weight: 800;
-        }
-
-        .order-status {
-            display: inline-flex;
-            padding: 6px 10px;
-            border-radius: 999px;
-            background: #eef2ff;
-            color: #3730a3;
-            font-size: 12px;
-            font-weight: 800;
-        }
-
-        .order-items {
-            margin-top: 12px;
-            color: #4b5563;
-            font-size: 14px;
-            line-height: 1.6;
-        }
-
-        .order-total {
-            margin-top: 12px;
-            font-weight: 800;
-        }
-
-        .empty-orders {
-            color: #6b7280;
-            padding: 20px 0;
-        }
-
-        @media (max-width: 760px) {
-            .account-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .orders {
-                grid-column: auto;
-            }
-
-            .account-header {
-                align-items: flex-start;
-                flex-direction: column;
-            }
-        }
-    </style>
-</head>
-
-<body>
-
-<div class="account-page">
-
-    <div class="account-header">
-
-        <div>
-            <h1>Mon compte</h1>
-            <p id="accountEmail">
-                Chargement...
-            </p>
-        </div>
-
-        <a
-            class="back-home"
-            href="index.html"
-        >
-            ← Retour à NovaShop
-        </a>
-
-    </div>
-
-
-    <div class="account-grid">
-
-
-        <!-- PROFIL -->
-
-        <section class="account-card">
-
-            <h2>Informations</h2>
-
-            <div
-                class="status"
-                id="accountStatus"
-            >
-                Vérification du compte...
-            </div>
-
-
-            <label for="city">
-                Ville de livraison
-            </label>
-
-            <input
-                id="city"
-                type="text"
-                placeholder="Ex : Lille"
-                maxlength="80"
-                autocomplete="address-level2"
-            >
-
-
-            <div class="buttons">
-
-                <button
-                    class="primary-btn"
-                    id="saveCity"
-                >
-                    Enregistrer
-                </button>
-
-                <button
-                    class="secondary-btn"
-                    id="logout"
-                >
-                    Se déconnecter
-                </button>
-
-            </div>
-
-        </section>
-
-
-
-        <!-- ACTIONS -->
-
-        <section class="account-card">
-
-            <h2>Gestion du compte</h2>
-
-            <p style="
-                color:#6b7280;
-                font-size:14px;
-                line-height:1.6;
-            ">
-                Tu peux consulter tes commandes,
-                modifier ta ville de livraison ou
-                supprimer les données associées à ton compte.
-            </p>
-
-
-            <div class="buttons">
-
-                <button
-                    class="secondary-btn"
-                    id="refreshOrders"
-                >
-                    Actualiser les commandes
-                </button>
-
-                <button
-                    class="danger-btn"
-                    id="deleteData"
-                >
-                    Supprimer mes données
-                </button>
-
-            </div>
-
-        </section>
-
-
-
-        <!-- COMMANDES -->
-
-        <section class="account-card orders">
-
-            <h2>Mes commandes</h2>
-
-            <div id="orders">
-
-                <div class="empty-orders">
-                    Chargement des commandes...
-                </div>
-
-            </div>
-
-        </section>
-
-    </div>
-
-</div>
-
-
-
-<script type="module">
-
-    import "./firebase.js";
-
-
-    function waitForFirebase() {
-
-        return new Promise(resolve => {
-
-            if (window.NovaShopFirebase) {
-                resolve();
-                return;
-            }
-
-
-            const timer =
-                setInterval(() => {
-
-                    if (window.NovaShopFirebase) {
-
-                        clearInterval(timer);
-
-                        resolve();
-
-                    }
-
-                }, 50);
-
-        });
-
-    }
-
-
-    await waitForFirebase();
-
-
-    const Firebase =
-        window.NovaShopFirebase;
-
-
-    const emailElement =
-        document.getElementById("accountEmail");
-
-    const statusElement =
-        document.getElementById("accountStatus");
-
-    const cityInput =
-        document.getElementById("city");
-
-    const ordersElement =
-        document.getElementById("orders");
-
-
-    /* =========================
-       FORMAT PRIX
-    ========================= */
-
-    function money(value) {
-
-        return new Intl.NumberFormat(
-            "fr-FR",
-            {
-                style: "currency",
-                currency: "EUR"
-            }
-        ).format(value);
-
-    }
-
-
-    /* =========================
-       DATE
-    ========================= */
-
-    function formatDate(timestamp) {
-
-        if (!timestamp) {
-            return "Date inconnue";
-        }
-
-
-        return new Date(timestamp)
-            .toLocaleDateString(
-                "fr-FR",
-                {
-                    day: "2-digit",
-                    month: "2-digit",
-                    year: "numeric"
-                }
-            );
-
-    }
-
-
-    /* =========================
-       COMMANDES
-    ========================= */
-
-    async function loadOrders(uid) {
-
-        ordersElement.innerHTML = `
-            <div class="empty-orders">
-                Chargement...
-            </div>
-        `;
-
-
-        try {
-
-            const orders =
-                await Firebase.getOrders(uid);
-
-
-            if (!orders.length) {
-
-                ordersElement.innerHTML = `
-                    <div class="empty-orders">
-                        Aucune commande pour le moment.
-                    </div>
-                `;
-
-                return;
-            }
-
-
-            ordersElement.innerHTML = "";
-
-
-            orders.forEach(order => {
-
-                const element =
-                    document.createElement("div");
-
-                element.className = "order";
-
-
-                const items =
-                    Array.isArray(order.items)
-                        ? order.items
-                        : [];
-
-
-                const itemsHTML =
-                    items.map(item => `
-                        <div>
-                            ${item.name}
-                            × ${item.quantity}
-                        </div>
-                    `).join("");
-
-
-                element.innerHTML = `
-
-                    <div class="order-top">
-
-                        <div>
-
-                            <div class="order-id">
-                                Commande #${order.id.slice(0, 8)}
-                            </div>
-
-                            <small>
-                                ${formatDate(order.createdAt)}
-                            </small>
-
-                        </div>
-
-                        <div class="order-status">
-                            ${order.status || "En préparation"}
-                        </div>
-
-                    </div>
-
-
-                    <div class="order-items">
-
-                        ${itemsHTML}
-
-                    </div>
-
-
-                    <div class="order-total">
-
-                        Total :
-                        ${money(order.total || 0)}
-
-                    </div>
-
-                `;
-
-
-                ordersElement.appendChild(element);
-
-            });
-
-        } catch (error) {
-
-            console.error(error);
-
-
-            ordersElement.innerHTML = `
-                <div class="empty-orders">
-                    Impossible de charger les commandes.
-                </div>
-            `;
-
-        }
-
-    }
-
-
-    /* =========================
-       AUTH
-    ========================= */
-
-    Firebase.watchAuth(
-        async user => {
-
-            if (!user) {
-
-                window.location.href =
-                    "index.html";
-
-                return;
-
-            }
-
-
-            emailElement.textContent =
-                user.email || "";
-
-
-            statusElement.textContent =
-                "Compte connecté";
-
-
-            try {
-
-                const profile =
-                    await Firebase.getProfile(
-                        user.uid
-                    );
-
-
-                if (profile?.city) {
-
-                    cityInput.value =
-                        profile.city;
-
-                }
-
-
-            } catch (error) {
-
-                console.error(error);
-
-            }
-
-
-            await loadOrders(user.uid);
-
-        }
-    );
-
-
-    /* =========================
-       VILLE
-    ========================= */
-
-    document
-        .getElementById("saveCity")
-        .addEventListener(
-            "click",
-            async () => {
-
-                const user =
-                    Firebase.getCurrentUser();
-
-
-                if (!user) return;
-
-
-                const city =
-                    cityInput.value.trim();
-
-
-                try {
-
-                    await Firebase.saveCity(
-                        user.uid,
-                        city
-                    );
-
-
-                    statusElement.textContent =
-                        "Ville enregistrée ✓";
-
-
-                } catch (error) {
-
-                    console.error(error);
-
-                    statusElement.textContent =
-                        "Erreur lors de l'enregistrement.";
-
-                }
-
-            }
-        );
-
-
-    /* =========================
-       LOGOUT
-    ========================= */
-
-    document
-        .getElementById("logout")
-        .addEventListener(
-            "click",
-            async () => {
-
-                try {
-
-                    await Firebase.logout();
-
-                    window.location.href =
-                        "index.html";
-
-                } catch (error) {
-
-                    console.error(error);
-
-                }
-
-            }
-        );
-
-
-    /* =========================
-       REFRESH COMMANDES
-    ========================= */
-
-    document
-        .getElementById("refreshOrders")
-        .addEventListener(
-            "click",
-            async () => {
-
-                const user =
-                    Firebase.getCurrentUser();
-
-
-                if (!user) return;
-
-
-                await loadOrders(user.uid);
-
-            }
-        );
-
-
-    /* =========================
-       SUPPRESSION DONNÉES
-    ========================= */
-
-    document
-        .getElementById("deleteData")
-        .addEventListener(
-            "click",
-            async () => {
-
-                const confirmation =
-                    confirm(
-                        "Supprimer toutes les données associées à ce compte ? Cette action est définitive."
-                    );
-
-
-                if (!confirmation) {
-                    return;
-                }
-
-
-                try {
-
-                    await Firebase.deleteAccountData();
-
-
-                    alert(
-                        "Les données du compte ont été supprimées."
-                    );
-
-
-                    window.location.href =
-                        "index.html";
-
-
-                } catch (error) {
-
-                    console.error(error);
-
-
-                    alert(
-                        "Impossible de supprimer les données."
-                    );
-
-                }
-
-            }
-        );
-
-</script>
-
-</body>
-</html><!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>NovaShop | Connexion</title>
-
-    <link rel="stylesheet" href="style.css">
+    <meta name="theme-color" content="#111318">
+    <meta name="description" content="NovaShop, matériel informatique et gaming.">
+    <title>NovaShop | Matériel PC & Gaming</title>
 
     <style>
         * {
             box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --black: #111318;
+            --black-2: #181a20;
+            --white: #ffffff;
+            --bg: #f4f5f7;
+            --card: #ffffff;
+            --border: #e1e3e7;
+            --text: #17191e;
+            --muted: #737780;
+            --blue: #2864e8;
+            --blue-dark: #1d4fc2;
+            --green: #168447;
+            --red: #d93030;
+            --shadow: 0 8px 30px rgba(17, 19, 24, .07);
+            --radius: 14px;
+        }
+
+        html {
+            scroll-behavior: smooth;
         }
 
         body {
-            margin: 0;
+            font-family: Inter, Arial, Helvetica, sans-serif;
+            background: var(--bg);
+            color: var(--text);
             min-height: 100vh;
-            background: #f6f7f9;
-            color: #111827;
-            font-family: Arial, Helvetica, sans-serif;
-            display: flex;
-            align-items: center;
-            justify-content: center;
         }
 
-        .auth-page {
-            width: 100%;
-            max-width: 440px;
-            padding: 24px;
-        }
-
-        .auth-logo {
-            text-align: center;
-            margin-bottom: 24px;
-        }
-
-        .auth-logo a {
-            text-decoration: none;
-            color: #111827;
-            font-size: 28px;
-            font-weight: 900;
-            letter-spacing: -1px;
-        }
-
-        .auth-card {
-            background: white;
-            border: 1px solid #e5e7eb;
-            border-radius: 20px;
-            padding: 30px;
-            box-shadow: 0 15px 45px rgba(0,0,0,.06);
-        }
-
-        .auth-card h1 {
-            margin: 0;
-            font-size: 26px;
-        }
-
-        .auth-card .subtitle {
-            margin: 8px 0 25px;
-            color: #6b7280;
-            font-size: 14px;
-        }
-
-        .field {
-            margin-bottom: 16px;
-        }
-
-        .field label {
-            display: block;
-            margin-bottom: 7px;
-            font-size: 13px;
-            font-weight: 700;
-        }
-
-        .field input {
-            width: 100%;
-            border: 1px solid #d1d5db;
-            border-radius: 11px;
-            padding: 14px;
-            font-size: 14px;
-            outline: none;
-            background: white;
-        }
-
-        .field input:focus {
-            border-color: #111827;
-        }
-
-        .password-wrap {
-            position: relative;
-        }
-
-        .password-wrap input {
-            padding-right: 75px;
-        }
-
-        .show-password {
-            position: absolute;
-            right: 10px;
-            top: 50%;
-            transform: translateY(-50%);
-            border: 0;
-            background: transparent;
-            cursor: pointer;
-            font-size: 12px;
-            font-weight: 700;
-            color: #4b5563;
-        }
-
-        .submit {
-            width: 100%;
-            border: 0;
-            border-radius: 11px;
-            padding: 14px;
-            background: #111827;
-            color: white;
-            font-weight: 800;
-            cursor: pointer;
-            font-size: 14px;
-            margin-top: 4px;
-        }
-
-        .submit:hover {
-            background: #000;
-        }
-
-        .submit:disabled {
-            opacity: .55;
-            cursor: not-allowed;
-        }
-
-        .message {
-            display: none;
-            margin-bottom: 16px;
-            padding: 12px 14px;
-            border-radius: 10px;
-            font-size: 13px;
-            line-height: 1.4;
-        }
-
-        .message.show {
-            display: block;
-        }
-
-        .message.error {
-            background: #fee2e2;
-            color: #991b1b;
-        }
-
-        .message.success {
-            background: #dcfce7;
-            color: #166534;
-        }
-
-        .register {
-            text-align: center;
-            margin-top: 20px;
-            font-size: 14px;
-            color: #6b7280;
-        }
-
-        .register a {
-            color: #111827;
-            font-weight: 800;
-            text-decoration: none;
-        }
-
-        .back {
-            display: block;
-            text-align: center;
-            margin-top: 18px;
-            color: #6b7280;
-            text-decoration: none;
-            font-size: 13px;
-        }
-
-        @media (max-width: 480px) {
-            .auth-page {
-                padding: 15px;
-            }
-
-            .auth-card {
-                padding: 22px;
-            }
-        }
-    </style>
-</head>
-
-<body>
-
-<div class="auth-page">
-
-    <div class="auth-logo">
-        <a href="index.html">NovaShop</a>
-    </div>
-
-
-    <div class="auth-card">
-
-        <h1>Connexion</h1>
-
-        <p class="subtitle">
-            Connecte-toi à ton espace NovaShop.
-        </p>
-
-
-        <div
-            id="message"
-            class="message"
-        ></div>
-
-
-        <form id="loginForm">
-
-            <div class="field">
-
-                <label for="email">
-                    Adresse e-mail
-                </label>
-
-                <input
-                    id="email"
-                    type="email"
-                    placeholder="exemple@email.com"
-                    autocomplete="email"
-                    required
-                >
-
-            </div>
-
-
-            <div class="field">
-
-                <label for="password">
-                    Mot de passe
-                </label>
-
-                <div class="password-wrap">
-
-                    <input
-                        id="password"
-                        type="password"
-                        placeholder="Ton mot de passe"
-                        autocomplete="current-password"
-                        required
-                    >
-
-                    <button
-                        type="button"
-                        class="show-password"
-                        id="showPassword"
-                    >
-                        Afficher
-                    </button>
-
-                </div>
-
-            </div>
-
-
-            <button
-                class="submit"
-                id="submit"
-                type="submit"
-            >
-                Se connecter
-            </button>
-
-        </form>
-
-
-        <div class="register">
-
-            Pas encore de compte ?
-
-            <a href="register.html">
-                Créer un compte
-            </a>
-
-        </div>
-
-    </div>
-
-
-    <a
-        class="back"
-        href="index.html"
-    >
-        ← Retour à NovaShop
-    </a>
-
-</div>
-
-
-<script type="module">
-
-    import "./firebase.js";
-
-
-    function waitForFirebase() {
-
-        return new Promise(resolve => {
-
-            if (window.NovaShopFirebase) {
-                resolve();
-                return;
-            }
-
-
-            const interval =
-                setInterval(() => {
-
-                    if (window.NovaShopFirebase) {
-
-                        clearInterval(interval);
-
-                        resolve();
-
-                    }
-
-                }, 50);
-
-        });
-
-    }
-
-
-    await waitForFirebase();
-
-
-    const Firebase =
-        window.NovaShopFirebase;
-
-
-    const form =
-        document.getElementById("loginForm");
-
-    const email =
-        document.getElementById("email");
-
-    const password =
-        document.getElementById("password");
-
-    const submit =
-        document.getElementById("submit");
-
-    const message =
-        document.getElementById("message");
-
-    const showPassword =
-        document.getElementById("showPassword");
-
-
-    /* =========================
-       MESSAGE
-    ========================= */
-
-    function showMessage(
-        text,
-        type = "error"
-    ) {
-
-        message.textContent = text;
-
-        message.className =
-            `message show ${type}`;
-
-    }
-
-
-    function hideMessage() {
-
-        message.className =
-            "message";
-
-        message.textContent = "";
-
-    }
-
-
-    /* =========================
-       MOT DE PASSE
-    ========================= */
-
-    showPassword.addEventListener(
-        "click",
-        () => {
-
-            const visible =
-                password.type === "text";
-
-
-            password.type =
-                visible
-                    ? "password"
-                    : "text";
-
-
-            showPassword.textContent =
-                visible
-                    ? "Afficher"
-                    : "Masquer";
-
-        }
-    );
-
-
-    /* =========================
-       CONNEXION
-    ========================= */
-
-    form.addEventListener(
-        "submit",
-        async event => {
-
-            event.preventDefault();
-
-            hideMessage();
-
-
-            const mail =
-                email.value.trim();
-
-            const pass =
-                password.value;
-
-
-            if (!mail || !pass) {
-
-                showMessage(
-                    "Remplis tous les champs."
-                );
-
-                return;
-
-            }
-
-
-            submit.disabled = true;
-
-            submit.textContent =
-                "Connexion...";
-
-
-            try {
-
-                await Firebase.login(
-                    mail,
-                    pass
-                );
-
-
-                showMessage(
-                    "Connexion réussie. Redirection...",
-                    "success"
-                );
-
-
-                setTimeout(() => {
-
-                    window.location.href =
-                        "account.html";
-
-                }, 500);
-
-
-            } catch (error) {
-
-                console.error(error);
-
-
-                let text =
-                    "Impossible de se connecter.";
-
-
-                if (
-                    error.code ===
-                    "auth/invalid-credential"
-                ) {
-
-                    text =
-                        "E-mail ou mot de passe incorrect.";
-
-                }
-
-                else if (
-                    error.code ===
-                    "auth/user-not-found"
-                ) {
-
-                    text =
-                        "Aucun compte ne correspond à cet e-mail.";
-
-                }
-
-                else if (
-                    error.code ===
-                    "auth/wrong-password"
-                ) {
-
-                    text =
-                        "Mot de passe incorrect.";
-
-                }
-
-                else if (
-                    error.code ===
-                    "auth/invalid-email"
-                ) {
-
-                    text =
-                        "Adresse e-mail invalide.";
-
-                }
-
-                else if (
-                    error.code ===
-                    "auth/too-many-requests"
-                ) {
-
-                    text =
-                        "Trop de tentatives. Réessaie plus tard.";
-
-                }
-
-
-                showMessage(text);
-
-
-                submit.disabled = false;
-
-                submit.textContent =
-                    "Se connecter";
-
-            }
-
-        }
-    );
-
-
-    /* =========================
-       SI DÉJÀ CONNECTÉ
-    ========================= */
-
-    Firebase.watchAuth(
-        user => {
-
-            if (user) {
-
-                window.location.href =
-                    "account.html";
-
-            }
-
-        }
-    );
-
-</script>
-
-</body>
-</html><!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NovaShop | Créer un compte</title>
-    <link rel="stylesheet" href="style.css">
-
-    <style>
-        * {
-            box-sizing: border-box;
-        }
-
-        body {
-            margin: 0;
-            min-height: 100vh;
-            background: #f6f7f9;
-            color: #111827;
-            font-family: Arial, Helvetica, sans-serif;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .auth-page {
-            width: 100%;
-            max-width: 440px;
-            padding: 24px;
-        }
-
-        .logo {
-            text-align: center;
-            margin-bottom: 24px;
-        }
-
-        .logo a {
-            color: #111827;
-            text-decoration: none;
-            font-size: 29px;
-            font-weight: 900;
-            letter-spacing: -1px;
-        }
-
-        .card {
-            background: #fff;
-            border: 1px solid #e5e7eb;
-            border-radius: 20px;
-            padding: 30px;
-            box-shadow: 0 15px 45px rgba(0,0,0,.06);
-        }
-
-        h1 {
-            margin: 0;
-            font-size: 26px;
-        }
-
-        .subtitle {
-            margin: 8px 0 25px;
-            color: #6b7280;
-            font-size: 14px;
-        }
-
-        .field {
-            margin-bottom: 16px;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 7px;
-            font-size: 13px;
-            font-weight: 700;
-        }
-
-        input {
-            width: 100%;
-            padding: 14px;
-            border: 1px solid #d1d5db;
-            border-radius: 11px;
-            font-size: 14px;
-            outline: none;
-        }
-
-        input:focus {
-            border-color: #111827;
-        }
-
-        .password {
-            position: relative;
-        }
-
-        .password input {
-            padding-right: 75px;
-        }
-
-        .toggle {
-            position: absolute;
-            right: 10px;
-            top: 50%;
-            transform: translateY(-50%);
-            border: 0;
-            background: transparent;
-            cursor: pointer;
-            font-size: 12px;
-            font-weight: 700;
-            color: #4b5563;
-        }
-
-        .submit {
-            width: 100%;
-            margin-top: 4px;
-            padding: 14px;
-            border: 0;
-            border-radius: 11px;
-            background: #111827;
-            color: white;
-            font-size: 14px;
-            font-weight: 800;
-            cursor: pointer;
-        }
-
-        .submit:hover {
-            background: #000;
-        }
-
-        .submit:disabled {
-            opacity: .55;
-            cursor: not-allowed;
-        }
-
-        .message {
-            display: none;
-            margin-bottom: 16px;
-            padding: 12px 14px;
-            border-radius: 10px;
-            font-size: 13px;
-            line-height: 1.45;
-        }
-
-        .message.show {
-            display: block;
-        }
-
-        .error {
-            background: #fee2e2;
-            color: #991b1b;
-        }
-
-        .success {
-            background: #dcfce7;
-            color: #166534;
-        }
-
-        .login {
-            text-align: center;
-            margin-top: 20px;
-            color: #6b7280;
-            font-size: 14px;
-        }
-
-        .login a,
-        .back {
-            color: #111827;
-            font-weight: 800;
-            text-decoration: none;
-        }
-
-        .back {
-            display: block;
-            text-align: center;
-            margin-top: 18px;
-            color: #6b7280;
-            font-size: 13px;
-        }
-
-        .rules {
-            margin: -4px 0 17px;
-            font-size: 12px;
-            color: #6b7280;
-            line-height: 1.5;
-        }
-
-        @media (max-width: 480px) {
-            .auth-page {
-                padding: 15px;
-            }
-
-            .card {
-                padding: 22px;
-            }
-        }
-    </style>
-</head>
-
-<body>
-
-<div class="auth-page">
-
-    <div class="logo">
-        <a href="index.html">NovaShop</a>
-    </div>
-
-    <div class="card">
-
-        <h1>Créer un compte</h1>
-
-        <p class="subtitle">
-            Rejoins NovaShop pour retrouver tes commandes.
-        </p>
-
-        <div id="message" class="message"></div>
-
-        <form id="registerForm">
-
-            <div class="field">
-                <label for="email">Adresse e-mail</label>
-
-                <input
-                    id="email"
-                    type="email"
-                    placeholder="exemple@email.com"
-                    autocomplete="email"
-                    required
-                >
-            </div>
-
-            <div class="field">
-                <label for="password">Mot de passe</label>
-
-                <div class="password">
-                    <input
-                        id="password"
-                        type="password"
-                        placeholder="Minimum 6 caractères"
-                        autocomplete="new-password"
-                        minlength="6"
-                        required
-                    >
-
-                    <button
-                        type="button"
-                        class="toggle"
-                        id="togglePassword"
-                    >
-                        Afficher
-                    </button>
-                </div>
-            </div>
-
-            <div class="field">
-                <label for="confirmPassword">
-                    Confirmer le mot de passe
-                </label>
-
-                <div class="password">
-                    <input
-                        id="confirmPassword"
-                        type="password"
-                        placeholder="Retape ton mot de passe"
-                        autocomplete="new-password"
-                        minlength="6"
-                        required
-                    >
-
-                    <button
-                        type="button"
-                        class="toggle"
-                        id="toggleConfirm"
-                    >
-                        Afficher
-                    </button>
-                </div>
-            </div>
-
-            <div class="rules">
-                Ton mot de passe doit contenir au moins 6 caractères.
-            </div>
-
-            <button
-                class="submit"
-                id="submit"
-                type="submit"
-            >
-                Créer mon compte
-            </button>
-
-        </form>
-
-        <div class="login">
-            Déjà un compte ?
-            <a href="login.html">Se connecter</a>
-        </div>
-
-    </div>
-
-    <a class="back" href="index.html">
-        ← Retour à NovaShop
-    </a>
-
-</div>
-
-
-<script type="module">
-
-    import "./firebase.js";
-
-
-    function waitForFirebase() {
-
-        return new Promise(resolve => {
-
-            if (window.NovaShopFirebase) {
-                resolve();
-                return;
-            }
-
-            const interval = setInterval(() => {
-
-                if (window.NovaShopFirebase) {
-
-                    clearInterval(interval);
-                    resolve();
-
-                }
-
-            }, 50);
-
-        });
-
-    }
-
-
-    await waitForFirebase();
-
-
-    const Firebase =
-        window.NovaShopFirebase;
-
-
-    const form =
-        document.getElementById("registerForm");
-
-    const email =
-        document.getElementById("email");
-
-    const password =
-        document.getElementById("password");
-
-    const confirmPassword =
-        document.getElementById("confirmPassword");
-
-    const submit =
-        document.getElementById("submit");
-
-    const message =
-        document.getElementById("message");
-
-
-    function showMessage(text, type) {
-
-        message.textContent = text;
-
-        message.className =
-            `message show ${type}`;
-
-    }
-
-
-    function toggleInput(input, button) {
-
-        const visible =
-            input.type === "text";
-
-        input.type =
-            visible ? "password" : "text";
-
-        button.textContent =
-            visible ? "Afficher" : "Masquer";
-
-    }
-
-
-    document
-        .getElementById("togglePassword")
-        .addEventListener("click", event => {
-
-            toggleInput(
-                password,
-                event.currentTarget
-            );
-
-        });
-
-
-    document
-        .getElementById("toggleConfirm")
-        .addEventListener("click", event => {
-
-            toggleInput(
-                confirmPassword,
-                event.currentTarget
-            );
-
-        });
-
-
-    form.addEventListener(
-        "submit",
-        async event => {
-
-            event.preventDefault();
-
-
-            const mail =
-                email.value.trim();
-
-            const pass =
-                password.value;
-
-            const confirmation =
-                confirmPassword.value;
-
-
-            if (pass.length < 6) {
-
-                showMessage(
-                    "Le mot de passe doit contenir au moins 6 caractères.",
-                    "error"
-                );
-
-                return;
-
-            }
-
-
-            if (pass !== confirmation) {
-
-                showMessage(
-                    "Les deux mots de passe ne correspondent pas.",
-                    "error"
-                );
-
-                return;
-
-            }
-
-
-            submit.disabled = true;
-
-            submit.textContent =
-                "Création...";
-
-
-            try {
-
-                await Firebase.register(
-                    mail,
-                    pass
-                );
-
-
-                showMessage(
-                    "Compte créé. Redirection...",
-                    "success"
-                );
-
-
-                setTimeout(() => {
-
-                    window.location.href =
-                        "account.html";
-
-                }, 700);
-
-
-            } catch (error) {
-
-                console.error(error);
-
-
-                let text =
-                    "Impossible de créer le compte.";
-
-
-                if (
-                    error.code ===
-                    "auth/email-already-in-use"
-                ) {
-
-                    text =
-                        "Cette adresse e-mail possède déjà un compte.";
-
-                }
-
-                else if (
-                    error.code ===
-                    "auth/invalid-email"
-                ) {
-
-                    text =
-                        "Adresse e-mail invalide.";
-
-                }
-
-                else if (
-                    error.code ===
-                    "auth/weak-password"
-                ) {
-
-                    text =
-                        "Le mot de passe est trop faible.";
-
-                }
-
-
-                showMessage(
-                    text,
-                    "error"
-                );
-
-
-                submit.disabled = false;
-
-                submit.textContent =
-                    "Créer mon compte";
-
-            }
-
-        }
-    );
-
-
-    Firebase.watchAuth(user => {
-
-        if (user) {
-
-            window.location.href =
-                "account.html";
-
-        }
-
-    });
-
-</script>
-
-</body>
-</html><!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NovaShop | Administration</title>
-    <link rel="stylesheet" href="style.css">
-
-    <style>
-        * {
-            box-sizing: border-box;
-        }
-
-        body {
-            margin: 0;
-            background: #f5f6f8;
-            color: #111827;
-            font-family: Arial, Helvetica, sans-serif;
-        }
-
-        .admin {
-            max-width: 1250px;
-            margin: auto;
-            padding: 30px 20px 60px;
-        }
-
-        .top {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 20px;
-            margin-bottom: 25px;
-        }
-
-        .top h1 {
-            margin: 0;
-            font-size: 30px;
-        }
-
-        .top p {
-            margin: 7px 0 0;
-            color: #6b7280;
-        }
-
-        .back {
-            color: #111827;
-            text-decoration: none;
-            font-weight: 800;
-        }
-
-        .login-box,
-        .panel {
-            background: #fff;
-            border: 1px solid #e5e7eb;
-            border-radius: 18px;
-            padding: 24px;
-            box-shadow: 0 8px 30px rgba(0,0,0,.04);
-        }
-
-        .login-box {
-            max-width: 460px;
-            margin: 60px auto;
-        }
-
-        .login-box h2,
-        .panel h2 {
-            margin: 0 0 18px;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 7px;
-            font-size: 13px;
-            font-weight: 700;
-        }
-
+        button,
         input,
         select {
-            width: 100%;
-            padding: 13px;
-            border: 1px solid #d1d5db;
-            border-radius: 10px;
-            outline: none;
-            margin-bottom: 14px;
-            background: #fff;
+            font: inherit;
         }
 
         button {
-            border: 0;
-            border-radius: 10px;
-            padding: 12px 16px;
             cursor: pointer;
-            font-weight: 800;
         }
 
-        .primary {
-            background: #111827;
-            color: #fff;
+        a {
+            color: inherit;
+            text-decoration: none;
         }
 
-        .secondary {
-            background: #eef0f3;
-            color: #111827;
+        img {
+            max-width: 100%;
         }
 
-        .danger {
-            background: #fee2e2;
-            color: #b91c1c;
+        .hidden {
+            display: none !important;
         }
 
-        .message {
-            display: none;
-            margin-bottom: 15px;
-            padding: 12px;
-            border-radius: 10px;
-            font-size: 13px;
-        }
+        /* =========================
+           HEADER
+        ========================= */
 
-        .message.show {
-            display: block;
-        }
-
-        .error {
-            background: #fee2e2;
-            color: #991b1b;
-        }
-
-        .success {
-            background: #dcfce7;
-            color: #166534;
-        }
-
-        #dashboard {
-            display: none;
-        }
-
-        .stats {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-
-        .stat {
-            background: #fff;
-            border: 1px solid #e5e7eb;
-            border-radius: 16px;
-            padding: 20px;
-        }
-
-        .stat span {
-            display: block;
-            color: #6b7280;
-            font-size: 13px;
-            margin-bottom: 8px;
-        }
-
-        .stat strong {
-            font-size: 25px;
-        }
-
-        .orders {
-            display: grid;
-            gap: 12px;
-        }
-
-        .order {
-            border: 1px solid #e5e7eb;
-            border-radius: 14px;
-            padding: 18px;
-        }
-
-        .order-head {
+        .header {
+            height: 74px;
+            background: var(--white);
+            border-bottom: 1px solid var(--border);
             display: flex;
-            justify-content: space-between;
-            gap: 15px;
-            flex-wrap: wrap;
+            align-items: center;
+            gap: 24px;
+            padding: 0 38px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
         }
 
-        .order-id {
+        .logo {
+            min-width: 170px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 20px;
+            font-weight: 900;
+            letter-spacing: -.7px;
+        }
+
+        .logo-mark {
+            width: 35px;
+            height: 35px;
+            display: grid;
+            place-items: center;
+            background: var(--black);
+            color: white;
+            border-radius: 9px;
+            font-size: 16px;
+        }
+
+        .search {
+            flex: 1;
+            max-width: 650px;
+            height: 44px;
+            background: #f2f3f5;
+            border: 1px solid var(--border);
+            border-radius: 9px;
+            display: flex;
+            align-items: center;
+            padding: 0 13px;
+        }
+
+        .search-icon {
+            color: var(--muted);
+            font-size: 20px;
+        }
+
+        .search input {
+            width: 100%;
+            height: 100%;
+            border: 0;
+            outline: 0;
+            background: transparent;
+            padding: 0 10px;
+            color: var(--text);
+            font-size: 13px;
+        }
+
+        .header-actions {
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            gap: 7px;
+        }
+
+        .header-button {
+            height: 42px;
+            padding: 0 12px;
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            color: #363940;
+            transition: .15s ease;
+        }
+
+        .header-button:hover {
+            background: #f5f6f8;
+        }
+
+        .cart-button {
+            background: var(--black);
+            color: white;
+            border-color: var(--black);
+        }
+
+        .cart-button:hover {
+            background: #252832;
+        }
+
+        .cart-count {
+            min-width: 20px;
+            height: 20px;
+            padding: 0 5px;
+            display: grid;
+            place-items: center;
+            background: white;
+            color: var(--black);
+            border-radius: 50%;
+            font-size: 10px;
             font-weight: 900;
         }
 
-        .status {
-            display: inline-block;
-            padding: 6px 10px;
-            border-radius: 999px;
-            background: #eef2ff;
-            color: #3730a3;
-            font-size: 12px;
-            font-weight: 800;
-        }
+        /* =========================
+           CATEGORIES
+        ========================= */
 
-        .items {
-            margin-top: 12px;
-            color: #4b5563;
-            font-size: 14px;
-            line-height: 1.6;
-        }
-
-        .order-actions {
+        .categories {
+            min-height: 54px;
+            background: white;
+            border-bottom: 1px solid var(--border);
             display: flex;
-            gap: 10px;
             align-items: center;
-            margin-top: 15px;
+            gap: 5px;
+            padding: 0 38px;
+            overflow-x: auto;
+            scrollbar-width: none;
         }
 
-        .order-actions select {
-            max-width: 220px;
-            margin: 0;
+        .categories::-webkit-scrollbar {
+            display: none;
         }
 
-        .user {
-            margin-top: 5px;
-            color: #6b7280;
-            font-size: 13px;
+        .category {
+            border: 0;
+            background: transparent;
+            color: #696d75;
+            padding: 8px 11px;
+            border-radius: 7px;
+            white-space: nowrap;
+            font-size: 12px;
+            transition: .15s ease;
         }
 
-        @media (max-width: 850px) {
-            .stats {
-                grid-template-columns: repeat(2, 1fr);
-            }
+        .category:hover {
+            background: #f0f1f3;
+            color: var(--text);
         }
 
-        @media (max-width: 560px) {
-            .stats {
-                grid-template-columns: 1fr;
-            }
-
-            .top {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-
-            .order-actions {
-                flex-direction: column;
-                align-items: stretch;
-            }
-
-            .order-actions select {
-                max-width: none;
-            }
-        }
-    </style>
-</head>
-
-<body>
-
-<div class="admin">
-
-    <div class="top">
-        <div>
-            <h1>Administration</h1>
-            <p>Gestion des commandes NovaShop</p>
-        </div>
-
-        <a class="back" href="index.html">
-            ← NovaShop
-        </a>
-    </div>
-
-
-    <!-- CONNEXION ADMIN -->
-
-    <div id="loginBox" class="login-box">
-
-        <h2>Accès administration</h2>
-
-        <div id="message" class="message"></div>
-
-        <label for="email">
-            E-mail administrateur
-        </label>
-
-        <input
-            id="email"
-            type="email"
-            placeholder="admin@novashop.fr"
-        >
-
-        <label for="password">
-            Mot de passe
-        </label>
-
-        <input
-            id="password"
-            type="password"
-            placeholder="Mot de passe"
-        >
-
-        <button
-            class="primary"
-            id="login"
-        >
-            Se connecter
-        </button>
-
-    </div>
-
-
-    <!-- DASHBOARD -->
-
-    <div id="dashboard">
-
-        <div class="stats">
-
-            <div class="stat">
-                <span>Commandes</span>
-                <strong id="ordersCount">0</strong>
-            </div>
-
-            <div class="stat">
-                <span>Chiffre commandes</span>
-                <strong id="revenue">0 €</strong>
-            </div>
-
-            <div class="stat">
-                <span>En préparation</span>
-                <strong id="preparing">0</strong>
-            </div>
-
-            <div class="stat">
-                <span>Livrées</span>
-                <strong id="delivered">0</strong>
-            </div>
-
-        </div>
-
-
-        <div class="panel">
-
-            <div style="
-                display:flex;
-                justify-content:space-between;
-                align-items:center;
-                gap:15px;
-                margin-bottom:18px;
-                flex-wrap:wrap;
-            ">
-
-                <h2 style="margin:0">
-                    Toutes les commandes
-                </h2>
-
-                <div style="
-                    display:flex;
-                    gap:10px;
-                ">
-
-                    <button
-                        class="secondary"
-                        id="refresh"
-                    >
-                        Actualiser
-                    </button>
-
-                    <button
-                        class="secondary"
-                        id="logout"
-                    >
-                        Déconnexion
-                    </button>
-
-                </div>
-
-            </div>
-
-
-            <div id="orders" class="orders">
-
-                Chargement...
-
-            </div>
-
-        </div>
-
-    </div>
-
-</div>
-
-
-<script type="module">
-
-    import "./firebase.js";
-
-
-    /*
-       IMPORTANT :
-
-       Remplace cette adresse par TON adresse
-       Firebase admin.
-
-       Cette page sert uniquement à l'interface.
-       Les vraies règles de sécurité doivent être
-       configurées dans Firestore.
-    */
-
-    const ADMIN_EMAIL =
-        "admin@novashop.fr";
-
-
-    function waitForFirebase() {
-
-        return new Promise(resolve => {
-
-            if (window.NovaShopFirebase) {
-
-                resolve();
-
-                return;
-            }
-
-
-            const timer =
-                setInterval(() => {
-
-                    if (window.NovaShopFirebase) {
-
-                        clearInterval(timer);
-
-                        resolve();
-
-                    }
-
-                }, 50);
-
-        });
-
-    }
-
-
-    await waitForFirebase();
-
-
-    const Firebase =
-        window.NovaShopFirebase;
-
-
-    const loginBox =
-        document.getElementById("loginBox");
-
-    const dashboard =
-        document.getElementById("dashboard");
-
-    const message =
-        document.getElementById("message");
-
-    const email =
-        document.getElementById("email");
-
-    const password =
-        document.getElementById("password");
-
-    const ordersElement =
-        document.getElementById("orders");
-
-
-    function showMessage(
-        text,
-        type = "error"
-    ) {
-
-        message.textContent = text;
-
-        message.className =
-            `message show ${type}`;
-
-    }
-
-
-    function money(value) {
-
-        return new Intl.NumberFormat(
-            "fr-FR",
-            {
-                style: "currency",
-                currency: "EUR"
-            }
-        ).format(value);
-
-    }
-
-
-    function date(timestamp) {
-
-        if (!timestamp) {
-            return "Date inconnue";
+        .category.active {
+            background: var(--black);
+            color: white;
         }
 
-        return new Date(timestamp)
-            .toLocaleString("fr-FR");
+        /* =========================
+           MAIN
+        ========================= */
 
-    }
-
-
-    async function loadOrders() {
-
-        ordersElement.innerHTML =
-            "Chargement...";
-
-
-        try {
-
-            /*
-             * getOrders() est volontairement utilisé
-             * ici comme base.
-             *
-             * Pour un vrai panneau admin,
-             * il faudra une fonction Firebase dédiée
-             * qui récupère les commandes autorisées.
-             */
-
-            const user =
-                Firebase.getCurrentUser();
-
-
-            if (!user) return;
-
-
-            const orders =
-                await Firebase.getOrders(
-                    user.uid
-                );
-
-
-            renderOrders(orders);
-
-
-        } catch (error) {
-
-            console.error(error);
-
-
-            ordersElement.innerHTML = `
-                <div style="
-                    padding:20px;
-                    color:#991b1b;
-                    background:#fee2e2;
-                    border-radius:10px;
-                ">
-                    Impossible de charger les commandes.
-                </div>
-            `;
-
+        main {
+            width: 100%;
+            max-width: 1500px;
+            margin: 0 auto;
         }
 
-    }
-
-
-    function renderOrders(orders) {
-
-        document.getElementById(
-            "ordersCount"
-        ).textContent =
-            orders.length;
-
-
-        const revenue =
-            orders.reduce(
-                (sum, order) =>
-                    sum + Number(order.total || 0),
-                0
-            );
-
-
-        document.getElementById(
-            "revenue"
-        ).textContent =
-            money(revenue);
-
-
-        document.getElementById(
-            "preparing"
-        ).textContent =
-            orders.filter(
-                order =>
-                    order.status === "En préparation"
-            ).length;
-
-
-        document.getElementById(
-            "delivered"
-        ).textContent =
-            orders.filter(
-                order =>
-                    order.status === "Livrée"
-            ).length;
-
-
-        if (!orders.length) {
-
-            ordersElement.innerHTML = `
-                <div style="
-                    padding:25px 0;
-                    color:#6b7280;
-                ">
-                    Aucune commande.
-                </div>
-            `;
-
-            return;
-        }
-
-
-        ordersElement.innerHTML = "";
-
-
-        orders.forEach(order => {
-
-            const element =
-                document.createElement("div");
-
-            element.className = "order";
-
-
-            const items =
-                Array.isArray(order.items)
-                    ? order.items
-                    : [];
-
-
-            const itemsHTML =
-                items.map(item => `
-                    <div>
-                        ${item.name}
-                        × ${item.quantity}
-                    </div>
-                `).join("");
-
-
-            element.innerHTML = `
-
-                <div class="order-head">
-
-                    <div>
-
-                        <div class="order-id">
-                            Commande #${order.id.slice(0, 8)}
-                        </div>
-
-                        <div class="user">
-                            ${order.email || "E-mail inconnu"}
-                        </div>
-
-                        <div class="user">
-                            Ville :
-                            ${order.city || "Non renseignée"}
-                        </div>
-
-                        <div class="user">
-                            ${date(order.createdAt)}
-                        </div>
-
-                    </div>
-
-                    <div class="status">
-                        ${order.status || "En préparation"}
-                    </div>
-
-                </div>
-
-
-                <div class="items">
-
-                    ${itemsHTML}
-
-                </div>
-
-
-                <div style="
-                    margin-top:12px;
-                    font-weight:900;
-                ">
-
-                    Total :
-                    ${money(order.total || 0)}
-
-                </div>
-
-
-                <div class="order-actions">
-
-                    <select
-                        data-status="${order.id}"
-                    >
-
-                        <option
-                            ${order.status === "En préparation" ? "selected" : ""}
-                        >
-                            En préparation
-                        </option>
-
-                        <option
-                            ${order.status === "Expédiée" ? "selected" : ""}
-                        >
-                            Expédiée
-                        </option>
-
-                        <option
-                            ${order.status === "En livraison" ? "selected" : ""}
-                        >
-                            En livraison
-                        </option>
-
-                        <option
-                            ${order.status === "Livrée" ? "selected" : ""}
-                        >
-                            Livrée
-                        </option>
-
-                    </select>
-
-                    <button
-                        class="danger"
-                        data-delete="${order.id}"
-                    >
-                        Supprimer
-                    </button>
-
-                </div>
-            `;
-
-
-            ordersElement.appendChild(element);
-
-        });
-
-    }
-
-
-    document
-        .getElementById("login")
-        .addEventListener(
-            "click",
-            async () => {
-
-                const mail =
-                    email.value.trim();
-
-                const pass =
-                    password.value;
-
-
-                if (!mail || !pass) {
-
-                    showMessage(
-                        "Remplis les deux champs."
-                    );
-
-                    return;
-
-                }
-
-
-                try {
-
-                    await Firebase.login(
-                        mail,
-                        pass
-                    );
-
-
-                    const user =
-                        Firebase.getCurrentUser();
-
-
-                    if (
-                        !user ||
-                        user.email.toLowerCase() !==
-                        ADMIN_EMAIL.toLowerCase()
-                    ) {
-
-                        await Firebase.logout();
-
-                        showMessage(
-                            "Ce compte n'a pas accès à l'administration."
-                        );
-
-                        return;
-
-                    }
-
-
-                    loginBox.style.display =
-                        "none";
-
-                    dashboard.style.display =
-                        "block";
-
-
-                    await loadOrders();
-
-
-                } catch (error) {
-
-                    console.error(error);
-
-                    showMessage(
-                        "Identifiants incorrects."
-                    );
-
-                }
-
-            }
-        );
-
-
-    document
-        .getElementById("refresh")
-        .addEventListener(
-            "click",
-            loadOrders
-        );
-
-
-    document
-        .getElementById("logout")
-        .addEventListener(
-            "click",
-            async () => {
-
-                await Firebase.logout();
-
-                dashboard.style.display =
-                    "none";
-
-                loginBox.style.display =
-                    "block";
-
-                password.value = "";
-
-            }
-        );
-
-
-    /*
-       Les boutons de statut/suppression
-       seront reliés à Firebase dans la partie
-       suivante avec les fonctions sécurisées.
-    */
-
-</script>
-
-</body>
-</html><!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>NovaShop | Mes commandes</title>
-
-    <link rel="stylesheet" href="style.css">
-
-    <style>
-        * {
-            box-sizing: border-box;
-        }
-
-        body {
-            margin: 0;
-            background: #f6f7f9;
-            color: #111827;
-            font-family: Arial, Helvetica, sans-serif;
-        }
-
-        .page {
-            max-width: 1100px;
-            margin: auto;
-            padding: 30px 20px 70px;
-        }
-
-        .header {
+        /* =========================
+           HERO
+        ========================= */
+
+        .hero {
+            margin: 28px 38px 0;
+            min-height: 410px;
+            background: var(--black-2);
+            color: white;
+            border-radius: 20px;
+            padding: 58px 65px;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            gap: 20px;
-            margin-bottom: 28px;
+            gap: 40px;
+            overflow: hidden;
+            position: relative;
         }
 
-        .header h1 {
-            margin: 0;
-            font-size: 30px;
+        .hero::before {
+            content: "";
+            position: absolute;
+            width: 520px;
+            height: 520px;
+            border: 1px solid rgba(255,255,255,.06);
+            border-radius: 50%;
+            right: -250px;
+            top: -230px;
         }
 
-        .header p {
-            margin: 7px 0 0;
-            color: #6b7280;
+        .hero::after {
+            content: "";
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            border: 1px solid rgba(255,255,255,.035);
+            border-radius: 50%;
+            right: 80px;
+            bottom: -210px;
         }
 
-        .back {
-            color: #111827;
-            text-decoration: none;
+        .hero-content {
+            max-width: 680px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            padding: 7px 10px;
+            border-radius: 7px;
+            border: 1px solid rgba(255,255,255,.13);
+            background: rgba(255,255,255,.05);
+            font-size: 10px;
             font-weight: 800;
+            letter-spacing: 1.3px;
         }
 
-        .orders {
+        .hero h1 {
+            margin-top: 18px;
+            font-size: clamp(44px, 5vw, 72px);
+            line-height: .96;
+            letter-spacing: -4px;
+            max-width: 680px;
+        }
+
+        .hero h1 span {
+            color: #80a6ff;
+        }
+
+        .hero p {
+            margin-top: 20px;
+            max-width: 570px;
+            color: #b7bac2;
+            line-height: 1.7;
+            font-size: 14px;
+        }
+
+        .hero-button {
+            margin-top: 27px;
+            min-height: 46px;
+            padding: 0 17px;
+            background: white;
+            color: var(--black);
+            border: 0;
+            border-radius: 8px;
+            font-weight: 850;
+            display: inline-flex;
+            align-items: center;
+            gap: 25px;
+            transition: .15s ease;
+        }
+
+        .hero-button:hover {
+            transform: translateY(-1px);
+            background: #f1f2f4;
+        }
+
+        .hero-stats {
+            width: 300px;
             display: grid;
+            gap: 10px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .hero-stat {
+            min-height: 82px;
+            border: 1px solid rgba(255,255,255,.09);
+            background: rgba(255,255,255,.045);
+            border-radius: 12px;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .hero-stat strong {
+            font-size: 15px;
+        }
+
+        .hero-stat span {
+            margin-top: 4px;
+            color: #8e929b;
+            font-size: 11px;
+        }
+
+        /* =========================
+           PRODUCTS
+        ========================= */
+
+        .products-section {
+            padding: 70px 38px 90px;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            gap: 25px;
+            margin-bottom: 27px;
+        }
+
+        .section-label {
+            color: var(--blue);
+            font-size: 10px;
+            font-weight: 900;
+            letter-spacing: 1.6px;
+        }
+
+        .section-header h2 {
+            margin-top: 5px;
+            font-size: 35px;
+            letter-spacing: -1.8px;
+        }
+
+        .section-header p {
+            margin-top: 5px;
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        .filters {
+            display: flex;
+            gap: 8px;
+        }
+
+        .filter {
+            height: 42px;
+            min-width: 175px;
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 0 12px;
+            color: #44474f;
+            outline: 0;
+        }
+
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
             gap: 16px;
         }
 
-        .order {
-            background: #fff;
-            border: 1px solid #e5e7eb;
-            border-radius: 18px;
+        .product-card {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            overflow: hidden;
+            transition:
+                transform .18s ease,
+                box-shadow .18s ease,
+                border-color .18s ease;
+        }
+
+        .product-card:hover {
+            transform: translateY(-3px);
+            border-color: #d1d4da;
+            box-shadow: var(--shadow);
+        }
+
+        .product-image {
+            height: 235px;
             padding: 22px;
-            box-shadow: 0 8px 30px rgba(0,0,0,.04);
+            background: #f7f8f9;
+            position: relative;
+            display: grid;
+            place-items: center;
         }
 
-        .order-head {
+        .product-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            transition: transform .18s ease;
+        }
+
+        .product-card:hover .product-image img {
+            transform: scale(1.025);
+        }
+
+        .favorite-button {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            width: 35px;
+            height: 35px;
+            border: 1px solid var(--border);
+            border-radius: 50%;
+            background: white;
+            color: #44474d;
+            font-size: 18px;
+            z-index: 3;
+        }
+
+        .favorite-button.active {
+            color: var(--red);
+        }
+
+        .product-info {
+            padding: 16px;
+        }
+
+        .product-brand {
+            color: #898d95;
+            font-size: 10px;
+            font-weight: 900;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .product-name {
+            min-height: 41px;
+            margin-top: 6px;
+            font-size: 15px;
+            line-height: 1.35;
+            font-weight: 800;
+        }
+
+        .product-category {
+            margin-top: 6px;
+            color: var(--muted);
+            font-size: 11px;
+        }
+
+        .product-bottom {
+            margin-top: 17px;
             display: flex;
+            align-items: center;
             justify-content: space-between;
-            align-items: flex-start;
-            gap: 15px;
-            flex-wrap: wrap;
-            padding-bottom: 17px;
-            border-bottom: 1px solid #eef0f2;
+            gap: 10px;
         }
 
-        .order-number {
-            font-size: 17px;
+        .product-price {
+            font-size: 18px;
             font-weight: 900;
         }
 
-        .date {
-            margin-top: 5px;
-            color: #6b7280;
+        .add-button {
+            min-height: 37px;
+            padding: 0 12px;
+            border: 0;
+            border-radius: 7px;
+            background: var(--black);
+            color: white;
+            font-size: 11px;
+            font-weight: 850;
+        }
+
+        .add-button:hover {
+            background: #292c34;
+        }
+
+        /* =========================
+           EMPTY
+        ========================= */
+
+        .empty {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 15px;
+            padding: 75px 20px;
+            text-align: center;
+        }
+
+        .empty-icon {
+            font-size: 40px;
+        }
+
+        .empty h3 {
+            margin-top: 10px;
+            font-size: 19px;
+        }
+
+        .empty p {
+            margin-top: 7px;
+            color: var(--muted);
             font-size: 13px;
         }
 
-        .status {
-            display: inline-flex;
-            padding: 7px 11px;
-            border-radius: 999px;
-            background: #eef2ff;
-            color: #3730a3;
+        .empty button {
+            margin-top: 18px;
+            padding: 11px 15px;
+            background: var(--black);
+            color: white;
+            border: 0;
+            border-radius: 8px;
             font-size: 12px;
             font-weight: 800;
         }
 
-        .status.done {
-            background: #dcfce7;
-            color: #166534;
+        /* =========================
+           PAGINATION
+        ========================= */
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 6px;
+            margin-top: 30px;
         }
 
-        .status.shipping {
-            background: #fff7ed;
-            color: #9a3412;
+        .page {
+            width: 37px;
+            height: 37px;
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 12px;
         }
 
-        .items {
-            padding: 17px 0;
-            display: grid;
-            gap: 10px;
+        .page:hover {
+            background: #f3f4f6;
         }
 
-        .item {
+        .page.active {
+            background: var(--black);
+            border-color: var(--black);
+            color: white;
+        }
+
+        /* =========================
+           DRAWERS
+        ========================= */
+
+        .overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 400;
+            background: rgba(0,0,0,.42);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity .2s ease;
+        }
+
+        .overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .drawer {
+            position: fixed;
+            z-index: 500;
+            top: 0;
+            right: 0;
+            width: min(450px, 94vw);
+            height: 100vh;
+            background: white;
+            box-shadow: -15px 0 50px rgba(0,0,0,.12);
+            transform: translateX(105%);
+            transition: transform .25s ease;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .drawer.active {
+            transform: translateX(0);
+        }
+
+        .drawer-header {
+            min-height: 85px;
+            padding: 0 23px;
+            border-bottom: 1px solid var(--border);
             display: flex;
             align-items: center;
-            gap: 13px;
+            justify-content: space-between;
         }
 
-        .item-image {
-            width: 58px;
-            height: 58px;
-            border: 1px solid #e5e7eb;
-            border-radius: 11px;
-            overflow: hidden;
-            background: #fafafa;
+        .drawer-label {
+            color: #898d95;
+            font-size: 9px;
+            font-weight: 900;
+            letter-spacing: 1.3px;
+        }
+
+        .drawer-header h2 {
+            margin-top: 2px;
+            font-size: 24px;
+        }
+
+        .close-button {
+            width: 37px;
+            height: 37px;
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 21px;
+        }
+
+        .drawer-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 18px;
+        }
+
+        .drawer-footer {
+            padding: 20px;
+            border-top: 1px solid var(--border);
+        }
+
+        .total-row {
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .total-row span {
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        .total-row strong {
+            font-size: 21px;
+        }
+
+        .checkout-button {
+            width: 100%;
+            height: 47px;
+            background: var(--black);
+            color: white;
+            border: 0;
+            border-radius: 8px;
+            font-weight: 850;
+        }
+
+        /* =========================
+           CART
+        ========================= */
+
+        .cart-item {
+            display: flex;
+            gap: 12px;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .cart-image {
+            width: 74px;
+            height: 74px;
             flex-shrink: 0;
+            padding: 7px;
+            background: #f5f6f7;
+            border-radius: 9px;
         }
 
-        .item-image img {
+        .cart-image img {
             width: 100%;
             height: 100%;
             object-fit: contain;
         }
 
-        .item-info {
-            min-width: 0;
+        .cart-info {
             flex: 1;
+            min-width: 0;
         }
 
-        .item-name {
-            font-weight: 700;
-            font-size: 14px;
-        }
-
-        .item-details {
-            margin-top: 4px;
-            color: #6b7280;
+        .cart-info strong {
+            display: block;
             font-size: 13px;
+            line-height: 1.35;
         }
 
-        .item-price {
+        .cart-price {
+            margin-top: 5px;
+            font-size: 13px;
             font-weight: 800;
-            white-space: nowrap;
         }
 
-        .bottom {
-            border-top: 1px solid #eef0f2;
-            padding-top: 16px;
+        .quantity {
+            margin-top: 9px;
             display: flex;
-            justify-content: space-between;
-            gap: 20px;
-            flex-wrap: wrap;
+            align-items: center;
+            gap: 7px;
         }
 
-        .delivery {
-            color: #6b7280;
+        .quantity button {
+            width: 25px;
+            height: 25px;
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+        }
+
+        .quantity span {
+            min-width: 18px;
+            text-align: center;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .remove-button {
+            margin-top: 5px;
+            border: 0;
+            background: transparent;
+            color: var(--red);
+            font-size: 11px;
+        }
+
+        /* =========================
+           FAVORITES
+        ========================= */
+
+        .favorite-item {
+            display: flex;
+            gap: 12px;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .favorite-item img {
+            width: 75px;
+            height: 75px;
+            padding: 7px;
+            background: #f5f6f7;
+            border-radius: 9px;
+            object-fit: contain;
+        }
+
+        .favorite-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .favorite-info strong {
+            display: block;
+            font-size: 13px;
+            line-height: 1.35;
+        }
+
+        .favorite-info small {
+            display: block;
+            margin-top: 5px;
+            color: var(--muted);
+        }
+
+        .favorite-actions {
+            display: flex;
+            gap: 6px;
+            margin-top: 9px;
+        }
+
+        .favorite-actions button {
+            padding: 6px 8px;
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 10px;
+        }
+
+        /* =========================
+           MODAL
+        ========================= */
+
+        .modal {
+            position: fixed;
+            inset: 0;
+            z-index: 800;
+            background: rgba(0,0,0,.5);
+            display: grid;
+            place-items: center;
+            padding: 20px;
+        }
+
+        .modal-box {
+            width: min(850px, 100%);
+            max-height: 90vh;
+            overflow-y: auto;
+            background: white;
+            border-radius: 17px;
+            position: relative;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            width: 37px;
+            height: 37px;
+            border: 1px solid var(--border);
+            border-radius: 50%;
+            background: white;
+            font-size: 21px;
+            z-index: 2;
+        }
+
+        .modal-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            padding: 45px;
+        }
+
+        .modal-image {
+            height: 360px;
+            padding: 25px;
+            background: #f5f6f7;
+            border-radius: 13px;
+            display: grid;
+            place-items: center;
+        }
+
+        .modal-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .modal-info {
+            padding-top: 20px;
+        }
+
+        .modal-info small {
+            color: var(--blue);
+            font-weight: 850;
+            text-transform: uppercase;
+            font-size: 10px;
+            letter-spacing: 1px;
+        }
+
+        .modal-info h2 {
+            margin-top: 9px;
+            font-size: 30px;
+            line-height: 1.1;
+            letter-spacing: -1px;
+        }
+
+        .modal-info p {
+            margin-top: 18px;
+            color: var(--muted);
+            line-height: 1.7;
             font-size: 13px;
         }
 
-        .delivery strong {
-            color: #111827;
-        }
-
-        .total {
-            font-size: 18px;
+        .modal-price {
+            margin-top: 25px;
+            font-size: 27px;
             font-weight: 900;
         }
 
-        .empty {
-            background: #fff;
-            border: 1px solid #e5e7eb;
-            border-radius: 18px;
-            padding: 60px 20px;
-            text-align: center;
+        .modal-add {
+            width: 100%;
+            height: 47px;
+            margin-top: 20px;
+            background: var(--black);
+            color: white;
+            border: 0;
+            border-radius: 8px;
+            font-weight: 850;
         }
 
-        .empty-icon {
-            font-size: 44px;
-            margin-bottom: 15px;
+        /* =========================
+           TOAST
+        ========================= */
+
+        .toast {
+            position: fixed;
+            left: 50%;
+            bottom: 25px;
+            z-index: 1000;
+            padding: 12px 17px;
+            background: var(--black);
+            color: white;
+            border-radius: 8px;
+            font-size: 12px;
+            opacity: 0;
+            pointer-events: none;
+            transform: translate(-50%, 20px);
+            transition: .2s ease;
         }
 
-        .empty h2 {
-            margin: 0;
-            font-size: 20px;
+        .toast.show {
+            opacity: 1;
+            transform: translate(-50%, 0);
         }
 
-        .empty p {
-            color: #6b7280;
-            font-size: 14px;
-            margin: 8px 0 20px;
+        /* =========================
+           FOOTER
+        ========================= */
+
+        footer {
+            background: var(--black);
+            color: white;
+            padding: 45px 38px;
         }
 
-        .shop {
-            display: inline-block;
-            background: #111827;
-            color: #fff;
-            padding: 12px 18px;
-            border-radius: 10px;
-            text-decoration: none;
-            font-weight: 800;
-            font-size: 14px;
+        .footer-inner {
+            max-width: 1425px;
+            margin: auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 25px;
         }
 
-        .loading {
-            text-align: center;
-            padding: 50px;
-            color: #6b7280;
+        .footer-logo {
+            font-weight: 900;
+            font-size: 18px;
         }
 
-        .error {
-            background: #fee2e2;
-            color: #991b1b;
-            border-radius: 12px;
-            padding: 15px;
+        .footer-text {
+            color: #888d96;
+            font-size: 11px;
         }
 
-        @media (max-width: 650px) {
+        /* =========================
+           RESPONSIVE
+        ========================= */
+
+        @media (max-width: 1150px) {
+            .products-grid {
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+            }
+
+            .hero {
+                margin-left: 20px;
+                margin-right: 20px;
+            }
+
+            .products-section {
+                padding-left: 20px;
+                padding-right: 20px;
+            }
+
             .header {
+                padding-left: 20px;
+                padding-right: 20px;
+            }
+
+            .categories {
+                padding-left: 20px;
+                padding-right: 20px;
+            }
+        }
+
+        @media (max-width: 850px) {
+            .hero {
+                padding: 45px 30px;
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .hero-stats {
+                width: 100%;
+            }
+
+            .section-header {
                 align-items: flex-start;
                 flex-direction: column;
             }
 
-            .order {
-                padding: 17px;
+            .filters {
+                width: 100%;
             }
 
-            .item-price {
+            .filter {
+                flex: 1;
+            }
+
+            .products-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            .header {
+                height: auto;
+                min-height: 74px;
+                flex-wrap: wrap;
+                padding-top: 12px;
+                padding-bottom: 12px;
+            }
+
+            .search {
+                order: 3;
+                flex-basis: 100%;
+                max-width: none;
+            }
+        }
+
+        @media (max-width: 580px) {
+            .header-actions {
+                gap: 4px;
+            }
+
+            .header-button {
+                padding: 0 9px;
+            }
+
+            .header-button .label {
                 display: none;
+            }
+
+            .products-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .hero {
+                min-height: auto;
+                padding: 38px 25px;
+            }
+
+            .hero h1 {
+                font-size: 43px;
+                letter-spacing: -2.5px;
+            }
+
+            .products-section {
+                padding-top: 50px;
+            }
+
+            .filters {
+                flex-direction: column;
+            }
+
+            .modal-content {
+                grid-template-columns: 1fr;
+                padding: 25px;
+            }
+
+            .modal-image {
+                height: 280px;
+            }
+
+            .footer-inner {
+                flex-direction: column;
+                align-items: flex-start;
             }
         }
     </style>
@@ -5806,1014 +1103,499 @@ window.NovaShop = {
 
 <body>
 
-<div class="page">
+    <!-- =========================
+         HEADER
+    ========================= -->
 
-    <div class="header">
+    <header class="header">
 
-        <div>
-            <h1>Mes commandes</h1>
-
-            <p>
-                Retrouve ici toutes tes commandes NovaShop.
-            </p>
-        </div>
-
-        <a
-            href="account.html"
-            class="back"
-        >
-            ← Mon compte
+        <a class="logo" href="index.html">
+            <span class="logo-mark">N</span>
+            <span>NovaShop</span>
         </a>
 
-    </div>
-
-
-    <div
-        id="orders"
-        class="orders"
-    >
-
-        <div class="loading">
-            Chargement de tes commandes...
+        <div class="search">
+            <span class="search-icon">⌕</span>
+            <input
+                id="searchInput"
+                type="search"
+                placeholder="Rechercher un produit, une marque..."
+                autocomplete="off"
+            >
         </div>
 
-    </div>
+        <div class="header-actions">
 
-</div>
+            <button
+                class="header-button"
+                id="favoritesBtn"
+                type="button"
+                aria-label="Favoris"
+            >
+                <span>♡</span>
+                <span class="label">Favoris</span>
+            </button>
 
+            <button
+                class="header-button"
+                id="accountBtn"
+                type="button"
+                aria-label="Compte"
+            >
+                <span>👤</span>
+                <span class="label">Compte</span>
+            </button>
 
-<script type="module">
+            <button
+                class="header-button cart-button"
+                id="cartBtn"
+                type="button"
+                aria-label="Panier"
+            >
+                <span>🛒</span>
+                <span class="label">Panier</span>
+                <b class="cart-count" id="cartCount">0</b>
+            </button>
 
-    import "./firebase.js";
+        </div>
 
-
-    function waitForFirebase() {
-
-        return new Promise(resolve => {
-
-            if (window.NovaShopFirebase) {
-
-                resolve();
-
-                return;
-            }
-
-
-            const timer =
-                setInterval(() => {
-
-                    if (window.NovaShopFirebase) {
-
-                        clearInterval(timer);
-
-                        resolve();
-
-                    }
-
-                }, 50);
-
-        });
-
-    }
+    </header>
 
 
-    await waitForFirebase();
+    <!-- =========================
+         CATEGORIES
+    ========================= -->
+
+    <nav class="categories" aria-label="Catégories">
+
+        <button class="category active" data-category="Tous">
+            Tous
+        </button>
+
+        <button class="category" data-category="PC">
+            PC
+        </button>
+
+        <button class="category" data-category="Cartes graphiques">
+            Cartes graphiques
+        </button>
+
+        <button class="category" data-category="Processeurs">
+            Processeurs
+        </button>
+
+        <button class="category" data-category="RAM">
+            RAM
+        </button>
+
+        <button class="category" data-category="SSD">
+            SSD
+        </button>
+
+        <button class="category" data-category="Cartes mères">
+            Cartes mères
+        </button>
+
+        <button class="category" data-category="Boîtiers">
+            Boîtiers
+        </button>
+
+        <button class="category" data-category="Alimentations">
+            Alimentations
+        </button>
+
+        <button class="category" data-category="Refroidissement">
+            Refroidissement
+        </button>
+
+        <button class="category" data-category="Écrans">
+            Écrans
+        </button>
+
+        <button class="category" data-category="Claviers">
+            Claviers
+        </button>
+
+        <button class="category" data-category="Souris">
+            Souris
+        </button>
+
+        <button class="category" data-category="Casques">
+            Casques
+        </button>
+
+        <button class="category" data-category="Microphones">
+            Microphones
+        </button>
+
+        <button class="category" data-category="Webcams">
+            Webcams
+        </button>
+
+        <button class="category" data-category="Manettes">
+            Manettes
+        </button>
+
+        <button class="category" data-category="Streaming">
+            Streaming
+        </button>
+
+        <button class="category" data-category="Setup">
+            Setup
+        </button>
+
+        <button class="category" data-category="Accessoires">
+            Accessoires
+        </button>
+
+    </nav>
 
 
-    const Firebase =
-        window.NovaShopFirebase;
+    <!-- =========================
+         MAIN
+    ========================= -->
+
+    <main>
+
+        <!-- HERO -->
+
+        <section class="hero">
+
+            <div class="hero-content">
+
+                <div class="hero-badge">
+                    NOVASHOP
+                    <span>•</span>
+                    PC & GAMING
+                </div>
+
+                <h1>
+                    Le matériel
+                    <span>qui fait la différence.</span>
+                </h1>
+
+                <p>
+                    Composants PC, matériel gaming et accessoires
+                    sélectionnés pour construire un setup propre,
+                    performant et adapté à tes besoins.
+                </p>
+
+                <button
+                    class="hero-button"
+                    id="heroButton"
+                    type="button"
+                >
+                    Découvrir les produits
+                    <span>→</span>
+                </button>
+
+            </div>
+
+            <div class="hero-stats">
+
+                <div class="hero-stat">
+                    <strong>PC</strong>
+                    <span>Composants et hardware</span>
+                </div>
+
+                <div class="hero-stat">
+                    <strong>GAMING</strong>
+                    <span>Périphériques et accessoires</span>
+                </div>
+
+                <div class="hero-stat">
+                    <strong>SETUP</strong>
+                    <span>Tout pour ton bureau</span>
+                </div>
+
+            </div>
+
+        </section>
 
 
-    const ordersContainer =
-        document.getElementById("orders");
+        <!-- PRODUCTS -->
 
+        <section
+            class="products-section"
+            id="productsSection"
+        >
 
-    function money(value) {
+            <div class="section-header">
 
-        return new Intl.NumberFormat(
-            "fr-FR",
-            {
-                style: "currency",
-                currency: "EUR"
-            }
-        ).format(value);
+                <div>
 
-    }
-
-
-    function formatDate(timestamp) {
-
-        if (!timestamp) {
-            return "Date inconnue";
-        }
-
-
-        return new Date(timestamp)
-            .toLocaleDateString(
-                "fr-FR",
-                {
-                    day: "2-digit",
-                    month: "long",
-                    year: "numeric"
-                }
-            );
-
-    }
-
-
-    function statusClass(status) {
-
-        if (status === "Livrée") {
-            return "done";
-        }
-
-        if (
-            status === "Expédiée" ||
-            status === "En livraison"
-        ) {
-            return "shipping";
-        }
-
-        return "";
-
-    }
-
-
-    function renderOrders(orders) {
-
-        if (!orders.length) {
-
-            ordersContainer.innerHTML = `
-
-                <div class="empty">
-
-                    <div class="empty-icon">
-                        📦
+                    <div class="section-label">
+                        NOVASHOP
                     </div>
 
                     <h2>
-                        Aucune commande
+                        Produits
                     </h2>
 
-                    <p>
-                        Tes commandes apparaîtront ici.
+                    <p id="resultText">
+                        Chargement...
                     </p>
 
-                    <a
-                        href="index.html"
-                        class="shop"
+                </div>
+
+                <div class="filters">
+
+                    <select
+                        class="filter"
+                        id="brandFilter"
                     >
-                        Découvrir NovaShop
-                    </a>
+                        <option value="Tous">
+                            Toutes les marques
+                        </option>
+                    </select>
+
+                    <select
+                        class="filter"
+                        id="sortSelect"
+                    >
+                        <option value="featured">
+                            Pertinence
+                        </option>
+
+                        <option value="priceAsc">
+                            Prix croissant
+                        </option>
+
+                        <option value="priceDesc">
+                            Prix décroissant
+                        </option>
+
+                        <option value="name">
+                            Nom A-Z
+                        </option>
+                    </select>
 
                 </div>
 
-            `;
-
-            return;
-        }
+            </div>
 
 
-        ordersContainer.innerHTML = "";
+            <div
+                class="products-grid"
+                id="productsGrid"
+            ></div>
 
 
-        orders.forEach(order => {
+            <div
+                class="empty hidden"
+                id="emptyState"
+            >
 
-            const status =
-                order.status ||
-                "En préparation";
-
-
-            const items =
-                Array.isArray(order.items)
-                    ? order.items
-                    : [];
-
-
-            const orderElement =
-                document.createElement("article");
-
-
-            orderElement.className =
-                "order";
-
-
-            orderElement.innerHTML = `
-
-                <div class="order-head">
-
-                    <div>
-
-                        <div class="order-number">
-                            Commande #${order.id.slice(0, 8)}
-                        </div>
-
-                        <div class="date">
-                            ${formatDate(order.createdAt)}
-                        </div>
-
-                    </div>
-
-                    <div class="status ${statusClass(status)}">
-                        ${status}
-                    </div>
-
+                <div class="empty-icon">
+                    🔎
                 </div>
 
+                <h3>
+                    Aucun produit
+                </h3>
 
-                <div class="items">
+                <p>
+                    Aucun produit ne correspond à ta recherche.
+                </p>
 
-                    ${
-                        items.length
-                            ? items.map(item => `
+                <button
+                    id="resetButton"
+                    type="button"
+                >
+                    Réinitialiser
+                </button>
 
-                                <div class="item">
+            </div>
 
-                                    <div class="item-image">
 
-                                        <img
-                                            src="${item.image || ""}"
-                                            alt="${item.name || "Produit"}"
-                                            loading="lazy"
-                                        >
+            <div
+                class="pagination"
+                id="pagination"
+            ></div>
 
-                                    </div>
+        </section>
 
-                                    <div class="item-info">
+    </main>
 
-                                        <div class="item-name">
-                                            ${item.name || "Produit"}
-                                        </div>
 
-                                        <div class="item-details">
-                                            ${item.brand || ""}
-                                            · Quantité :
-                                            ${item.quantity || 1}
-                                        </div>
+    <!-- =========================
+         OVERLAY
+    ========================= -->
 
-                                    </div>
+    <div
+        class="overlay"
+        id="overlay"
+    ></div>
 
-                                    <div class="item-price">
-                                        ${money(
-                                            Number(item.price || 0) *
-                                            Number(item.quantity || 1)
-                                        )}
-                                    </div>
 
-                                </div>
+    <!-- =========================
+         CART DRAWER
+    ========================= -->
 
-                            `).join("")
-                            : `
-                                <div class="item-details">
-                                    Aucun produit enregistré.
-                                </div>
-                            `
-                    }
+    <aside
+        class="drawer"
+        id="cartDrawer"
+        aria-label="Panier"
+    >
 
+        <div class="drawer-header">
+
+            <div>
+                <div class="drawer-label">
+                    NOVASHOP
                 </div>
 
+                <h2>
+                    Mon panier
+                </h2>
+            </div>
 
-                <div class="bottom">
+            <button
+                class="close-button"
+                id="closeCart"
+                type="button"
+            >
+                ×
+            </button>
 
-                    <div class="delivery">
-
-                        Livraison à :
-
-                        <strong>
-                            ${order.city || "Ville non renseignée"}
-                        </strong>
-
-                    </div>
+        </div>
 
 
-                    <div class="total">
+        <div
+            class="drawer-content"
+            id="cartItems"
+        ></div>
 
-                        Total :
-                        ${money(order.total || 0)}
 
-                    </div>
+        <div class="drawer-footer">
 
+            <div class="total-row">
+                <span>Total</span>
+                <strong id="cartTotal">
+                    0,00 €
+                </strong>
+            </div>
+
+            <button
+                class="checkout-button"
+                id="checkoutButton"
+                type="button"
+            >
+                Continuer
+            </button>
+
+        </div>
+
+    </aside>
+
+
+    <!-- =========================
+         FAVORITES DRAWER
+    ========================= -->
+
+    <aside
+        class="drawer"
+        id="favoritesDrawer"
+        aria-label="Favoris"
+    >
+
+        <div class="drawer-header">
+
+            <div>
+                <div class="drawer-label">
+                    NOVASHOP
                 </div>
 
-            `;
+                <h2>
+                    Mes favoris
+                </h2>
+            </div>
+
+            <button
+                class="close-button"
+                id="closeFavorites"
+                type="button"
+            >
+                ×
+            </button>
+
+        </div>
 
 
-            ordersContainer.appendChild(
-                orderElement
-            );
+        <div
+            class="drawer-content"
+            id="favoriteItems"
+        ></div>
 
-        });
-
-    }
-
-
-    Firebase.watchAuth(
-        async user => {
-
-            if (!user) {
-
-                window.location.href =
-                    "login.html";
-
-                return;
-
-            }
+    </aside>
 
 
-            try {
+    <!-- =========================
+         PRODUCT MODAL
+    ========================= -->
 
-                const orders =
-                    await Firebase.getOrders(
-                        user.uid
-                    );
+    <div
+        class="modal hidden"
+        id="productModal"
+    >
+
+        <div class="modal-box">
+
+            <button
+                class="modal-close"
+                id="closeModal"
+                type="button"
+                aria-label="Fermer"
+            >
+                ×
+            </button>
+
+            <div
+                class="modal-content"
+                id="modalContent"
+            ></div>
+
+        </div>
+
+    </div>
 
 
-                renderOrders(orders);
+    <!-- =========================
+         TOAST
+    ========================= -->
 
-            } catch (error) {
+    <div
+        class="toast"
+        id="toast"
+    ></div>
 
-                console.error(error);
+
+    <!-- =========================
+         FOOTER
+    ========================= -->
+
+    <footer>
+
+        <div class="footer-inner">
+
+            <div class="footer-logo">
+                NovaShop
+            </div>
+
+            <div class="footer-text">
+                Matériel PC • Gaming • Setup
+            </div>
+
+        </div>
+
+    </footer>
 
 
-                ordersContainer.innerHTML = `
+    <!-- =========================
+         JAVASCRIPT
+    ========================= -->
 
-                    <div class="error">
-                        Impossible de récupérer tes commandes.
-                        Réessaie dans quelques instants.
-                    </div>
-
-                `;
-
-            }
-
-        }
-    );
-
-</script>
+    <script src="index.js"></script>
 
 </body>
-</html>import {
-    initializeApp
-} from "https://www.gstatic.com/firebasejs/12.2.1/firebase-app.js";
-
-import {
-    getAuth,
-    createUserWithEmailAndPassword,
-    signInWithEmailAndPassword,
-    signOut,
-    onAuthStateChanged
-} from "https://www.gstatic.com/firebasejs/12.2.1/firebase-auth.js";
-
-import {
-    getFirestore,
-    doc,
-    setDoc,
-    getDoc,
-    addDoc,
-    collection,
-    query,
-    where,
-    orderBy,
-    getDocs,
-    deleteDoc,
-    updateDoc
-} from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
-
-
-/* =========================
-   FIREBASE CONFIG
-========================= */
-
-const firebaseConfig = {
-
-    apiKey:
-        "AIzaSyAZ5vAkAEfIBpfLyhxgO7uvNdJ67KYKWD0",
-
-    authDomain:
-        "novashop-4ee63.firebaseapp.com",
-
-    projectId:
-        "novashop-4ee63",
-
-    storageBucket:
-        "novashop-4ee63.firebasestorage.app",
-
-    messagingSenderId:
-        "1044964015809",
-
-    appId:
-        "1:1044964015809:web:4eafe0b1aede48f8539e40",
-
-    measurementId:
-        "G-XNY5X2VMY9"
-};
-
-
-/* =========================
-   INITIALISATION
-========================= */
-
-const app =
-    initializeApp(firebaseConfig);
-
-const auth =
-    getAuth(app);
-
-const db =
-    getFirestore(app);
-
-
-/* =========================
-   INSCRIPTION
-========================= */
-
-async function register(
-    email,
-    password
-) {
-
-    const result =
-        await createUserWithEmailAndPassword(
-            auth,
-            email,
-            password
-        );
-
-
-    const user =
-        result.user;
-
-
-    await setDoc(
-        doc(
-            db,
-            "users",
-            user.uid
-        ),
-        {
-            uid: user.uid,
-            email: user.email,
-            city: "",
-            createdAt: Date.now()
-        }
-    );
-
-
-    return user;
-}
-
-
-/* =========================
-   CONNEXION
-========================= */
-
-async function login(
-    email,
-    password
-) {
-
-    const result =
-        await signInWithEmailAndPassword(
-            auth,
-            email,
-            password
-        );
-
-
-    return result.user;
-}
-
-
-/* =========================
-   DÉCONNEXION
-========================= */
-
-async function logout() {
-
-    await signOut(auth);
-
-}
-
-
-/* =========================
-   UTILISATEUR ACTUEL
-========================= */
-
-function getCurrentUser() {
-
-    return auth.currentUser;
-
-}
-
-
-/* =========================
-   SURVEILLANCE AUTH
-========================= */
-
-function watchAuth(
-    callback
-) {
-
-    return onAuthStateChanged(
-        auth,
-        callback
-    );
-
-}
-
-
-/* =========================
-   PROFIL
-========================= */
-
-async function getProfile(
-    uid
-) {
-
-    const snapshot =
-        await getDoc(
-            doc(
-                db,
-                "users",
-                uid
-            )
-        );
-
-
-    if (!snapshot.exists()) {
-
-        return null;
-
-    }
-
-
-    return snapshot.data();
-
-}
-
-
-/* =========================
-   VILLE
-========================= */
-
-async function saveCity(
-    uid,
-    city
-) {
-
-    await setDoc(
-        doc(
-            db,
-            "users",
-            uid
-        ),
-        {
-            city: city
-        },
-        {
-            merge: true
-        }
-    );
-
-}
-
-
-/* =========================
-   CRÉATION COMMANDE
-========================= */
-
-async function createOrder(
-    cart,
-    products
-) {
-
-    const user =
-        auth.currentUser;
-
-
-    if (!user) {
-
-        throw new Error(
-            "Utilisateur non connecté."
-        );
-
-    }
-
-
-    if (
-        !Array.isArray(cart) ||
-        cart.length === 0
-    ) {
-
-        throw new Error(
-            "Le panier est vide."
-        );
-
-    }
-
-
-    const profile =
-        await getProfile(
-            user.uid
-        );
-
-
-    const items =
-        cart
-            .map(item => {
-
-                const product =
-                    products.find(
-                        product =>
-                            product.id === item.id
-                    );
-
-
-                if (!product) {
-
-                    return null;
-
-                }
-
-
-                return {
-
-                    id:
-                        product.id,
-
-                    name:
-                        product.name,
-
-                    brand:
-                        product.brand,
-
-                    category:
-                        product.category,
-
-                    price:
-                        product.price,
-
-                    image:
-                        product.image,
-
-                    quantity:
-                        item.quantity
-
-                };
-
-            })
-            .filter(Boolean);
-
-
-    if (items.length === 0) {
-
-        throw new Error(
-            "Aucun produit valide dans le panier."
-        );
-
-    }
-
-
-    const total =
-        items.reduce(
-            (
-                sum,
-                item
-            ) => {
-
-                return (
-                    sum +
-                    item.price *
-                    item.quantity
-                );
-
-            },
-            0
-        );
-
-
-    const order = {
-
-        userId:
-            user.uid,
-
-        email:
-            user.email,
-
-        city:
-            profile?.city || "",
-
-        items:
-
-            items,
-
-        total:
-            Number(
-                total.toFixed(2)
-            ),
-
-        status:
-            "En préparation",
-
-        createdAt:
-            Date.now()
-
-    };
-
-
-    const reference =
-        await addDoc(
-            collection(
-                db,
-                "orders"
-            ),
-            order
-        );
-
-
-    return {
-
-        id:
-            reference.id,
-
-        ...order
-
-    };
-
-}
-
-
-/* =========================
-   COMMANDES UTILISATEUR
-========================= */
-
-async function getOrders(
-    uid
-) {
-
-    const ordersQuery =
-        query(
-            collection(
-                db,
-                "orders"
-            ),
-
-            where(
-                "userId",
-                "==",
-                uid
-            ),
-
-            orderBy(
-                "createdAt",
-                "desc"
-            )
-        );
-
-
-    const snapshot =
-        await getDocs(
-            ordersQuery
-        );
-
-
-    return snapshot.docs.map(
-        document => ({
-
-            id:
-                document.id,
-
-            ...document.data()
-
-        })
-    );
-
-}
-
-
-/* =========================
-   TOUTES LES COMMANDES
-========================= */
-
-async function getAllOrders() {
-
-    const ordersQuery =
-        query(
-            collection(
-                db,
-                "orders"
-            ),
-
-            orderBy(
-                "createdAt",
-                "desc"
-            )
-        );
-
-
-    const snapshot =
-        await getDocs(
-            ordersQuery
-        );
-
-
-    return snapshot.docs.map(
-        document => ({
-
-            id:
-                document.id,
-
-            ...document.data()
-
-        })
-    );
-
-}
-
-
-/* =========================
-   MODIFIER STATUT
-========================= */
-
-async function updateOrderStatus(
-    orderId,
-    status
-) {
-
-    const user =
-        auth.currentUser;
-
-
-    if (!user) {
-
-        throw new Error(
-            "Utilisateur non connecté."
-        );
-
-    }
-
-
-    await updateDoc(
-        doc(
-            db,
-            "orders",
-            orderId
-        ),
-        {
-            status:
-                status,
-
-            updatedAt:
-                Date.now()
-        }
-    );
-
-}
-
-
-/* =========================
-   SUPPRIMER UNE COMMANDE
-========================= */
-
-async function deleteOrder(
-    orderId
-) {
-
-    const user =
-        auth.currentUser;
-
-
-    if (!user) {
-
-        throw new Error(
-            "Utilisateur non connecté."
-        );
-
-    }
-
-
-    await deleteDoc(
-        doc(
-            db,
-            "orders",
-            orderId
-        )
-    );
-
-}
-
-
-/* =========================
-   SUPPRIMER DONNÉES COMPTE
-========================= */
-
-async function deleteAccountData() {
-
-    const user =
-        auth.currentUser;
-
-
-    if (!user) {
-
-        throw new Error(
-            "Utilisateur non connecté."
-        );
-
-    }
-
-
-    const ordersQuery =
-        query(
-            collection(
-                db,
-                "orders"
-            ),
-
-            where(
-                "userId",
-                "==",
-                user.uid
-            )
-        );
-
-
-    const ordersSnapshot =
-        await getDocs(
-            ordersQuery
-        );
-
-
-    for (
-        const orderDoc
-        of ordersSnapshot.docs
-    ) {
-
-        await deleteDoc(
-            doc(
-                db,
-                "orders",
-                orderDoc.id
-            )
-        );
-
-    }
-
-
-    await deleteDoc(
-        doc(
-            db,
-            "users",
-            user.uid
-        )
-    );
-
-
-    await signOut(auth);
-
-}
-
-
-/* =========================
-   EXPORT GLOBAL
-========================= */
-
-window.NovaShopFirebase = {
-
-    app,
-
-    auth,
-
-    db,
-
-    register,
-
-    login,
-
-    logout,
-
-    getCurrentUser,
-
-    watchAuth,
-
-    getProfile,
-
-    saveCity,
-
-    createOrder,
-
-    getOrders,
-
-    getAllOrders,
-
-    updateOrderStatus,
-
-    deleteOrder,
-
-    deleteAccountData
-
-};
-
-
-console.log(
-    "🔥 NovaShop Firebase connecté."
-);
+</html>
