@@ -15,8 +15,6 @@ import {
   getDocs,
   doc,
   setDoc,
-  updateDoc,
-  deleteDoc,
   query,
   where,
   onSnapshot,
@@ -50,42 +48,8 @@ const db = getFirestore(app);
 const ADMIN_EMAIL = "pc2alex.les@gmail.com";
 const ADMIN_CODE = "NOVA-ADMIN-2026";
 
-
-/* =========================================================
-   IMAGES DE SECOURS
-========================================================= */
-
 const FALLBACK_IMAGE =
   "https://placehold.co/800x800/111827/ffffff?text=NovaShop";
-
-
-/*
-  IMPORTANT :
-  On conserve tes images.
-  Si une URL ne répond pas, on remplace automatiquement
-  l'image cassée par une image de secours.
-*/
-
-const imageFallbacks = {
-  p1: "https://m.media-amazon.com/images/I/81JFKzNyl+L._AC_SL1500_.jpg",
-  p2: "https://www.memorypc.fr/thumbnail/53/79/73/1786604635/019f8f1c2c6972a8a3ea1ee9516a0652_1784812416_800x800.png",
-  p3: "https://cdn.shopify.com/s/files/1/0551/0548/6979/files/hyperx_cloud_ii_red_1_main_64x64.jpg?v=1764129756",
-  p4: "https://m.media-amazon.com/images/I/71-lhAU97VL._AC_SL1500_.jpg",
-  p5: "https://tryhard-gear.com/cdn/shop/files/TestCelshadingnoirV2.webp?v=1762273866&width=832",
-  p6: "https://ae-pic-a1.aliexpress-media.com/kf/S1e981b53ccfe4e1391cd5b5deb4fce87o.png_960x960.png_.avif",
-  p7: "https://static.fnac-static.com/multimedia/Images/FR/MDM/7a/34/bc/29111418/1540-1.jpg",
-  p8: "https://content.pearl.fr/media/cache/default/article_ultralarge_high_nocrop/shared/images/articles/M/MW1/disque-dur-interne-ssd-990-pro-pcie-nvme-m-2-2280-1-to-ref_MW1148_2.jpg",
-  p9: "https://pc.comparer.fr/500x500/310191422.webp",
-  p10: "https://assets.corsair.com/image/upload/c_pad,q_85,h_608,w_608,f_auto/products/Power-Supply-Units/base-rmx-2024-config/gallery/black/1000/RM1000x_2024_01.webp",
-  p11: "https://assets.corsair.com/image/upload/c_pad,q_85,h_608,w_608,f_auto/products/Power-Supply-Units/base-rmx-2024-config/gallery/black/850/RM850x_2024_01.webp",
-  p12: "https://media.ldlc.com/r1600/ld/products/00/06/26/05/LD0006260502.jpg",
-  p13: "https://cdn.idealo.com/folder/Product/206182/0/206182034/s4_produktbild_gross/arctic-liquid-freezer-iii-pro-360-a-rgb-black.jpg",
-  p14: "https://media.ldlc.com/r705/ld/products/00/06/32/99/LD0006329977.jpg",
-  p15: "https://www.digit-photo.com/images/produits/ELGATO10AAT9901/1.jpg",
-  p16: "https://media.carrefour.fr/media/referential/media/cc07d7de4b9e4bea8c063e8f9bb46d94/p_200x200/0711719023005_0.jpg",
-  p17: "https://media.materiel.net/r550/products/MN0005986139.jpg",
-  p18: "https://m.media-amazon.com/images/I/71TYAcZ4J8L._AC_SL1200_.jpg"
-};
 
 
 /* =========================================================
@@ -99,7 +63,7 @@ const products = [
     name: "Gigabyte B650 AORUS Elite AX",
     category: "Composants",
     price: 189.99,
-    image: imageFallbacks.p1
+    image: "https://m.media-amazon.com/images/I/81JFKzNyl+L._AC_SL1500_.jpg"
   },
 
   {
@@ -107,7 +71,7 @@ const products = [
     name: "PC Gamer AMD Ryzen 7 7800X3D | RX 9070 XT | 32 Go DDR5",
     category: "PC Gamer",
     price: 2237.65,
-    image: imageFallbacks.p2
+    image: "https://www.memorypc.fr/thumbnail/53/79/73/1786604635/019f8f1c2c6972a8a3ea1ee9516a0652_1784812416_800x800.png"
   },
 
   {
@@ -115,7 +79,7 @@ const products = [
     name: "HyperX Cloud II",
     category: "Casques",
     price: 49.99,
-    image: imageFallbacks.p3
+    image: "https://cdn.shopify.com/s/files/1/0551/0548/6979/files/hyperx_cloud_ii_red_1_main_64x64.jpg?v=1764129756"
   },
 
   {
@@ -123,7 +87,7 @@ const products = [
     name: "TECORS Clavier Gamer Mécanique 60% AZERTY",
     category: "Claviers",
     price: 30,
-    image: imageFallbacks.p4
+    image: "https://m.media-amazon.com/images/I/71-lhAU97VL._AC_SL1500_.jpg"
   },
 
   {
@@ -131,7 +95,7 @@ const products = [
     name: "Clavier Magnétique 65% Celshading Noir",
     category: "Claviers",
     price: 120.90,
-    image: imageFallbacks.p5
+    image: "https://tryhard-gear.com/cdn/shop/files/TestCelshadingnoirV2.webp?v=1762273866&width=832"
   },
 
   {
@@ -139,7 +103,7 @@ const products = [
     name: "Ajazz AJ199 MAX Carbon Fiber Wireless Gaming Mouse",
     category: "Souris",
     price: 49.99,
-    image: imageFallbacks.p6
+    image: "https://ae-pic-a1.aliexpress-media.com/kf/S1e981b53ccfe4e1391cd5b5deb4fce87o.png_960x960.png_.avif"
   },
 
   {
@@ -147,7 +111,7 @@ const products = [
     name: "Logitech G PRO X2 Superstrike Blanc et Noir",
     category: "Souris",
     price: 150.99,
-    image: imageFallbacks.p7
+    image: "https://static.fnac-static.com/multimedia/Images/FR/MDM/7a/34/bc/29111418/1540-1.jpg"
   },
 
   {
@@ -155,7 +119,7 @@ const products = [
     name: "Samsung 990 PRO 1TB",
     category: "Stockage",
     price: 249.99,
-    image: imageFallbacks.p8
+    image: "https://content.pearl.fr/media/cache/default/article_ultralarge_high_nocrop/shared/images/articles/M/MW1/disque-dur-interne-ssd-990-pro-pcie-nvme-m-2-2280-1-to-ref_MW1148_2.jpg"
   },
 
   {
@@ -163,7 +127,7 @@ const products = [
     name: "Samsung 990 PRO 2TB",
     category: "Stockage",
     price: 199.93,
-    image: imageFallbacks.p9
+    image: "https://pc.comparer.fr/500x500/310191422.webp"
   },
 
   {
@@ -171,7 +135,7 @@ const products = [
     name: "CORSAIR RM1000x EU",
     category: "Alimentations",
     price: 159.90,
-    image: imageFallbacks.p10
+    image: "https://assets.corsair.com/image/upload/c_pad,q_85,h_608,w_608,f_auto/products/Power-Supply-Units/base-rmx-2024-config/gallery/black/1000/RM1000x_2024_01.webp"
   },
 
   {
@@ -179,7 +143,7 @@ const products = [
     name: "CORSAIR RM850x EU",
     category: "Alimentations",
     price: 134.90,
-    image: imageFallbacks.p11
+    image: "https://assets.corsair.com/image/upload/c_pad,q_85,h_608,w_608,f_auto/products/Power-Supply-Units/base-rmx-2024-config/gallery/black/850/RM850x_2024_01.webp"
   },
 
   {
@@ -187,7 +151,7 @@ const products = [
     name: "Corsair Frame 5000D RS ARGB Noir",
     category: "Boîtiers",
     price: 159.90,
-    image: imageFallbacks.p12
+    image: "https://media.ldlc.com/r1600/ld/products/00/06/26/05/LD0006260502.jpg"
   },
 
   {
@@ -195,7 +159,7 @@ const products = [
     name: "ARCTIC Liquid Freezer III Pro 360 A-RGB Black",
     category: "Refroidissement",
     price: 129.90,
-    image: imageFallbacks.p13
+    image: "https://cdn.idealo.com/folder/Product/206182/0/206182034/s4_produktbild_gross/arctic-liquid-freezer-iii-pro-360-a-rgb-black.jpg"
   },
 
   {
@@ -203,7 +167,7 @@ const products = [
     name: "Samsung 27 QD-OLED Odyssey G6",
     category: "Écrans",
     price: 399.95,
-    image: imageFallbacks.p14
+    image: "https://media.ldlc.com/r705/ld/products/00/06/32/99/LD0006329977.jpg"
   },
 
   {
@@ -211,7 +175,7 @@ const products = [
     name: "ELGATO Wave Mic Arm Pro",
     category: "Streaming",
     price: 229.90,
-    image: imageFallbacks.p15
+    image: "https://www.digit-photo.com/images/produits/ELGATO10AAT9901/1.jpg"
   },
 
   {
@@ -219,7 +183,7 @@ const products = [
     name: "Sony DualSense Cosmic Red PS5/PC",
     category: "Manettes",
     price: 74.90,
-    image: imageFallbacks.p16
+    image: "https://media.carrefour.fr/media/referential/media/cc07d7de4b9e4bea8c063e8f9bb46d94/p_200x200/0711719023005_0.jpg"
   },
 
   {
@@ -227,7 +191,7 @@ const products = [
     name: "ASUS TUF Gaming B650-PLUS",
     category: "Composants",
     price: 179.90,
-    image: imageFallbacks.p17
+    image: "https://media.materiel.net/r550/products/MN0005986139.jpg"
   },
 
   {
@@ -235,7 +199,7 @@ const products = [
     name: "MSI MAG B650 Tomahawk WiFi",
     category: "Composants",
     price: 189.90,
-    image: imageFallbacks.p18
+    image: "https://m.media-amazon.com/images/I/71TYAcZ4J8L._AC_SL1200_.jpg"
   }
 
 ];
@@ -246,19 +210,19 @@ const products = [
 ========================================================= */
 
 let currentUser = null;
+
 let authMode = "login";
+
 let selectedCategory = "Tous";
+
 let searchValue = "";
 
 let cart =
-  JSON.parse(localStorage.getItem("novaCart") || "[]");
+  JSON.parse(
+    localStorage.getItem("novaCart") || "[]"
+  );
 
 let reviewsCache = {};
-
-let questionsUnsubscribe = null;
-let adminQuestionsUnsubscribe = null;
-
-let messageUnsubscribers = [];
 
 
 /* =========================================================
@@ -266,16 +230,24 @@ let messageUnsubscribers = [];
 ========================================================= */
 
 function randomInt(min, max) {
+
   return Math.floor(
-    Math.random() * (max - min + 1)
+    Math.random() *
+    (max - min + 1)
   ) + min;
+
 }
 
 
 function randomItem(array) {
+
   return array[
-    Math.floor(Math.random() * array.length)
+    Math.floor(
+      Math.random() *
+      array.length
+    )
   ];
+
 }
 
 
@@ -311,7 +283,9 @@ function stars(value) {
       0,
       Math.min(
         5,
-        Math.round(Number(value) || 0)
+        Math.round(
+          Number(value) || 0
+        )
       )
     );
 
@@ -326,22 +300,34 @@ function stars(value) {
 function showToast(message) {
 
   const toast =
-    document.getElementById("toast");
+    document.getElementById(
+      "toast"
+    );
 
   if (!toast) return;
 
-  toast.textContent = message;
+  toast.textContent =
+    message;
 
-  toast.classList.add("show");
+  toast.classList.add(
+    "show"
+  );
 
-  clearTimeout(window.__novaToastTimer);
+  clearTimeout(
+    window.__novaToastTimer
+  );
 
   window.__novaToastTimer =
-    setTimeout(() => {
+    setTimeout(
+      () => {
 
-      toast.classList.remove("show");
+        toast.classList.remove(
+          "show"
+        );
 
-    }, 3000);
+      },
+      3000
+    );
 
 }
 
@@ -350,7 +336,9 @@ function openModal(id) {
 
   document
     .getElementById(id)
-    ?.classList.add("open");
+    ?.classList.add(
+      "open"
+    );
 
 }
 
@@ -359,51 +347,40 @@ function closeModal(id) {
 
   document
     .getElementById(id)
-    ?.classList.remove("open");
+    ?.classList.remove(
+      "open"
+    );
 
 }
 
 
 /* =========================================================
-   IMAGE LOADING
+   IMAGES
 ========================================================= */
 
-/*
-  Cette fonction est appelée sur TOUTES les images
-  des produits.
-
-  Si l'image distante échoue :
-  1. on essaie une nouvelle fois avec l'URL enregistrée
-  2. puis on affiche une image NovaShop de secours.
-*/
-
-function handleImageError(img, productId) {
+function handleImageError(
+  img
+) {
 
   if (!img) return;
 
-  if (img.dataset.fallbackUsed === "1") {
-
-    img.src = FALLBACK_IMAGE;
-
-    return;
-  }
-
-  img.dataset.fallbackUsed = "1";
-
-  const original =
-    imageFallbacks[productId];
-
   if (
-    original &&
-    img.src !== original
+    img.dataset.fallbackUsed ===
+    "1"
   ) {
 
-    img.src = original;
+    img.src =
+      FALLBACK_IMAGE;
 
     return;
+
   }
 
-  img.src = FALLBACK_IMAGE;
+  img.dataset.fallbackUsed =
+    "1";
+
+  img.src =
+    FALLBACK_IMAGE;
 
 }
 
@@ -413,6 +390,7 @@ function handleImageError(img, productId) {
 ========================================================= */
 
 const firstNames = [
+
   "Lucas",
   "Hugo",
   "Nathan",
@@ -433,10 +411,12 @@ const firstNames = [
   "Sacha",
   "Liam",
   "Raphaël"
+
 ];
 
 
 const lastNames = [
+
   "Martin",
   "Bernard",
   "Dubois",
@@ -455,53 +435,70 @@ const lastNames = [
   "David",
   "Bertrand",
   "Roux"
+
 ];
 
 
 const reviewTexts = {
 
   5: [
+
     "Excellent produit, fonctionne parfaitement.",
     "Très bonne qualité et livraison rapide.",
     "Je suis très satisfait du produit.",
     "Produit conforme à la description.",
     "Très bon achat.",
     "Rien à redire, tout fonctionne parfaitement."
+
   ],
 
   4: [
+
     "Très bon produit dans l'ensemble.",
     "Bonne qualité, je recommande.",
     "Produit efficace et conforme.",
     "Très satisfait malgré quelques petits détails."
+
   ],
 
   3: [
+
     "Produit correct.",
     "Ça fonctionne mais peut être amélioré.",
     "Qualité correcte pour le prix."
+
   ],
 
   2: [
+
     "Quelques problèmes mais le produit fonctionne.",
     "Pas totalement convaincu.",
     "Qualité moyenne."
+
   ],
 
   1: [
+
     "Produit qui ne correspond pas totalement à mes attentes.",
     "Quelques problèmes rencontrés."
+
   ]
 
 };
 
 
-function generateReviews(product) {
+function generateReviews(
+  product
+) {
 
   const reviews = [];
 
   const reviewCount =
-    randomInt(850, 950);
+    randomInt(
+      850,
+      950
+    );
+
 
   for (
     let i = 0;
@@ -509,40 +506,64 @@ function generateReviews(product) {
     i++
   ) {
 
-    const roll = Math.random();
+    const roll =
+      Math.random();
 
     let rating;
 
+
     if (roll < 0.72) {
+
       rating = 5;
+
     }
     else if (roll < 0.90) {
+
       rating = 4;
+
     }
     else if (roll < 0.97) {
+
       rating = 3;
+
     }
     else if (roll < 0.99) {
+
       rating = 2;
+
     }
     else {
+
       rating = 1;
+
     }
 
+
     const first =
-      randomItem(firstNames);
+      randomItem(
+        firstNames
+      );
 
     const last =
-      randomItem(lastNames);
+      randomItem(
+        lastNames
+      );
+
 
     const daysAgo =
-      randomInt(0, 720);
+      randomInt(
+        0,
+        720
+      );
+
 
     const date =
       new Date(
         Date.now() -
-        daysAgo * 86400000
+        daysAgo *
+        86400000
       );
+
 
     reviews.push({
 
@@ -565,40 +586,68 @@ function generateReviews(product) {
 
   }
 
+
   return reviews;
 
 }
 
 
-function getReviews(product) {
+function getReviews(
+  product
+) {
 
-  if (!reviewsCache[product.id]) {
+  if (
+    !reviewsCache[
+      product.id
+    ]
+  ) {
 
-    reviewsCache[product.id] =
-      generateReviews(product);
+    reviewsCache[
+      product.id
+    ] =
+      generateReviews(
+        product
+      );
 
   }
 
-  return reviewsCache[product.id];
+  return reviewsCache[
+    product.id
+  ];
 
 }
 
 
-function getReviewStats(product) {
+function getReviewStats(
+  product
+) {
 
   const reviews =
-    getReviews(product);
+    getReviews(
+      product
+    );
+
 
   const average =
     reviews.reduce(
-      (sum, review) =>
-        sum + review.rating,
+      (
+        sum,
+        review
+      ) =>
+        sum +
+        review.rating,
       0
-    ) / reviews.length;
+    ) /
+    reviews.length;
+
 
   return {
-    count: reviews.length,
+
+    count:
+      reviews.length,
+
     average
+
   };
 
 }
@@ -611,59 +660,79 @@ function getReviewStats(product) {
 function renderCategories() {
 
   const categories = [
+
     "Tous",
+
     ...new Set(
       products.map(
-        product => product.category
+        product =>
+          product.category
       )
     )
+
   ];
+
 
   const container =
     document.getElementById(
       "categories"
     );
 
+
   if (!container) return;
 
+
   container.innerHTML =
-    categories.map(
-      category => `
+    categories
+      .map(
+        category => `
 
-        <button
-          class="category-btn ${
-            category === selectedCategory
-              ? "active"
-              : ""
-          }"
-          data-category="${escapeHtml(category)}"
-        >
-          ${escapeHtml(category)}
-        </button>
+          <button
+            class="category-btn ${
+              category ===
+              selectedCategory
+                ? "active"
+                : ""
+            }"
+            data-category="${escapeHtml(
+              category
+            )}"
+          >
 
-      `
-    ).join("");
+            ${escapeHtml(
+              category
+            )}
+
+          </button>
+
+        `
+      )
+      .join("");
+
 
   container
     .querySelectorAll(
       "[data-category]"
     )
-    .forEach(button => {
+    .forEach(
+      button => {
 
-      button.addEventListener(
-        "click",
-        () => {
+        button.addEventListener(
+          "click",
+          () => {
 
-          selectedCategory =
-            button.dataset.category;
+            selectedCategory =
+              button.dataset.category;
 
-          renderCategories();
-          renderProducts();
+            renderCategories();
 
-        }
-      );
+            renderProducts();
 
-    });
+          }
+        );
+
+      }
+    );
 
 }
 
@@ -679,26 +748,37 @@ function renderProducts() {
       "products"
     );
 
+
   if (!container) return;
 
+
   const filtered =
-    products.filter(product => {
+    products.filter(
+      product => {
 
-      const categoryOK =
-        selectedCategory === "Tous" ||
-        product.category ===
-        selectedCategory;
+        const categoryOK =
+          selectedCategory ===
+          "Tous" ||
+          product.category ===
+          selectedCategory;
 
-      const searchOK =
-        product.name
-          .toLowerCase()
-          .includes(
-            searchValue.toLowerCase()
-          );
 
-      return categoryOK && searchOK;
+        const searchOK =
+          product.name
+            .toLowerCase()
+            .includes(
+              searchValue
+                .toLowerCase()
+            );
 
-    });
+
+        return (
+          categoryOK &&
+          searchOK
+        );
+
+      }
+    );
 
 
   if (!filtered.length) {
@@ -719,201 +799,273 @@ function renderProducts() {
 
 
   container.innerHTML =
-    filtered.map(product => {
+    filtered
+      .map(
+        product => {
 
-      const stats =
-        getReviewStats(product);
+          const stats =
+            getReviewStats(
+              product
+            );
 
-      return `
 
-        <article
-          class="product-card"
-        >
+          return `
 
-          <div class="product-image-wrap">
-
-            <img
-              class="product-image"
-              src="${escapeHtml(product.image)}"
-              alt="${escapeHtml(product.name)}"
-              loading="eager"
-              referrerpolicy="no-referrer"
-              data-product-image="${product.id}"
+            <article
+              class="product-card"
             >
 
-          </div>
-
-          <div class="product-info">
-
-            <div class="product-category">
-              ${escapeHtml(product.category)}
-            </div>
-
-            <div class="product-name">
-              ${escapeHtml(product.name)}
-            </div>
-
-            <div
-              style="
-                display:flex;
-                align-items:center;
-                gap:7px;
-                flex-wrap:wrap;
-                margin-top:10px;
-              "
-            >
-
-              <span
-                class="stars"
+              <div
+                class="product-image-wrap"
               >
-                ${stars(stats.average)}
-              </span>
 
-              <strong>
-                ${stats.average.toFixed(1)}/5
-              </strong>
+                <img
+                  class="product-image"
+                  src="${escapeHtml(
+                    product.image
+                  )}"
+                  alt="${escapeHtml(
+                    product.name
+                  )}"
+                  loading="eager"
+                  referrerpolicy="no-referrer"
+                  data-product-image="${product.id}"
+                >
 
-              <span
-                style="
-                  color:#9ba8bd;
-                  font-size:12px
-                "
+              </div>
+
+
+              <div
+                class="product-info"
               >
-                (${stats.count} avis)
-              </span>
 
-            </div>
+                <div
+                  class="product-category"
+                >
 
-            <div
-              style="
-                color:#71809a;
-                font-size:11px;
-                margin-top:3px;
-              "
-            >
-              ${stats.count.toLocaleString("fr-FR")}
-              avis
-            </div>
+                  ${escapeHtml(
+                    product.category
+                  )}
 
-            <div class="price">
-              ${money(product.price)}
-            </div>
-
-            <div class="product-buttons">
-
-              <button
-                class="btn"
-                data-view-reviews="${product.id}"
-              >
-                💬 Voir les avis
-              </button>
-
-              <button
-                class="btn primary"
-                data-add-cart="${product.id}"
-              >
-                🛒
-              </button>
-
-            </div>
-
-          </div>
-
-        </article>
-
-      `;
-
-    }).join("");
+                </div>
 
 
-  /*
-    Installation du fallback sur les images.
-  */
+                <div
+                  class="product-name"
+                >
+
+                  ${escapeHtml(
+                    product.name
+                  )}
+
+                </div>
+
+
+                <div
+                  style="
+                    display:flex;
+                    align-items:center;
+                    gap:7px;
+                    flex-wrap:wrap;
+                    margin-top:10px;
+                  "
+                >
+
+                  <span
+                    class="stars"
+                  >
+                    ${stars(
+                      stats.average
+                    )}
+                  </span>
+
+
+                  <strong>
+                    ${stats.average.toFixed(
+                      1
+                    )}/5
+                  </strong>
+
+
+                  <span
+                    style="
+                      color:#9ba8bd;
+                      font-size:12px
+                    "
+                  >
+
+                    (
+                    ${stats.count}
+                    avis
+                    )
+
+                  </span>
+
+                </div>
+
+
+                <div
+                  style="
+                    color:#71809a;
+                    font-size:11px;
+                    margin-top:3px;
+                  "
+                >
+
+                  ${stats.count.toLocaleString(
+                    "fr-FR"
+                  )}
+                  avis
+
+                </div>
+
+
+                <div
+                  class="price"
+                >
+
+                  ${money(
+                    product.price
+                  )}
+
+                </div>
+
+
+                <div
+                  class="product-buttons"
+                >
+
+                  <button
+                    class="btn"
+                    data-view-reviews="${product.id}"
+                  >
+
+                    💬 Voir les avis
+
+                  </button>
+
+
+                  <button
+                    class="btn primary"
+                    data-add-cart="${product.id}"
+                  >
+
+                    🛒
+
+                  </button>
+
+                </div>
+
+              </div>
+
+            </article>
+
+          `;
+
+        }
+      )
+      .join("");
+
 
   container
     .querySelectorAll(
       "[data-product-image]"
     )
-    .forEach(img => {
+    .forEach(
+      img => {
 
-      const productId =
-        img.dataset.productImage;
+        img.addEventListener(
+          "error",
+          () => {
 
-      img.addEventListener(
-        "error",
-        () => {
+            handleImageError(
+              img
+            );
 
-          handleImageError(
-            img,
-            productId
-          );
+          }
+        );
 
-        }
-      );
-
-    });
+      }
+    );
 
 
   container
     .querySelectorAll(
       "[data-view-reviews]"
     )
-    .forEach(button => {
+    .forEach(
+      button => {
 
-      button.addEventListener(
-        "click",
-        () => {
+        button.addEventListener(
+          "click",
+          () => {
 
-          showReviews(
-            button.dataset.viewReviews
-          );
+            showReviews(
+              button.dataset
+                .viewReviews
+            );
 
-        }
-      );
+          }
+        );
 
-    });
+      }
+    );
 
 
   container
     .querySelectorAll(
       "[data-add-cart]"
     )
-    .forEach(button => {
+    .forEach(
+      button => {
 
-      button.addEventListener(
-        "click",
-        () => {
+        button.addEventListener(
+          "click",
+          () => {
 
-          addToCart(
-            button.dataset.addCart
-          );
+            addToCart(
+              button.dataset
+                .addCart
+            );
 
-        }
-      );
+          }
+        );
 
-    });
+      }
+    );
 
 }
 
 
 /* =========================================================
-   AVIS
+   AVIS PRODUIT
 ========================================================= */
 
-function showReviews(productId) {
+function showReviews(
+  productId
+) {
 
   const product =
     products.find(
-      p => p.id === productId
+      p =>
+        p.id ===
+        productId
     );
+
 
   if (!product) return;
 
+
   const reviews =
-    getReviews(product);
+    getReviews(
+      product
+    );
+
 
   const stats =
-    getReviewStats(product);
+    getReviewStats(
+      product
+    );
 
 
   const title =
@@ -921,10 +1073,12 @@ function showReviews(productId) {
       "reviewsTitle"
     );
 
+
   const content =
     document.getElementById(
       "reviewsContent"
     );
+
 
   if (!title || !content) return;
 
@@ -934,7 +1088,10 @@ function showReviews(productId) {
 
 
   const firstReviews =
-    reviews.slice(0, 80);
+    reviews.slice(
+      0,
+      80
+    );
 
 
   content.innerHTML = `
@@ -955,15 +1112,25 @@ function showReviews(productId) {
           font-weight:900
         "
       >
-        ${stats.average.toFixed(1)}/5
+
+        ${stats.average.toFixed(
+          1
+        )}/5
+
       </div>
+
 
       <div
         class="stars"
         style="font-size:22px"
       >
-        ${stars(stats.average)}
+
+        ${stars(
+          stats.average
+        )}
+
       </div>
+
 
       <div
         style="
@@ -971,46 +1138,77 @@ function showReviews(productId) {
           margin-top:5px
         "
       >
-        ${stats.count.toLocaleString("fr-FR")}
+
+        ${stats.count.toLocaleString(
+          "fr-FR"
+        )}
         avis
+
       </div>
 
     </div>
 
 
-    ${firstReviews.map(review => `
+    ${firstReviews
+      .map(
+        review => `
 
-      <div class="review">
+          <div
+            class="review"
+          >
 
-        <div class="review-top">
+            <div
+              class="review-top"
+            >
 
-          <strong>
-            ${escapeHtml(review.name)}
-          </strong>
+              <strong>
 
-          <span class="stars">
-            ${"★".repeat(review.rating)}
-          </span>
+                ${escapeHtml(
+                  review.name
+                )}
 
-        </div>
+              </strong>
 
-        <div class="review-date">
 
-          ${review.date.toLocaleDateString(
-            "fr-FR"
-          )}
+              <span
+                class="stars"
+              >
 
-        </div>
+                ${"★".repeat(
+                  review.rating
+                )}
 
-        <div class="review-text">
+              </span>
 
-          ${escapeHtml(review.text)}
+            </div>
 
-        </div>
 
-      </div>
+            <div
+              class="review-date"
+            >
 
-    `).join("")}
+              ${review.date.toLocaleDateString(
+                "fr-FR"
+              )}
+
+            </div>
+
+
+            <div
+              class="review-text"
+            >
+
+              ${escapeHtml(
+                review.text
+              )}
+
+            </div>
+
+          </div>
+
+        `
+      )
+      .join("")}
 
 
     <div
@@ -1023,7 +1221,8 @@ function showReviews(productId) {
 
       ${Math.max(
         0,
-        reviews.length - 80
+        reviews.length -
+        80
       )}
 
       autres avis
@@ -1033,7 +1232,9 @@ function showReviews(productId) {
   `;
 
 
-  openModal("reviewsModal");
+  openModal(
+    "reviewsModal"
+  );
 
 }
 
@@ -1046,18 +1247,23 @@ function saveCart() {
 
   localStorage.setItem(
     "novaCart",
-    JSON.stringify(cart)
+    JSON.stringify(
+      cart
+    )
   );
 
 }
 
 
-function addToCart(productId) {
+function addToCart(
+  productId
+) {
 
   const existing =
     cart.find(
       item =>
-        item.productId === productId
+        item.productId ===
+        productId
     );
 
 
@@ -1090,13 +1296,17 @@ function addToCart(productId) {
 }
 
 
-function removeFromCart(productId) {
+function removeFromCart(
+  productId
+) {
 
   cart =
     cart.filter(
       item =>
-        item.productId !== productId
+        item.productId !==
+        productId
     );
+
 
   saveCart();
 
@@ -1115,17 +1325,26 @@ function changeQuantity(
   const item =
     cart.find(
       item =>
-        item.productId === productId
+        item.productId ===
+        productId
     );
+
 
   if (!item) return;
 
-  item.quantity += amount;
+
+  item.quantity +=
+    amount;
 
 
-  if (item.quantity <= 0) {
+  if (
+    item.quantity <=
+    0
+  ) {
 
-    removeFromCart(productId);
+    removeFromCart(
+      productId
+    );
 
     return;
 
@@ -1148,16 +1367,24 @@ function updateCartCount() {
       "cartCount"
     );
 
+
   if (!element) return;
+
 
   const count =
     cart.reduce(
-      (sum, item) =>
-        sum + item.quantity,
+      (
+        sum,
+        item
+      ) =>
+        sum +
+        item.quantity,
       0
     );
 
-  element.textContent = count;
+
+  element.textContent =
+    count;
 
 }
 
@@ -1165,7 +1392,10 @@ function updateCartCount() {
 function getCartTotal() {
 
   return cart.reduce(
-    (sum, item) => {
+    (
+      sum,
+      item
+    ) => {
 
       const product =
         products.find(
@@ -1174,9 +1404,13 @@ function getCartTotal() {
             item.productId
         );
 
+
       return (
         sum +
-        (product?.price || 0) *
+        (
+          product?.price ||
+          0
+        ) *
         item.quantity
       );
 
@@ -1193,6 +1427,7 @@ function renderCart() {
     document.getElementById(
       "cartContent"
     );
+
 
   if (!container) return;
 
@@ -1216,82 +1451,114 @@ function renderCart() {
 
   container.innerHTML = `
 
-    ${cart.map(item => {
+    ${cart
+      .map(
+        item => {
 
-      const product =
-        products.find(
-          p =>
-            p.id ===
-            item.productId
-        );
-
-      if (!product) return "";
+          const product =
+            products.find(
+              p =>
+                p.id ===
+                item.productId
+            );
 
 
-      return `
+          if (!product)
+            return "";
 
-        <div class="cart-item">
 
-          <img
-            src="${escapeHtml(product.image)}"
-            alt="${escapeHtml(product.name)}"
-            referrerpolicy="no-referrer"
-            data-cart-image="${product.id}"
-          >
-
-          <div class="cart-item-info">
-
-            <strong>
-              ${escapeHtml(product.name)}
-            </strong>
+          return `
 
             <div
-              style="
-                margin-top:5px;
-                color:#8d9bb0
-              "
+              class="cart-item"
             >
-              ${money(product.price)}
+
+              <img
+                src="${escapeHtml(
+                  product.image
+                )}"
+                alt="${escapeHtml(
+                  product.name
+                )}"
+                referrerpolicy="no-referrer"
+                data-cart-image="${product.id}"
+              >
+
+
+              <div
+                class="cart-item-info"
+              >
+
+                <strong>
+
+                  ${escapeHtml(
+                    product.name
+                  )}
+
+                </strong>
+
+
+                <div
+                  style="
+                    margin-top:5px;
+                    color:#8d9bb0
+                  "
+                >
+
+                  ${money(
+                    product.price
+                  )}
+
+                </div>
+
+              </div>
+
+
+              <button
+                class="btn"
+                data-minus="${product.id}"
+              >
+                −
+              </button>
+
+
+              <strong>
+                ${item.quantity}
+              </strong>
+
+
+              <button
+                class="btn"
+                data-plus="${product.id}"
+              >
+                +
+              </button>
+
+
+              <button
+                class="btn danger"
+                data-remove="${product.id}"
+              >
+                ×
+              </button>
+
             </div>
 
-          </div>
+          `;
 
-          <button
-            class="btn"
-            data-minus="${product.id}"
-          >
-            −
-          </button>
-
-          <strong>
-            ${item.quantity}
-          </strong>
-
-          <button
-            class="btn"
-            data-plus="${product.id}"
-          >
-            +
-          </button>
-
-          <button
-            class="btn danger"
-            data-remove="${product.id}"
-          >
-            ×
-          </button>
-
-        </div>
-
-      `;
-
-    }).join("")}
+        }
+      )
+      .join("")}
 
 
-    <div class="cart-total">
+    <div
+      class="cart-total"
+    >
 
       Total :
-      ${money(getCartTotal())}
+      ${money(
+        getCartTotal()
+      )}
 
     </div>
 
@@ -1304,7 +1571,9 @@ function renderCart() {
         margin-top:15px
       "
     >
+
       💳 Passer la commande
+
     </button>
 
   `;
@@ -1314,74 +1583,87 @@ function renderCart() {
     .querySelectorAll(
       "[data-cart-image]"
     )
-    .forEach(img => {
+    .forEach(
+      img => {
 
-      img.addEventListener(
-        "error",
-        () => {
+        img.addEventListener(
+          "error",
+          () => {
 
-          handleImageError(
-            img,
-            img.dataset.cartImage
-          );
+            handleImageError(
+              img
+            );
 
-        }
-      );
+          }
+        );
 
-    });
+      }
+    );
 
 
   container
     .querySelectorAll(
       "[data-minus]"
     )
-    .forEach(button => {
+    .forEach(
+      button => {
 
-      button.onclick = () => {
+        button.onclick =
+          () => {
 
-        changeQuantity(
-          button.dataset.minus,
-          -1
-        );
+            changeQuantity(
+              button.dataset
+                .minus,
+              -1
+            );
 
-      };
+          };
 
-    });
+      }
+    );
 
 
   container
     .querySelectorAll(
       "[data-plus]"
     )
-    .forEach(button => {
+    .forEach(
+      button => {
 
-      button.onclick = () => {
+        button.onclick =
+          () => {
 
-        changeQuantity(
-          button.dataset.plus,
-          1
-        );
+            changeQuantity(
+              button.dataset
+                .plus,
+              1
+            );
 
-      };
+          };
 
-    });
+      }
+    );
 
 
   container
     .querySelectorAll(
       "[data-remove]"
     )
-    .forEach(button => {
+    .forEach(
+      button => {
 
-      button.onclick = () => {
+        button.onclick =
+          () => {
 
-        removeFromCart(
-          button.dataset.remove
-        );
+            removeFromCart(
+              button.dataset
+                .remove
+            );
 
-      };
+          };
 
-    });
+      }
+    );
 
 
   document
@@ -1410,6 +1692,7 @@ function renderCart() {
 
         }
 
+
         closeModal(
           "cartModal"
         );
@@ -1425,7 +1708,7 @@ function renderCart() {
 
 
 /* =========================================================
-   AUTH UI
+   COMPTE
 ========================================================= */
 
 function updateAuthUI() {
@@ -1435,9 +1718,8 @@ function updateAuthUI() {
       "adminBtn"
     );
 
-  if (
-    adminButton
-  ) {
+
+  if (adminButton) {
 
     adminButton.style.display =
       currentUser?.email ===
@@ -1446,6 +1728,7 @@ function updateAuthUI() {
         : "none";
 
   }
+
 
   renderAccount();
 
@@ -1458,6 +1741,7 @@ function renderAccount() {
     document.getElementById(
       "accountContent"
     );
+
 
   if (!container) return;
 
@@ -1472,14 +1756,19 @@ function renderAccount() {
           margin-bottom:15px
         "
       >
+
         Tu n'es pas connecté.
+
       </div>
+
 
       <button
         class="btn primary"
         id="accountLoginBtn"
       >
+
         Se connecter
+
       </button>
 
     `;
@@ -1503,6 +1792,7 @@ function renderAccount() {
 
         }
       );
+
 
     return;
 
@@ -1529,10 +1819,13 @@ function renderAccount() {
         EMAIL
       </div>
 
+
       <strong>
+
         ${escapeHtml(
           currentUser.email
         )}
+
       </strong>
 
     </div>
@@ -1546,7 +1839,9 @@ function renderAccount() {
         margin-top:15px
       "
     >
+
       Se déconnecter
+
     </button>
 
   `;
@@ -1562,7 +1857,9 @@ function renderAccount() {
 
         try {
 
-          await signOut(auth);
+          await signOut(
+            auth
+          );
 
           closeModal(
             "accountModal"
@@ -1575,7 +1872,9 @@ function renderAccount() {
         }
         catch (error) {
 
-          console.error(error);
+          console.error(
+            error
+          );
 
           showToast(
             "Erreur de déconnexion."
@@ -1601,7 +1900,9 @@ document
     "click",
     () => {
 
-      authMode = "login";
+      authMode =
+        "login";
+
 
       document
         .getElementById(
@@ -1611,6 +1912,7 @@ document
           "active"
         );
 
+
       document
         .getElementById(
           "registerTab"
@@ -1619,10 +1921,12 @@ document
           "active"
         );
 
+
       const submit =
         document.getElementById(
           "authSubmit"
         );
+
 
       if (submit) {
 
@@ -1643,7 +1947,9 @@ document
     "click",
     () => {
 
-      authMode = "register";
+      authMode =
+        "register";
+
 
       document
         .getElementById(
@@ -1653,6 +1959,7 @@ document
           "active"
         );
 
+
       document
         .getElementById(
           "loginTab"
@@ -1661,10 +1968,12 @@ document
           "active"
         );
 
+
       const submit =
         document.getElementById(
           "authSubmit"
         );
+
 
       if (submit) {
 
@@ -1678,7 +1987,7 @@ document
 
 
 /* =========================================================
-   AUTH FORM
+   AUTH
 ========================================================= */
 
 document
@@ -1715,7 +2024,10 @@ document
         );
 
 
-      if (!email || !password) {
+      if (
+        !email ||
+        !password
+      ) {
 
         if (info) {
 
@@ -1837,6 +2149,7 @@ document
             password
           );
 
+
           showToast(
             "Connexion réussie."
           );
@@ -1851,7 +2164,10 @@ document
       }
       catch (error) {
 
-        console.error(error);
+        console.error(
+          error
+        );
+
 
         if (info) {
 
@@ -1864,1319 +2180,6 @@ document
 
     }
   );
-
-
-/* =========================================================
-   QUESTIONS
-========================================================= */
-
-async function sendQuestion() {
-
-  if (!currentUser) {
-
-    closeModal(
-      "questionsModal"
-    );
-
-    openModal(
-      "authModal"
-    );
-
-    showToast(
-      "Connecte-toi pour envoyer une question."
-    );
-
-    return;
-
-  }
-
-
-  const input =
-    document.getElementById(
-      "newQuestion"
-    );
-
-
-  const text =
-    input?.value.trim();
-
-
-  if (!text) {
-
-    showToast(
-      "Écris une question."
-    );
-
-    return;
-
-  }
-
-
-  try {
-
-    await addDoc(
-      collection(
-        db,
-        "questions"
-      ),
-      {
-
-        userId:
-          currentUser.uid,
-
-        userEmail:
-          currentUser.email,
-
-        question:
-          text,
-
-        status:
-          "open",
-
-        createdAt:
-          serverTimestamp(),
-
-        updatedAt:
-          serverTimestamp()
-
-      }
-    );
-
-
-    if (input) {
-
-      input.value = "";
-
-    }
-
-
-    showToast(
-      "Question envoyée 💬"
-    );
-
-
-    loadUserQuestions();
-
-  }
-  catch (error) {
-
-    console.error(error);
-
-    showToast(
-      "Impossible d'envoyer la question."
-    );
-
-  }
-
-}
-
-
-async function sendAdminReply(
-  questionId
-) {
-
-  if (
-    currentUser?.email !==
-    ADMIN_EMAIL
-  ) {
-
-    showToast(
-      "Accès administrateur requis."
-    );
-
-    return;
-
-  }
-
-
-  const input =
-    document.getElementById(
-      `reply-${questionId}`
-    );
-
-
-  const text =
-    input?.value.trim();
-
-
-  if (!text) return;
-
-
-  try {
-
-    await addDoc(
-      collection(
-        db,
-        "questions",
-        questionId,
-        "messages"
-      ),
-      {
-
-        senderId:
-          currentUser.uid,
-
-        senderEmail:
-          currentUser.email,
-
-        senderRole:
-          "admin",
-
-        text,
-
-        createdAt:
-          serverTimestamp()
-
-      }
-    );
-
-
-    await updateDoc(
-      doc(
-        db,
-        "questions",
-        questionId
-      ),
-      {
-
-        updatedAt:
-          serverTimestamp(),
-
-        status:
-          "answered"
-
-      }
-    );
-
-
-    input.value = "";
-
-    showToast(
-      "Réponse envoyée."
-    );
-
-  }
-  catch (error) {
-
-    console.error(error);
-
-    showToast(
-      "Erreur pendant l'envoi."
-    );
-
-  }
-
-}
-
-
-async function sendUserReply(
-  questionId
-) {
-
-  if (!currentUser) return;
-
-
-  const input =
-    document.getElementById(
-      `user-reply-${questionId}`
-    );
-
-
-  const text =
-    input?.value.trim();
-
-
-  if (!text) return;
-
-
-  try {
-
-    await addDoc(
-      collection(
-        db,
-        "questions",
-        questionId,
-        "messages"
-      ),
-      {
-
-        senderId:
-          currentUser.uid,
-
-        senderEmail:
-          currentUser.email,
-
-        senderRole:
-          "user",
-
-        text,
-
-        createdAt:
-          serverTimestamp()
-
-      }
-    );
-
-
-    await updateDoc(
-      doc(
-        db,
-        "questions",
-        questionId
-      ),
-      {
-
-        updatedAt:
-          serverTimestamp()
-
-      }
-    );
-
-
-    input.value = "";
-
-  }
-  catch (error) {
-
-    console.error(error);
-
-    showToast(
-      "Erreur d'envoi."
-    );
-
-  }
-
-}
-
-
-/* =========================================================
-   MESSAGES
-========================================================= */
-
-function clearMessageListeners() {
-
-  messageUnsubscribers.forEach(
-    unsubscribe => {
-
-      try {
-
-        unsubscribe();
-
-      }
-      catch (_) {}
-
-    }
-  );
-
-  messageUnsubscribers = [];
-
-}
-
-
-function loadQuestionMessages(
-  questionId,
-  containerId
-) {
-
-  const messagesRef =
-    collection(
-      db,
-      "questions",
-      questionId,
-      "messages"
-    );
-
-
-  const unsubscribe =
-    onSnapshot(
-      messagesRef,
-      snapshot => {
-
-        const container =
-          document.getElementById(
-            containerId
-          );
-
-        if (!container) return;
-
-
-        const docs =
-          [...snapshot.docs];
-
-
-        docs.sort(
-          (a, b) => {
-
-            const aTime =
-              a.data()
-                .createdAt
-                ?.toMillis?.() || 0;
-
-            const bTime =
-              b.data()
-                .createdAt
-                ?.toMillis?.() || 0;
-
-            return aTime - bTime;
-
-          }
-        );
-
-
-        if (!docs.length) {
-
-          container.innerHTML = `
-
-            <div
-              style="
-                color:#71809a
-              "
-            >
-              Aucun message pour le moment.
-            </div>
-
-          `;
-
-          return;
-
-        }
-
-
-        container.innerHTML =
-          docs.map(
-            messageDoc => {
-
-              const data =
-                messageDoc.data();
-
-              const isAdmin =
-                data.senderRole ===
-                "admin";
-
-
-              return `
-
-                <div
-                  class="
-                    message
-                    ${
-                      isAdmin
-                        ? "admin"
-                        : "user"
-                    }
-                  "
-                >
-
-                  <div
-                    class="message-author"
-                  >
-
-                    ${
-                      isAdmin
-                        ? "👑 NovaShop"
-                        : "👤 " +
-                          escapeHtml(
-                            data.senderEmail ||
-                            "Utilisateur"
-                          )
-                    }
-
-                  </div>
-
-                  ${escapeHtml(
-                    data.text
-                  )}
-
-                </div>
-
-              `;
-
-            }
-          ).join("");
-
-
-        container.scrollTop =
-          container.scrollHeight;
-
-      },
-      error => {
-
-        console.error(error);
-
-        const container =
-          document.getElementById(
-            containerId
-          );
-
-        if (container) {
-
-          container.innerHTML = `
-
-            <div
-              style="
-                color:#ff7d7d
-              "
-            >
-              Impossible de charger les messages.
-            </div>
-
-          `;
-
-        }
-
-      }
-    );
-
-
-  messageUnsubscribers.push(
-    unsubscribe
-  );
-
-}
-
-
-/* =========================================================
-   QUESTIONS UTILISATEUR
-========================================================= */
-
-function loadUserQuestions() {
-
-  const container =
-    document.getElementById(
-      "questionsContent"
-    );
-
-  if (!container) return;
-
-
-  if (!currentUser) {
-
-    container.innerHTML = `
-
-      <div class="empty">
-
-        Connecte-toi pour accéder
-        à tes discussions.
-
-      </div>
-
-    `;
-
-    return;
-
-  }
-
-
-  if (questionsUnsubscribe) {
-
-    questionsUnsubscribe();
-
-  }
-
-
-  const q =
-    query(
-      collection(
-        db,
-        "questions"
-      ),
-      where(
-        "userId",
-        "==",
-        currentUser.uid
-      )
-    );
-
-
-  questionsUnsubscribe =
-    onSnapshot(
-      q,
-      snapshot => {
-
-        const docs =
-          [...snapshot.docs];
-
-
-        docs.sort(
-          (a, b) => {
-
-            const aTime =
-              a.data()
-                .createdAt
-                ?.toMillis?.() || 0;
-
-            const bTime =
-              b.data()
-                .createdAt
-                ?.toMillis?.() || 0;
-
-            return bTime - aTime;
-
-          }
-        );
-
-
-        renderUserQuestions(
-          docs
-        );
-
-      },
-      error => {
-
-        console.error(error);
-
-        container.innerHTML = `
-
-          <div
-            style="
-              color:#ff7d7d
-            "
-          >
-            Impossible de charger tes questions.
-          </div>
-
-        `;
-
-      }
-    );
-
-}
-
-
-/* =========================================================
-   RENDU QUESTIONS UTILISATEUR
-========================================================= */
-
-function renderUserQuestions(
-  docs
-) {
-
-  const container =
-    document.getElementById(
-      "questionsContent"
-    );
-
-  if (!container) return;
-
-
-  let html = `
-
-    <button
-      class="btn primary"
-      id="newQuestionBtn"
-      style="
-        width:100%;
-        margin-bottom:15px
-      "
-    >
-      ✏️ Poser une nouvelle question
-    </button>
-
-  `;
-
-
-  if (!docs.length) {
-
-    html += `
-
-      <div class="empty">
-
-        Tu n'as encore envoyé
-        aucune question.
-
-      </div>
-
-    `;
-
-
-    container.innerHTML =
-      html;
-
-
-    document
-      .getElementById(
-        "newQuestionBtn"
-      )
-      ?.addEventListener(
-        "click",
-        showNewQuestionForm
-      );
-
-
-    return;
-
-  }
-
-
-  html +=
-    docs.map(
-      questionDoc => {
-
-        const question =
-          questionDoc.data();
-
-        const id =
-          questionDoc.id;
-
-
-        return `
-
-          <div
-            class="admin-question"
-          >
-
-            <div
-              class="question-head"
-            >
-
-              <div>
-
-                <span
-                  class="question-user"
-                >
-                  Ta question
-                </span>
-
-              </div>
-
-              <div
-                class="question-date"
-              >
-
-                ${
-                  question.status ===
-                  "answered"
-                    ? "✅ Répondue"
-                    : "⏳ En attente"
-                }
-
-              </div>
-
-            </div>
-
-
-            <div
-              class="message user"
-            >
-
-              <div
-                class="message-author"
-              >
-                👤 Toi
-              </div>
-
-              ${escapeHtml(
-                question.question ||
-                ""
-              )}
-
-            </div>
-
-
-            <div
-              class="chat"
-              id="user-chat-${id}"
-            >
-              Chargement...
-            </div>
-
-
-            <div
-              class="chat-input"
-            >
-
-              <textarea
-                id="user-reply-${id}"
-                placeholder="Écrire un message..."
-              ></textarea>
-
-              <button
-                class="btn primary"
-                data-user-reply="${id}"
-              >
-                Envoyer
-              </button>
-
-            </div>
-
-          </div>
-
-        `;
-
-      }
-    ).join("");
-
-
-  container.innerHTML =
-    html;
-
-
-  document
-    .getElementById(
-      "newQuestionBtn"
-    )
-    ?.addEventListener(
-      "click",
-      showNewQuestionForm
-    );
-
-
-  container
-    .querySelectorAll(
-      "[data-user-reply]"
-    )
-    .forEach(button => {
-
-      button.onclick = () => {
-
-        sendUserReply(
-          button.dataset.userReply
-        );
-
-      };
-
-    });
-
-
-  docs.forEach(
-    questionDoc => {
-
-      loadQuestionMessages(
-        questionDoc.id,
-        `user-chat-${questionDoc.id}`
-      );
-
-    }
-  );
-
-}
-
-
-/* =========================================================
-   NOUVELLE QUESTION
-========================================================= */
-
-function showNewQuestionForm() {
-
-  const container =
-    document.getElementById(
-      "questionsContent"
-    );
-
-  if (!container) return;
-
-
-  container.innerHTML = `
-
-    <button
-      class="btn"
-      id="backQuestions"
-      style="
-        width:100%;
-        margin-bottom:15px
-      "
-    >
-      ← Retour aux discussions
-    </button>
-
-
-    <div class="modal-title">
-      ✏️ Nouvelle question
-    </div>
-
-
-    <form
-      class="form"
-      id="questionForm"
-    >
-
-      <textarea
-        id="newQuestion"
-        placeholder="Écris ta question..."
-        maxlength="2000"
-        required
-      ></textarea>
-
-
-      <button
-        class="btn primary"
-        type="submit"
-      >
-        💬 Envoyer la question
-      </button>
-
-    </form>
-
-  `;
-
-
-  document
-    .getElementById(
-      "backQuestions"
-    )
-    ?.addEventListener(
-      "click",
-      loadUserQuestions
-    );
-
-
-  document
-    .getElementById(
-      "questionForm"
-    )
-    ?.addEventListener(
-      "submit",
-      event => {
-
-        event.preventDefault();
-
-        sendQuestion();
-
-      }
-    );
-
-}
-
-
-/* =========================================================
-   ADMIN QUESTIONS
-========================================================= */
-
-function loadAdminQuestions() {
-
-  if (
-    currentUser?.email !==
-    ADMIN_EMAIL
-  ) {
-
-    return;
-
-  }
-
-
-  if (
-    adminQuestionsUnsubscribe
-  ) {
-
-    adminQuestionsUnsubscribe();
-
-  }
-
-
-  const q =
-    collection(
-      db,
-      "questions"
-    );
-
-
-  adminQuestionsUnsubscribe =
-    onSnapshot(
-      q,
-      snapshot => {
-
-        const docs =
-          [...snapshot.docs];
-
-
-        docs.sort(
-          (a, b) => {
-
-            const aTime =
-              a.data()
-                .updatedAt
-                ?.toMillis?.() || 0;
-
-            const bTime =
-              b.data()
-                .updatedAt
-                ?.toMillis?.() || 0;
-
-            return bTime - aTime;
-
-          }
-        );
-
-
-        renderAdminQuestions(
-          docs
-        );
-
-        updateQuestionBadge(
-          docs
-        );
-
-      },
-      error => {
-
-        console.error(error);
-
-        const container =
-          document.getElementById(
-            "adminContent"
-          );
-
-        if (container) {
-
-          container.innerHTML = `
-
-            <div
-              style="
-                color:#ff7d7d
-              "
-            >
-              Impossible de charger les questions.
-            </div>
-
-          `;
-
-        }
-
-      }
-    );
-
-}
-
-
-/* =========================================================
-   BADGE QUESTIONS
-========================================================= */
-
-function updateQuestionBadge(
-  docs
-) {
-
-  const badge =
-    document.getElementById(
-      "questionBadge"
-    );
-
-  if (!badge) return;
-
-
-  const unanswered =
-    docs.filter(
-      docItem => {
-
-        const data =
-          docItem.data();
-
-        return (
-          data.status !==
-          "answered"
-        );
-
-      }
-    ).length;
-
-
-  if (unanswered > 0) {
-
-    badge.style.display =
-      "inline-block";
-
-    badge.textContent =
-      unanswered;
-
-  }
-  else {
-
-    badge.style.display =
-      "none";
-
-  }
-
-}
-
-
-/* =========================================================
-   ADMIN QUESTIONS RENDER
-========================================================= */
-
-function renderAdminQuestions(
-  docs
-) {
-
-  const container =
-    document.getElementById(
-      "adminContent"
-    );
-
-  if (!container) return;
-
-
-  let html = `
-
-    <div class="admin-tools">
-
-      <button
-        class="btn"
-        id="refreshAdminQuestions"
-      >
-        🔄 Actualiser
-      </button>
-
-    </div>
-
-  `;
-
-
-  if (!docs.length) {
-
-    html += `
-
-      <div class="empty">
-
-        Aucune question reçue.
-
-      </div>
-
-    `;
-
-
-    container.innerHTML =
-      html;
-
-    return;
-
-  }
-
-
-  html +=
-    docs.map(
-      questionDoc => {
-
-        const question =
-          questionDoc.data();
-
-        const id =
-          questionDoc.id;
-
-
-        return `
-
-          <div
-            class="admin-question"
-          >
-
-            <div
-              class="question-head"
-            >
-
-              <div
-                class="question-user"
-              >
-                👤
-                ${escapeHtml(
-                  question.userEmail ||
-                  "Utilisateur"
-                )}
-              </div>
-
-
-              <div
-                class="question-date"
-              >
-
-                ${
-                  question.status ===
-                  "answered"
-                    ? "✅ Répondue"
-                    : "🟠 À traiter"
-                }
-
-              </div>
-
-            </div>
-
-
-            <div
-              class="message user"
-            >
-
-              <div
-                class="message-author"
-              >
-                Question
-              </div>
-
-              ${escapeHtml(
-                question.question ||
-                ""
-              )}
-
-            </div>
-
-
-            <div
-              class="chat"
-              id="admin-chat-${id}"
-            >
-              Chargement...
-            </div>
-
-
-            <div
-              class="chat-input"
-            >
-
-              <textarea
-                id="reply-${id}"
-                placeholder="Répondre à cet utilisateur..."
-              ></textarea>
-
-
-              <button
-                class="btn primary"
-                data-admin-reply="${id}"
-              >
-                Répondre
-              </button>
-
-            </div>
-
-
-            <button
-              class="btn danger"
-              data-delete-question="${id}"
-              style="
-                width:100%;
-                margin-top:8px
-              "
-            >
-              🗑️ Supprimer la discussion
-            </button>
-
-          </div>
-
-        `;
-
-      }
-    ).join("");
-
-
-  container.innerHTML =
-    html;
-
-
-  document
-    .getElementById(
-      "refreshAdminQuestions"
-    )
-    ?.addEventListener(
-      "click",
-      loadAdminQuestions
-    );
-
-
-  container
-    .querySelectorAll(
-      "[data-admin-reply]"
-    )
-    .forEach(button => {
-
-      button.onclick = () => {
-
-        sendAdminReply(
-          button.dataset.adminReply
-        );
-
-      };
-
-    });
-
-
-  container
-    .querySelectorAll(
-      "[data-delete-question]"
-    )
-    .forEach(button => {
-
-      button.onclick = () => {
-
-        deleteQuestion(
-          button.dataset.deleteQuestion
-        );
-
-      };
-
-    });
-
-
-  docs.forEach(
-    questionDoc => {
-
-      loadQuestionMessages(
-        questionDoc.id,
-        `admin-chat-${questionDoc.id}`
-      );
-
-    }
-  );
-
-}
-
-
-/* =========================================================
-   SUPPRESSION QUESTION
-========================================================= */
-
-async function deleteQuestion(
-  questionId
-) {
-
-  if (
-    currentUser?.email !==
-    ADMIN_EMAIL
-  ) {
-
-    showToast(
-      "Accès administrateur requis."
-    );
-
-    return;
-
-  }
-
-
-  if (
-    !confirm(
-      "Supprimer définitivement cette discussion ?"
-    )
-  ) {
-
-    return;
-
-  }
-
-
-  try {
-
-    await deleteDoc(
-      doc(
-        db,
-        "questions",
-        questionId
-      )
-    );
-
-
-    showToast(
-      "Discussion supprimée."
-    );
-
-  }
-  catch (error) {
-
-    console.error(error);
-
-    showToast(
-      "Impossible de supprimer la discussion."
-    );
-
-  }
-
-}
 
 
 /* =========================================================
@@ -3274,39 +2277,41 @@ document
 
 
       const orderItems =
-        cart.map(item => {
+        cart.map(
+          item => {
 
-          const product =
-            products.find(
-              p =>
-                p.id ===
-                item.productId
-            );
+            const product =
+              products.find(
+                p =>
+                  p.id ===
+                  item.productId
+              );
 
 
-          return {
+            return {
 
-            productId:
-              item.productId,
+              productId:
+                item.productId,
 
-            name:
-              product?.name ||
-              "",
+              name:
+                product?.name ||
+                "",
 
-            price:
-              product?.price ||
-              0,
+              price:
+                product?.price ||
+                0,
 
-            quantity:
-              item.quantity,
+              quantity:
+                item.quantity,
 
-            image:
-              product?.image ||
-              ""
+              image:
+                product?.image ||
+                ""
 
-          };
+            };
 
-        });
+          }
+        );
 
 
       try {
@@ -3369,6 +2374,7 @@ document
 
         updateCartCount();
 
+
         closeModal(
           "checkoutModal"
         );
@@ -3381,7 +2387,10 @@ document
       }
       catch (error) {
 
-        console.error(error);
+        console.error(
+          error
+        );
+
 
         showToast(
           "Erreur pendant la création de la commande."
@@ -3403,6 +2412,7 @@ async function loadOrders() {
     document.getElementById(
       "ordersContent"
     );
+
 
   if (!container) return;
 
@@ -3442,7 +2452,9 @@ async function loadOrders() {
 
 
     const snapshot =
-      await getDocs(q);
+      await getDocs(
+        q
+      );
 
 
     const docs =
@@ -3455,14 +2467,21 @@ async function loadOrders() {
         const aTime =
           a.data()
             .createdAt
-            ?.toMillis?.() || 0;
+            ?.toMillis?.() ||
+          0;
+
 
         const bTime =
           b.data()
             .createdAt
-            ?.toMillis?.() || 0;
+            ?.toMillis?.() ||
+          0;
 
-        return bTime - aTime;
+
+        return (
+          bTime -
+          aTime
+        );
 
       }
     );
@@ -3486,133 +2505,144 @@ async function loadOrders() {
 
 
     container.innerHTML =
-      docs.map(
-        orderDoc => {
+      docs
+        .map(
+          orderDoc => {
 
-          const order =
-            orderDoc.data();
-
-
-          let delivery =
-            "Date inconnue";
+            const order =
+              orderDoc.data();
 
 
-          if (
-            order.deliveryDate
-              ?.toDate
-          ) {
+            let delivery =
+              "Date inconnue";
 
-            delivery =
+
+            if (
               order.deliveryDate
-                .toDate()
-                .toLocaleDateString(
-                  "fr-FR"
-                );
+                ?.toDate
+            ) {
 
-          }
+              delivery =
+                order.deliveryDate
+                  .toDate()
+                  .toLocaleDateString(
+                    "fr-FR"
+                  );
+
+            }
 
 
-          return `
-
-            <div class="order">
-
-              <strong>
-
-                📦 Commande
-                ${orderDoc.id.slice(
-                  0,
-                  8
-                )}
-
-              </strong>
-
+            return `
 
               <div
-                style="
-                  margin-top:8px
-                "
+                class="order"
               >
-
-                Total :
 
                 <strong>
-                  ${money(
-                    order.total ||
-                    0
+
+                  📦 Commande
+                  ${orderDoc.id.slice(
+                    0,
+                    8
                   )}
+
                 </strong>
 
+
+                <div
+                  style="
+                    margin-top:8px
+                  "
+                >
+
+                  Total :
+
+                  <strong>
+
+                    ${money(
+                      order.total ||
+                      0
+                    )}
+
+                  </strong>
+
+                </div>
+
+
+                <div
+                  class="order-status"
+                >
+
+                  ${escapeHtml(
+                    order.status ||
+                    "En préparation"
+                  )}
+
+                </div>
+
+
+                <div
+                  style="
+                    margin-top:8px;
+                    color:#93a1b5
+                  "
+                >
+
+                  📍 Position :
+
+                  ${escapeHtml(
+                    order.currentLocation ||
+                    ""
+                  )}
+
+                </div>
+
+
+                <div
+                  style="
+                    margin-top:5px;
+                    color:#93a1b5
+                  "
+                >
+
+                  🎯 Destination :
+
+                  ${escapeHtml(
+                    order.destination ||
+                    ""
+                  )}
+
+                </div>
+
+
+                <div
+                  style="
+                    margin-top:5px;
+                    color:#93a1b5
+                  "
+                >
+
+                  🚚 Livraison prévue :
+
+                  ${delivery}
+
+                </div>
+
               </div>
 
+            `;
 
-              <div
-                class="order-status"
-              >
-                ${escapeHtml(
-                  order.status ||
-                  "En préparation"
-                )}
-              </div>
-
-
-              <div
-                style="
-                  margin-top:8px;
-                  color:#93a1b5
-                "
-              >
-
-                📍 Position :
-
-                ${escapeHtml(
-                  order.currentLocation ||
-                  ""
-                )}
-
-              </div>
-
-
-              <div
-                style="
-                  margin-top:5px;
-                  color:#93a1b5
-                "
-              >
-
-                🎯 Destination :
-
-                ${escapeHtml(
-                  order.destination ||
-                  ""
-                )}
-
-              </div>
-
-
-              <div
-                style="
-                  margin-top:5px;
-                  color:#93a1b5
-                "
-              >
-
-                🚚 Livraison prévue :
-
-                ${delivery}
-
-              </div>
-
-            </div>
-
-          `;
-
-        }
-      ).join("");
+          }
+        )
+        .join("");
 
   }
   catch (error) {
 
-    console.error(error);
+    console.error(
+      error
+    );
+
 
     container.innerHTML = `
 
@@ -3698,40 +2728,17 @@ document
         "adminCodeModal"
       );
 
+
       openModal(
         "adminModal"
       );
 
-      loadAdminQuestions();
-
     }
   );
 
 
 /* =========================================================
-   BOUTON QUESTIONS
-========================================================= */
-
-document
-  .getElementById(
-    "questionsBtn"
-  )
-  ?.addEventListener(
-    "click",
-    () => {
-
-      openModal(
-        "questionsModal"
-      );
-
-      loadUserQuestions();
-
-    }
-  );
-
-
-/* =========================================================
-   COMPTE
+   BOUTONS
 ========================================================= */
 
 document
@@ -3770,10 +2777,6 @@ document
   );
 
 
-/* =========================================================
-   COMMANDES
-========================================================= */
-
 document
   .getElementById(
     "ordersBtn"
@@ -3791,10 +2794,6 @@ document
     }
   );
 
-
-/* =========================================================
-   PANIER
-========================================================= */
 
 document
   .getElementById(
@@ -3831,10 +2830,6 @@ document
     }
   );
 
-
-/* =========================================================
-   ADMIN BUTTON
-========================================================= */
 
 document
   .getElementById(
@@ -3875,47 +2870,51 @@ document
   .querySelectorAll(
     "[data-close]"
   )
-  .forEach(button => {
+  .forEach(
+    button => {
 
-    button.addEventListener(
-      "click",
-      () => {
+      button.addEventListener(
+        "click",
+        () => {
 
-        closeModal(
-          button.dataset.close
-        );
+          closeModal(
+            button.dataset.close
+          );
 
-      }
-    );
+        }
+      );
 
-  });
+    }
+  );
 
 
 document
   .querySelectorAll(
     ".modal"
   )
-  .forEach(modal => {
+  .forEach(
+    modal => {
 
-    modal.addEventListener(
-      "click",
-      event => {
+      modal.addEventListener(
+        "click",
+        event => {
 
-        if (
-          event.target ===
-          modal
-        ) {
+          if (
+            event.target ===
+            modal
+          ) {
 
-          modal.classList.remove(
-            "open"
-          );
+            modal.classList.remove(
+              "open"
+            );
+
+          }
 
         }
+      );
 
-      }
-    );
-
-  });
+    }
+  );
 
 
 /* =========================================================
@@ -3926,26 +2925,10 @@ onAuthStateChanged(
   auth,
   user => {
 
-    currentUser = user;
+    currentUser =
+      user;
 
     updateAuthUI();
-
-
-    if (user) {
-
-      loadUserQuestions();
-
-
-      if (
-        user.email ===
-        ADMIN_EMAIL
-      ) {
-
-        loadAdminQuestions();
-
-      }
-
-    }
 
   }
 );
@@ -3969,7 +2952,7 @@ renderAccount();
 ========================================================= */
 
 console.log(
-  "%c NovaShop chargé correctement 🛒 ",
+  "%c NovaShop chargé 🛒 ",
   "font-weight:bold;font-size:16px"
 );
 
@@ -3979,6 +2962,5 @@ console.log(
 );
 
 console.log(
-  "Images configurées :",
-  Object.keys(imageFallbacks).length
+  "Système Questions : SUPPRIMÉ"
 );
