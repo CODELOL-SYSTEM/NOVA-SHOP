@@ -1,4 +1,6 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
+import {
+  initializeApp
+} from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
 
 import {
   getAuth,
@@ -13,21 +15,21 @@ import {
   collection,
   addDoc,
   getDocs,
-  doc,
-  setDoc,
   query,
   where,
-  onSnapshot,
+  orderBy,
   serverTimestamp,
-  deleteDoc
+  deleteDoc,
+  doc
 } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+
 
 /* =========================================================
    FIREBASE
 ========================================================= */
 
 const firebaseConfig = {
-  apiKey: "AIzaSyAZ5vAkAEfIBpfLyhxgO7uvNdJ67KYKWD0",
+  apiKey: "AIzaSyAZ5vAkAEfIBpfLyhxG7OuvNdJ67KYKWD0",
   authDomain: "novashop-4ee63.firebaseapp.com",
   projectId: "novashop-4ee63",
   storageBucket: "novashop-4ee63.firebasestorage.app",
@@ -36,15 +38,25 @@ const firebaseConfig = {
   measurementId: "G-XNY5X2VMY9"
 };
 
-const firebaseApp = initializeApp(firebaseConfig);
-const auth = getAuth(firebaseApp);
-const db = getFirestore(firebaseApp);
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+
+/* =========================================================
+   ADMIN
+========================================================= */
 
 const ADMIN_EMAIL = "pc2alex.les@gmail.com";
 const ADMIN_CODE = "NOVA-ADMIN-2026";
 
-const FALLBACK_IMAGE =
-  "https://placehold.co/800x800/111827/ffffff?text=NovaShop";
+/*
+  IMPORTANT :
+  Cette clé mémorise l'autorisation admin sur CE navigateur.
+  Une fois le bon code entré, il ne sera plus demandé.
+*/
+const ADMIN_ACCESS_KEY = "novaAdminAuthorized";
+
 
 /* =========================================================
    PRODUITS
@@ -198,7 +210,7 @@ const products = [
 
   {
     id: "p19",
-    name: "KOORUI Écran PC Gamer 27 Pouces 200Hz IPS QHD HDR400",
+    name: "KOORUI Ecran PC Gamer 27 Pouces 200Hz IPS QHD HDR400 1ms",
     category: "Écrans",
     price: 74.99,
     image: "https://m.media-amazon.com/images/I/71CJ1DF-8sL._AC_SL1500_.jpg"
@@ -230,7 +242,7 @@ const products = [
 
   {
     id: "p23",
-    name: "Chaise GTPLAYER Ergonomique Gaming",
+    name: "Chaise GTPLAYER Ergonomique Gaming Soutien Lombaire",
     category: "Chaises gaming",
     price: 109.99,
     image: "https://thumb.pccomponentes.com/w-530-530/articles/1118/11186247/167-silla-gaming-gtplayer-ergonomica-con-reposapies-y-soporte-lumbar-4d.jpg"
@@ -286,7 +298,7 @@ const products = [
 
   {
     id: "p30",
-    name: "Logitech PRO X TKL Rapid Noir, filaire AZERTY",
+    name: "Logitech PRO X TKL Rapid Noir AZERTY",
     category: "Claviers",
     price: 78.99,
     image: "https://static.fnac-static.com/multimedia/Images/FR/MDM/6a/89/8f/26184042/1540-1.jpg"
@@ -294,7 +306,7 @@ const products = [
 
   {
     id: "p31",
-    name: "QwertyKey75 HE Striker",
+    name: "QwertyKey75 HE Striker Hall Effect",
     category: "Claviers",
     price: 56.99,
     image: "https://cdn.shopify.com/s/files/1/0814/2530/1746/files/QK75-HE-STRIKER-qwertykey-tastatura-mecanica-gaming-hotswap-2025_1eee355b-72ca-46e6-a458-751384d0595c_1800x.webp?v=1771799537"
@@ -310,7 +322,7 @@ const products = [
 
   {
     id: "p33",
-    name: "ATTACK SHARK R11 Ultra",
+    name: "ATTACK SHARK R11 Ultra 8000Hz 49g",
     category: "Souris",
     price: 26.99,
     image: "https://m.media-amazon.com/images/I/71bMz15SqcL._AC_SL1500_.jpg"
@@ -318,7 +330,7 @@ const products = [
 
   {
     id: "p34",
-    name: "HyperX QuadCast 2 – Microphone USB – RGB",
+    name: "HyperX QuadCast 2 USB RGB",
     category: "Microphones",
     price: 98.99,
     image: "https://fr.hyperx.com/cdn/shop/files/hyperx_quadcast_2_872v1aa_main_1_2d47a555-f537-457b-9002-8b9e9010dc00.jpg?v=1763067608"
@@ -358,7 +370,7 @@ const products = [
 
   {
     id: "p39",
-    name: "Lampe de plafond hexagone nid d’abeille LED",
+    name: "Lampe de plafond hexagone nid d’abeille LED 2.4m x 4.8m",
     category: "Éclairage RGB",
     price: 91.10,
     image: "https://www.discount-autosport.com/wp-content/webp-express/webp-images/uploads/2025/02/lampe-hexagone-plafond-led-4m80-contour-bleu-.jpg.webp"
@@ -390,8 +402,9 @@ const products = [
 
 ];
 
+
 /* =========================================================
-   ETAT
+   VARIABLES
 ========================================================= */
 
 let currentUser = null;
@@ -401,64 +414,64 @@ let searchValue = "";
 let cart = [];
 let reviewsCache = {};
 
+const FALLBACK_IMAGE =
+  "https://placehold.co/800x800/111827/ffffff?text=NovaShop";
+
+
 /* =========================================================
    DOM
 ========================================================= */
 
-const searchInput = document.getElementById("searchInput");
-const categoriesContainer = document.getElementById("categories");
-const productsGrid = document.getElementById("productsGrid");
-const productCount = document.getElementById("productCount");
+const $ = id => document.getElementById(id);
 
-const cartBtn = document.getElementById("cartBtn");
-const cartBadge = document.getElementById("cartBadge");
-const cartOverlay = document.getElementById("cartOverlay");
-const cartDrawer = document.getElementById("cartDrawer");
-const closeCartBtn = document.getElementById("closeCartBtn");
-const cartItems = document.getElementById("cartItems");
-const cartTotal = document.getElementById("cartTotal");
-const checkoutBtn = document.getElementById("checkoutBtn");
+const searchInput = $("searchInput");
+const categoriesEl = $("categories");
+const productsGrid = $("productsGrid");
+const productCount = $("productCount");
 
-const toastContainer = document.getElementById("toastContainer");
+const cartBtn = $("cartBtn");
+const cartBadge = $("cartBadge");
+const cartOverlay = $("cartOverlay");
+const cartDrawer = $("cartDrawer");
+const cartItems = $("cartItems");
+const cartTotal = $("cartTotal");
 
-const modalOverlay = document.getElementById("modalOverlay");
-const modalTitle = document.getElementById("modalTitle");
-const modalBody = document.getElementById("modalBody");
-const modalCloseBtn = document.getElementById("modalCloseBtn");
+const accountBtn = $("accountBtn");
+const ordersBtn = $("ordersBtn");
+const adminBtn = $("adminBtn");
 
-const accountBtn = document.getElementById("accountBtn");
-const ordersBtn = document.getElementById("ordersBtn");
-const adminBtn = document.getElementById("adminBtn");
+const modal = $("modal");
+const modalContent = $("modalContent");
 
-const heroShopBtn = document.getElementById("heroShopBtn");
-const heroCartBtn = document.getElementById("heroCartBtn");
+const toastContainer = $("toastContainer");
+
 
 /* =========================================================
    UTILITAIRES
 ========================================================= */
 
 function randomInt(min, max) {
-  return Math.floor(
-    Math.random() * (max - min + 1)
-  ) + min;
+  return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-function money(value) {
-  const amount = Number(value);
 
-  if (!Number.isFinite(amount)) {
+function money(value) {
+  const n = Number(value);
+
+  if (!Number.isFinite(n)) {
     return "0,00 €";
   }
 
-  if (amount === 0) {
+  if (n === 0) {
     return "Prix à venir";
   }
 
-  return new Intl.NumberFormat("fr-FR", {
-    style: "currency",
-    currency: "EUR"
-  }).format(amount);
+  return n.toLocaleString("fr-FR", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  }) + " €";
 }
+
 
 function escapeHtml(value) {
   return String(value ?? "")
@@ -469,28 +482,29 @@ function escapeHtml(value) {
     .replaceAll("'", "&#039;");
 }
 
-function stars(value) {
-  const rounded = Math.max(
-    0,
-    Math.min(5, Math.round(value))
-  );
 
-  return (
-    "★".repeat(rounded) +
-    "☆".repeat(5 - rounded)
-  );
+function stars(rating) {
+  const full = Math.round(Number(rating) || 0);
+
+  return "★".repeat(full) +
+    "☆".repeat(Math.max(0, 5 - full));
 }
+
 
 /* =========================================================
    TOAST
 ========================================================= */
 
-function showToast(message, type = "success") {
-  if (!toastContainer) return;
+function showToast(message, type = "normal") {
+
+  if (!toastContainer) {
+    alert(message);
+    return;
+  }
 
   const toast = document.createElement("div");
 
-  toast.className = `toast ${type}`;
+  toast.className = `nova-toast ${type}`;
 
   toast.innerHTML = `
     <span>${escapeHtml(message)}</span>
@@ -503,212 +517,425 @@ function showToast(message, type = "success") {
   });
 
   setTimeout(() => {
+
     toast.classList.remove("show");
 
     setTimeout(() => {
       toast.remove();
     }, 300);
-  }, 2600);
+
+  }, 2200);
 }
+
 
 /* =========================================================
    MODAL
 ========================================================= */
 
-function openModal(title, content) {
-  if (!modalOverlay) return;
+function openModal(html) {
 
-  modalTitle.textContent = title;
-  modalBody.innerHTML = content;
-
-  modalOverlay.classList.add("active");
-}
-
-function closeModal() {
-  modalOverlay?.classList.remove("active");
-}
-
-modalCloseBtn?.addEventListener(
-  "click",
-  closeModal
-);
-
-modalOverlay?.addEventListener(
-  "click",
-  event => {
-    if (event.target === modalOverlay) {
-      closeModal();
-    }
+  if (!modal || !modalContent) {
+    return;
   }
-);
 
-/* =========================================================
-   IMAGES
-========================================================= */
+  modalContent.innerHTML = html;
 
-function setupImageFallback(img) {
-  if (!img) return;
+  modal.classList.add("open");
 
-  img.addEventListener("error", () => {
-
-    if (img.dataset.fallbackUsed === "1") {
-      return;
-    }
-
-    img.dataset.fallbackUsed = "1";
-    img.src = FALLBACK_IMAGE;
+  requestAnimationFrame(() => {
+    modal.classList.add("visible");
   });
 }
 
-/* =========================================================
-   AVIS
-========================================================= */
 
-function getReviews(productId) {
+function closeModal() {
 
-  if (!reviewsCache[productId]) {
+  if (!modal) return;
 
-    reviewsCache[productId] = {
-      count: randomInt(850, 950),
-      average:
-        Math.round(
-          (4.3 + Math.random() * 0.6) * 10
-        ) / 10
-    };
-  }
+  modal.classList.remove("visible");
 
-  return reviewsCache[productId];
+  setTimeout(() => {
+    modal.classList.remove("open");
+  }, 180);
 }
 
+
+document.addEventListener("click", event => {
+
+  if (event.target.matches("[data-close-modal]")) {
+    closeModal();
+  }
+
+});
+
+
 /* =========================================================
-   CATEGORIES
+   AVATAR / AUTH
 ========================================================= */
 
-function renderCategories() {
+function isAdmin() {
+  return currentUser &&
+    currentUser.email &&
+    currentUser.email.toLowerCase() === ADMIN_EMAIL.toLowerCase();
+}
 
-  if (!categoriesContainer) return;
+
+/*
+  NOUVEAU :
+  Vérifie si le navigateur a déjà mémorisé
+  l'autorisation admin.
+*/
+function hasAdminAccess() {
+  return localStorage.getItem(ADMIN_ACCESS_KEY) === "true";
+}
+
+
+/*
+  NOUVEAU :
+  Enregistre l'autorisation admin.
+*/
+function saveAdminAccess() {
+  localStorage.setItem(ADMIN_ACCESS_KEY, "true");
+}
+
+
+/*
+  Permet de supprimer l'autorisation si nécessaire.
+*/
+function removeAdminAccess() {
+  localStorage.removeItem(ADMIN_ACCESS_KEY);
+}
+
+
+/* =========================================================
+   AUTH MODAL
+========================================================= */
+
+function openAuth() {
+
+  if (currentUser) {
+
+    openModal(`
+      <div class="modal-head">
+        <h2>👤 Mon compte</h2>
+        <button data-close-modal>×</button>
+      </div>
+
+      <div style="padding:20px 0">
+        <p>
+          Connecté avec :
+          <strong>${escapeHtml(currentUser.email || "")}</strong>
+        </p>
+
+        <button
+          id="logoutBtn"
+          class="primary-btn"
+          style="margin-top:20px;width:100%"
+        >
+          Se déconnecter
+        </button>
+      </div>
+    `);
+
+    $("logoutBtn").onclick = async () => {
+
+      try {
+
+        await signOut(auth);
+
+        removeAdminAccess();
+
+        closeModal();
+
+        showToast("Déconnexion réussie");
+
+      } catch (error) {
+
+        showToast("Erreur lors de la déconnexion", "error");
+
+      }
+
+    };
+
+    return;
+  }
+
+
+  openModal(`
+    <div class="modal-head">
+      <h2>${authMode === "login" ? "🔐 Connexion" : "✨ Créer un compte"}</h2>
+      <button data-close-modal>×</button>
+    </div>
+
+    <form id="authForm">
+
+      <input
+        id="authEmail"
+        type="email"
+        placeholder="Adresse e-mail"
+        required
+      >
+
+      <input
+        id="authPassword"
+        type="password"
+        placeholder="Mot de passe"
+        minlength="6"
+        required
+      >
+
+      <button
+        type="submit"
+        class="primary-btn"
+        style="width:100%"
+      >
+        ${authMode === "login" ? "Se connecter" : "Créer mon compte"}
+      </button>
+
+    </form>
+
+    <button
+      id="switchAuth"
+      class="text-btn"
+      style="margin-top:15px"
+    >
+      ${
+        authMode === "login"
+          ? "Créer un compte"
+          : "J'ai déjà un compte"
+      }
+    </button>
+  `);
+
+
+  $("switchAuth").onclick = () => {
+
+    authMode =
+      authMode === "login"
+        ? "register"
+        : "login";
+
+    openAuth();
+
+  };
+
+
+  $("authForm").onsubmit = async event => {
+
+    event.preventDefault();
+
+    const email = $("authEmail").value.trim();
+    const password = $("authPassword").value;
+
+    try {
+
+      if (authMode === "login") {
+
+        await signInWithEmailAndPassword(
+          auth,
+          email,
+          password
+        );
+
+        showToast("Connexion réussie ✅");
+
+      } else {
+
+        await createUserWithEmailAndPassword(
+          auth,
+          email,
+          password
+        );
+
+        showToast("Compte créé ✅");
+
+      }
+
+      closeModal();
+
+    } catch (error) {
+
+      let message = "Une erreur est survenue.";
+
+      if (
+        error.code === "auth/invalid-credential" ||
+        error.code === "auth/wrong-password"
+      ) {
+        message = "E-mail ou mot de passe incorrect.";
+      }
+
+      if (error.code === "auth/email-already-in-use") {
+        message = "Cette adresse e-mail est déjà utilisée.";
+      }
+
+      if (error.code === "auth/weak-password") {
+        message = "Le mot de passe doit contenir au moins 6 caractères.";
+      }
+
+      if (error.code === "auth/invalid-email") {
+        message = "Adresse e-mail invalide.";
+      }
+
+      showToast(message, "error");
+
+    }
+
+  };
+
+}
+
+
+/* =========================================================
+   CATÉGORIES
+========================================================= */
+
+function getCategories() {
 
   const categories = [
     "Tous",
-    ...new Set(
-      products.map(product => product.category)
-    )
+    ...new Set(products.map(product => product.category))
   ];
 
-  categoriesContainer.innerHTML =
-    categories.map(category => `
+  return categories;
+}
+
+
+function renderCategories() {
+
+  if (!categoriesEl) return;
+
+  categoriesEl.innerHTML = getCategories()
+    .map(category => `
       <button
         class="category-btn ${
-          selectedCategory === category
-            ? "active"
-            : ""
+          selectedCategory === category ? "active" : ""
         }"
         data-category="${escapeHtml(category)}"
       >
         ${escapeHtml(category)}
       </button>
-    `).join("");
+    `)
+    .join("");
 
-  categoriesContainer
-    .querySelectorAll(".category-btn")
+
+  categoriesEl
+    .querySelectorAll("[data-category]")
     .forEach(button => {
 
-      button.addEventListener(
-        "click",
-        () => {
+      button.onclick = () => {
 
-          selectedCategory =
-            button.dataset.category;
+        selectedCategory =
+          button.dataset.category;
 
-          renderCategories();
-          renderProducts();
-        }
-      );
+        renderCategories();
+        renderProducts();
+
+      };
+
     });
+
 }
 
+
 /* =========================================================
-   PRODUITS FILTRES
+   AVIS
+========================================================= */
+
+function getProductReviews(productId) {
+
+  if (!reviewsCache[productId]) {
+
+    const count = randomInt(850, 950);
+
+    const average =
+      Math.round(
+        (4.3 + Math.random() * 0.6) * 10
+      ) / 10;
+
+    reviewsCache[productId] = {
+      count,
+      average
+    };
+
+  }
+
+  return reviewsCache[productId];
+}
+
+
+/* =========================================================
+   FILTRAGE
 ========================================================= */
 
 function getFilteredProducts() {
 
-  const search =
+  const queryText =
     searchValue
       .trim()
       .toLowerCase();
 
   return products.filter(product => {
 
-    const categoryMatch =
+    const categoryOK =
       selectedCategory === "Tous" ||
       product.category === selectedCategory;
 
-    const searchMatch =
-      !search ||
-      product.name
-        .toLowerCase()
-        .includes(search) ||
-      product.category
-        .toLowerCase()
-        .includes(search);
+    const searchOK =
+      !queryText ||
+      product.name.toLowerCase().includes(queryText) ||
+      product.category.toLowerCase().includes(queryText);
 
-    return (
-      categoryMatch &&
-      searchMatch
-    );
+    return categoryOK && searchOK;
+
   });
+
 }
 
+
 /* =========================================================
-   RENDU PRODUITS
+   PRODUITS
 ========================================================= */
 
 function renderProducts() {
 
   if (!productsGrid) return;
 
-  const filtered =
-    getFilteredProducts();
+  const filtered = getFilteredProducts();
 
   if (productCount) {
     productCount.textContent =
-      `${filtered.length} produit${
-        filtered.length > 1
-          ? "s"
-          : ""
-      }`;
+      `${filtered.length} produit${filtered.length > 1 ? "s" : ""}`;
   }
+
 
   if (!filtered.length) {
 
     productsGrid.innerHTML = `
-      <div class="empty-products">
-        <div>🔎</div>
+      <div class="empty-state">
+        <div style="font-size:45px">🔎</div>
         <h3>Aucun produit trouvé</h3>
-        <p>
-          Essaie une autre recherche
-          ou une autre catégorie.
-        </p>
+        <p>Essaie une autre recherche.</p>
       </div>
     `;
 
     return;
   }
 
-  productsGrid.innerHTML =
-    filtered.map(product => {
 
-      const review =
-        getReviews(product.id);
+  productsGrid.innerHTML =
+    filtered.map((product, index) => {
+
+      const reviews =
+        getProductReviews(product.id);
 
       const unavailable =
-        Number(product.price) === 0;
+        Number(product.price) <= 0;
 
       return `
+
         <article
           class="product-card"
-          data-product-id="${product.id}"
+          data-product-id="${escapeHtml(product.id)}"
         >
 
           <div class="product-image-wrap">
@@ -718,6 +945,7 @@ function renderProducts() {
               src="${escapeHtml(product.image)}"
               alt="${escapeHtml(product.name)}"
               loading="lazy"
+              data-image-fallback
             >
 
           </div>
@@ -728,28 +956,26 @@ function renderProducts() {
               ${escapeHtml(product.category)}
             </div>
 
-            <h3 class="product-name">
+            <h3 class="product-title">
               ${escapeHtml(product.name)}
             </h3>
 
-            <div class="product-rating">
-
+            <button
+              class="reviews-btn"
+              data-review-product="${escapeHtml(product.id)}"
+            >
               <span class="stars">
-                ${stars(review.average)}
+                ${stars(reviews.average)}
               </span>
 
               <span>
-                ${review.average}
+                ${reviews.average}/5
               </span>
 
-              <button
-                class="reviews-btn"
-                data-reviews="${product.id}"
-              >
-                ${review.count} avis
-              </button>
-
-            </div>
+              <span>
+                (${reviews.count})
+              </span>
+            </button>
 
             <div class="product-bottom">
 
@@ -757,25 +983,17 @@ function renderProducts() {
                 ${money(product.price)}
               </div>
 
-              ${
-                unavailable
-                  ? `
-                    <button
-                      class="add-btn disabled"
-                      disabled
-                    >
-                      Prix à venir
-                    </button>
-                  `
-                  : `
-                    <button
-                      class="add-btn"
-                      data-add="${product.id}"
-                    >
-                      Ajouter
-                    </button>
-                  `
-              }
+              <button
+                class="add-cart-btn"
+                data-add-product="${escapeHtml(product.id)}"
+                ${unavailable ? "disabled" : ""}
+              >
+                ${
+                  unavailable
+                    ? "Prix à venir"
+                    : "Ajouter"
+                }
+              </button>
 
             </div>
 
@@ -783,166 +1001,183 @@ function renderProducts() {
 
         </article>
       `;
+
     }).join("");
 
-  productsGrid
-    .querySelectorAll(".product-image")
-    .forEach(setupImageFallback);
 
   productsGrid
-    .querySelectorAll("[data-add]")
-    .forEach(button => {
+    .querySelectorAll("[data-image-fallback]")
+    .forEach(image => {
 
-      button.addEventListener(
-        "click",
-        event => {
+      image.addEventListener("error", () => {
 
-          const product =
-            products.find(
-              item =>
-                item.id ===
-                button.dataset.add
-            );
-
-          if (product) {
-            addToCart(
-              product,
-              event,
-              button
-            );
-          }
+        if (image.src !== FALLBACK_IMAGE) {
+          image.src = FALLBACK_IMAGE;
         }
-      );
+
+      });
+
     });
 
+
   productsGrid
-    .querySelectorAll("[data-reviews]")
+    .querySelectorAll("[data-add-product]")
     .forEach(button => {
 
-      button.addEventListener(
-        "click",
-        () => {
+      button.onclick = () => {
 
-          const product =
-            products.find(
-              item =>
-                item.id ===
-                button.dataset.reviews
-            );
+        addToCart(
+          button.dataset.addProduct,
+          button
+        );
 
-          if (!product) return;
+      };
 
-          const review =
-            getReviews(product.id);
-
-          openModal(
-            `Avis • ${product.name}`,
-            `
-              <div class="reviews-modal">
-
-                <div class="reviews-score">
-                  <strong>
-                    ${review.average}
-                  </strong>
-                  <span>/ 5</span>
-                </div>
-
-                <div class="stars big">
-                  ${stars(review.average)}
-                </div>
-
-                <p>
-                  Basé sur
-                  ${review.count}
-                  avis clients.
-                </p>
-
-              </div>
-            `
-          );
-        }
-      );
     });
+
+
+  productsGrid
+    .querySelectorAll("[data-review-product]")
+    .forEach(button => {
+
+      button.onclick = () => {
+
+        openReviews(
+          button.dataset.reviewProduct
+        );
+
+      };
+
+    });
+
 }
+
 
 /* =========================================================
-   NETTOYAGE PANIER
+   AVIS MODAL
 ========================================================= */
 
-function sanitizeCart() {
+function openReviews(productId) {
 
-  if (!Array.isArray(cart)) {
-    cart = [];
-    return;
+  const product =
+    products.find(p => p.id === productId);
+
+  if (!product) return;
+
+  const reviewData =
+    getProductReviews(productId);
+
+  openModal(`
+
+    <div class="modal-head">
+
+      <h2>⭐ Avis clients</h2>
+
+      <button data-close-modal>×</button>
+
+    </div>
+
+    <div class="review-summary">
+
+      <div class="review-big">
+        ${reviewData.average}/5
+      </div>
+
+      <div>
+        <div class="stars big">
+          ${stars(reviewData.average)}
+        </div>
+
+        <p>
+          ${reviewData.count} avis clients
+        </p>
+      </div>
+
+    </div>
+
+    <div style="margin-top:25px">
+
+      <h3>
+        ${escapeHtml(product.name)}
+      </h3>
+
+      <p style="margin-top:10px">
+        Les avis sont actuellement représentés
+        par les statistiques affichées sur NovaShop.
+      </p>
+
+    </div>
+
+  `);
+
+}
+
+
+/* =========================================================
+   PANIER : NETTOYAGE
+========================================================= */
+
+function sanitizeCart(items) {
+
+  if (!Array.isArray(items)) {
+    return [];
   }
 
-  cart =
-    cart
-      .map(item => {
+  return items
+    .map(item => {
 
-        if (
-          !item ||
-          typeof item !== "object"
-        ) {
-          return null;
-        }
+      if (!item || typeof item !== "object") {
+        return null;
+      }
 
-        const product =
-          products.find(
-            product =>
-              product.id === item.id
-          );
+      const product =
+        products.find(
+          p => p.id === item.id
+        );
 
-        if (!product) {
-          return null;
-        }
+      if (!product) {
+        return null;
+      }
 
-        const price =
-          Number(product.price);
-
-        if (
-          !Number.isFinite(price) ||
-          price <= 0
-        ) {
-          return null;
-        }
-
-        const quantity =
-          Number(item.quantity);
-
-        if (
-          !Number.isFinite(quantity) ||
-          quantity <= 0
-        ) {
-          return null;
-        }
-
-        return {
-          id: product.id,
-          name: product.name,
-          price: product.price,
-          image: product.image,
-          quantity: Math.min(
+      const quantity =
+        Math.max(
+          1,
+          Math.min(
             99,
-            Math.max(
-              1,
-              Math.floor(quantity)
-            )
+            Number.parseInt(item.quantity, 10) || 1
           )
-        };
-      })
-      .filter(Boolean);
+        );
+
+      return {
+        id: product.id,
+        quantity
+      };
+
+    })
+    .filter(Boolean);
+
 }
+
+
+/* =========================================================
+   PANIER : SAUVEGARDE
+========================================================= */
 
 function saveCart() {
 
-  sanitizeCart();
+  cart = sanitizeCart(cart);
 
   localStorage.setItem(
     "novaCart",
     JSON.stringify(cart)
   );
+
 }
+
+
+/* =========================================================
+   PANIER : CHARGEMENT
+========================================================= */
 
 function loadCart() {
 
@@ -950,252 +1185,128 @@ function loadCart() {
 
     const saved =
       JSON.parse(
-        localStorage.getItem(
-          "novaCart"
-        ) || "[]"
+        localStorage.getItem("novaCart") || "[]"
       );
 
-    cart =
-      Array.isArray(saved)
-        ? saved
-        : [];
+    cart = sanitizeCart(saved);
+
+    saveCart();
 
   } catch {
 
     cart = [];
+
+    saveCart();
+
   }
 
-  sanitizeCart();
-  saveCart();
   renderCart();
+
 }
+
 
 /* =========================================================
-   INFOS PANIER
+   ANIMATION PRODUIT → PANIER
 ========================================================= */
 
-function getCartQuantity() {
+function animateProductToCart(productId, button) {
 
-  sanitizeCart();
+  if (!button || !cartBtn) return;
 
-  return cart.reduce(
-    (total, item) =>
-      total +
-      Number(item.quantity),
-    0
-  );
-}
-
-function getCartTotal() {
-
-  sanitizeCart();
-
-  return cart.reduce(
-    (total, item) => {
-
-      const price =
-        Number(item.price);
-
-      const quantity =
-        Number(item.quantity);
-
-      if (
-        !Number.isFinite(price) ||
-        !Number.isFinite(quantity)
-      ) {
-        return total;
-      }
-
-      return (
-        total +
-        price * quantity
-      );
-    },
-    0
-  );
-}
-
-function updateCartBadge() {
-
-  if (!cartBadge) return;
-
-  const quantity =
-    getCartQuantity();
-
-  cartBadge.textContent =
-    quantity > 99
-      ? "99+"
-      : String(quantity);
-
-  cartBadge.classList.remove(
-    "pop"
-  );
-
-  if (quantity > 0) {
-
-    requestAnimationFrame(() => {
-      cartBadge.classList.add(
-        "pop"
-      );
-    });
-  }
-}
-
-/* =========================================================
-   ANIMATION PRODUIT
-========================================================= */
-
-function flyProductToCart(
-  productCard
-) {
+  const card =
+    button.closest(".product-card");
 
   const image =
-    productCard?.querySelector(
-      ".product-image"
-    );
+    card?.querySelector(".product-image");
 
-  const cartTarget =
-    cartBtn;
+  if (!image) return;
 
-  if (
-    !image ||
-    !cartTarget
-  ) {
-    return;
-  }
-
-  const imageRect =
+  const start =
     image.getBoundingClientRect();
 
-  const cartRect =
-    cartTarget.getBoundingClientRect();
+  const end =
+    cartBtn.getBoundingClientRect();
+
 
   const clone =
     image.cloneNode(true);
 
-  clone.className =
-    "flying-product";
+  clone.style.position = "fixed";
+  clone.style.left = `${start.left}px`;
+  clone.style.top = `${start.top}px`;
+  clone.style.width = `${start.width}px`;
+  clone.style.height = `${start.height}px`;
+  clone.style.objectFit = "contain";
+  clone.style.zIndex = "99999";
+  clone.style.pointerEvents = "none";
+  clone.style.borderRadius = "12px";
+  clone.style.transition =
+    "left .55s cubic-bezier(.22,.8,.28,1), top .55s cubic-bezier(.22,.8,.28,1), width .55s, height .55s, opacity .55s, transform .55s";
 
-  const size =
-    Math.min(
-      imageRect.width,
-      180
-    );
+  document.body.appendChild(clone);
 
-  clone.style.position =
-    "fixed";
 
-  clone.style.left =
-    `${imageRect.left}px`;
+  requestAnimationFrame(() => {
 
-  clone.style.top =
-    `${imageRect.top}px`;
+    clone.style.left =
+      `${end.left + end.width / 2 - 18}px`;
 
-  clone.style.width =
-    `${size}px`;
+    clone.style.top =
+      `${end.top + end.height / 2 - 18}px`;
 
-  clone.style.height =
-    `${size}px`;
+    clone.style.width = "36px";
+    clone.style.height = "36px";
+    clone.style.opacity = "0.35";
+    clone.style.transform = "scale(.65)";
 
-  clone.style.objectFit =
-    "contain";
+  });
 
-  clone.style.zIndex =
-    "99999";
 
-  clone.style.pointerEvents =
-    "none";
+  setTimeout(() => {
 
-  document.body.appendChild(
-    clone
-  );
+    clone.remove();
 
-  const endX =
-    cartRect.left +
-    cartRect.width / 2 -
-    size / 2;
+    cartBtn.classList.add("cart-pop");
 
-  const endY =
-    cartRect.top +
-    cartRect.height / 2 -
-    size / 2;
+    setTimeout(() => {
+      cartBtn.classList.remove("cart-pop");
+    }, 400);
 
-  const animation =
-    clone.animate(
-      [
-        {
-          transform:
-            "translate(0,0) scale(1)",
-          opacity: 1
-        },
+  }, 600);
 
-        {
-          transform:
-            `translate(
-              ${(endX - imageRect.left) * 0.55}px,
-              ${(endY - imageRect.top) * 0.55}px
-            ) scale(.72)`,
-          opacity: 0.9
-        },
-
-        {
-          transform:
-            `translate(
-              ${endX - imageRect.left}px,
-              ${endY - imageRect.top}px
-            ) scale(.18)`,
-          opacity: 0
-        }
-      ],
-      {
-        duration: 620,
-        easing:
-          "cubic-bezier(.22,.8,.25,1)"
-      }
-    );
-
-  animation.finished
-    .catch(() => {})
-    .finally(() => {
-      clone.remove();
-    });
 }
+
 
 /* =========================================================
    AJOUT PANIER
 ========================================================= */
 
-function addToCart(
-  product,
-  event,
-  button
-) {
+function addToCart(productId, button = null) {
+
+  const product =
+    products.find(
+      p => p.id === productId
+    );
 
   if (!product) return;
 
-  const price =
-    Number(product.price);
 
-  if (
-    !Number.isFinite(price) ||
-    price <= 0
-  ) {
+  if (Number(product.price) <= 0) {
 
     showToast(
-      "Produit indisponible pour le moment.",
+      "Le prix de ce produit n'est pas encore disponible.",
       "error"
     );
 
     return;
   }
 
-  sanitizeCart();
 
   const existing =
     cart.find(
-      item =>
-        item.id === product.id
+      item => item.id === productId
     );
+
 
   if (existing) {
 
@@ -1208,963 +1319,759 @@ function addToCart(
   } else {
 
     cart.push({
-      id: product.id,
-      name: product.name,
-      price: product.price,
-      image: product.image,
+      id: productId,
       quantity: 1
     });
+
   }
 
+
   saveCart();
-  updateCartBadge();
+
   renderCart();
 
-  const productCard =
-    button?.closest(
-      ".product-card"
-    );
-
-  flyProductToCart(
-    productCard
-  );
 
   if (button) {
+
+    animateProductToCart(
+      productId,
+      button
+    );
 
     const original =
       button.textContent;
 
     button.textContent =
-      "Ajouté ✓";
+      "✓ Ajouté";
 
-    button.classList.add(
-      "added"
-    );
+    button.classList.add("added");
 
     setTimeout(() => {
 
       button.textContent =
         original;
 
-      button.classList.remove(
-        "added"
-      );
+      button.classList.remove("added");
 
-    }, 1000);
+    }, 900);
+
   }
+
 
   showToast(
-    `${product.name} ajouté au panier.`
+    `${product.name} ajouté au panier`
   );
+
 }
+
 
 /* =========================================================
-   QUANTITE
+   SUPPRIMER PANIER
 ========================================================= */
 
-function changeQuantity(
-  id,
-  delta
-) {
-
-  sanitizeCart();
-
-  const item =
-    cart.find(
-      product =>
-        product.id === id
-    );
-
-  if (!item) {
-
-    renderCart();
-    return;
-  }
-
-  const quantity =
-    Number(item.quantity) +
-    Number(delta);
-
-  if (
-    !Number.isFinite(quantity) ||
-    quantity <= 0
-  ) {
-
-    cart =
-      cart.filter(
-        product =>
-          product.id !== id
-      );
-
-  } else {
-
-    item.quantity =
-      Math.min(
-        99,
-        Math.floor(quantity)
-      );
-  }
-
-  saveCart();
-  renderCart();
-  updateCartBadge();
-}
-
-function removeFromCart(id) {
+function removeFromCart(productId) {
 
   cart =
     cart.filter(
-      item =>
-        item.id !== id
+      item => item.id !== productId
     );
 
   saveCart();
   renderCart();
-  updateCartBadge();
 
-  showToast(
-    "Article retiré du panier."
-  );
 }
 
+
 /* =========================================================
-   RENDU PANIER
+   QUANTITÉ
+========================================================= */
+
+function changeQuantity(productId, amount) {
+
+  const item =
+    cart.find(
+      x => x.id === productId
+    );
+
+  if (!item) return;
+
+
+  item.quantity =
+    Math.max(
+      1,
+      Math.min(
+        99,
+        item.quantity + amount
+      )
+    );
+
+
+  saveCart();
+  renderCart();
+
+}
+
+
+/* =========================================================
+   PANIER
 ========================================================= */
 
 function renderCart() {
 
-  if (
-    !cartItems ||
-    !cartTotal
-  ) {
-    return;
+  cart = sanitizeCart(cart);
+
+  saveCart();
+
+
+  const totalQuantity =
+    cart.reduce(
+      (sum, item) =>
+        sum + item.quantity,
+      0
+    );
+
+
+  if (cartBadge) {
+
+    cartBadge.textContent =
+      totalQuantity > 99
+        ? "99+"
+        : String(totalQuantity);
+
+    cartBadge.classList.toggle(
+      "visible",
+      totalQuantity > 0
+    );
+
   }
 
-  sanitizeCart();
-  saveCart();
-  updateCartBadge();
+
+  if (!cartItems) return;
+
 
   if (!cart.length) {
 
     cartItems.innerHTML = `
       <div class="empty-cart">
 
-        <div class="empty-cart-icon">
-          🛒
-        </div>
+        <div style="font-size:55px">🛒</div>
 
-        <h3>
-          Ton panier est vide
-        </h3>
+        <h3>Ton panier est vide</h3>
 
         <p>
-          Ajoute un produit pour commencer.
+          Ajoute des produits pour les retrouver ici.
         </p>
 
       </div>
     `;
 
-    cartTotal.textContent =
-      money(0);
-
-    if (checkoutBtn) {
-      checkoutBtn.disabled =
-        true;
+    if (cartTotal) {
+      cartTotal.textContent = "0,00 €";
     }
 
     return;
   }
+
+
+  let total = 0;
+
 
   cartItems.innerHTML =
     cart.map(item => {
 
       const product =
         products.find(
-          product =>
-            product.id === item.id
+          p => p.id === item.id
         );
 
-      if (!product) {
-        return "";
-      }
+      if (!product) return "";
 
-      const price =
-        Number(product.price);
 
       const quantity =
-        Number(item.quantity);
+        Math.max(
+          1,
+          Number(item.quantity) || 1
+        );
 
-      if (
-        !Number.isFinite(price) ||
-        !Number.isFinite(quantity) ||
-        quantity <= 0
-      ) {
-        return "";
-      }
 
-      const lineTotal =
-        price * quantity;
+      total +=
+        Number(product.price) *
+        quantity;
+
 
       return `
+
         <div class="cart-item">
 
           <img
-            class="cart-item-image"
             src="${escapeHtml(product.image)}"
             alt="${escapeHtml(product.name)}"
+            onerror="this.src='${FALLBACK_IMAGE}'"
           >
 
           <div class="cart-item-info">
 
-            <h4>
+            <strong>
               ${escapeHtml(product.name)}
-            </h4>
+            </strong>
 
-            <div class="cart-item-price">
-              ${money(price)}
-            </div>
+            <span>
+              ${money(product.price)}
+            </span>
 
-            <div class="cart-item-actions">
+            <div class="quantity-controls">
 
               <button
-                class="quantity-btn"
-                data-minus="${product.id}"
+                data-minus="${escapeHtml(product.id)}"
               >
                 −
               </button>
 
-              <span class="quantity">
+              <span>
                 ${quantity}
               </span>
 
               <button
-                class="quantity-btn"
-                data-plus="${product.id}"
+                data-plus="${escapeHtml(product.id)}"
               >
                 +
               </button>
 
               <button
-                class="remove-cart-btn"
-                data-remove="${product.id}"
+                class="remove-item"
+                data-remove="${escapeHtml(product.id)}"
               >
-                Supprimer
+                🗑️
               </button>
 
             </div>
 
           </div>
 
-          <div class="cart-item-total">
-            ${money(lineTotal)}
-          </div>
-
         </div>
+
       `;
+
     }).join("");
 
-  cartItems
-    .querySelectorAll(
-      ".cart-item-image"
-    )
-    .forEach(
-      setupImageFallback
-    );
 
-  cartItems
-    .querySelectorAll(
-      "[data-minus]"
-    )
-    .forEach(button => {
-
-      button.addEventListener(
-        "click",
-        () => {
-
-          changeQuantity(
-            button.dataset.minus,
-            -1
-          );
-        }
-      );
-    });
-
-  cartItems
-    .querySelectorAll(
-      "[data-plus]"
-    )
-    .forEach(button => {
-
-      button.addEventListener(
-        "click",
-        () => {
-
-          changeQuantity(
-            button.dataset.plus,
-            1
-          );
-        }
-      );
-    });
-
-  cartItems
-    .querySelectorAll(
-      "[data-remove]"
-    )
-    .forEach(button => {
-
-      button.addEventListener(
-        "click",
-        () => {
-
-          removeFromCart(
-            button.dataset.remove
-          );
-        }
-      );
-    });
-
-  cartTotal.textContent =
-    money(
-      getCartTotal()
-    );
-
-  if (checkoutBtn) {
-    checkoutBtn.disabled =
-      false;
+  if (cartTotal) {
+    cartTotal.textContent =
+      money(total);
   }
+
+
+  cartItems
+    .querySelectorAll("[data-minus]")
+    .forEach(button => {
+
+      button.onclick = () => {
+
+        changeQuantity(
+          button.dataset.minus,
+          -1
+        );
+
+      };
+
+    });
+
+
+  cartItems
+    .querySelectorAll("[data-plus]")
+    .forEach(button => {
+
+      button.onclick = () => {
+
+        changeQuantity(
+          button.dataset.plus,
+          1
+        );
+
+      };
+
+    });
+
+
+  cartItems
+    .querySelectorAll("[data-remove]")
+    .forEach(button => {
+
+      button.onclick = () => {
+
+        removeFromCart(
+          button.dataset.remove
+        );
+
+      };
+
+    });
+
 }
 
+
 /* =========================================================
-   OUVERTURE PANIER
+   OUVRIR / FERMER PANIER
 ========================================================= */
 
 function openCart() {
 
-  sanitizeCart();
-  saveCart();
-  renderCart();
+  if (!cartOverlay || !cartDrawer) return;
 
-  cartOverlay?.classList.add(
-    "active"
-  );
+  cartOverlay.classList.add("open");
 
-  cartDrawer?.classList.add(
-    "active"
-  );
+  requestAnimationFrame(() => {
+    cartOverlay.classList.add("visible");
+    cartDrawer.classList.add("visible");
+  });
 
-  document.body.classList.add(
-    "cart-open"
-  );
 }
+
 
 function closeCart() {
 
-  cartOverlay?.classList.remove(
-    "active"
-  );
+  if (!cartOverlay || !cartDrawer) return;
 
-  cartDrawer?.classList.remove(
-    "active"
-  );
-
-  document.body.classList.remove(
-    "cart-open"
-  );
-}
-
-cartBtn?.addEventListener(
-  "click",
-  openCart
-);
-
-closeCartBtn?.addEventListener(
-  "click",
-  closeCart
-);
-
-cartOverlay?.addEventListener(
-  "click",
-  event => {
-
-    if (
-      event.target ===
-      cartOverlay
-    ) {
-      closeCart();
-    }
-  }
-);
-
-heroCartBtn?.addEventListener(
-  "click",
-  openCart
-);
-
-/* =========================================================
-   COMPTE
-========================================================= */
-
-function renderAccountModal() {
-
-  if (currentUser) {
-
-    openModal(
-      "Mon compte",
-      `
-        <div class="account-panel">
-
-          <p>
-            Connecté avec :
-          </p>
-
-          <strong>
-            ${escapeHtml(
-              currentUser.email
-            )}
-          </strong>
-
-          <button
-            id="logoutBtn"
-            class="modal-action"
-          >
-            Se déconnecter
-          </button>
-
-        </div>
-      `
-    );
-
-    setTimeout(() => {
-
-      document
-        .getElementById(
-          "logoutBtn"
-        )
-        ?.addEventListener(
-          "click",
-          async () => {
-
-            try {
-
-              await signOut(auth);
-
-              closeModal();
-
-              showToast(
-                "Déconnexion réussie."
-              );
-
-            } catch {
-
-              showToast(
-                "Impossible de se déconnecter.",
-                "error"
-              );
-            }
-          }
-        );
-
-    }, 0);
-
-    return;
-  }
-
-  openAuthModal();
-}
-
-function openAuthModal() {
-
-  const isLogin =
-    authMode === "login";
-
-  openModal(
-    isLogin
-      ? "Connexion"
-      : "Créer un compte",
-
-    `
-      <form
-        id="authForm"
-        class="auth-form"
-      >
-
-        <input
-          id="authEmail"
-          type="email"
-          placeholder="Adresse e-mail"
-          required
-        >
-
-        <input
-          id="authPassword"
-          type="password"
-          placeholder="Mot de passe"
-          required
-        >
-
-        <button
-          type="submit"
-          class="modal-action"
-        >
-          ${
-            isLogin
-              ? "Se connecter"
-              : "Créer mon compte"
-          }
-        </button>
-
-        <button
-          type="button"
-          id="switchAuth"
-          class="text-button"
-        >
-          ${
-            isLogin
-              ? "Créer un compte"
-              : "J'ai déjà un compte"
-          }
-        </button>
-
-      </form>
-    `
-  );
+  cartDrawer.classList.remove("visible");
+  cartOverlay.classList.remove("visible");
 
   setTimeout(() => {
+    cartOverlay.classList.remove("open");
+  }, 300);
 
-    const form =
-      document.getElementById(
-        "authForm"
-      );
-
-    const switchAuth =
-      document.getElementById(
-        "switchAuth"
-      );
-
-    form?.addEventListener(
-      "submit",
-      async event => {
-
-        event.preventDefault();
-
-        const email =
-          document
-            .getElementById(
-              "authEmail"
-            )
-            ?.value
-            .trim();
-
-        const password =
-          document
-            .getElementById(
-              "authPassword"
-            )
-            ?.value;
-
-        if (!email || !password) {
-          return;
-        }
-
-        try {
-
-          if (
-            authMode === "login"
-          ) {
-
-            await signInWithEmailAndPassword(
-              auth,
-              email,
-              password
-            );
-
-            showToast(
-              "Connexion réussie."
-            );
-
-          } else {
-
-            await createUserWithEmailAndPassword(
-              auth,
-              email,
-              password
-            );
-
-            showToast(
-              "Compte créé."
-            );
-          }
-
-          closeModal();
-
-        } catch (error) {
-
-          let message =
-            "Une erreur est survenue.";
-
-          if (
-            error.code ===
-            "auth/invalid-credential"
-          ) {
-            message =
-              "E-mail ou mot de passe incorrect.";
-          }
-
-          if (
-            error.code ===
-            "auth/email-already-in-use"
-          ) {
-            message =
-              "Cet e-mail est déjà utilisé.";
-          }
-
-          if (
-            error.code ===
-            "auth/weak-password"
-          ) {
-            message =
-              "Le mot de passe est trop faible.";
-          }
-
-          showToast(
-            message,
-            "error"
-          );
-        }
-      }
-    );
-
-    switchAuth?.addEventListener(
-      "click",
-      () => {
-
-        authMode =
-          authMode === "login"
-            ? "register"
-            : "login";
-
-        openAuthModal();
-      }
-    );
-
-  }, 0);
 }
 
-accountBtn?.addEventListener(
-  "click",
-  renderAccountModal
-);
+
+if (cartBtn) {
+  cartBtn.onclick = openCart;
+}
+
+
+if (cartOverlay) {
+
+  cartOverlay.addEventListener(
+    "click",
+    event => {
+
+      if (
+        event.target === cartOverlay ||
+        event.target.matches("[data-close-cart]")
+      ) {
+        closeCart();
+      }
+
+    }
+  );
+
+}
+
 
 /* =========================================================
    COMMANDES
 ========================================================= */
 
-async function showOrders() {
+async function openOrders() {
 
   if (!currentUser) {
 
-    authMode = "login";
+    showToast(
+      "Connecte-toi pour voir tes commandes.",
+      "error"
+    );
 
-    openAuthModal();
+    openAuth();
 
     return;
   }
 
-  openModal(
-    "Mes commandes",
-    `
-      <div id="ordersContent">
+
+  openModal(`
+
+    <div class="modal-head">
+
+      <h2>📦 Mes commandes</h2>
+
+      <button data-close-modal>×</button>
+
+    </div>
+
+    <div id="ordersList">
+
+      <div class="loading">
         Chargement...
       </div>
-    `
-  );
+
+    </div>
+
+  `);
+
 
   try {
 
-    const ordersQuery =
+    const q =
       query(
-        collection(
-          db,
-          "orders"
-        ),
+        collection(db, "orders"),
         where(
           "userId",
           "==",
           currentUser.uid
+        ),
+        orderBy(
+          "createdAt",
+          "desc"
         )
       );
 
+
     const snapshot =
-      await getDocs(
-        ordersQuery
-      );
+      await getDocs(q);
 
-    const orders = [];
 
-    snapshot.forEach(
-      docSnap => {
+    const list =
+      $("ordersList");
 
-        orders.push({
-          id: docSnap.id,
-          ...docSnap.data()
-        });
-      }
-    );
 
-    const container =
-      document.getElementById(
-        "ordersContent"
-      );
+    if (!snapshot.size) {
 
-    if (!container) return;
-
-    if (!orders.length) {
-
-      container.innerHTML = `
-        <div class="empty-orders">
-
-          <div>📦</div>
-
-          <h3>
-            Aucune commande
-          </h3>
-
-          <p>
-            Tu n'as encore aucune commande.
-          </p>
-
+      list.innerHTML = `
+        <div class="empty-state">
+          <div style="font-size:45px">📦</div>
+          <h3>Aucune commande</h3>
+          <p>Tu n'as pas encore passé de commande.</p>
         </div>
       `;
 
       return;
     }
 
-    orders.sort(
-      (a, b) =>
-        (b.createdAt?.seconds || 0) -
-        (a.createdAt?.seconds || 0)
-    );
 
-    container.innerHTML =
-      orders.map(order => {
+    list.innerHTML =
+      snapshot.docs
+        .map(orderDoc => {
 
-        const items =
-          Array.isArray(order.items)
-            ? order.items
-            : [];
+          const order =
+            orderDoc.data();
 
-        return `
-          <div class="order-card">
 
-            <div class="order-header">
+          const date =
+            order.createdAt?.toDate
+              ? order.createdAt.toDate()
+              : null;
+
+
+          return `
+
+            <div class="order-card">
+
+              <div>
+                <strong>
+                  Commande #${escapeHtml(
+                    orderDoc.id.slice(0, 8)
+                  )}
+                </strong>
+
+                <p>
+                  ${
+                    date
+                      ? date.toLocaleString("fr-FR")
+                      : "Date inconnue"
+                  }
+                </p>
+
+              </div>
 
               <strong>
-                Commande #${escapeHtml(
-                  order.id.slice(0, 8)
-                )}
+                ${money(order.total)}
               </strong>
 
-              <span>
-                ${money(order.total)}
-              </span>
-
             </div>
 
-            <div class="order-products">
+          `;
 
-              ${items.map(item => `
-                <div>
-                  ${escapeHtml(
-                    item.name
-                  )}
-                  × ${
-                    Number(
-                      item.quantity
-                    ) || 0
-                  }
-                </div>
-              `).join("")}
+        }).join("");
 
-            </div>
 
-          </div>
-        `;
-      }).join("");
+  } catch (error) {
 
-  } catch {
+    console.error(error);
 
-    const container =
-      document.getElementById(
-        "ordersContent"
-      );
-
-    if (container) {
-
-      container.innerHTML = `
+    $("ordersList").innerHTML = `
+      <div class="empty-state">
+        <h3>Impossible de charger les commandes</h3>
         <p>
-          Impossible de charger
-          les commandes.
+          Vérifie les règles Firestore.
         </p>
-      `;
-    }
+      </div>
+    `;
+
   }
+
 }
 
-ordersBtn?.addEventListener(
-  "click",
-  showOrders
-);
 
 /* =========================================================
    CHECKOUT
 ========================================================= */
 
-checkoutBtn?.addEventListener(
-  "click",
-  async () => {
-
-    sanitizeCart();
-
-    if (!cart.length) {
-
-      showToast(
-        "Ton panier est vide.",
-        "error"
-      );
-
-      return;
-    }
-
-    if (!currentUser) {
-
-      closeCart();
-
-      authMode = "login";
-
-      openAuthModal();
-
-      showToast(
-        "Connecte-toi pour commander.",
-        "error"
-      );
-
-      return;
-    }
-
-    const total =
-      getCartTotal();
-
-    if (
-      !Number.isFinite(total) ||
-      total <= 0
-    ) {
-
-      showToast(
-        "Panier invalide.",
-        "error"
-      );
-
-      return;
-    }
-
-    const items =
-      cart.map(item => ({
-        id: item.id,
-        name: item.name,
-        price: Number(
-          item.price
-        ),
-        quantity: Number(
-          item.quantity
-        ),
-        image: item.image
-      }));
-
-    try {
-
-      checkoutBtn.disabled =
-        true;
-
-      checkoutBtn.textContent =
-        "Commande...";
-
-      await addDoc(
-        collection(
-          db,
-          "orders"
-        ),
-        {
-          userId:
-            currentUser.uid,
-
-          userEmail:
-            currentUser.email,
-
-          items,
-
-          total,
-
-          status:
-            "En attente",
-
-          createdAt:
-            serverTimestamp()
-        }
-      );
-
-      cart = [];
-
-      saveCart();
-      renderCart();
-
-      showToast(
-        "Commande enregistrée !"
-      );
-
-      setTimeout(
-        closeCart,
-        700
-      );
-
-    } catch {
-
-      showToast(
-        "Impossible d'enregistrer la commande.",
-        "error"
-      );
-
-    } finally {
-
-      checkoutBtn.disabled =
-        false;
-
-      checkoutBtn.textContent =
-        "Commander";
-    }
-  }
-);
-
-/* =========================================================
-   SUPPRESSION DE TOUTES LES DONNEES
-========================================================= */
-
-async function deleteAllData() {
+async function checkout() {
 
   if (!currentUser) {
 
     showToast(
-      "Connexion administrateur requise.",
+      "Connecte-toi avant de commander.",
+      "error"
+    );
+
+    closeCart();
+    openAuth();
+
+    return;
+  }
+
+
+  cart = sanitizeCart(cart);
+
+
+  if (!cart.length) {
+
+    showToast(
+      "Ton panier est vide.",
       "error"
     );
 
     return;
   }
 
-  if (
-    currentUser.email?.toLowerCase() !==
-    ADMIN_EMAIL.toLowerCase()
-  ) {
+
+  let total = 0;
+
+
+  const items =
+    cart.map(item => {
+
+      const product =
+        products.find(
+          p => p.id === item.id
+        );
+
+      if (!product) return null;
+
+
+      const quantity =
+        Number(item.quantity) || 1;
+
+
+      total +=
+        Number(product.price) *
+        quantity;
+
+
+      return {
+        productId: product.id,
+        name: product.name,
+        price: product.price,
+        quantity
+      };
+
+    })
+    .filter(Boolean);
+
+
+  if (!items.length) return;
+
+
+  try {
+
+    await addDoc(
+      collection(db, "orders"),
+      {
+        userId: currentUser.uid,
+        userEmail: currentUser.email,
+        items,
+        total,
+        status: "En préparation",
+        createdAt: serverTimestamp()
+      }
+    );
+
+
+    cart = [];
+
+    saveCart();
+    renderCart();
+
+    closeCart();
+
+
+    showToast(
+      "Commande enregistrée avec succès ✅"
+    );
+
+
+  } catch (error) {
+
+    console.error(error);
+
+    showToast(
+      "Impossible d'enregistrer la commande.",
+      "error"
+    );
+
+  }
+
+}
+
+
+/* =========================================================
+   ADMIN : ACCÈS
+========================================================= */
+
+function openAdmin() {
+
+  if (!isAdmin()) {
+
+    showToast(
+      "Accès réservé à l'administrateur.",
+      "error"
+    );
+
+    return;
+  }
+
+
+  /*
+    NOUVEAU :
+    Si l'autorisation est déjà enregistrée,
+    on ouvre directement le Dashboard.
+  */
+
+  if (hasAdminAccess()) {
+
+    openAdminDashboard();
+
+    return;
+  }
+
+
+  /*
+    Première connexion seulement :
+    demande du code.
+  */
+
+  openModal(`
+
+    <div class="modal-head">
+
+      <h2>🛡️ Accès administrateur</h2>
+
+      <button data-close-modal>×</button>
+
+    </div>
+
+    <div style="padding:20px 0">
+
+      <p style="margin-bottom:18px">
+        Entre le code administrateur pour accéder
+        au Dashboard NovaShop.
+      </p>
+
+      <input
+        id="adminCodeInput"
+        type="password"
+        placeholder="Code administrateur"
+        autocomplete="off"
+      >
+
+      <button
+        id="adminCodeSubmit"
+        class="primary-btn"
+        style="width:100%;margin-top:12px"
+      >
+        Accéder au Dashboard
+      </button>
+
+    </div>
+
+  `);
+
+
+  const input =
+    $("adminCodeInput");
+
+  const submit =
+    $("adminCodeSubmit");
+
+
+  function checkAdminCode() {
+
+    if (
+      input.value.trim() ===
+      ADMIN_CODE
+    ) {
+
+      /*
+        IMPORTANT :
+        On mémorise l'accès.
+      */
+
+      saveAdminAccess();
+
+      closeModal();
+
+      showToast(
+        "Accès administrateur mémorisé ✅"
+      );
+
+      setTimeout(() => {
+        openAdminDashboard();
+      }, 250);
+
+    } else {
+
+      input.value = "";
+
+      input.focus();
+
+      showToast(
+        "Code administrateur incorrect.",
+        "error"
+      );
+
+    }
+
+  }
+
+
+  submit.onclick =
+    checkAdminCode;
+
+
+  input.addEventListener(
+    "keydown",
+    event => {
+
+      if (event.key === "Enter") {
+        checkAdminCode();
+      }
+
+    }
+  );
+
+
+  setTimeout(() => {
+    input.focus();
+  }, 100);
+
+}
+
+
+/* =========================================================
+   DASHBOARD ADMIN
+========================================================= */
+
+async function openAdminDashboard() {
+
+  if (!isAdmin()) {
 
     showToast(
       "Accès administrateur refusé.",
@@ -2174,45 +2081,255 @@ async function deleteAllData() {
     return;
   }
 
-  const firstConfirm =
-    confirm(
-      "⚠️ ATTENTION\n\n" +
-      "Cette action va supprimer TOUTES les commandes " +
-      "enregistrées dans NovaShop et vider les données " +
-      "locales du site.\n\n" +
-      "Cette action est irréversible.\n\n" +
-      "Continuer ?"
-    );
 
-  if (!firstConfirm) {
+  /*
+    Sécurité supplémentaire :
+    si l'accès n'est pas mémorisé,
+    on repasse par la vérification.
+  */
+
+  if (!hasAdminAccess()) {
+
+    openAdmin();
+
     return;
   }
+
+
+  openModal(`
+
+    <div class="admin-dashboard">
+
+      <div class="admin-dashboard-header">
+
+        <div>
+
+          <div class="admin-label">
+            NOVASHOP ADMIN
+          </div>
+
+          <h2>
+            🛡️ Dashboard
+          </h2>
+
+        </div>
+
+        <button data-close-modal>
+          ×
+        </button>
+
+      </div>
+
+
+      <div class="admin-grid">
+
+        <div class="admin-stat">
+
+          <span>Produits</span>
+
+          <strong>
+            ${products.length}
+          </strong>
+
+        </div>
+
+
+        <div class="admin-stat">
+
+          <span>Catégories</span>
+
+          <strong>
+            ${getCategories().length - 1}
+          </strong>
+
+        </div>
+
+
+        <div class="admin-stat">
+
+          <span>Utilisateur</span>
+
+          <strong>
+            Admin
+          </strong>
+
+        </div>
+
+
+        <div class="admin-stat">
+
+          <span>Statut</span>
+
+          <strong>
+            🟢 Actif
+          </strong>
+
+        </div>
+
+      </div>
+
+
+      <div class="admin-section">
+
+        <h3>
+          📊 Catalogue
+        </h3>
+
+        <p>
+          ${products.length}
+          produits actuellement affichés sur NovaShop.
+        </p>
+
+      </div>
+
+
+      <div class="admin-section">
+
+        <h3>
+          🗂️ Catégories
+        </h3>
+
+        <div class="admin-categories">
+
+          ${getCategories()
+            .filter(c => c !== "Tous")
+            .map(c => `
+              <span>
+                ${escapeHtml(c)}
+              </span>
+            `)
+            .join("")}
+
+        </div>
+
+      </div>
+
+
+      <div class="admin-section danger-zone">
+
+        <h3>
+          ⚠️ Zone dangereuse
+        </h3>
+
+        <p>
+          Cette action supprime les commandes
+          enregistrées dans Firestore et les données
+          locales NovaShop de ce navigateur.
+        </p>
+
+        <button
+          id="deleteAllDataBtn"
+          class="danger-btn"
+        >
+          🗑️ Supprimer toutes les données
+        </button>
+
+      </div>
+
+
+      <div class="admin-footer">
+
+        <button
+          id="adminLogoutAccessBtn"
+          class="secondary-btn"
+        >
+          🔒 Retirer l'autorisation mémorisée
+        </button>
+
+      </div>
+
+    </div>
+
+  `);
+
+
+  const deleteButton =
+    $("deleteAllDataBtn");
+
+
+  if (deleteButton) {
+
+    deleteButton.onclick =
+      deleteAllData;
+
+  }
+
+
+  const removeAccessButton =
+    $("adminLogoutAccessBtn");
+
+
+  if (removeAccessButton) {
+
+    removeAccessButton.onclick = () => {
+
+      removeAdminAccess();
+
+      closeModal();
+
+      showToast(
+        "Autorisation admin supprimée."
+      );
+
+    };
+
+  }
+
+}
+
+
+/* =========================================================
+   SUPPRESSION DES DONNÉES ADMIN
+========================================================= */
+
+async function deleteAllData() {
+
+  if (!isAdmin()) {
+
+    showToast(
+      "Action réservée à l'administrateur.",
+      "error"
+    );
+
+    return;
+  }
+
+
+  const firstConfirm =
+    confirm(
+      "⚠️ ATTENTION\n\nSupprimer toutes les commandes et les données locales NovaShop ?"
+    );
+
+
+  if (!firstConfirm) return;
+
 
   const secondConfirm =
     confirm(
-      "DERNIÈRE CONFIRMATION\n\n" +
-      "Supprimer définitivement toutes les commandes ?"
+      "DERNIÈRE CONFIRMATION\n\nCette action ne peut pas être annulée. Continuer ?"
     );
 
-  if (!secondConfirm) {
-    return;
-  }
+
+  if (!secondConfirm) return;
+
 
   try {
 
+    showToast(
+      "Suppression en cours..."
+    );
+
+
     const snapshot =
       await getDocs(
-        collection(
-          db,
-          "orders"
-        )
+        collection(db, "orders")
       );
+
 
     let deletedCount = 0;
 
-    for (
-      const orderDoc of snapshot.docs
-    ) {
+
+    for (const orderDoc of snapshot.docs) {
 
       await deleteDoc(
         doc(
@@ -2223,25 +2340,25 @@ async function deleteAllData() {
       );
 
       deletedCount++;
+
     }
 
-    /* Nettoyage local */
 
-    localStorage.removeItem(
-      "novaCart"
-    );
+    /*
+      Nettoyage local
+    */
 
-    localStorage.removeItem(
-      "novaOrders"
-    );
+    localStorage.removeItem("novaCart");
+    localStorage.removeItem("novaOrders");
+    localStorage.removeItem("novaCheckout");
+    localStorage.removeItem("novaReviews");
 
-    localStorage.removeItem(
-      "novaCheckout"
-    );
-
-    localStorage.removeItem(
-      "novaReviews"
-    );
+    /*
+      IMPORTANT :
+      On ne supprime PAS novaAdminAuthorized.
+      Ainsi l'admin n'a pas besoin de remettre
+      son code après avoir nettoyé les données.
+    */
 
     sessionStorage.clear();
 
@@ -2252,320 +2369,147 @@ async function deleteAllData() {
     saveCart();
     renderCart();
 
+
     showToast(
-      `${deletedCount} commande${
-        deletedCount > 1
-          ? "s"
-          : ""
-      } supprimée${
-        deletedCount > 1
-          ? "s"
-          : ""
-      }.`
+      `${deletedCount} commande(s) supprimée(s) ✅`
     );
 
-    openAdminDashboard();
+
+    setTimeout(() => {
+      openAdminDashboard();
+    }, 500);
+
 
   } catch (error) {
 
     console.error(
-      "Erreur suppression totale :",
+      "Erreur suppression données :",
       error
     );
 
     showToast(
-      "Impossible de supprimer toutes les données.",
+      "Erreur pendant la suppression des données.",
       "error"
     );
+
   }
+
 }
 
+
 /* =========================================================
-   ADMIN
+   HERO / BOUTONS
 ========================================================= */
 
-function openAdmin() {
+function scrollToProducts() {
 
-  if (!currentUser) {
+  const element =
+    $("products");
 
-    showToast(
-      "Connecte-toi avec le compte administrateur.",
-      "error"
-    );
+  if (!element) return;
 
-    return;
-  }
+  element.scrollIntoView({
+    behavior: "smooth",
+    block: "start"
+  });
 
-  if (
-    currentUser.email?.toLowerCase() !==
-    ADMIN_EMAIL.toLowerCase()
-  ) {
-
-    showToast(
-      "Accès administrateur refusé.",
-      "error"
-    );
-
-    return;
-  }
-
-  openModal(
-    "Administration NovaShop",
-    `
-      <form
-        id="adminForm"
-        class="auth-form"
-      >
-
-        <p>
-          Entre le code administrateur.
-        </p>
-
-        <input
-          id="adminCode"
-          type="password"
-          placeholder="Code admin"
-          required
-        >
-
-        <button
-          type="submit"
-          class="modal-action"
-        >
-          Ouvrir le dashboard
-        </button>
-
-      </form>
-    `
-  );
-
-  setTimeout(() => {
-
-    document
-      .getElementById(
-        "adminForm"
-      )
-      ?.addEventListener(
-        "submit",
-        event => {
-
-          event.preventDefault();
-
-          const code =
-            document
-              .getElementById(
-                "adminCode"
-              )
-              ?.value;
-
-          if (
-            code !== ADMIN_CODE
-          ) {
-
-            showToast(
-              "Code incorrect.",
-              "error"
-            );
-
-            return;
-          }
-
-          openAdminDashboard();
-        }
-      );
-
-  }, 0);
 }
 
-/* =========================================================
-   DASHBOARD ADMIN
-========================================================= */
 
-function openAdminDashboard() {
-
-  if (!currentUser) {
-    return;
-  }
-
-  const categoryCount =
-    new Set(
-      products.map(
-        product =>
-          product.category
-      )
-    ).size;
-
-  openModal(
-    "Dashboard NovaShop",
-    `
-      <div class="admin-dashboard">
-
-        <div class="admin-stat">
-
-          <span>
-            Produits
-          </span>
-
-          <strong>
-            ${products.length}
-          </strong>
-
-        </div>
-
-        <div class="admin-stat">
-
-          <span>
-            Catégories
-          </span>
-
-          <strong>
-            ${categoryCount}
-          </strong>
-
-        </div>
-
-        <div class="admin-stat">
-
-          <span>
-            Administrateur
-          </span>
-
-          <strong>
-            ${escapeHtml(
-              currentUser.email
-            )}
-          </strong>
-
-        </div>
-
-        <div
-          style="
-            margin-top:24px;
-            padding-top:24px;
-            border-top:1px solid rgba(255,255,255,.10);
-          "
-        >
-
-          <h3
-            style="
-              margin:0 0 8px;
-              color:#ff5b5b;
-            "
-          >
-            Zone dangereuse
-          </h3>
-
-          <p
-            style="
-              margin:0 0 16px;
-              opacity:.7;
-              line-height:1.5;
-            "
-          >
-            Supprime toutes les commandes
-            enregistrées et nettoie les données
-            locales de NovaShop.
-          </p>
-
-          <button
-            id="deleteAllDataBtn"
-            type="button"
-            style="
-              width:100%;
-              border:0;
-              border-radius:12px;
-              padding:14px 18px;
-              background:#c62828;
-              color:white;
-              font-weight:800;
-              cursor:pointer;
-              transition:.2s;
-            "
-          >
-            🗑️ Supprimer toutes les données
-          </button>
-
-        </div>
-
-      </div>
-    `
-  );
-
-  setTimeout(() => {
+document.addEventListener(
+  "click",
+  event => {
 
     const button =
-      document.getElementById(
-        "deleteAllDataBtn"
+      event.target.closest(
+        "[data-scroll-products]"
       );
 
-    if (!button) return;
+    if (button) {
+      scrollToProducts();
+    }
 
-    button.addEventListener(
-      "mouseenter",
-      () => {
-        button.style.background =
-          "#e53935";
-        button.style.transform =
-          "translateY(-1px)";
-      }
-    );
-
-    button.addEventListener(
-      "mouseleave",
-      () => {
-        button.style.background =
-          "#c62828";
-        button.style.transform =
-          "translateY(0)";
-      }
-    );
-
-    button.addEventListener(
-      "click",
-      deleteAllData
-    );
-
-  }, 0);
-}
-
-adminBtn?.addEventListener(
-  "click",
-  openAdmin
+  }
 );
+
 
 /* =========================================================
    RECHERCHE
 ========================================================= */
 
-searchInput?.addEventListener(
-  "input",
-  event => {
+if (searchInput) {
 
-    searchValue =
-      event.target.value || "";
+  searchInput.addEventListener(
+    "input",
+    event => {
 
-    renderProducts();
-  }
-);
+      searchValue =
+        event.target.value;
+
+      renderProducts();
+
+    }
+  );
+
+}
+
 
 /* =========================================================
-   HERO
+   AUTH BUTTON
 ========================================================= */
 
-heroShopBtn?.addEventListener(
-  "click",
-  () => {
+if (accountBtn) {
 
-    document
-      .getElementById(
-        "productsGrid"
-      )
-      ?.scrollIntoView({
-        behavior: "smooth",
-        block: "start"
-      });
+  accountBtn.onclick =
+    openAuth;
+
+}
+
+
+/* =========================================================
+   ORDERS BUTTON
+========================================================= */
+
+if (ordersBtn) {
+
+  ordersBtn.onclick =
+    openOrders;
+
+}
+
+
+/* =========================================================
+   ADMIN BUTTON
+========================================================= */
+
+if (adminBtn) {
+
+  adminBtn.onclick =
+    openAdmin;
+
+}
+
+
+/* =========================================================
+   CHECKOUT BUTTONS
+========================================================= */
+
+document.addEventListener(
+  "click",
+  event => {
+
+    const checkoutButton =
+      event.target.closest(
+        "#checkoutBtn, [data-checkout]"
+      );
+
+    if (checkoutButton) {
+      checkout();
+    }
+
   }
 );
+
 
 /* =========================================================
    AUTH STATE
@@ -2577,25 +2521,65 @@ onAuthStateChanged(
 
     currentUser = user;
 
+
+    /*
+      Si l'utilisateur n'est plus le compte admin,
+      on retire l'autorisation mémorisée.
+    */
+
+    if (!isAdmin()) {
+      removeAdminAccess();
+    }
+
+
     if (accountBtn) {
 
-      accountBtn.textContent =
-        user
-          ? "Mon compte"
-          : "Connexion";
+      if (currentUser) {
+
+        accountBtn.textContent =
+          "👤 Compte";
+
+      } else {
+
+        accountBtn.textContent =
+          "👤 Connexion";
+
+      }
+
     }
+
 
     if (adminBtn) {
 
       adminBtn.style.display =
-        user &&
-        user.email?.toLowerCase() ===
-        ADMIN_EMAIL.toLowerCase()
+        isAdmin()
           ? ""
           : "none";
+
     }
+
   }
 );
+
+
+/* =========================================================
+   ESCAPE
+========================================================= */
+
+document.addEventListener(
+  "keydown",
+  event => {
+
+    if (event.key !== "Escape") {
+      return;
+    }
+
+    closeModal();
+    closeCart();
+
+  }
+);
+
 
 /* =========================================================
    INITIALISATION
@@ -2603,13 +2587,66 @@ onAuthStateChanged(
 
 function init() {
 
-  renderCategories();
-
   loadCart();
+
+  renderCategories();
 
   renderProducts();
 
-  updateCartBadge();
+
+  /*
+    Si l'admin est déjà autorisé sur ce navigateur,
+    aucune demande de code supplémentaire.
+  */
+
+  if (
+    localStorage.getItem(
+      ADMIN_ACCESS_KEY
+    ) === "true"
+  ) {
+
+    console.log(
+      "NovaShop Admin : accès mémorisé."
+    );
+
+  }
+
 }
 
+
 init();
+
+
+/* =========================================================
+   DEBUG NOVASHOP
+========================================================= */
+
+window.NovaShop = {
+
+  products,
+
+  getCart: () => [...cart],
+
+  clearCart: () => {
+
+    cart = [];
+
+    saveCart();
+    renderCart();
+
+  },
+
+  adminAuthorized: () =>
+    hasAdminAccess(),
+
+  removeAdminAuthorization: () => {
+
+    removeAdminAccess();
+
+    console.log(
+      "Autorisation admin supprimée."
+    );
+
+  }
+
+};
