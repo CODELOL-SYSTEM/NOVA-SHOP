@@ -4,11 +4,11 @@ import {
 
 import {
   getAuth,
-  onAuthStateChanged,
-  signInWithEmailAndPassword,
-  createUserWithEmailAndPassword,
   GoogleAuthProvider,
   signInWithPopup,
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
+  onAuthStateChanged,
   signOut
 } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
 
@@ -28,12 +28,13 @@ const firebaseConfig = {
 
 let firebaseReady = false;
 let auth = null;
+let currentUser = null;
 
 try {
-  const firebaseApp = initializeApp(firebaseConfig);
-  auth = getAuth(firebaseApp);
+  const app = initializeApp(firebaseConfig);
+  auth = getAuth(app);
   firebaseReady = true;
-} catch(error) {
+} catch (error) {
   console.error("Firebase:", error);
 }
 
@@ -51,792 +52,588 @@ const PROMOS = {
 };
 
 const STORAGE = {
-  cart: "nova_cart_v6",
-  favorites: "nova_favorites_v6",
-  orders: "nova_orders_v6",
-  reviews: "nova_reviews_v6",
-  settings: "nova_settings_v6",
-  phone: "nova_phone_v6",
-  admin: "nova_admin_unlocked_v6"
+  cart: "nova_cart",
+  favorites: "nova_favorites",
+  orders: "nova_orders",
+  reviews: "nova_reviews",
+  dark: "nova_dark",
+  sound: "nova_sound",
+  admin: "nova_admin_unlocked"
 };
-
-const DELIVERY_STATUSES = [
-  "Préparation",
-  "Expédiée",
-  "En transit",
-  "Livrée"
-];
 
 /* =========================================================
    PRODUCTS
 ========================================================= */
 
 const PRODUCTS = [
-
   {
-    id:"gigabyte-b650",
-    name:"Gigabyte B650 AORUS Elite AX",
-    category:"Composants",
-    price:189.99,
-    image:"https://m.media-amazon.com/images/I/81JFKzNyl+L._AC_SL1500_.jpg",
-    description:"Carte mère gaming AMD AM5 avec connectivité moderne."
+    id: "gigabyte-b650",
+    name: "Gigabyte B650 AORUS Elite AX",
+    category: "Composants",
+    price: 189.99,
+    image: "https://m.media-amazon.com/images/I/81JFKzNyl+L._AC_SL1500_.jpg",
+    description: "Carte mère AMD AM5 avec Wi-Fi et connectique moderne."
   },
 
   {
-    id:"pc-7800x3d",
-    name:"PC Gamer AMD Ryzen 7 7800X3D | RX 9070 XT | 32 Go DDR5",
-    category:"PC Gamer",
-    price:2237.65,
-    image:"https://www.memorypc.fr/thumbnail/53/79/73/1786604635/019f8f1c2c6972a8a3ea1ee9516a0652_1784812416_800x800.png",
-    description:"PC gaming haut de gamme orienté performances."
+    id: "pc-7800x3d-rx9070xt",
+    name: "PC Gamer AMD Ryzen 7 7800X3D | RX 9070 XT | 32 Go DDR5",
+    category: "PC Gamer",
+    price: 2237.65,
+    image: "https://www.memorypc.fr/thumbnail/53/79/73/1786604635/019f8f1c2c6972a8a3ea1ee9516a0652_1784812416_800x800.png",
+    description: "PC gaming haut de gamme pensé pour le jeu en haute fréquence."
   },
 
   {
-    id:"hyperx-cloud-2",
-    name:"HyperX Cloud II – Casque gaming",
-    category:"Casques",
-    price:49.99,
-    image:"https://cdn.shopify.com/s/files/1/0551/0548/6979/files/hyperx_cloud_ii_red_1_main_64x64.jpg?v=1764129756",
-    description:"Casque gaming confortable avec son immersif."
+    id: "hyperx-cloud-ii",
+    name: "HyperX Cloud II – Casque gaming",
+    category: "Casques",
+    price: 49.99,
+    image: "https://cdn.shopify.com/s/files/1/0551/0548/6979/files/hyperx_cloud_ii_red_1_main_64x64.jpg?v=1764129756",
+    description: "Casque gaming confortable avec son immersif."
   },
 
   {
-    id:"tecors-60",
-    name:"TECORS Clavier Gamer Mécanique 60% AZERTY",
-    category:"Claviers",
-    price:30,
-    image:"https://m.media-amazon.com/images/I/71-lhAU97VL._AC_SL1500_.jpg",
-    description:"Clavier mécanique compact au format 60%."
+    id: "tecors-60",
+    name: "TECORS Clavier Gamer Mécanique 60% AZERTY",
+    category: "Claviers",
+    price: 30,
+    image: "https://m.media-amazon.com/images/I/71-lhAU97VL._AC_SL1500_.jpg",
+    description: "Clavier mécanique compact 60% au format AZERTY."
   },
 
   {
-    id:"celshading",
-    name:"Clavier Magnétique 65% Celshading Noir",
-    category:"Claviers",
-    price:120.90,
-    image:"https://tryhard-gear.com/cdn/shop/files/TestCelshadingnoirV2.webp?v=1762273866&width=832",
-    description:"Clavier gaming magnétique 65% au design noir."
+    id: "celshading-65",
+    name: "Clavier Magnétique 65% Celshading Noir",
+    category: "Claviers",
+    price: 120.90,
+    image: "https://tryhard-gear.com/cdn/shop/files/TestCelshadingnoirV2.webp?v=1762273866&width=832",
+    description: "Clavier 65% magnétique avec design noir."
   },
 
   {
-    id:"ajazz-aj199",
-    name:"Ajazz AJ199 MAX Carbon Fiber Wireless Gaming Mouse",
-    category:"Souris",
-    price:49.99,
-    image:"https://ae-pic-a1.aliexpress-media.com/kf/S1e981b53ccfe4e1391cd5b5deb4fce87o.png_960x960.png_.avif",
-    description:"Souris gaming sans fil légère et rapide."
+    id: "ajazz-aj199",
+    name: "Ajazz AJ199 MAX Carbon Fiber Wireless Gaming Mouse",
+    category: "Souris",
+    price: 49.99,
+    image: "https://ae-pic-a1.aliexpress-media.com/kf/S1e981b53ccfe4e1391cd5b5deb4fce87o.png_960x960.png_.avif",
+    description: "Souris gaming sans fil légère avec finition carbone."
   },
 
   {
-    id:"logitech-superstrike",
-    name:"Logitech G PRO X2 Superstrike Blanc et Noir",
-    category:"Souris",
-    price:150.99,
-    image:"https://static.fnac-static.com/multimedia/Images/FR/MDM/7a/34/bc/29111418/1540-1.jpg",
-    description:"Souris gaming haut de gamme."
+    id: "logitech-gpro-x2",
+    name: "Logitech G PRO X2 Superstrike Blanc et Noir",
+    category: "Souris",
+    price: 150.99,
+    image: "https://static.fnac-static.com/multimedia/Images/FR/MDM/7a/34/bc/29111418/1540-1.jpg",
+    description: "Souris gaming haut de gamme pensée pour la précision."
   },
 
   {
-    id:"samsung-990-1tb",
-    name:"Samsung 990 PRO 1TB",
-    category:"Stockage",
-    price:249.99,
-    image:"https://content.pearl.fr/media/cache/default/article_ultralarge_high_nocrop/shared/images/articles/M/MW1/disque-dur-interne-ssd-990-pro-pcie-nvme-m-2-2280-1-to-ref_MW1148_2.jpg?_gl=1*16ls1hl*_up*MQ..&_gs*MQ..&gclid=Cj0KCQjw5bjVBhCiARIsAJzMVnQEMBfJ7Tu6QehfaOfDIYc2h0U2uRDxO4NJ1bikZGdwwED5WhZ8aAiHlEALw_wcB&gbraid=0AAAAAD8i938YdP3zfodKdTY8yIxjNfdF4",
-    description:"SSD NVMe PCIe haute performance de 1 To."
+    id: "samsung-990-1tb",
+    name: "Samsung 990 PRO 1TB",
+    category: "Stockage",
+    price: 249.99,
+    image: "https://content.pearl.fr/media/cache/default/article_ultralarge_high_nocrop/shared/images/articles/M/MW1/disque-dur-interne-ssd-990-pro-pcie-nvme-m-2-2280-1-to-ref_MW1148_2.jpg?_gl=1*16ls1hl*_up*MQ..&_gs*MQ..&gclid=Cj0KCQjw5bjVBhCiARIsAJzMVnQEMBfJ7Tu6QehfaOfDIYc2h0U2uRDxO4NJ1bikZGdwwED5WhZ8aAiHlEALw_wcB&gbraid=0AAAAAD8i938YdP3zfodKdTY8yIxjNfdF4",
+    description: "SSD NVMe PCIe haute performance de 1 To."
   },
 
   {
-    id:"samsung-990-2tb",
-    name:"Samsung 990 PRO 2TB",
-    category:"Stockage",
-    price:199.93,
-    image:"https://pc.comparer.fr/500x500/310191422.webp",
-    description:"SSD NVMe rapide avec capacité de 2 To."
+    id: "samsung-990-2tb",
+    name: "Samsung 990 PRO 2TB",
+    category: "Stockage",
+    price: 199.93,
+    image: "https://pc.comparer.fr/500x500/310191422.webp",
+    description: "SSD NVMe rapide avec capacité de 2 To."
   },
 
   {
-    id:"rm1000x",
-    name:"CORSAIR RM1000x (EU)",
-    category:"Alimentations",
-    price:159.90,
-    image:"https://assets.corsair.com/image/upload/c_pad,q_85,h_608,w_608,f_auto/products/Power-Supply-Units/base-rmx-2024-config/gallery/black/1000/RM1000x_2024_01.webp",
-    description:"Alimentation 1000 W pour configuration gaming."
+    id: "corsair-rm1000x",
+    name: "CORSAIR RM1000x (EU)",
+    category: "Alimentations",
+    price: 159.90,
+    image: "https://assets.corsair.com/image/upload/c_pad,q_85,h_608,w_608,f_auto/products/Power-Supply-Units/base-rmx-2024-config/gallery/black/1000/RM1000x_2024_01.webp",
+    description: "Alimentation 1000 W conçue pour les configurations puissantes."
   },
 
   {
-    id:"rm850x",
-    name:"CORSAIR RM850x (EU)",
-    category:"Alimentations",
-    price:134.90,
-    image:"https://assets.corsair.com/image/upload/c_pad,q_85,h_608,w_608,f_auto/products/Power-Supply-Units/base-rmx-2024-config/gallery/black/850/RM850x_2024_01.webp",
-    description:"Alimentation modulaire 850 W."
+    id: "corsair-rm850x",
+    name: "CORSAIR RM850x (EU)",
+    category: "Alimentations",
+    price: 134.90,
+    image: "https://assets.corsair.com/image/upload/c_pad,q_85,h_608,w_608,f_auto/products/Power-Supply-Units/base-rmx-2024-config/gallery/black/850/RM850x_2024_01.webp",
+    description: "Alimentation 850 W fiable pour PC gaming."
   },
 
   {
-    id:"corsair-5000d",
-    name:"Corsair Frame 5000D RS ARGB (Noir)",
-    category:"Boîtiers",
-    price:159.90,
-    image:"https://media.ldlc.com/r1600/ld/products/00/06/26/05/LD0006260502.jpg",
-    description:"Boîtier gaming spacieux avec ventilation ARGB."
+    id: "corsair-frame-5000d",
+    name: "Corsair Frame 5000D RS ARGB (Noir)",
+    category: "Boîtiers",
+    price: 159.90,
+    image: "https://media.ldlc.com/r1600/ld/products/00/06/26/05/LD0006260502.jpg",
+    description: "Boîtier ATX noir avec ventilation et éclairage ARGB."
   },
 
   {
-    id:"arctic-360",
-    name:"ARCTIC Liquid Freezer III Pro 360 A-RGB Black",
-    category:"Refroidissement",
-    price:129.90,
-    image:"https://cdn.idealo.com/folder/Product/206182/0/206182034/s4_produktbild_gross/arctic-liquid-freezer-iii-pro-360-a-rgb-black.jpg",
-    description:"Refroidissement liquide AIO 360 mm."
+    id: "arctic-liquid-freezer",
+    name: "ARCTIC Liquid Freezer III Pro 360 A-RGB Black",
+    category: "Refroidissement",
+    price: 129.90,
+    image: "https://cdn.idealo.com/folder/Product/206182/0/206182034/s4_produktbild_gross/arctic-liquid-freezer-iii-pro-360-a-rgb-black.jpg",
+    description: "Watercooling 360 mm pour processeurs performants."
   },
 
   {
-    id:"odyssey-g6",
-    name:'Samsung 27" QD-OLED Odyssey G6 S27HG612SU',
-    category:"Écrans",
-    price:399.95,
-    image:"https://media.ldlc.com/r705/ld/products/00/06/32/99/LD0006329977.jpg",
-    description:"Écran gaming QD-OLED 27 pouces."
+    id: "samsung-oled-g6",
+    name: "Samsung 27 QD-OLED Odyssey G6 S27HG612SU",
+    category: "Écrans",
+    price: 399.95,
+    image: "https://media.ldlc.com/r705/ld/products/00/06/32/99/LD0006329977.jpg",
+    description: "Écran gaming QD-OLED 27 pouces."
   },
 
   {
-    id:"elgato-wave-arm",
-    name:"ELGATO Wave Mic Arm Pro",
-    category:"Streaming",
-    price:229.90,
-    image:"https://www.digit-photo.com/images/produits/ELGATO10AAT9901/1.jpg?v=d2e89aca097c819fe092262cbf426b587e3800d5",
-    description:"Bras articulé premium pour microphone."
+    id: "elgato-wave-arm",
+    name: "ELGATO Wave Mic Arm Pro",
+    category: "Streaming",
+    price: 229.90,
+    image: "https://www.digit-photo.com/images/produits/ELGATO10AAT9901/1.jpg?v=d2e89aca097c819fe092262cbf426b587e3800d5",
+    description: "Bras articulé premium pour microphone."
   },
 
   {
-    id:"dualsense-red",
-    name:"Sony DualSense Cosmic Red PS5/PC",
-    category:"Manettes",
-    price:74.90,
-    image:"https://media.carrefour.fr/media/referential/media/cc07d7de4b9e4bea8c063e8f9bb46d94/p_200x200/0711719023005_0.jpg",
-    description:"Manette sans fil compatible PS5 et PC."
+    id: "dualsense-red",
+    name: "Sony DualSense Cosmic Red PS5/PC",
+    category: "Manettes",
+    price: 74.90,
+    image: "https://media.carrefour.fr/media/referential/media/cc07d7de4b9e4bea8c063e8f9bb46d94/p_200x200/0711719023005_0.jpg",
+    description: "Manette DualSense compatible PS5 et PC."
   },
 
   {
-    id:"asus-b650",
-    name:"ASUS TUF Gaming B650-PLUS",
-    category:"Composants",
-    price:179.90,
-    image:"https://media.materiel.net/r550/products/MN0005986139.jpg",
-    description:"Carte mère AMD B650 orientée gaming."
+    id: "asus-b650",
+    name: "ASUS TUF Gaming B650-PLUS",
+    category: "Composants",
+    price: 179.90,
+    image: "https://media.materiel.net/r550/products/MN0005986139.jpg",
+    description: "Carte mère gaming AMD AM5."
   },
 
   {
-    id:"msi-b650",
-    name:"MSI MAG B650 Tomahawk WiFi",
-    category:"Composants",
-    price:189.90,
-    image:"https://m.media-amazon.com/images/I/71TYAcZ4J8L._AC_SL1200_.jpg",
-    description:"Carte mère B650 avec Wi-Fi intégré."
+    id: "msi-b650",
+    name: "MSI MAG B650 Tomahawk WiFi",
+    category: "Composants",
+    price: 189.90,
+    image: "https://m.media-amazon.com/images/I/71TYAcZ4J8L._AC_SL1200_.jpg",
+    description: "Carte mère B650 avec Wi-Fi et alimentation renforcée."
   }
-
 ];
 
 /* =========================================================
    STATE
 ========================================================= */
 
-let currentUser = null;
+let cart = loadJSON(STORAGE.cart, []);
+let favorites = loadJSON(STORAGE.favorites, []);
+let orders = loadJSON(STORAGE.orders, []);
+let reviews = loadJSON(STORAGE.reviews, []);
+
 let activeCategory = "Tous";
 let searchTerm = "";
-let currentProduct = null;
-let currentReviewRating = 5;
+let currentProductId = null;
+let selectedRating = 5;
 let appliedPromo = null;
-
-let cart = load(STORAGE.cart, []);
-let favorites = load(STORAGE.favorites, []);
-let orders = load(STORAGE.orders, []);
-let reviews = load(STORAGE.reviews, []);
-
-let settings = load(STORAGE.settings, {
-  dark:false,
-  sound:true
-});
-
-/* =========================================================
-   DOM
-========================================================= */
-
-const $ = id => document.getElementById(id);
-
-const overlay = $("overlay");
-const toast = $("toast");
+let countdownTimer = null;
 
 /* =========================================================
    HELPERS
 ========================================================= */
 
-function load(key, fallback){
-  try{
+const $ = id => document.getElementById(id);
+
+function loadJSON(key, fallback) {
+  try {
     const value = localStorage.getItem(key);
     return value ? JSON.parse(value) : fallback;
-  }catch{
+  } catch {
     return fallback;
   }
 }
 
-function save(key,value){
-  localStorage.setItem(key,JSON.stringify(value));
+function saveJSON(key, value) {
+  localStorage.setItem(key, JSON.stringify(value));
 }
 
-function money(value){
-  return Number(value || 0).toLocaleString("fr-FR",{
-    style:"currency",
-    currency:"EUR"
+function money(value) {
+  return Number(value || 0).toLocaleString("fr-FR", {
+    style: "currency",
+    currency: "EUR"
   });
 }
 
-function escapeHTML(value){
+function escapeHTML(value) {
   return String(value ?? "")
-    .replaceAll("&","&amp;")
-    .replaceAll("<","&lt;")
-    .replaceAll(">","&gt;")
-    .replaceAll('"',"&quot;")
-    .replaceAll("'","&#039;");
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
 }
 
-function getProduct(id){
-  return PRODUCTS.find(p => p.id === id);
-}
+function randomId(length = 8) {
+  const chars = "abcdefghijklmnopqrstuvwxyz0123456789";
+  let result = "";
 
-function getCurrentEmail(){
-  return currentUser?.email?.toLowerCase() || "";
-}
-
-function isAdmin(){
-  return getCurrentEmail() === ADMIN_EMAIL.toLowerCase() &&
-         localStorage.getItem(STORAGE.admin) === "true";
-}
-
-function uid(){
-  if(window.crypto?.randomUUID){
-    return crypto.randomUUID();
+  for (let i = 0; i < length; i++) {
+    result += chars[Math.floor(Math.random() * chars.length)];
   }
 
-  return "NS-" + Date.now() + "-" + Math.random().toString(36).slice(2);
+  return result;
 }
 
-function showToast(message){
+function showToast(message) {
+  const toast = $("toast");
+
   toast.textContent = message;
   toast.classList.add("show");
 
   clearTimeout(showToast.timer);
 
-  showToast.timer = setTimeout(()=>{
+  showToast.timer = setTimeout(() => {
     toast.classList.remove("show");
-  },2500);
+  }, 2500);
 }
 
-function playSound(){
-  if(!settings.sound) return;
+function formatDate(date) {
+  try {
+    return new Date(date).toLocaleDateString("fr-FR", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric"
+    });
+  } catch {
+    return "-";
+  }
+}
 
-  try{
-    const AudioContext = window.AudioContext || window.webkitAudioContext;
+function formatDateTime(date) {
+  try {
+    return new Date(date).toLocaleString("fr-FR", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit"
+    });
+  } catch {
+    return "-";
+  }
+}
 
-    if(!AudioContext) return;
+function getCurrentEmail() {
+  return currentUser?.email?.trim().toLowerCase() || "";
+}
+
+function isAdminEmail() {
+  return getCurrentEmail() === ADMIN_EMAIL.toLowerCase();
+}
+
+function isAdminUnlocked() {
+  return localStorage.getItem(STORAGE.admin) === "true";
+}
+
+function isAdmin() {
+  return isAdminEmail() && isAdminUnlocked();
+}
+
+/* =========================================================
+   SOUND
+========================================================= */
+
+function soundEnabled() {
+  return localStorage.getItem(STORAGE.sound) !== "false";
+}
+
+function playBop() {
+  if (!soundEnabled()) return;
+
+  try {
+    const AudioContext =
+      window.AudioContext || window.webkitAudioContext;
+
+    if (!AudioContext) return;
 
     const ctx = new AudioContext();
-    const osc = ctx.createOscillator();
+
+    const oscillator = ctx.createOscillator();
     const gain = ctx.createGain();
 
-    osc.type = "sine";
-    osc.frequency.value = 620;
+    oscillator.type = "sine";
+    oscillator.frequency.setValueAtTime(520, ctx.currentTime);
+    oscillator.frequency.exponentialRampToValueAtTime(
+      760,
+      ctx.currentTime + 0.06
+    );
 
-    gain.gain.setValueAtTime(.0001,ctx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(.055,ctx.currentTime + .01);
-    gain.gain.exponentialRampToValueAtTime(.0001,ctx.currentTime + .09);
+    gain.gain.setValueAtTime(0.0001, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(
+      0.06,
+      ctx.currentTime + 0.01
+    );
 
-    osc.connect(gain);
+    gain.gain.exponentialRampToValueAtTime(
+      0.0001,
+      ctx.currentTime + 0.09
+    );
+
+    oscillator.connect(gain);
     gain.connect(ctx.destination);
 
-    osc.start();
-    osc.stop(ctx.currentTime + .1);
-  }catch{}
+    oscillator.start();
+    oscillator.stop(ctx.currentTime + 0.1);
+
+    setTimeout(() => {
+      try {
+        ctx.close();
+      } catch {}
+    }, 150);
+  } catch {}
 }
 
 /* =========================================================
    MODALS
 ========================================================= */
 
-function openModal(id){
+function openModal(id) {
   const modal = $(id);
 
-  if(!modal) return;
+  if (!modal) return;
 
-  overlay.classList.add("show");
+  document.querySelectorAll(".modal.show").forEach(m => {
+    m.classList.remove("show");
+  });
+
   modal.classList.add("show");
-
-  playSound();
+  $("overlay").classList.add("show");
 }
 
-function closeModal(id){
+function closeModal(id) {
   const modal = $(id);
 
-  if(modal){
+  if (modal) {
     modal.classList.remove("show");
   }
 
-  const anyOpen = [...document.querySelectorAll(".modal.show")].length > 0;
-
-  if(!anyOpen){
-    overlay.classList.remove("show");
+  if (!document.querySelector(".modal.show")) {
+    $("overlay").classList.remove("show");
   }
 }
 
-function closeAllModals(){
-  document.querySelectorAll(".modal.show").forEach(modal=>{
+function closeAllModals() {
+  document.querySelectorAll(".modal.show").forEach(modal => {
     modal.classList.remove("show");
   });
 
-  overlay.classList.remove("show");
-}
-
-overlay.addEventListener("click",closeAllModals);
-
-document.querySelectorAll("[data-close]").forEach(button=>{
-  button.addEventListener("click",()=>{
-    closeModal(button.dataset.close);
-  });
-});
-
-/* =========================================================
-   AUTH
-========================================================= */
-
-function updateAccountUI(){
-  if(currentUser){
-    $("accountButton").textContent = "👤";
-    $("ordersButton").style.display = "";
-  }else{
-    $("accountButton").textContent = "🔐";
-    $("ordersButton").style.display = "none";
-  }
-
-  if(isAdmin()){
-    $("adminButton").style.display = "";
-  }else{
-    $("adminButton").style.display = "none";
-  }
-}
-
-function showLogin(){
-  $("loginTab").classList.add("active");
-  $("signupTab").classList.remove("active");
-
-  $("loginForm").style.display = "grid";
-  $("signupForm").style.display = "none";
-}
-
-function showSignup(){
-  $("signupTab").classList.add("active");
-  $("loginTab").classList.remove("active");
-
-  $("loginForm").style.display = "none";
-  $("signupForm").style.display = "grid";
-}
-
-$("loginTab").addEventListener("click",showLogin);
-$("signupTab").addEventListener("click",showSignup);
-
-$("accountButton").addEventListener("click",()=>{
-  if(currentUser){
-    renderAccount();
-    openModal("accountModal");
-  }else{
-    showLogin();
-    openModal("authModal");
-  }
-});
-
-$("loginForm").addEventListener("submit",async event=>{
-  event.preventDefault();
-
-  if(!firebaseReady){
-    showToast("Firebase n'est pas disponible.");
-    return;
-  }
-
-  try{
-    const email = $("loginEmail").value.trim();
-    const password = $("loginPassword").value;
-
-    await signInWithEmailAndPassword(auth,email,password);
-
-    showToast("Connexion réussie.");
-    closeModal("authModal");
-
-  }catch(error){
-    console.error(error);
-    showToast("Connexion impossible.");
-  }
-});
-
-$("signupForm").addEventListener("submit",async event=>{
-  event.preventDefault();
-
-  if(!firebaseReady){
-    showToast("Firebase n'est pas disponible.");
-    return;
-  }
-
-  const email = $("signupEmail").value.trim();
-  const phone = $("signupPhone").value.trim();
-  const password = $("signupPassword").value;
-  const confirm = $("signupConfirm").value;
-
-  if(password !== confirm){
-    showToast("Les mots de passe sont différents.");
-    return;
-  }
-
-  try{
-    await createUserWithEmailAndPassword(auth,email,password);
-
-    localStorage.setItem(
-      STORAGE.phone,
-      JSON.stringify({
-        email,
-        phone
-      })
-    );
-
-    showToast("Compte créé.");
-    closeModal("authModal");
-
-  }catch(error){
-    console.error(error);
-    showToast("Création du compte impossible.");
-  }
-});
-
-async function googleLogin(){
-  if(!firebaseReady){
-    showToast("Firebase n'est pas disponible.");
-    return;
-  }
-
-  try{
-    const provider = new GoogleAuthProvider();
-    await signInWithPopup(auth,provider);
-
-    showToast("Connexion Google réussie.");
-    closeModal("authModal");
-
-  }catch(error){
-    console.error(error);
-    showToast("Connexion Google impossible.");
-  }
-}
-
-$("googleButton").addEventListener("click",googleLogin);
-$("googleSignupButton").addEventListener("click",googleLogin);
-
-if(firebaseReady){
-  onAuthStateChanged(auth,user=>{
-    currentUser = user;
-    updateAccountUI();
-
-    if(currentUser){
-      if(isAdmin()){
-        $("adminButton").style.display = "";
-      }
-    }
-  });
+  $("overlay").classList.remove("show");
 }
 
 /* =========================================================
-   ACCOUNT
+   DARK MODE
 ========================================================= */
 
-function renderAccount(){
-  if(!currentUser){
-    $("accountContent").innerHTML = `
-      <p>Vous devez être connecté.</p>
-    `;
-    return;
+function loadSettings() {
+  const dark = localStorage.getItem(STORAGE.dark) === "true";
+
+  if (dark) {
+    document.body.classList.add("dark");
+    $("darkSwitch").classList.add("active");
   }
 
-  const phoneData = load(STORAGE.phone,null);
+  if (soundEnabled()) {
+    $("soundSwitch").classList.add("active");
+  }
+}
 
-  let phone = "";
+function toggleDarkMode() {
+  const active = document.body.classList.toggle("dark");
 
-  if(phoneData && phoneData.email === currentUser.email){
-    phone = phoneData.phone;
+  localStorage.setItem(STORAGE.dark, String(active));
+  $("darkSwitch").classList.toggle("active", active);
+
+  playBop();
+}
+
+function toggleSound() {
+  const active = !soundEnabled();
+
+  localStorage.setItem(STORAGE.sound, String(active));
+  $("soundSwitch").classList.toggle("active", active);
+
+  if (active) {
+    playBop();
+  }
+}
+
+/* =========================================================
+   PRODUCT FILTER
+========================================================= */
+
+function getFilteredProducts() {
+  let list = [...PRODUCTS];
+
+  if (activeCategory !== "Tous") {
+    list = list.filter(p => p.category === activeCategory);
   }
 
-  $("accountContent").innerHTML = `
-    <div style="display:grid;gap:14px">
+  if (searchTerm.trim()) {
+    const term = searchTerm.toLowerCase();
 
-      <div style="
-        padding:17px;
-        background:#f5f7fa;
-        border-radius:14px;
-      ">
-        <div style="font-size:11px;color:#69707a;font-weight:800">
-          COMPTE
-        </div>
-
-        <div style="font-size:18px;font-weight:950;margin-top:5px">
-          ${escapeHTML(currentUser.email || "")}
-        </div>
-
-        ${
-          phone
-          ? `<div style="margin-top:5px;color:#69707a">
-               📱 ${escapeHTML(phone)}
-             </div>`
-          : ""
-        }
-      </div>
-
-      <button class="primary" id="accountOrdersButton">
-        📦 Mes commandes
-      </button>
-
-      ${
-        isAdmin()
-        ? `<button class="icon-btn" id="accountDashboardButton">
-             🛠️ Ouvrir le Dashboard
-           </button>`
-        : ""
-      }
-
-      <button class="icon-btn" id="logoutButton">
-        Déconnexion
-      </button>
-
-    </div>
-  `;
-
-  $("accountOrdersButton").addEventListener("click",()=>{
-    closeModal("accountModal");
-    renderOrders();
-    openModal("ordersModal");
-  });
-
-  $("logoutButton").addEventListener("click",async()=>{
-    if(firebaseReady){
-      await signOut(auth);
-    }
-
-    currentUser = null;
-    localStorage.removeItem(STORAGE.admin);
-
-    updateAccountUI();
-    closeModal("accountModal");
-
-    showToast("Vous êtes déconnecté.");
-  });
-
-  const dashboardButton = $("accountDashboardButton");
-
-  if(dashboardButton){
-    dashboardButton.addEventListener("click",()=>{
-      closeModal("accountModal");
-      renderDashboard();
-      openModal("dashboardModal");
+    list = list.filter(product => {
+      return (
+        product.name.toLowerCase().includes(term) ||
+        product.category.toLowerCase().includes(term) ||
+        product.description.toLowerCase().includes(term)
+      );
     });
   }
-}
 
-/* =========================================================
-   ADMIN UNLOCK
-========================================================= */
+  const sort = $("sortSelect")?.value || "relevance";
 
-$("adminButton").addEventListener("click",()=>{
-  if(!currentUser){
-    showToast("Connecte-toi d'abord.");
-    return;
+  if (sort === "priceAsc") {
+    list.sort((a, b) => a.price - b.price);
   }
 
-  if(getCurrentEmail() !== ADMIN_EMAIL.toLowerCase()){
-    showToast("Compte non autorisé.");
-    return;
+  if (sort === "priceDesc") {
+    list.sort((a, b) => b.price - a.price);
   }
 
-  if(localStorage.getItem(STORAGE.admin) === "true"){
-    renderDashboard();
-    openModal("dashboardModal");
-    return;
-  }
-
-  const code = prompt("Code Dashboard NovaShop :");
-
-  if(code === ADMIN_CODE){
-    localStorage.setItem(STORAGE.admin,"true");
-
-    updateAccountUI();
-    renderDashboard();
-    openModal("dashboardModal");
-
-    showToast("Dashboard déverrouillé.");
-  }else{
-    showToast("Code incorrect.");
-  }
-});
-
-/* =========================================================
-   CATEGORIES
-========================================================= */
-
-document.querySelectorAll(".category").forEach(button=>{
-  button.addEventListener("click",()=>{
-    document.querySelectorAll(".category").forEach(b=>{
-      b.classList.remove("active");
-    });
-
-    button.classList.add("active");
-
-    activeCategory = button.dataset.category;
-
-    renderProducts();
-  });
-});
-
-/* =========================================================
-   SEARCH
-========================================================= */
-
-$("searchInput").addEventListener("input",()=>{
-  searchTerm = $("searchInput").value.trim().toLowerCase();
-  renderProducts();
-});
-
-$("searchInput").addEventListener("keydown",event=>{
-  if(event.key === "Enter"){
-    event.preventDefault();
-    renderProducts();
-  }
-});
-
-$("searchButton").addEventListener("click",()=>{
-  searchTerm = $("searchInput").value.trim().toLowerCase();
-  renderProducts();
-});
-
-/* =========================================================
-   PRODUCTS
-========================================================= */
-
-function getFilteredProducts(){
-  let list = PRODUCTS.filter(product=>{
-
-    const categoryMatch =
-      activeCategory === "Tous" ||
-      product.category === activeCategory;
-
-    const searchMatch =
-      !searchTerm ||
-      product.name.toLowerCase().includes(searchTerm) ||
-      product.category.toLowerCase().includes(searchTerm);
-
-    return categoryMatch && searchMatch;
-  });
-
-  const sort = $("sortSelect").value;
-
-  if(sort === "priceAsc"){
-    list.sort((a,b)=>a.price-b.price);
-  }
-
-  if(sort === "priceDesc"){
-    list.sort((a,b)=>b.price-a.price);
-  }
-
-  if(sort === "name"){
-    list.sort((a,b)=>a.name.localeCompare(b.name));
+  if (sort === "name") {
+    list.sort((a, b) => a.name.localeCompare(b.name, "fr"));
   }
 
   return list;
 }
 
-function averageRating(productId){
-  const list = reviews.filter(r=>r.productId === productId);
+/* =========================================================
+   RATINGS
+========================================================= */
 
-  if(!list.length){
+function getProductReviews(productId) {
+  return reviews.filter(review => review.productId === productId);
+}
+
+function getAverageRating(productId) {
+  const list = getProductReviews(productId);
+
+  if (!list.length) {
     return 0;
   }
 
-  return list.reduce((sum,r)=>sum + Number(r.rating),0) / list.length;
+  return (
+    list.reduce((total, review) => total + Number(review.rating), 0) /
+    list.length
+  );
 }
 
-function starsHTML(productId){
-  const average = averageRating(productId);
+function renderStars(rating) {
+  const rounded = Math.round(rating);
 
-  if(!average){
-    return `<span style="color:#9aa0a8">Pas encore noté</span>`;
+  let output = "";
+
+  for (let i = 1; i <= 5; i++) {
+    output += i <= rounded ? "★" : "☆";
   }
 
-  const rounded = Math.round(average);
-
-  return `
-    ${"★".repeat(rounded)}${"☆".repeat(5-rounded)}
-    <span>${average.toFixed(1)}</span>
-  `;
+  return output;
 }
 
-function renderProducts(){
+function getSafeReviewName() {
+  const name =
+    currentUser?.displayName ||
+    currentUser?.email?.split("@")[0] ||
+    "Utilisateur";
+
+  const clean = name.replace(/[^a-zA-ZÀ-ÿ0-9]/g, "");
+
+  return (clean.slice(0, 3) || "Use") + "***";
+}
+
+function userAlreadyReviewed(productId) {
+  if (!currentUser) return false;
+
+  return reviews.some(
+    review =>
+      review.productId === productId &&
+      review.userId === currentUser.uid
+  );
+}
+
+/* =========================================================
+   PRODUCTS RENDER
+========================================================= */
+
+function renderProducts() {
   const grid = $("productsGrid");
   const empty = $("emptyState");
-  const products = getFilteredProducts();
+  const count = $("resultsCount");
 
-  $("resultsCount").textContent =
-    `${products.length} produit${products.length > 1 ? "s" : ""}`;
+  const list = getFilteredProducts();
 
   grid.innerHTML = "";
 
-  if(!products.length){
+  count.textContent =
+    `${list.length} produit${list.length > 1 ? "s" : ""}`;
+
+  if (!list.length) {
     empty.style.display = "block";
     return;
   }
 
   empty.style.display = "none";
 
-  products.forEach(product=>{
-    const card = document.createElement("article");
-
-    card.className = "product-card";
-    card.dataset.id = product.id;
-
+  list.forEach(product => {
+    const average = getAverageRating(product.id);
+    const reviewCount = getProductReviews(product.id).length;
     const favorite = favorites.includes(product.id);
 
+    const card = document.createElement("article");
+
+    card.className = "card";
+    card.dataset.productId = product.id;
+
     card.innerHTML = `
-      <div class="product-image-wrap">
-
-        <img
-          class="product-image"
-          src="${product.image}"
-          alt="${escapeHTML(product.name)}"
-          loading="lazy"
-        >
-
+      <div class="image-box">
         <button
           class="favorite ${favorite ? "active" : ""}"
           data-action="favorite"
+          data-id="${product.id}"
           title="Favori"
         >
           ${favorite ? "♥" : "♡"}
         </button>
 
+        <img
+          src="${product.image}"
+          alt="${escapeHTML(product.name)}"
+          loading="lazy"
+        >
       </div>
 
-      <div class="product-body">
+      <div class="card-body">
 
-        <div class="product-category">
+        <div class="category-name">
           ${escapeHTML(product.category)}
         </div>
 
-        <div class="product-title">
+        <div class="title">
           ${escapeHTML(product.name)}
         </div>
 
         <div class="rating">
-          ${starsHTML(product.id)}
+          ${average ? renderStars(average) : "☆☆☆☆☆"}
+          <span style="color:#777;font-size:10px">
+            ${reviewCount ? `(${reviewCount})` : "Aucun avis"}
+          </span>
         </div>
 
         <div class="price">
@@ -845,11 +642,18 @@ function renderProducts(){
 
         <div class="card-actions">
 
-          <button data-action="view">
+          <button
+            data-action="view"
+            data-id="${product.id}"
+          >
             Voir
           </button>
 
-          <button class="add" data-action="add">
+          <button
+            class="add"
+            data-action="add"
+            data-id="${product.id}"
+          >
             🛒 Ajouter
           </button>
 
@@ -858,244 +662,213 @@ function renderProducts(){
       </div>
     `;
 
-    const image = card.querySelector(".product-image");
+    const img = card.querySelector("img");
 
-    image.addEventListener("error",()=>{
+    img.addEventListener("error", () => {
       card.remove();
-      updateGridEmptyState();
+
+      const remaining = document.querySelectorAll(
+        "#productsGrid .card"
+      ).length;
+
+      if (!remaining) {
+        empty.style.display = "block";
+      }
     });
 
     grid.appendChild(card);
   });
 }
 
-function updateGridEmptyState(){
-  const grid = $("productsGrid");
-
-  $("emptyState").style.display =
-    grid.children.length ? "none" : "block";
-}
-
-$("sortSelect").addEventListener("change",renderProducts);
-
-$("productsGrid").addEventListener("click",event=>{
-  const button = event.target.closest("button");
-
-  if(!button) return;
-
-  const card = button.closest(".product-card");
-
-  if(!card) return;
-
-  const id = card.dataset.id;
-
-  if(button.dataset.action === "favorite"){
-    toggleFavorite(id);
-  }
-
-  if(button.dataset.action === "view"){
-    openProduct(id);
-  }
-
-  if(button.dataset.action === "add"){
-    addToCart(id);
-  }
-});
-
 /* =========================================================
    FAVORITES
 ========================================================= */
 
-function toggleFavorite(id){
-  if(favorites.includes(id)){
-    favorites = favorites.filter(x=>x !== id);
-    showToast("Retiré des favoris.");
-  }else{
-    favorites.push(id);
-    showToast("Ajouté aux favoris.");
+function toggleFavorite(productId) {
+  if (favorites.includes(productId)) {
+    favorites = favorites.filter(id => id !== productId);
+    showToast("Retiré des favoris");
+  } else {
+    favorites.push(productId);
+    showToast("Ajouté aux favoris ❤️");
   }
 
-  save(STORAGE.favorites,favorites);
+  saveJSON(STORAGE.favorites, favorites);
   renderProducts();
+
+  if (currentProductId === productId) {
+    renderProductDetails(productId);
+  }
 }
 
 /* =========================================================
    CART
 ========================================================= */
 
-function addToCart(id){
-  const existing = cart.find(item=>item.id === id);
+function getCartDetailed() {
+  return cart
+    .map(item => {
+      const product = PRODUCTS.find(p => p.id === item.id);
 
-  if(existing){
-    existing.qty++;
-  }else{
+      if (!product) return null;
+
+      return {
+        ...product,
+        quantity: Math.max(1, Number(item.quantity || 1))
+      };
+    })
+    .filter(Boolean);
+}
+
+function cartQuantity() {
+  return cart.reduce(
+    (total, item) => total + Number(item.quantity || 0),
+    0
+  );
+}
+
+function cartSubtotal() {
+  return getCartDetailed().reduce(
+    (total, item) => total + item.price * item.quantity,
+    0
+  );
+}
+
+function updateCartCount() {
+  $("cartCount").textContent = cartQuantity();
+}
+
+function addToCart(productId) {
+  const existing = cart.find(item => item.id === productId);
+
+  if (existing) {
+    existing.quantity += 1;
+  } else {
     cart.push({
-      id,
-      qty:1
+      id: productId,
+      quantity: 1
     });
   }
 
-  save(STORAGE.cart,cart);
-
+  saveJSON(STORAGE.cart, cart);
   updateCartCount();
 
-  showToast("Produit ajouté au panier.");
+  showToast("Produit ajouté au panier 🛒");
+  playBop();
 }
 
-function removeFromCart(id){
-  cart = cart.filter(item=>item.id !== id);
+function changeQuantity(productId, amount) {
+  const item = cart.find(item => item.id === productId);
 
-  save(STORAGE.cart,cart);
+  if (!item) return;
 
-  renderCart();
-  updateCartCount();
-}
+  item.quantity += amount;
 
-function changeQuantity(id,delta){
-  const item = cart.find(x=>x.id === id);
-
-  if(!item) return;
-
-  item.qty += delta;
-
-  if(item.qty <= 0){
-    removeFromCart(id);
-    return;
+  if (item.quantity <= 0) {
+    cart = cart.filter(i => i.id !== productId);
   }
 
-  save(STORAGE.cart,cart);
+  saveJSON(STORAGE.cart, cart);
 
   renderCart();
   updateCartCount();
 }
 
-function cartSubtotal(){
-  return cart.reduce((sum,item)=>{
-    const product = getProduct(item.id);
-
-    return sum + (product ? product.price * item.qty : 0);
-  },0);
-}
-
-function updateCartCount(){
-  const count = cart.reduce((sum,item)=>sum + item.qty,0);
-  $("cartCount").textContent = count;
-}
-
-function renderCart(){
+function renderCart() {
   const content = $("cartContent");
+  const list = getCartDetailed();
 
-  if(!cart.length){
+  if (!list.length) {
     content.innerHTML = `
-      <div style="text-align:center;padding:40px 10px;color:#69707a">
-        <div style="font-size:40px">🛒</div>
-        <strong>Ton panier est vide</strong>
+      <div style="
+        text-align:center;
+        padding:45px 10px;
+        color:#6b7280
+      ">
+        <div style="font-size:45px">🛒</div>
+        <h3>Ton panier est vide</h3>
+        <p style="margin-top:5px">
+          Ajoute un produit pour commencer.
+        </p>
       </div>
     `;
 
     $("cartTotal").textContent = money(0);
     $("checkoutButton").disabled = true;
-    $("checkoutButton").style.opacity = ".5";
 
     return;
   }
 
   $("checkoutButton").disabled = false;
-  $("checkoutButton").style.opacity = "1";
 
-  content.innerHTML = cart.map(item=>{
-    const product = getProduct(item.id);
+  content.innerHTML = list.map(item => `
+    <div class="cart-item">
 
-    if(!product) return "";
+      <img
+        src="${item.image}"
+        alt=""
+      >
 
-    return `
-      <div class="cart-item">
+      <div>
+        <strong>
+          ${escapeHTML(item.name)}
+        </strong>
 
-        <img
-          class="cart-item-img"
-          src="${product.image}"
-          alt=""
-        >
+        <div style="font-size:12px;color:#6b7280">
+          ${money(item.price)}
+        </div>
 
-        <div>
+        <div class="qty">
+
+          <button
+            data-cart-minus="${item.id}"
+          >
+            −
+          </button>
 
           <strong>
-            ${escapeHTML(product.name)}
+            ${item.quantity}
           </strong>
 
-          <div style="color:#69707a;font-size:12px;margin-top:3px">
-            ${money(product.price)}
-          </div>
-
-          <div class="qty">
-            <button data-cart-minus="${product.id}">
-              −
-            </button>
-
-            <strong>
-              ${item.qty}
-            </strong>
-
-            <button data-cart-plus="${product.id}">
-              +
-            </button>
-          </div>
+          <button
+            data-cart-plus="${item.id}"
+          >
+            +
+          </button>
 
         </div>
 
-        <button
-          class="close"
-          data-cart-remove="${product.id}"
-          title="Supprimer"
-        >
-          ×
-        </button>
-
       </div>
-    `;
-  }).join("");
+
+      <strong>
+        ${money(item.price * item.quantity)}
+      </strong>
+
+    </div>
+  `).join("");
 
   $("cartTotal").textContent = money(cartSubtotal());
 }
 
-$("cartContent").addEventListener("click",event=>{
-
-  const remove = event.target.closest("[data-cart-remove]");
-  const plus = event.target.closest("[data-cart-plus]");
-  const minus = event.target.closest("[data-cart-minus]");
-
-  if(remove){
-    removeFromCart(remove.dataset.cartRemove);
-  }
-
-  if(plus){
-    changeQuantity(plus.dataset.cartPlus,1);
-  }
-
-  if(minus){
-    changeQuantity(minus.dataset.cartMinus,-1);
-  }
-});
-
-$("cartButton").addEventListener("click",()=>{
-  renderCart();
-  openModal("cartModal");
-});
-
 /* =========================================================
-   PRODUCT DETAILS
+   PRODUCT MODAL
 ========================================================= */
 
-function openProduct(id){
-  const product = getProduct(id);
+function openProduct(productId) {
+  currentProductId = productId;
 
-  if(!product) return;
+  renderProductDetails(productId);
+  openModal("productModal");
+}
 
-  currentProduct = product;
-  currentReviewRating = 5;
+function renderProductDetails(productId) {
+  const product = PRODUCTS.find(p => p.id === productId);
 
-  const productReviews =
-    reviews.filter(r=>r.productId === id);
+  if (!product) return;
+
+  const average = getAverageRating(product.id);
+  const list = getProductReviews(product.id);
+  const favorite = favorites.includes(product.id);
 
   $("productContent").innerHTML = `
     <div class="product-detail">
@@ -1109,7 +882,7 @@ function openProduct(id){
 
       <div class="detail">
 
-        <div class="product-category">
+        <div class="category-name">
           ${escapeHTML(product.category)}
         </div>
 
@@ -1117,8 +890,13 @@ function openProduct(id){
           ${escapeHTML(product.name)}
         </h2>
 
-        <div class="rating" style="margin-top:9px">
-          ${starsHTML(product.id)}
+        <div class="rating" style="margin-top:10px">
+          ${average ? renderStars(average) : "☆☆☆☆☆"}
+          <span style="color:#777;font-size:11px">
+            ${average
+              ? `${average.toFixed(1)}/5`
+              : "Pas encore noté"}
+          </span>
         </div>
 
         <div class="detail-price">
@@ -1129,588 +907,952 @@ function openProduct(id){
           ${escapeHTML(product.description)}
         </p>
 
-        <button
-          class="primary"
-          id="detailAddButton"
-          style="width:100%;margin-top:20px"
-        >
-          🛒 Ajouter au panier
-        </button>
+        <div style="
+          display:flex;
+          gap:8px;
+          margin-top:18px;
+        ">
 
-        <div class="review-box">
+          <button
+            class="primary"
+            data-detail-add="${product.id}"
+          >
+            🛒 Ajouter au panier
+          </button>
 
-          <h3>Avis clients</h3>
-
-          <div id="reviewsList">
-            ${
-              productReviews.length
-              ? productReviews.map(reviewHTML).join("")
-              : `<p style="color:#69707a;margin-top:10px">
-                   Aucun avis pour le moment.
-                 </p>`
-            }
-          </div>
-
-          ${
-            currentUser
-            ? `
-              <div style="margin-top:20px">
-
-                <strong>Laisser un avis</strong>
-
-                <div class="stars-input" id="starsInput">
-                  ${[1,2,3,4,5].map(n=>`
-                    <button
-                      class="star-btn ${n <= 5 ? "active" : ""}"
-                      data-rating="${n}"
-                    >
-                      ★
-                    </button>
-                  `).join("")}
-                </div>
-
-                <textarea
-                  id="reviewComment"
-                  placeholder="Ton avis..."
-                  style="
-                    width:100%;
-                    min-height:80px;
-                    border:1px solid var(--line);
-                    border-radius:11px;
-                    padding:10px;
-                  "
-                ></textarea>
-
-                <button
-                  class="primary"
-                  id="submitReview"
-                  style="margin-top:10px"
-                >
-                  Publier
-                </button>
-
-              </div>
-            `
-            : `
-              <p style="color:#69707a;margin-top:15px">
-                Connecte-toi pour laisser un avis.
-              </p>
-            `
-          }
+          <button
+            class="btn"
+            data-detail-fav="${product.id}"
+          >
+            ${favorite ? "♥ Favori" : "♡ Favori"}
+          </button>
 
         </div>
 
       </div>
+
     </div>
-  `;
 
-  $("detailAddButton").addEventListener("click",()=>{
-    addToCart(product.id);
-  });
+    <div class="review-section">
 
-  const stars = $("starsInput");
-
-  if(stars){
-    stars.addEventListener("click",event=>{
-      const button = event.target.closest("[data-rating]");
-
-      if(!button) return;
-
-      currentReviewRating = Number(button.dataset.rating);
-
-      stars.querySelectorAll(".star-btn").forEach(star=>{
-        star.classList.toggle(
-          "active",
-          Number(star.dataset.rating) <= currentReviewRating
-        );
-      });
-    });
-  }
-
-  const submit = $("submitReview");
-
-  if(submit){
-    submit.addEventListener("click",submitReview);
-  }
-
-  openModal("productModal");
-}
-
-function reviewHTML(review){
-  const date = new Date(review.date);
-
-  return `
-    <div class="review">
-
-      <strong>
-        ${escapeHTML(review.name)}
-      </strong>
-
-      <span style="color:#ffad00">
-        ${"★".repeat(review.rating)}
-        ${"☆".repeat(5-review.rating)}
-      </span>
-
-      <div style="font-size:11px;color:#999">
-        ${date.toLocaleDateString("fr-FR")}
-      </div>
+      <h3>
+        Avis clients
+      </h3>
 
       ${
-        review.comment
-        ? `<p>${escapeHTML(review.comment)}</p>`
-        : ""
+        currentUser && !userAlreadyReviewed(product.id)
+          ? `
+            <div style="
+              background:#f5f6f8;
+              padding:15px;
+              border-radius:12px;
+              margin-top:13px;
+            ">
+
+              <strong>
+                Donner ton avis
+              </strong>
+
+              <div class="stars-input" id="starsInput">
+                ${[1,2,3,4,5].map(n => `
+                  <button
+                    type="button"
+                    class="star ${n <= selectedRating ? "active" : ""}"
+                    data-rating="${n}"
+                  >
+                    ★
+                  </button>
+                `).join("")}
+              </div>
+
+              <textarea
+                id="reviewText"
+                placeholder="Ton avis..."
+                style="
+                  width:100%;
+                  min-height:80px;
+                  border:1px solid var(--line);
+                  border-radius:10px;
+                  padding:10px;
+                "
+              ></textarea>
+
+              <button
+                class="primary"
+                style="margin-top:8px"
+                id="submitReview"
+                data-review-product="${product.id}"
+              >
+                Publier mon avis
+              </button>
+
+            </div>
+          `
+          : !currentUser
+            ? `
+              <p style="
+                color:#6b7280;
+                font-size:12px;
+                margin-top:10px;
+              ">
+                Connecte-toi pour laisser un avis.
+              </p>
+            `
+            : ""
       }
+
+      <div style="margin-top:15px">
+
+        ${
+          list.length
+            ? list.map(review => `
+              <div class="review">
+
+                <div style="
+                  display:flex;
+                  justify-content:space-between;
+                  gap:10px;
+                ">
+
+                  <strong>
+                    ${escapeHTML(review.name)}
+                  </strong>
+
+                  <span style="
+                    color:#777;
+                    font-size:10px;
+                  ">
+                    ${formatDate(review.date)}
+                  </span>
+
+                </div>
+
+                <div class="rating">
+                  ${renderStars(review.rating)}
+                </div>
+
+                <div style="
+                  font-size:13px;
+                  margin-top:5px;
+                ">
+                  ${escapeHTML(review.comment)}
+                </div>
+
+              </div>
+            `).join("")
+            : `
+              <p style="
+                color:#777;
+                margin-top:15px;
+                font-size:13px;
+              ">
+                Aucun avis pour le moment.
+              </p>
+            `
+        }
+
+      </div>
 
     </div>
   `;
+
+  document.querySelectorAll("[data-rating]").forEach(button => {
+    button.addEventListener("click", () => {
+      selectedRating = Number(button.dataset.rating);
+
+      document.querySelectorAll("[data-rating]").forEach(star => {
+        star.classList.toggle(
+          "active",
+          Number(star.dataset.rating) <= selectedRating
+        );
+      });
+
+      playBop();
+    });
+  });
+
+  const reviewButton = $("submitReview");
+
+  if (reviewButton) {
+    reviewButton.addEventListener("click", submitReview);
+  }
 }
 
-function submitReview(){
-  if(!currentUser || !currentProduct) return;
+function submitReview() {
+  const productId = $("submitReview")?.dataset.reviewProduct;
 
-  const already = reviews.some(
-    r =>
-      r.productId === currentProduct.id &&
-      r.userId === currentUser.uid
-  );
+  if (!productId || !currentUser) {
+    showToast("Connecte-toi pour laisser un avis.");
+    return;
+  }
 
-  if(already){
+  if (userAlreadyReviewed(productId)) {
     showToast("Tu as déjà noté ce produit.");
     return;
   }
 
-  const comment =
-    $("reviewComment").value.trim();
+  const text = $("reviewText")?.value.trim();
 
-  const emailName =
-    currentUser.email
-      ? currentUser.email.split("@")[0]
-      : "Client";
-
-  const safeName =
-    emailName.slice(0,3) + "***";
+  if (!text) {
+    showToast("Écris un commentaire.");
+    return;
+  }
 
   reviews.push({
-    id:uid(),
-    productId:currentProduct.id,
-    userId:currentUser.uid,
-    name:safeName,
-    rating:currentReviewRating,
-    comment,
-    date:new Date().toISOString()
+    id: randomId(10),
+    productId,
+    userId: currentUser.uid,
+    name: getSafeReviewName(),
+    rating: selectedRating,
+    comment: text,
+    date: new Date().toISOString()
   });
 
-  save(STORAGE.reviews,reviews);
+  saveJSON(STORAGE.reviews, reviews);
 
-  showToast("Avis publié.");
+  showToast("Avis publié ⭐");
 
-  openProduct(currentProduct.id);
   renderProducts();
+  renderProductDetails(productId);
 }
 
 /* =========================================================
-   CHECKOUT
+   AUTH UI
 ========================================================= */
 
-$("checkoutButton").addEventListener("click",()=>{
-  if(!currentUser){
-    closeModal("cartModal");
-    showLogin();
-    openModal("authModal");
-    showToast("Connecte-toi pour commander.");
+function updateAccountUI() {
+  const email = getCurrentEmail();
+
+  $("accountButton").textContent = currentUser ? "👤" : "🔐";
+
+  $("ordersButton").style.display =
+    currentUser ? "inline-flex" : "none";
+
+  /*
+    IMPORTANT :
+    Le bouton Dashboard apparaît dès que le compte connecté
+    correspond à l'adresse admin.
+    Le code sera demandé uniquement lorsqu'on clique dessus.
+  */
+
+  $("adminButton").style.display =
+    email === ADMIN_EMAIL.toLowerCase()
+      ? "inline-flex"
+      : "none";
+}
+
+function switchAuthTab(mode) {
+  const login = mode === "login";
+
+  $("loginTab").classList.toggle("active", login);
+  $("signupTab").classList.toggle("active", !login);
+
+  $("loginForm").style.display = login ? "grid" : "none";
+  $("signupForm").style.display = login ? "none" : "grid";
+}
+
+/* =========================================================
+   LOGIN
+========================================================= */
+
+async function loginWithEmail(event) {
+  event.preventDefault();
+
+  if (!firebaseReady) {
+    showToast("Firebase n'est pas disponible.");
     return;
   }
 
-  if(!cart.length){
-    showToast("Ton panier est vide.");
+  const email = $("loginEmail").value.trim();
+  const password = $("loginPassword").value;
+
+  try {
+    await signInWithEmailAndPassword(
+      auth,
+      email,
+      password
+    );
+
+    showToast("Connexion réussie 👋");
+    closeModal("authModal");
+
+  } catch (error) {
+    console.error(error);
+
+    const messages = {
+      "auth/invalid-credential":
+        "E-mail ou mot de passe incorrect.",
+      "auth/user-not-found":
+        "Compte introuvable.",
+      "auth/wrong-password":
+        "Mot de passe incorrect.",
+      "auth/invalid-email":
+        "E-mail invalide.",
+      "auth/too-many-requests":
+        "Trop de tentatives. Réessaie plus tard."
+    };
+
+    showToast(
+      messages[error.code] ||
+      "Impossible de se connecter."
+    );
+  }
+}
+
+/* =========================================================
+   SIGNUP
+========================================================= */
+
+async function signup(event) {
+  event.preventDefault();
+
+  if (!firebaseReady) {
+    showToast("Firebase n'est pas disponible.");
     return;
   }
+
+  const email = $("signupEmail").value.trim();
+  const phone = $("signupPhone").value.trim();
+  const password = $("signupPassword").value;
+  const confirm = $("signupConfirm").value;
+
+  if (!email || !phone || !password || !confirm) {
+    showToast("Remplis tous les champs.");
+    return;
+  }
+
+  if (password !== confirm) {
+    showToast("Les mots de passe ne correspondent pas.");
+    return;
+  }
+
+  if (password.length < 6) {
+    showToast("Le mot de passe doit avoir au moins 6 caractères.");
+    return;
+  }
+
+  try {
+    const credential =
+      await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+
+    /*
+      Le téléphone est sauvegardé localement pour le prototype.
+      Pour une vraie vérification SMS, il faut activer Firebase
+      Phone Authentication + reCAPTCHA.
+    */
+
+    localStorage.setItem(
+      `nova_phone_${credential.user.uid}`,
+      phone
+    );
+
+    showToast("Compte créé 🎉");
+
+    closeModal("authModal");
+
+  } catch (error) {
+    console.error(error);
+
+    const messages = {
+      "auth/email-already-in-use":
+        "Cet e-mail est déjà utilisé.",
+      "auth/invalid-email":
+        "E-mail invalide.",
+      "auth/weak-password":
+        "Mot de passe trop faible."
+    };
+
+    showToast(
+      messages[error.code] ||
+      "Impossible de créer le compte."
+    );
+  }
+}
+
+/* =========================================================
+   GOOGLE
+========================================================= */
+
+async function loginGoogle() {
+  if (!firebaseReady) {
+    showToast("Firebase n'est pas disponible.");
+    return;
+  }
+
+  try {
+    const provider = new GoogleAuthProvider();
+
+    await signInWithPopup(auth, provider);
+
+    showToast("Connexion Google réussie 🌐");
+    closeModal("authModal");
+
+  } catch (error) {
+    console.error(error);
+
+    if (error.code === "auth/popup-closed-by-user") {
+      return;
+    }
+
+    showToast(
+      error.message ||
+      "Connexion Google impossible."
+    );
+  }
+}
+
+/* =========================================================
+   ACCOUNT
+========================================================= */
+
+function renderAccount() {
+  if (!currentUser) {
+    $("accountContent").innerHTML = `
+      <div style="text-align:center;padding:30px">
+        <div style="font-size:45px">🔐</div>
+
+        <h3>
+          Connecte-toi à NovaShop
+        </h3>
+
+        <p style="
+          color:#6b7280;
+          margin:8px 0 18px;
+          font-size:13px;
+        ">
+          Accède à tes commandes et à ton compte.
+        </p>
+
+        <button
+          class="primary"
+          id="accountLogin"
+        >
+          Se connecter
+        </button>
+      </div>
+    `;
+
+    $("accountLogin").onclick = () => {
+      closeModal("accountModal");
+      switchAuthTab("login");
+      openModal("authModal");
+    };
+
+    return;
+  }
+
+  const phone =
+    localStorage.getItem(
+      `nova_phone_${currentUser.uid}`
+    ) || "Non renseigné";
+
+  $("accountContent").innerHTML = `
+    <div style="text-align:center">
+
+      <div style="font-size:50px">
+        👤
+      </div>
+
+      <h3>
+        ${escapeHTML(
+          currentUser.displayName ||
+          currentUser.email?.split("@")[0] ||
+          "Utilisateur"
+        )}
+      </h3>
+
+      <p style="
+        color:#6b7280;
+        font-size:13px;
+        margin-top:5px;
+      ">
+        ${escapeHTML(currentUser.email || "")}
+      </p>
+
+      <p style="
+        color:#6b7280;
+        font-size:12px;
+        margin-top:3px;
+      ">
+        📱 ${escapeHTML(phone)}
+      </p>
+
+    </div>
+
+    <div style="
+      display:grid;
+      gap:9px;
+      margin-top:22px;
+    ">
+
+      <button
+        class="btn"
+        id="accountOrders"
+      >
+        📦 Mes commandes
+      </button>
+
+      <button
+        class="btn"
+        id="accountLogout"
+      >
+        🚪 Se déconnecter
+      </button>
+
+    </div>
+  `;
+
+  $("accountOrders").onclick = () => {
+    closeModal("accountModal");
+    renderOrders();
+    openModal("ordersModal");
+  };
+
+  $("accountLogout").onclick = async () => {
+    if (firebaseReady) {
+      try {
+        await signOut(auth);
+      } catch (error) {
+        console.error(error);
+      }
+    }
+
+    currentUser = null;
+
+    localStorage.removeItem(STORAGE.admin);
+
+    updateAccountUI();
+
+    closeModal("accountModal");
+
+    showToast("Déconnecté.");
+  };
+}
+
+/* =========================================================
+   DELIVERY DATA
+========================================================= */
+
+function getDeliveryData(order) {
+  const oldDeliveryDate =
+    order.deliveryDate ||
+    new Date(
+      Date.now() + 3 * 24 * 60 * 60 * 1000
+    ).toISOString();
+
+  const oldRemaining = Math.max(
+    0,
+    Math.floor(
+      (new Date(oldDeliveryDate).getTime() - Date.now()) /
+      1000
+    )
+  );
+
+  let durationSeconds =
+    Number(order.deliveryDurationSeconds);
+
+  if (!Number.isFinite(durationSeconds)) {
+    durationSeconds = oldRemaining;
+  }
+
+  let updatedAt =
+    Number(order.deliveryUpdatedAt);
+
+  if (!Number.isFinite(updatedAt)) {
+    updatedAt = Date.now();
+  }
+
+  return {
+    status: order.status || "Préparation",
+
+    truckLocation:
+      order.truckLocation ||
+      "Entrepôt",
+
+    destination:
+      order.destination ||
+      order.address?.city ||
+      "France",
+
+    tracking:
+      order.tracking ||
+      "NOVA-" + randomId(8).toUpperCase(),
+
+    deliveryDate: oldDeliveryDate,
+
+    durationSeconds,
+
+    updatedAt
+  };
+}
+
+function getRemainingSeconds(order) {
+  const delivery = getDeliveryData(order);
+
+  if (delivery.status.toLowerCase() === "livrée") {
+    return 0;
+  }
+
+  const elapsed = Math.floor(
+    (Date.now() - delivery.updatedAt) / 1000
+  );
+
+  return Math.max(
+    0,
+    delivery.durationSeconds - elapsed
+  );
+}
+
+function formatDuration(seconds) {
+  seconds = Math.max(0, Math.floor(seconds));
+
+  const days = Math.floor(seconds / 86400);
+
+  seconds %= 86400;
+
+  const hours = Math.floor(seconds / 3600);
+
+  seconds %= 3600;
+
+  const minutes = Math.floor(seconds / 60);
+
+  const secs = seconds % 60;
+
+  if (days > 0) {
+    return `${days} j ${hours} h ${minutes} min ${secs} s`;
+  }
+
+  if (hours > 0) {
+    return `${hours} h ${minutes} min ${secs} s`;
+  }
+
+  if (minutes > 0) {
+    return `${minutes} min ${secs} s`;
+  }
+
+  return `${secs} s`;
+}
+
+function durationParts(seconds) {
+  seconds = Math.max(0, Math.floor(seconds));
+
+  const days = Math.floor(seconds / 86400);
+
+  seconds %= 86400;
+
+  const hours = Math.floor(seconds / 3600);
+
+  seconds %= 3600;
+
+  const minutes = Math.floor(seconds / 60);
+
+  return {
+    days,
+    hours,
+    minutes
+  };
+}
+
+function statusClass(status) {
+  const normalized = String(status).toLowerCase();
+
+  if (normalized.includes("livr")) {
+    return "status";
+  }
+
+  if (normalized.includes("transit")) {
+    return "status";
+  }
+
+  return "status";
+}
+
+/* =========================================================
+   CREATE ORDER
+========================================================= */
+
+function createOrder() {
+  if (!currentUser) {
+    showToast("Connecte-toi avant de commander.");
+    return;
+  }
+
+  const fullName = $("fullName").value.trim();
+  const country = $("country").value.trim();
+  const address = $("address").value.trim();
+  const postalCode = $("postalCode").value.trim();
+  const city = $("city").value.trim();
+
+  if (
+    !fullName ||
+    !country ||
+    !address ||
+    !postalCode ||
+    !city
+  ) {
+    showToast("Remplis toutes les informations de livraison.");
+    return;
+  }
+
+  /*
+    Vérification de format uniquement.
+    Ce n'est pas une vérification réelle de l'existence
+    de l'adresse.
+  */
+
+  if (postalCode.length < 4) {
+    showToast("Code postal invalide.");
+    return;
+  }
+
+  if (appliedPromo !== "NOVA100") {
+    showToast(
+      "Pour ce prototype, utilise le code NOVA100."
+    );
+    return;
+  }
+
+  const subtotal = cartSubtotal();
+
+  const discount = subtotal;
+
+  const total = 0;
+
+  const durationSeconds =
+    3 * 24 * 60 * 60;
+
+  const now = Date.now();
+
+  const deliveryDate =
+    new Date(
+      now + durationSeconds * 1000
+    ).toISOString();
+
+  const order = {
+    id: randomId(7),
+
+    orderNumber:
+      "NOVA-" +
+      Date.now().toString(36).toUpperCase(),
+
+    userId: currentUser.uid,
+
+    customer: {
+      name: fullName,
+      email: currentUser.email || "",
+      phone:
+        localStorage.getItem(
+          `nova_phone_${currentUser.uid}`
+        ) || ""
+    },
+
+    address: {
+      address,
+      postalCode,
+      city,
+      country
+    },
+
+    items: getCartDetailed().map(item => ({
+      id: item.id,
+      name: item.name,
+      image: item.image,
+      price: item.price,
+      quantity: item.quantity
+    })),
+
+    subtotal,
+
+    discount,
+
+    total,
+
+    promo: appliedPromo,
+
+    paymentMethod: "Code promotionnel",
+
+    createdAt: new Date().toISOString(),
+
+    status: "En préparation",
+
+    truckLocation: "Entrepôt",
+
+    destination: city,
+
+    tracking:
+      "NOVA-TRK-" +
+      randomId(7).toUpperCase(),
+
+    deliveryDurationSeconds:
+      durationSeconds,
+
+    deliveryUpdatedAt:
+      now,
+
+    deliveryDate
+  };
+
+  orders.unshift(order);
+
+  saveJSON(STORAGE.orders, orders);
+
+  cart = [];
+
+  saveJSON(STORAGE.cart, cart);
+
+  updateCartCount();
 
   appliedPromo = null;
 
   $("promoCode").value = "";
   $("promoMessage").textContent = "";
 
-  const subtotal = cartSubtotal();
-
-  $("checkoutSubtotal").textContent = money(subtotal);
-  $("checkoutDiscount").textContent = money(0);
-  $("checkoutTotal").textContent = money(subtotal);
-
-  closeModal("cartModal");
-  openModal("checkoutModal");
-});
-
-function applyPromo(){
-  const code =
-    $("promoCode").value.trim().toUpperCase();
-
-  if(!code){
-    appliedPromo = null;
-    $("promoMessage").textContent = "";
-    updateCheckoutTotals();
-    return;
-  }
-
-  if(PROMOS[code] !== undefined){
-    appliedPromo = {
-      code,
-      percent:PROMOS[code]
-    };
-
-    $("promoMessage").textContent =
-      `Code ${code} appliqué : -${PROMOS[code]}%`;
-
-    $("promoMessage").className =
-      "promo-message promo-valid";
-
-    updateCheckoutTotals();
-
-    return;
-  }
-
-  appliedPromo = null;
-
-  $("promoMessage").textContent =
-    "Code promotionnel invalide.";
-
-  $("promoMessage").className =
-    "promo-message promo-invalid";
-
-  updateCheckoutTotals();
-}
-
-$("applyPromo").addEventListener("click",applyPromo);
-
-function updateCheckoutTotals(){
-  const subtotal = cartSubtotal();
-
-  const discount =
-    appliedPromo
-    ? subtotal * appliedPromo.percent / 100
-    : 0;
-
-  const total = Math.max(0,subtotal-discount);
-
-  $("checkoutSubtotal").textContent = money(subtotal);
-  $("checkoutDiscount").textContent = `-${money(discount)}`;
-  $("checkoutTotal").textContent = money(total);
-
-  if(appliedPromo?.percent === 100){
-    $("payButton").textContent =
-      "🎟️ Valider avec NOVA100";
-  }else{
-    $("payButton").textContent =
-      "💳 Valider la commande";
-  }
-}
-
-$("checkoutForm").addEventListener("submit",event=>{
-  event.preventDefault();
-
-  const fullName = $("fullName").value.trim();
-  const address = $("address").value.trim();
-  const postalCode = $("postalCode").value.trim();
-  const city = $("city").value.trim();
-  const country = $("country").value.trim();
-
-  if(!fullName || !address || !postalCode || !city || !country){
-    showToast("Remplis tous les champs.");
-    return;
-  }
-
-  /*
-    Validation de format uniquement.
-    Ce frontend ne peut pas vérifier l'existence réelle
-    d'une adresse.
-  */
-
-  if(!/^\d{4,6}$/.test(postalCode)){
-    showToast("Code postal incorrect.");
-    return;
-  }
-
-  const subtotal = cartSubtotal();
-
-  const discount =
-    appliedPromo
-    ? subtotal * appliedPromo.percent / 100
-    : 0;
-
-  const total =
-    Math.max(0,subtotal-discount);
-
-  /*
-    Pour éviter de simuler un vrai paiement,
-    la commande gratuite utilise NOVA100.
-    Un vrai paiement PayPal nécessite une confirmation
-    côté serveur/webhook.
-  */
-
-  if(total > 0){
-    showToast(
-      "Pour cette démo, utilise NOVA100 pour valider."
-    );
-    return;
-  }
-
-  createOrder({
-    fullName,
-    address,
-    postalCode,
-    city,
-    country,
-    subtotal,
-    discount,
-    total,
-    promo:appliedPromo?.code || null
-  });
-});
-
-function createOrder(customer){
-  const now = new Date();
-
-  /*
-    Livraison par défaut :
-    +3 jours, 18h.
-  */
-
-  const delivery = new Date(now);
-
-  delivery.setDate(delivery.getDate()+3);
-  delivery.setHours(18,0,0,0);
-
-  const order = {
-    id:uid(),
-    number:"NS-" + Math.floor(100000 + Math.random()*900000),
-
-    userId:currentUser.uid,
-    email:currentUser.email || "",
-
-    customer,
-
-    items:cart.map(item=>({
-      id:item.id,
-      qty:item.qty
-    })),
-
-    status:"Préparation",
-
-    /*
-      IMPORTANT :
-      Tous ces champs sont modifiables dans le Dashboard.
-    */
-
-    truckLocation:"Entrepôt",
-    destination:customer.city,
-    deliveryDate:delivery.toISOString(),
-    tracking:"NOV-" + Math.floor(10000000 + Math.random()*90000000),
-
-    createdAt:now.toISOString(),
-
-    subtotal:customer.subtotal,
-    discount:customer.discount,
-    total:customer.total,
-
-    promo:customer.promo,
-
-    paymentMethod:
-      customer.promo === "NOVA100"
-      ? "Code promotionnel"
-      : "En attente"
-
-  };
-
-  orders.unshift(order);
-
-  save(STORAGE.orders,orders);
-
-  cart = [];
-  save(STORAGE.cart,cart);
-
-  updateCartCount();
-
-  $("checkoutForm").reset();
-  $("country").value = "France";
-
-  appliedPromo = null;
-
   closeModal("checkoutModal");
+  closeModal("cartModal");
 
-  showToast("Commande créée.");
+  showToast(
+    "Commande créée gratuitement 🎉"
+  );
 
-  renderOrders();
-
-  openInvoice(order.id);
+  setTimeout(() => {
+    renderOrders();
+    openModal("ordersModal");
+  }, 300);
 }
 
 /* =========================================================
    ORDERS
 ========================================================= */
 
-$("ordersButton").addEventListener("click",()=>{
-  renderOrders();
-  openModal("ordersModal");
-});
-
-$("heroOrders").addEventListener("click",()=>{
-  if(!currentUser){
-    showLogin();
-    openModal("authModal");
-    return;
-  }
-
-  renderOrders();
-  openModal("ordersModal");
-});
-
-function userOrders(){
-  if(!currentUser) return [];
+function getUserOrders() {
+  if (!currentUser) return [];
 
   return orders.filter(
     order => order.userId === currentUser.uid
   );
 }
 
-function deliveryRemaining(date){
-  const target = new Date(date).getTime();
-  const now = Date.now();
-
-  let difference = target-now;
-
-  if(difference <= 0){
-    return {
-      expired:true,
-      text:"Arrivée prévue maintenant"
-    };
-  }
-
-  const seconds =
-    Math.floor(difference/1000);
-
-  const days =
-    Math.floor(seconds/86400);
-
-  const hours =
-    Math.floor((seconds%86400)/3600);
-
-  const minutes =
-    Math.floor((seconds%3600)/60);
-
-  const secs =
-    seconds%60;
-
-  return {
-    expired:false,
-    days,
-    hours,
-    minutes,
-    seconds:secs,
-    text:
-      `${days}j ${hours}h ${minutes}m ${secs}s`
-  };
-}
-
-function progressForStatus(status){
-  if(status === "Préparation") return 20;
-  if(status === "Expédiée") return 45;
-  if(status === "En transit") return 75;
-  if(status === "Livrée") return 100;
-
-  return 20;
-}
-
-function renderOrders(){
+function renderOrders() {
   const content = $("ordersContent");
 
-  if(!currentUser){
+  if (!currentUser) {
     content.innerHTML = `
-      <p>Connecte-toi pour voir tes commandes.</p>
-    `;
-    return;
-  }
-
-  const list = userOrders();
-
-  if(!list.length){
-    content.innerHTML = `
-      <div style="text-align:center;padding:50px 10px;color:#69707a">
-        <div style="font-size:45px">📦</div>
-        <strong>Aucune commande</strong>
+      <div style="text-align:center;padding:40px">
+        🔐
+        <h3>Connecte-toi pour voir tes commandes.</h3>
       </div>
     `;
 
     return;
   }
 
-  content.innerHTML = list.map(order=>{
+  const userOrders = getUserOrders();
 
-    const remaining =
-      deliveryRemaining(order.deliveryDate);
+  if (!userOrders.length) {
+    content.innerHTML = `
+      <div style="
+        text-align:center;
+        padding:45px;
+        color:#6b7280;
+      ">
+        <div style="font-size:45px">📦</div>
 
-    const deliveryDate =
-      new Date(order.deliveryDate)
-        .toLocaleString("fr-FR",{
-          dateStyle:"medium",
-          timeStyle:"short"
-        });
+        <h3>
+          Aucune commande
+        </h3>
+
+        <p style="margin-top:6px">
+          Tes commandes apparaîtront ici.
+        </p>
+      </div>
+    `;
+
+    return;
+  }
+
+  content.innerHTML = userOrders.map(order => {
+    const delivery = getDeliveryData(order);
+    const remaining = getRemainingSeconds(order);
 
     const progress =
-      progressForStatus(order.status);
+      delivery.status.toLowerCase().includes("livr")
+        ? 100
+        : remaining <= 0
+          ? 95
+          : 45;
 
     return `
-      <div
-        class="order-card"
-        data-order-card="${order.id}"
-      >
+      <div class="order">
 
         <div class="order-top">
 
           <div>
-            <div class="order-id">
-              ${escapeHTML(order.number)}
-            </div>
+            <strong>
+              ${escapeHTML(order.orderNumber || order.id)}
+            </strong>
 
-            <div style="font-size:12px;color:#69707a;margin-top:3px">
-              ${new Date(order.createdAt).toLocaleDateString("fr-FR")}
+            <div style="
+              font-size:11px;
+              color:#777;
+              margin-top:4px;
+            ">
+              ${formatDateTime(order.createdAt)}
             </div>
           </div>
 
-          <span class="status">
-            ${escapeHTML(order.status)}
+          <span class="${statusClass(delivery.status)}">
+            ${escapeHTML(delivery.status)}
           </span>
 
         </div>
 
-        <div style="font-size:13px">
-          ${order.items.map(item=>{
-            const product = getProduct(item.id);
+        <div style="
+          margin-top:12px;
+          font-size:13px;
+        ">
+          ${order.items.map(item => `
+            <div style="
+              display:flex;
+              justify-content:space-between;
+              padding:4px 0;
+            ">
+              <span>
+                ${escapeHTML(item.name)}
+                × ${item.quantity}
+              </span>
 
-            return product
-              ? `<div style="padding:3px 0">
-                   ${item.qty} × ${escapeHTML(product.name)}
-                 </div>`
-              : "";
-          }).join("")}
+              <strong>
+                ${money(item.price * item.quantity)}
+              </strong>
+            </div>
+          `).join("")}
         </div>
 
-        <div class="delivery-box">
+        <div class="delivery">
 
           <div style="
-            font-weight:950;
-            margin-bottom:8px;
+            font-weight:900;
+            margin-bottom:7px;
           ">
-            🚚 Suivi de livraison
+            🚚 Livraison
           </div>
 
           <div class="delivery-row">
             <span>📍 Camion actuellement</span>
-            <strong>${escapeHTML(order.truckLocation || "Non renseigné")}</strong>
+            <strong>
+              ${escapeHTML(delivery.truckLocation)}
+            </strong>
           </div>
 
           <div class="delivery-row">
             <span>🎯 Destination</span>
-            <strong>${escapeHTML(order.destination || order.customer.city)}</strong>
+            <strong>
+              ${escapeHTML(delivery.destination)}
+            </strong>
           </div>
 
           <div class="delivery-row">
@@ -1719,39 +1861,47 @@ function renderOrders(){
               class="countdown"
               data-countdown="${order.id}"
             >
-              ${remaining.text}
+              ${
+                delivery.status
+                  .toLowerCase()
+                  .includes("livr")
+                  ? "Livrée"
+                  : formatDuration(remaining)
+              }
+            </strong>
+          </div>
+
+          <div class="progress">
+            <span
+              style="width:${progress}%"
+              data-progress="${order.id}"
+            ></span>
+          </div>
+
+          <div class="delivery-row">
+            <span>📅 Livraison estimée</span>
+            <strong>
+              ${formatDateTime(delivery.deliveryDate)}
             </strong>
           </div>
 
           <div class="delivery-row">
-            <span>📅 Arrivée prévue</span>
-            <strong>${deliveryDate}</strong>
-          </div>
-
-          <div class="delivery-row">
             <span>🔢 Suivi</span>
-            <strong>${escapeHTML(order.tracking || "N/A")}</strong>
-          </div>
-
-          <div class="truck-progress">
-            <span style="width:${progress}%"></span>
+            <strong>
+              ${escapeHTML(delivery.tracking)}
+            </strong>
           </div>
 
         </div>
 
         <div style="
           display:flex;
-          justify-content:space-between;
-          align-items:center;
-          margin-top:14px;
+          gap:7px;
+          margin-top:12px;
         ">
 
-          <strong>
-            ${money(order.total)}
-          </strong>
-
           <button
-            class="icon-btn"
+            class="btn"
             data-invoice="${order.id}"
           >
             🧾 Facture
@@ -1763,197 +1913,354 @@ function renderOrders(){
     `;
   }).join("");
 
-  content.querySelectorAll("[data-invoice]").forEach(button=>{
-    button.addEventListener("click",()=>{
-      openInvoice(button.dataset.invoice);
+  document.querySelectorAll("[data-invoice]").forEach(button => {
+    button.addEventListener("click", () => {
+      renderInvoice(button.dataset.invoice);
+      openModal("invoiceModal");
     });
   });
 
-  updateCountdowns();
+  startCountdown();
 }
 
-function updateCountdowns(){
-  document.querySelectorAll("[data-countdown]").forEach(element=>{
-    const id = element.dataset.countdown;
+/* =========================================================
+   COUNTDOWN
+========================================================= */
 
-    const order = orders.find(o=>o.id === id);
+function startCountdown() {
+  clearInterval(countdownTimer);
 
-    if(!order) return;
+  countdownTimer = setInterval(() => {
+    document
+      .querySelectorAll("[data-countdown]")
+      .forEach(element => {
 
-    element.textContent =
-      deliveryRemaining(order.deliveryDate).text;
-  });
+        const orderId =
+          element.dataset.countdown;
+
+        const order =
+          orders.find(o => o.id === orderId);
+
+        if (!order) return;
+
+        const delivery =
+          getDeliveryData(order);
+
+        const remaining =
+          getRemainingSeconds(order);
+
+        if (
+          delivery.status
+            .toLowerCase()
+            .includes("livr")
+        ) {
+          element.textContent = "Livrée";
+        } else if (remaining <= 0) {
+          element.textContent = "Arrivée imminente";
+        } else {
+          element.textContent =
+            formatDuration(remaining);
+        }
+      });
+  }, 1000);
 }
 
-setInterval(updateCountdowns,1000);
+/* =========================================================
+   CHECKOUT
+========================================================= */
+
+function renderCheckout() {
+  const subtotal = cartSubtotal();
+
+  let discount = 0;
+
+  if (appliedPromo === "NOVA100") {
+    discount = subtotal;
+  } else if (appliedPromo) {
+    discount =
+      subtotal *
+      (PROMOS[appliedPromo] / 100);
+  }
+
+  const total =
+    Math.max(0, subtotal - discount);
+
+  $("checkoutSubtotal").textContent =
+    money(subtotal);
+
+  $("checkoutDiscount").textContent =
+    `-${money(discount)}`;
+
+  $("checkoutTotal").textContent =
+    money(total);
+
+  $("payButton").disabled =
+    appliedPromo !== "NOVA100";
+}
+
+function applyPromo() {
+  const input =
+    $("promoCode").value.trim().toUpperCase();
+
+  const message =
+    $("promoMessage");
+
+  if (!input) {
+    appliedPromo = null;
+
+    message.textContent =
+      "Entre un code promotionnel.";
+
+    message.className =
+      "promo-message invalid";
+
+    renderCheckout();
+
+    return;
+  }
+
+  if (!Object.prototype.hasOwnProperty.call(PROMOS, input)) {
+    appliedPromo = null;
+
+    message.textContent =
+      "Code invalide.";
+
+    message.className =
+      "promo-message invalid";
+
+    renderCheckout();
+
+    return;
+  }
+
+  appliedPromo = input;
+
+  if (input === "NOVA100") {
+    message.textContent =
+      "✓ Code accepté : commande gratuite.";
+
+    message.className =
+      "promo-message valid";
+  } else {
+    message.textContent =
+      `✓ Réduction de ${PROMOS[input]}%.`;
+
+    message.className =
+      "promo-message valid";
+  }
+
+  renderCheckout();
+
+  playBop();
+}
 
 /* =========================================================
    DASHBOARD
 ========================================================= */
 
-function renderDashboard(){
-  if(!isAdmin()){
-    showToast("Accès refusé.");
+function renderDashboard() {
+  if (!isAdmin()) {
+    showToast("Accès Dashboard non autorisé.");
     return;
   }
 
-  $("statOrders").textContent = orders.length;
+  $("statOrders").textContent =
+    orders.length;
 
   $("statFree").textContent =
-    orders.filter(o=>o.total === 0).length;
+    orders.filter(
+      order => Number(order.total) === 0
+    ).length;
 
-  const catalog =
-    PRODUCTS.reduce((sum,p)=>sum+p.price,0);
+  const catalogValue =
+    PRODUCTS.reduce(
+      (total, product) =>
+        total + product.price,
+      0
+    );
 
-  $("statCatalog").textContent = money(catalog);
+  $("statCatalog").textContent =
+    money(catalogValue);
 
   renderAdminOrders();
   renderAdminPromos();
 }
 
-function renderAdminOrders(){
-  const container = $("adminOrders");
+function renderAdminOrders() {
+  const container =
+    $("adminOrders");
 
-  if(!orders.length){
+  if (!orders.length) {
     container.innerHTML = `
       <div style="
-        padding:35px;
+        padding:30px 10px;
+        color:#777;
         text-align:center;
-        color:#69707a;
-        border:1px dashed var(--line);
-        border-radius:15px;
       ">
-        Aucune commande.
+        Aucune commande pour le moment.
       </div>
     `;
 
     return;
   }
 
-  container.innerHTML = orders.map(order=>{
-
-    const deliveryDate =
-      new Date(order.deliveryDate);
-
-    const localDate =
-      new Date(
-        deliveryDate.getTime() -
-        deliveryDate.getTimezoneOffset()*60000
-      )
-      .toISOString()
-      .slice(0,16);
+  container.innerHTML = orders.map(order => {
+    const delivery = getDeliveryData(order);
+    const remaining = getRemainingSeconds(order);
+    const parts = durationParts(remaining);
 
     return `
       <div class="admin-order">
 
         <h4>
-          📦 ${escapeHTML(order.number)}
+          📦 ${escapeHTML(order.orderNumber || order.id)}
         </h4>
 
+        <div class="client">
+          Client :
+          ${escapeHTML(order.customer?.name || "Utilisateur")}
+          ·
+          ${escapeHTML(order.customer?.email || "")}
+        </div>
+
         <div style="
-          color:#69707a;
+          background:#f5f6f8;
+          border-radius:10px;
+          padding:10px;
+          margin-bottom:12px;
           font-size:12px;
-          margin-bottom:14px;
         ">
-          Client : ${escapeHTML(order.email)}
+          <strong>
+            Adresse client
+          </strong>
+
+          <div style="margin-top:4px">
+            ${escapeHTML(order.address?.address || "")}
+          </div>
+
+          <div>
+            ${escapeHTML(order.address?.postalCode || "")}
+            ${escapeHTML(order.address?.city || "")}
+          </div>
+
+          <div>
+            ${escapeHTML(order.address?.country || "")}
+          </div>
         </div>
 
         <div class="admin-grid">
 
           <div class="admin-field">
-            <label>🚚 Statut</label>
+            <label>Statut</label>
 
-            <select
-              data-admin-status="${order.id}"
-            >
-              ${DELIVERY_STATUSES.map(status=>`
+            <select data-status="${order.id}">
+              ${[
+                "En préparation",
+                "En transit",
+                "Arrivée imminente",
+                "Livrée",
+                "Annulée"
+              ].map(status => `
                 <option
-                  value="${escapeHTML(status)}"
-                  ${status === order.status ? "selected" : ""}
+                  value="${status}"
+                  ${delivery.status === status ? "selected" : ""}
                 >
-                  ${escapeHTML(status)}
+                  ${status}
                 </option>
               `).join("")}
             </select>
           </div>
 
           <div class="admin-field">
-            <label>📍 Position actuelle du camion</label>
+            <label>Suivi</label>
 
             <input
-              data-admin-location="${order.id}"
-              value="${escapeHTML(order.truckLocation || "")}"
+              value="${escapeHTML(delivery.tracking)}"
+              data-tracking="${order.id}"
+            >
+          </div>
+
+          <div class="admin-field admin-full">
+            <label>
+              📍 Endroit où se trouve actuellement le camion
+            </label>
+
+            <input
+              value="${escapeHTML(delivery.truckLocation)}"
+              data-location="${order.id}"
               placeholder="Ex : Centre logistique Lille"
             >
           </div>
 
-          <div class="admin-field">
-            <label>🎯 Destination</label>
+          <div class="admin-field admin-full">
+            <label>
+              🎯 Destination
+            </label>
 
             <input
-              data-admin-destination="${order.id}"
-              value="${escapeHTML(order.destination || "")}"
+              value="${escapeHTML(delivery.destination)}"
+              data-destination="${order.id}"
               placeholder="Ex : Roubaix"
             >
           </div>
 
           <div class="admin-field">
-            <label>🔢 Numéro de suivi</label>
-
-            <input
-              data-admin-tracking="${order.id}"
-              value="${escapeHTML(order.tracking || "")}"
-              placeholder="Numéro de suivi"
-            >
-          </div>
-
-          <div class="admin-field">
-            <label>📅 Date et heure d'arrivée</label>
-
-            <input
-              type="datetime-local"
-              data-admin-date="${order.id}"
-              value="${localDate}"
-            >
-          </div>
-
-          <div class="admin-field">
-            <label>⏱️ Durée restante personnalisée</label>
-
-            <select data-admin-duration="${order.id}">
-              <option value="">Calculée automatiquement</option>
-              <option value="3600">1 heure</option>
-              <option value="10800">3 heures</option>
-              <option value="21600">6 heures</option>
-              <option value="43200">12 heures</option>
-              <option value="86400">1 jour</option>
-              <option value="172800">2 jours</option>
-              <option value="259200">3 jours</option>
-              <option value="432000">5 jours</option>
-              <option value="604800">7 jours</option>
-            </select>
-          </div>
-
-          <div class="admin-field admin-full">
-
             <label>
-              ⚡ Durée exacte en minutes
+              ⏱️ Jours restants
             </label>
 
             <input
               type="number"
               min="0"
-              step="1"
-              data-admin-minutes="${order.id}"
-              placeholder="Ex : 1840"
+              value="${parts.days}"
+              data-days="${order.id}"
             >
+          </div>
 
+          <div class="admin-field">
+            <label>
+              ⏱️ Heures restantes
+            </label>
+
+            <input
+              type="number"
+              min="0"
+              max="23"
+              value="${parts.hours}"
+              data-hours="${order.id}"
+            >
+          </div>
+
+          <div class="admin-field">
+            <label>
+              ⏱️ Minutes restantes
+            </label>
+
+            <input
+              type="number"
+              min="0"
+              max="59"
+              value="${parts.minutes}"
+              data-minutes="${order.id}"
+            >
+          </div>
+
+          <div class="admin-field">
+            <label>
+              📅 Date prévue
+            </label>
+
+            <input
+              type="datetime-local"
+              value="${toDateTimeLocal(delivery.deliveryDate)}"
+              data-date="${order.id}"
+            >
           </div>
 
         </div>
 
         <button
-          class="save-delivery"
+          class="save"
           data-save-delivery="${order.id}"
         >
           💾 Enregistrer la livraison
@@ -1963,183 +2270,254 @@ function renderAdminOrders(){
     `;
   }).join("");
 
-  container
+  document
     .querySelectorAll("[data-save-delivery]")
-    .forEach(button=>{
-      button.addEventListener("click",()=>{
+    .forEach(button => {
+      button.addEventListener("click", () => {
         saveDelivery(button.dataset.saveDelivery);
       });
     });
 }
 
-function saveDelivery(orderId){
-  if(!isAdmin()){
+function toDateTimeLocal(date) {
+  try {
+    const d = new Date(date);
+
+    const pad = number =>
+      String(number).padStart(2, "0");
+
+    return (
+      d.getFullYear() +
+      "-" +
+      pad(d.getMonth() + 1) +
+      "-" +
+      pad(d.getDate()) +
+      "T" +
+      pad(d.getHours()) +
+      ":" +
+      pad(d.getMinutes())
+    );
+  } catch {
+    return "";
+  }
+}
+
+/* =========================================================
+   SAVE DELIVERY
+========================================================= */
+
+function saveDelivery(orderId) {
+  if (!isAdmin()) {
     showToast("Accès refusé.");
     return;
   }
 
   const order =
-    orders.find(o=>o.id === orderId);
+    orders.find(o => o.id === orderId);
 
-  if(!order) return;
+  if (!order) {
+    showToast("Commande introuvable.");
+    return;
+  }
 
   const status =
     document.querySelector(
-      `[data-admin-status="${orderId}"]`
-    ).value;
+      `[data-status="${orderId}"]`
+    )?.value || "En préparation";
 
   const location =
     document.querySelector(
-      `[data-admin-location="${orderId}"]`
-    ).value.trim();
+      `[data-location="${orderId}"]`
+    )?.value.trim() || "Entrepôt";
 
   const destination =
     document.querySelector(
-      `[data-admin-destination="${orderId}"]`
-    ).value.trim();
+      `[data-destination="${orderId}"]`
+    )?.value.trim() ||
+    order.address?.city ||
+    "France";
 
   const tracking =
     document.querySelector(
-      `[data-admin-tracking="${orderId}"]`
-    ).value.trim();
+      `[data-tracking="${orderId}"]`
+    )?.value.trim() ||
+    "NOVA-TRK-" +
+      randomId(7).toUpperCase();
+
+  let days = Number(
+    document.querySelector(
+      `[data-days="${orderId}"]`
+    )?.value || 0
+  );
+
+  let hours = Number(
+    document.querySelector(
+      `[data-hours="${orderId}"]`
+    )?.value || 0
+  );
+
+  let minutes = Number(
+    document.querySelector(
+      `[data-minutes="${orderId}"]`
+    )?.value || 0
+  );
+
+  days = Math.max(
+    0,
+    Math.floor(days)
+  );
+
+  hours = Math.max(
+    0,
+    Math.min(23, Math.floor(hours))
+  );
+
+  minutes = Math.max(
+    0,
+    Math.min(59, Math.floor(minutes))
+  );
+
+  const durationSeconds =
+    days * 86400 +
+    hours * 3600 +
+    minutes * 60;
+
+  const now = Date.now();
 
   const dateInput =
     document.querySelector(
-      `[data-admin-date="${orderId}"]`
+      `[data-date="${orderId}"]`
     );
 
-  const durationSelect =
-    document.querySelector(
-      `[data-admin-duration="${orderId}"]`
-    );
+  let deliveryDate;
 
-  const minutesInput =
-    document.querySelector(
-      `[data-admin-minutes="${orderId}"]`
-    );
+  if (dateInput?.value) {
+    const manuallySelectedDate =
+      new Date(dateInput.value).getTime();
 
-  if(!location){
-    showToast("Indique la position du camion.");
-    return;
-  }
-
-  if(!destination){
-    showToast("Indique la destination.");
-    return;
-  }
-
-  /*
-    Si une durée est choisie,
-    elle devient prioritaire sur la date.
-  */
-
-  const selectedSeconds =
-    Number(durationSelect.value || 0);
-
-  const exactMinutes =
-    Number(minutesInput.value || 0);
-
-  if(exactMinutes > 0){
-
-    const target =
-      new Date(
-        Date.now() + exactMinutes*60000
-      );
-
-    order.deliveryDate =
-      target.toISOString();
-
-  }else if(selectedSeconds > 0){
-
-    const target =
-      new Date(
-        Date.now() + selectedSeconds*1000
-      );
-
-    order.deliveryDate =
-      target.toISOString();
-
-  }else if(dateInput.value){
-
-    /*
-      datetime-local représente l'heure locale.
-    */
-
-    const target =
-      new Date(dateInput.value);
-
-    if(!Number.isNaN(target.getTime())){
-      order.deliveryDate =
-        target.toISOString();
+    if (
+      Number.isFinite(manuallySelectedDate) &&
+      manuallySelectedDate > now
+    ) {
+      deliveryDate =
+        new Date(
+          manuallySelectedDate
+        ).toISOString();
+    } else {
+      deliveryDate =
+        new Date(
+          now + durationSeconds * 1000
+        ).toISOString();
     }
-
+  } else {
+    deliveryDate =
+      new Date(
+        now + durationSeconds * 1000
+      ).toISOString();
   }
 
   order.status = status;
-  order.truckLocation = location;
-  order.destination = destination;
-  order.tracking = tracking;
 
-  save(STORAGE.orders,orders);
+  order.truckLocation =
+    location;
 
-  renderDashboard();
+  order.destination =
+    destination;
 
-  if(currentUser){
-    renderOrders();
+  order.tracking =
+    tracking;
+
+  order.deliveryDurationSeconds =
+    durationSeconds;
+
+  order.deliveryUpdatedAt =
+    now;
+
+  order.deliveryDate =
+    deliveryDate;
+
+  if (
+    status.toLowerCase().includes("livr")
+  ) {
+    order.deliveryDurationSeconds = 0;
+    order.deliveryUpdatedAt = now;
+    order.deliveryDate =
+      new Date(now).toISOString();
   }
 
-  showToast("🚚 Livraison mise à jour.");
+  saveJSON(STORAGE.orders, orders);
+
+  showToast(
+    "Livraison mise à jour 🚚"
+  );
+
+  renderDashboard();
 }
 
 /* =========================================================
    PROMOS DASHBOARD
 ========================================================= */
 
-function renderAdminPromos(){
+function renderAdminPromos() {
   $("adminPromos").innerHTML =
-    Object.entries(PROMOS).map(([code,percent])=>`
-      <div class="promo-admin">
-        <strong>${code}</strong>
-        <span>-${percent}%</span>
-      </div>
-    `).join("");
+    Object.entries(PROMOS)
+      .map(([code, percent]) => `
+        <div class="promo-admin">
+
+          <strong>
+            ${code}
+          </strong>
+
+          <span>
+            ${percent}%
+          </span>
+
+        </div>
+      `)
+      .join("");
 }
 
 /* =========================================================
    INVOICE
 ========================================================= */
 
-function openInvoice(orderId){
+function renderInvoice(orderId) {
   const order =
-    orders.find(o=>o.id === orderId);
+    orders.find(o => o.id === orderId);
 
-  if(!order) return;
+  if (!order) {
+    showToast("Commande introuvable.");
+    return;
+  }
 
-  const customer = order.customer;
+  const delivery =
+    getDeliveryData(order);
 
   $("invoiceContent").innerHTML = `
-    <div class="invoice">
+    <div>
 
       <div class="invoice-head">
 
-        <div>
-          <div class="invoice-logo">
-            NOVA<span>SHOP</span>
-          </div>
-
-          <div style="
-            margin-top:6px;
-            color:#69707a;
-            font-size:12px;
-          ">
-            Marketplace gaming
-          </div>
+        <div class="invoice-logo">
+          NOVA<span>SHOP</span>
         </div>
 
         <div class="invoice-meta">
-          <strong>FACTURE</strong><br>
-          ${escapeHTML(order.number)}<br>
-          ${new Date(order.createdAt).toLocaleDateString("fr-FR")}
+
+          <strong>
+            FACTURE
+          </strong>
+
+          <br>
+
+          ${escapeHTML(
+            order.orderNumber || order.id
+          )}
+
+          <br>
+
+          ${formatDate(order.createdAt)}
+
         </div>
 
       </div>
@@ -2147,32 +2525,50 @@ function openInvoice(orderId){
       <div class="invoice-customer">
 
         <div>
-          <strong>Client</strong>
+          <strong>
+            Client
+          </strong>
 
-          <div style="margin-top:6px;font-size:13px">
-            ${escapeHTML(customer.fullName)}
-          </div>
+          <br>
 
-          <div style="font-size:13px">
-            ${escapeHTML(order.email)}
-          </div>
+          ${escapeHTML(
+            order.customer?.name || ""
+          )}
+
+          <br>
+
+          ${escapeHTML(
+            order.customer?.email || ""
+          )}
+
         </div>
 
         <div>
-          <strong>Livraison</strong>
+          <strong>
+            Livraison
+          </strong>
 
-          <div style="margin-top:6px;font-size:13px">
-            ${escapeHTML(customer.address)}
-          </div>
+          <br>
 
-          <div style="font-size:13px">
-            ${escapeHTML(customer.postalCode)}
-            ${escapeHTML(customer.city)}
-          </div>
+          ${escapeHTML(
+            order.address?.address || ""
+          )}
 
-          <div style="font-size:13px">
-            ${escapeHTML(customer.country)}
-          </div>
+          <br>
+
+          ${escapeHTML(
+            order.address?.postalCode || ""
+          )}
+          ${escapeHTML(
+            order.address?.city || ""
+          )}
+
+          <br>
+
+          ${escapeHTML(
+            order.address?.country || ""
+          )}
+
         </div>
 
       </div>
@@ -2190,23 +2586,30 @@ function openInvoice(orderId){
 
         <tbody>
 
-          ${order.items.map(item=>{
+          ${order.items.map(item => `
+            <tr>
 
-            const product =
-              getProduct(item.id);
+              <td>
+                ${escapeHTML(item.name)}
+              </td>
 
-            if(!product) return "";
+              <td>
+                ${item.quantity}
+              </td>
 
-            return `
-              <tr>
-                <td>${escapeHTML(product.name)}</td>
-                <td>${item.qty}</td>
-                <td>${money(product.price)}</td>
-                <td>${money(product.price * item.qty)}</td>
-              </tr>
-            `;
+              <td>
+                ${money(item.price)}
+              </td>
 
-          }).join("")}
+              <td>
+                ${money(
+                  item.price *
+                  item.quantity
+                )}
+              </td>
+
+            </tr>
+          `).join("")}
 
         </tbody>
 
@@ -2215,18 +2618,58 @@ function openInvoice(orderId){
       <div class="invoice-total">
 
         <div>
-          <span>Sous-total</span>
-          <strong>${money(order.subtotal)}</strong>
+          <span>
+            Sous-total
+          </span>
+
+          <strong>
+            ${money(order.subtotal)}
+          </strong>
         </div>
 
         <div>
-          <span>Réduction</span>
-          <strong>-${money(order.discount)}</strong>
+          <span>
+            Réduction
+          </span>
+
+          <strong>
+            -${money(order.discount)}
+          </strong>
+        </div>
+
+        <div>
+          <span>
+            Code
+          </span>
+
+          <strong>
+            ${escapeHTML(order.promo || "-")}
+          </strong>
+        </div>
+
+        <div>
+          <span>
+            Paiement
+          </span>
+
+          <strong>
+            ${escapeHTML(
+              order.paymentMethod ||
+              "Code promotionnel"
+            )}
+          </strong>
         </div>
 
         <div class="invoice-grand">
-          <span>Total</span>
-          <strong>${money(order.total)}</strong>
+
+          <span>
+            TOTAL
+          </span>
+
+          <strong>
+            ${money(order.total)}
+          </strong>
+
         </div>
 
       </div>
@@ -2236,146 +2679,625 @@ function openInvoice(orderId){
         padding-top:15px;
         border-top:1px solid #ddd;
         font-size:12px;
-        color:#69707a;
+        color:#666;
       ">
-        Méthode de paiement :
-        <strong>${escapeHTML(order.paymentMethod)}</strong>
+
+        <strong>
+          Livraison
+        </strong>
+
         <br>
-        Code promotionnel :
-        <strong>${escapeHTML(order.promo || "Aucun")}</strong>
+
+        🚚
+        ${escapeHTML(delivery.status)}
+
+        <br>
+
+        📍
+        ${escapeHTML(delivery.truckLocation)}
+
+        <br>
+
+        🎯
+        ${escapeHTML(delivery.destination)}
+
+        <br>
+
+        🔢
+        ${escapeHTML(delivery.tracking)}
+
+      </div>
+
+      <div style="
+        margin-top:30px;
+        font-size:11px;
+        color:#777;
+        text-align:center;
+      ">
+        Merci pour ta commande chez NovaShop.
       </div>
 
     </div>
   `;
-
-  openModal("invoiceModal");
 }
 
-$("printInvoice").addEventListener("click",()=>{
-  window.print();
-});
-
 /* =========================================================
-   SETTINGS
+   ADMIN BUTTON
 ========================================================= */
 
-function applySettings(){
-  document.body.classList.toggle("dark",settings.dark);
-
-  $("darkSwitch").classList.toggle(
-    "active",
-    settings.dark
-  );
-
-  $("soundSwitch").classList.toggle(
-    "active",
-    settings.sound
-  );
-}
-
-$("settingsButton").addEventListener("click",()=>{
-  applySettings();
-  openModal("settingsModal");
-});
-
-$("darkSwitch").addEventListener("click",()=>{
-  settings.dark = !settings.dark;
-
-  save(STORAGE.settings,settings);
-  applySettings();
-});
-
-$("soundSwitch").addEventListener("click",()=>{
-  settings.sound = !settings.sound;
-
-  save(STORAGE.settings,settings);
-  applySettings();
-
-  playSound();
-});
-
-/* =========================================================
-   HERO
-========================================================= */
-
-$("heroProducts").addEventListener("click",()=>{
-  document.querySelector(".products-head")
-    .scrollIntoView({
-      behavior:"smooth"
-    });
-});
-
-/* =========================================================
-   KEYBOARD ESC
-========================================================= */
-
-document.addEventListener("keydown",event=>{
-  if(event.key === "Escape"){
-    closeAllModals();
+function handleAdminButton() {
+  if (!currentUser) {
+    showToast("Connecte-toi d'abord.");
+    return;
   }
-});
+
+  if (!isAdminEmail()) {
+    showToast("Compte non autorisé.");
+    return;
+  }
+
+  if (!isAdminUnlocked()) {
+    const code = prompt(
+      "Code Dashboard NovaShop :"
+    );
+
+    if (code !== ADMIN_CODE) {
+      showToast("Code Dashboard incorrect.");
+      return;
+    }
+
+    localStorage.setItem(
+      STORAGE.admin,
+      "true"
+    );
+  }
+
+  renderDashboard();
+  openModal("dashboardModal");
+}
 
 /* =========================================================
-   INITIALIZATION
+   EVENTS
 ========================================================= */
 
-function boot(){
+function setupEvents() {
 
-  applySettings();
+  /* Search */
 
-  updateCartCount();
+  $("searchButton").addEventListener(
+    "click",
+    () => {
+      searchTerm =
+        $("searchInput").value.trim();
 
-  updateAccountUI();
+      renderProducts();
+      playBop();
+    }
+  );
+
+  $("searchInput").addEventListener(
+    "keydown",
+    event => {
+      if (event.key === "Enter") {
+        searchTerm =
+          $("searchInput").value.trim();
+
+        renderProducts();
+        playBop();
+      }
+    }
+  );
+
+  /* Sort */
+
+  $("sortSelect").addEventListener(
+    "change",
+    renderProducts
+  );
+
+  /* Categories */
+
+  document
+    .querySelectorAll("[data-category]")
+    .forEach(button => {
+
+      button.addEventListener(
+        "click",
+        () => {
+
+          activeCategory =
+            button.dataset.category;
+
+          document
+            .querySelectorAll(".category")
+            .forEach(category => {
+              category.classList.toggle(
+                "active",
+                category.dataset.category ===
+                activeCategory
+              );
+            });
+
+          renderProducts();
+          playBop();
+        }
+      );
+
+    });
+
+  /* Product grid */
+
+  $("productsGrid").addEventListener(
+    "click",
+    event => {
+
+      const button =
+        event.target.closest("[data-action]");
+
+      if (!button) return;
+
+      const action =
+        button.dataset.action;
+
+      const id =
+        button.dataset.id;
+
+      if (action === "favorite") {
+        toggleFavorite(id);
+      }
+
+      if (action === "view") {
+        openProduct(id);
+      }
+
+      if (action === "add") {
+        addToCart(id);
+      }
+
+    }
+  );
+
+  /* Account */
+
+  $("accountButton").addEventListener(
+    "click",
+    () => {
+      renderAccount();
+      openModal("accountModal");
+    }
+  );
+
+  /* Orders */
+
+  $("ordersButton").addEventListener(
+    "click",
+    () => {
+      renderOrders();
+      openModal("ordersModal");
+    }
+  );
+
+  /* Dashboard */
+
+  $("adminButton").addEventListener(
+    "click",
+    handleAdminButton
+  );
+
+  /* Settings */
+
+  $("settingsButton").addEventListener(
+    "click",
+    () => {
+      openModal("settingsModal");
+    }
+  );
+
+  $("darkSwitch").addEventListener(
+    "click",
+    toggleDarkMode
+  );
+
+  $("soundSwitch").addEventListener(
+    "click",
+    toggleSound
+  );
+
+  /* Cart */
+
+  $("cartButton").addEventListener(
+    "click",
+    () => {
+      renderCart();
+      openModal("cartModal");
+    }
+  );
+
+  $("cartContent").addEventListener(
+    "click",
+    event => {
+
+      const minus =
+        event.target.closest(
+          "[data-cart-minus]"
+        );
+
+      const plus =
+        event.target.closest(
+          "[data-cart-plus]"
+        );
+
+      if (minus) {
+        changeQuantity(
+          minus.dataset.cartMinus,
+          -1
+        );
+      }
+
+      if (plus) {
+        changeQuantity(
+          plus.dataset.cartPlus,
+          1
+        );
+      }
+
+    }
+  );
+
+  /* Checkout */
+
+  $("checkoutButton").addEventListener(
+    "click",
+    () => {
+
+      if (!currentUser) {
+        closeModal("cartModal");
+
+        switchAuthTab("login");
+
+        openModal("authModal");
+
+        showToast(
+          "Connecte-toi pour commander."
+        );
+
+        return;
+      }
+
+      if (!cart.length) {
+        showToast("Ton panier est vide.");
+        return;
+      }
+
+      renderCheckout();
+
+      closeModal("cartModal");
+
+      openModal("checkoutModal");
+    }
+  );
+
+  $("applyPromo").addEventListener(
+    "click",
+    applyPromo
+  );
+
+  $("promoCode").addEventListener(
+    "keydown",
+    event => {
+      if (event.key === "Enter") {
+        event.preventDefault();
+        applyPromo();
+      }
+    }
+  );
+
+  $("checkoutForm").addEventListener(
+    "submit",
+    event => {
+      event.preventDefault();
+
+      if (
+        $("payButton").disabled
+      ) {
+        showToast(
+          "Utilise NOVA100 pour valider cette commande."
+        );
+
+        return;
+      }
+
+      createOrder();
+    }
+  );
+
+  /* Auth tabs */
+
+  $("loginTab").addEventListener(
+    "click",
+    () => switchAuthTab("login")
+  );
+
+  $("signupTab").addEventListener(
+    "click",
+    () => switchAuthTab("signup")
+  );
+
+  $("loginForm").addEventListener(
+    "submit",
+    loginWithEmail
+  );
+
+  $("signupForm").addEventListener(
+    "submit",
+    signup
+  );
+
+  $("googleButton").addEventListener(
+    "click",
+    loginGoogle
+  );
+
+  $("googleSignupButton").addEventListener(
+    "click",
+    loginGoogle
+  );
+
+  /* Hero */
+
+  $("heroProducts").addEventListener(
+    "click",
+    () => {
+      window.scrollTo({
+        top: document.querySelector(".products-head")
+          ?.offsetTop || 0,
+        behavior: "smooth"
+      });
+
+      playBop();
+    }
+  );
+
+  $("heroOrders").addEventListener(
+    "click",
+    () => {
+
+      if (!currentUser) {
+        switchAuthTab("login");
+        openModal("authModal");
+
+        showToast(
+          "Connecte-toi pour suivre une commande."
+        );
+
+        return;
+      }
+
+      renderOrders();
+      openModal("ordersModal");
+    }
+  );
+
+  /* Detail buttons */
+
+  $("productContent").addEventListener(
+    "click",
+    event => {
+
+      const add =
+        event.target.closest(
+          "[data-detail-add]"
+        );
+
+      const fav =
+        event.target.closest(
+          "[data-detail-fav]"
+        );
+
+      if (add) {
+        addToCart(add.dataset.detailAdd);
+      }
+
+      if (fav) {
+        toggleFavorite(
+          fav.dataset.detailFav
+        );
+      }
+
+    }
+  );
+
+  /* Close buttons */
+
+  document
+    .querySelectorAll("[data-close]")
+    .forEach(button => {
+
+      button.addEventListener(
+        "click",
+        () => {
+          closeModal(
+            button.dataset.close
+          );
+        }
+      );
+
+    });
+
+  $("overlay").addEventListener(
+    "click",
+    closeAllModals
+  );
+
+  document.addEventListener(
+    "keydown",
+    event => {
+      if (event.key === "Escape") {
+        closeAllModals();
+      }
+    }
+  );
+
+  /* Print */
+
+  $("printInvoice").addEventListener(
+    "click",
+    () => {
+      window.print();
+    }
+  );
+}
+
+/* =========================================================
+   FIREBASE AUTH STATE
+========================================================= */
+
+function setupFirebaseAuth() {
+  if (!firebaseReady) {
+    updateAccountUI();
+    return;
+  }
+
+  onAuthStateChanged(
+    auth,
+    user => {
+
+      currentUser = user;
+
+      /*
+        Le bouton Dashboard dépend uniquement
+        de l'e-mail connecté.
+      */
+
+      updateAccountUI();
+
+      if (user) {
+        console.log(
+          "NovaShop connecté :",
+          user.email
+        );
+      } else {
+        console.log(
+          "NovaShop : utilisateur déconnecté"
+        );
+      }
+    }
+  );
+}
+
+/* =========================================================
+   MIGRATION OLD ORDERS
+========================================================= */
+
+function migrateOrders() {
+  let changed = false;
+
+  orders = orders.map(order => {
+
+    if (!order.status) {
+      order.status = "En préparation";
+      changed = true;
+    }
+
+    if (!order.truckLocation) {
+      order.truckLocation =
+        "Entrepôt";
+
+      changed = true;
+    }
+
+    if (!order.destination) {
+      order.destination =
+        order.address?.city ||
+        "France";
+
+      changed = true;
+    }
+
+    if (!order.tracking) {
+      order.tracking =
+        "NOVA-TRK-" +
+        randomId(7).toUpperCase();
+
+      changed = true;
+    }
+
+    if (!Number.isFinite(
+      Number(order.deliveryDurationSeconds)
+    )) {
+
+      const date =
+        order.deliveryDate
+          ? new Date(order.deliveryDate).getTime()
+          : Date.now() +
+            3 * 86400000;
+
+      order.deliveryDurationSeconds =
+        Math.max(
+          0,
+          Math.floor(
+            (date - Date.now()) / 1000
+          )
+        );
+
+      changed = true;
+    }
+
+    if (!Number.isFinite(
+      Number(order.deliveryUpdatedAt)
+    )) {
+
+      order.deliveryUpdatedAt =
+        Date.now();
+
+      changed = true;
+    }
+
+    if (!order.deliveryDate) {
+
+      order.deliveryDate =
+        new Date(
+          order.deliveryUpdatedAt +
+          order.deliveryDurationSeconds *
+          1000
+        ).toISOString();
+
+      changed = true;
+    }
+
+    return order;
+  });
+
+  if (changed) {
+    saveJSON(STORAGE.orders, orders);
+  }
+}
+
+/* =========================================================
+   BOOT
+========================================================= */
+
+function boot() {
+  migrateOrders();
+
+  loadSettings();
+
+  setupEvents();
 
   renderProducts();
 
   renderCart();
 
-  /*
-    Nettoyage des produits inexistants
-    dans le panier.
-  */
-
-  cart = cart.filter(item=>{
-    return Boolean(getProduct(item.id));
-  });
-
-  save(STORAGE.cart,cart);
-
   updateCartCount();
 
-  /*
-    Nettoyage commandes invalides.
-  */
+  updateAccountUI();
 
-  orders = orders.filter(order=>{
-    return order &&
-           order.id &&
-           order.userId;
-  });
+  setupFirebaseAuth();
 
-  save(STORAGE.orders,orders);
+  console.log(
+    "%cNovaShop prêt.",
+    "font-weight:900;font-size:18px"
+  );
 }
 
 boot();
-
-/* =========================================================
-   DEBUG UTILS
-========================================================= */
-
-window.NovaShop = {
-  products:PRODUCTS,
-  orders,
-  cart,
-  reviews,
-  settings,
-
-  refresh(){
-    renderProducts();
-    renderCart();
-    renderOrders();
-    renderDashboard();
-  },
-
-  adminCode:ADMIN_CODE
-};
