@@ -6005,3 +6005,1436 @@ window.NovaShop = {
   openDashboard
 
 };
+(() => {
+  "use strict";
+
+  /* =====================================================
+     NOVASHOP FINAL
+     Stock • promos • notifications • responsive polish
+     ===================================================== */
+
+  const NS = window.NovaShop || {};
+
+  /* -----------------------------------------------------
+     STOCK
+     ----------------------------------------------------- */
+
+  const STOCK_KEY = "novashop_stock";
+  const PROMO_KEY = "novashop_promos";
+  const NOTIF_KEY = "novashop_notifications";
+
+  const defaultStock = {};
+
+  if (Array.isArray(NS.products)) {
+    NS.products.forEach(product => {
+      defaultStock[product.id] =
+        Math.floor(3 + Math.random() * 25);
+    });
+  }
+
+  let stock = load(STOCK_KEY, defaultStock);
+
+  let promotions = load(PROMO_KEY, {
+    "cpu-9600x": 199.99,
+    "ram-corsair-32": 89.99,
+    "ssd-990-1tb": 79.99,
+    "mouse-superlight2": 129.99
+  });
+
+  let notifications = load(
+    NOTIF_KEY,
+    []
+  );
+
+
+  function load(key, fallback) {
+    try {
+      const raw = localStorage.getItem(key);
+
+      if (raw === null) {
+        return fallback;
+      }
+
+      return JSON.parse(raw);
+
+    } catch {
+      return fallback;
+    }
+  }
+
+
+  function save(key, value) {
+    localStorage.setItem(
+      key,
+      JSON.stringify(value)
+    );
+  }
+
+
+  /* -----------------------------------------------------
+     PRIX
+     ----------------------------------------------------- */
+
+  function getProduct(productId) {
+
+    return NS.products?.find(
+      product => product.id === productId
+    );
+
+  }
+
+
+  function getPrice(product) {
+
+    if (!product) {
+      return 0;
+    }
+
+    if (
+      promotions[product.id] &&
+      promotions[product.id] < product.price
+    ) {
+      return promotions[product.id];
+    }
+
+    return product.price;
+  }
+
+
+  function formatMoney(value) {
+
+    return new Intl.NumberFormat(
+      "fr-FR",
+      {
+        style: "currency",
+        currency: "EUR"
+      }
+    ).format(value);
+
+  }
+
+
+  function getStock(productId) {
+
+    const value =
+      Number(stock[productId]);
+
+    return Number.isFinite(value)
+      ? Math.max(0, value)
+      : 0;
+
+  }
+
+
+  function stockLabel(quantity) {
+
+    if (quantity <= 0) {
+      return `
+        <span style="
+          color:#dc2626;
+          font-weight:800;
+        ">
+          Rupture de stock
+        </span>
+      `;
+    }
+
+    if (quantity <= 3) {
+      return `
+        <span style="
+          color:#d97706;
+          font-weight:800;
+        ">
+          Plus que ${quantity}
+        </span>
+      `;
+    }
+
+    return `
+      <span style="
+        color:#16a34a;
+        font-weight:700;
+      ">
+        En stock
+      </span>
+    `;
+  }
+
+
+  /* -----------------------------------------------------
+     NOTIFICATIONS
+     ----------------------------------------------------- */
+
+  function addNotification(
+    title,
+    message,
+    type = "info"
+  ) {
+
+    notifications.unshift({
+      id:
+        Date.now().toString(36) +
+        Math.random()
+          .toString(36)
+          .slice(2),
+
+      title,
+      message,
+      type,
+
+      date:
+        new Date().toISOString(),
+
+      read:false
+    });
+
+    notifications =
+      notifications.slice(0, 50);
+
+    save(
+      NOTIF_KEY,
+      notifications
+    );
+
+    renderNotifications();
+
+  }
+
+
+  function renderNotifications() {
+
+    let box =
+      document.getElementById(
+        "novaNotifications"
+      );
+
+    if (!box) {
+      createNotificationPanel();
+
+      box =
+        document.getElementById(
+          "novaNotifications"
+        );
+    }
+
+    if (!box) {
+      return;
+    }
+
+    const unread =
+      notifications.filter(
+        notification =>
+          !notification.read
+      ).length;
+
+    const content =
+      notifications.length
+        ? notifications.map(
+            notification => `
+              <div style="
+                padding:12px 0;
+                border-bottom:1px solid #e5e7eb;
+                opacity:${notification.read ? ".65" : "1"};
+              ">
+
+                <strong>
+                  ${escapeHTML(
+                    notification.title
+                  )}
+                </strong>
+
+                <p style="
+                  margin-top:4px;
+                  color:#6b7280;
+                  font-size:13px;
+                  line-height:1.4;
+                ">
+                  ${escapeHTML(
+                    notification.message
+                  )}
+                </p>
+
+                <small style="
+                  color:#9ca3af;
+                ">
+                  ${formatDate(
+                    notification.date
+                  )}
+                </small>
+
+              </div>
+            `
+          ).join("")
+        : `
+          <div style="
+            text-align:center;
+            padding:35px 10px;
+            color:#6b7280;
+          ">
+            Aucune notification
+          </div>
+        `;
+
+    box.innerHTML = `
+      <div style="
+        padding:18px;
+        border-bottom:1px solid #e5e7eb;
+        display:flex;
+        justify-content:space-between;
+        align-items:center;
+      ">
+
+        <strong>
+          Notifications
+        </strong>
+
+        ${
+          unread
+            ? `
+              <button
+                id="markNotificationsRead"
+                style="
+                  border:0;
+                  background:none;
+                  color:#2563eb;
+                  cursor:pointer;
+                  font-size:12px;
+                "
+              >
+                Tout lire
+              </button>
+            `
+            : ""
+        }
+
+      </div>
+
+      <div style="
+        padding:0 18px;
+        max-height:420px;
+        overflow:auto;
+      ">
+        ${content}
+      </div>
+    `;
+
+    updateNotificationBadge();
+
+  }
+
+
+  function markNotificationsRead() {
+
+    notifications =
+      notifications.map(
+        notification => ({
+          ...notification,
+          read:true
+        })
+      );
+
+    save(
+      NOTIF_KEY,
+      notifications
+    );
+
+    renderNotifications();
+
+  }
+
+
+  function updateNotificationBadge() {
+
+    const button =
+      document.getElementById(
+        "notificationButton"
+      );
+
+    if (!button) {
+      return;
+    }
+
+    const unread =
+      notifications.filter(
+        notification =>
+          !notification.read
+      ).length;
+
+    let badge =
+      button.querySelector(
+        ".nova-notification-count"
+      );
+
+    if (unread <= 0) {
+
+      if (badge) {
+        badge.remove();
+      }
+
+      return;
+    }
+
+    if (!badge) {
+
+      badge =
+        document.createElement("span");
+
+      badge.className =
+        "nova-notification-count";
+
+      badge.style.cssText = `
+        position:absolute;
+        right:-5px;
+        top:-5px;
+        min-width:18px;
+        height:18px;
+        padding:0 4px;
+        border-radius:50px;
+        background:#2563eb;
+        color:white;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        font-size:10px;
+        font-weight:900;
+      `;
+
+      button.appendChild(badge);
+
+    }
+
+    badge.textContent =
+      unread > 99
+        ? "99+"
+        : unread;
+
+  }
+
+
+  function createNotificationPanel() {
+
+    if (
+      document.getElementById(
+        "novaNotifications"
+      )
+    ) {
+      return;
+    }
+
+    const panel =
+      document.createElement("aside");
+
+    panel.id =
+      "novaNotifications";
+
+    panel.style.cssText = `
+      position:fixed;
+      top:72px;
+      right:20px;
+      width:min(390px,calc(100vw - 40px));
+      max-height:520px;
+      overflow:hidden;
+      background:white;
+      border:1px solid #e5e7eb;
+      border-radius:10px;
+      box-shadow:0 18px 50px rgba(0,0,0,.14);
+      z-index:3500;
+      display:none;
+    `;
+
+    document.body.appendChild(panel);
+
+  }
+
+
+  function toggleNotifications() {
+
+    createNotificationPanel();
+
+    const panel =
+      document.getElementById(
+        "novaNotifications"
+      );
+
+    if (!panel) {
+      return;
+    }
+
+    const visible =
+      panel.style.display === "block";
+
+    panel.style.display =
+      visible
+        ? "none"
+        : "block";
+
+    if (!visible) {
+      renderNotifications();
+    }
+
+  }
+
+
+  /* -----------------------------------------------------
+     STYLE FINAL
+     ----------------------------------------------------- */
+
+  function addFinalStyles() {
+
+    if (
+      document.getElementById(
+        "novashop-final-style"
+      )
+    ) {
+      return;
+    }
+
+    const style =
+      document.createElement("style");
+
+    style.id =
+      "novashop-final-style";
+
+    style.textContent = `
+
+      .nova-sale {
+        position:absolute;
+        left:10px;
+        bottom:10px;
+        background:#dc2626;
+        color:white;
+        padding:5px 8px;
+        border-radius:5px;
+        font-size:10px;
+        font-weight:900;
+        z-index:4;
+      }
+
+      .nova-old-price {
+        color:#9ca3af;
+        text-decoration:line-through;
+        font-size:13px;
+        margin-right:5px;
+      }
+
+      .nova-stock {
+        margin-top:7px;
+        font-size:11px;
+      }
+
+      .nova-toast-progress {
+        height:2px;
+        width:100%;
+        margin-top:8px;
+        background:#374151;
+        overflow:hidden;
+      }
+
+      .nova-toast-progress span {
+        display:block;
+        height:100%;
+        width:100%;
+        background:#fff;
+        animation:novaToastProgress 2.2s linear forwards;
+      }
+
+      @keyframes novaToastProgress {
+        from { width:100%; }
+        to { width:0%; }
+      }
+
+      .nova-buy-disabled {
+        opacity:.45 !important;
+        cursor:not-allowed !important;
+      }
+
+      @media(max-width:650px){
+
+        #novaNotifications {
+          top:66px !important;
+          right:10px !important;
+          width:calc(100vw - 20px) !important;
+        }
+
+      }
+
+      @media(prefers-reduced-motion:reduce){
+
+        * {
+          scroll-behavior:auto !important;
+          transition:none !important;
+          animation:none !important;
+        }
+
+      }
+
+    `;
+
+    document.head.appendChild(style);
+
+  }
+
+
+  /* -----------------------------------------------------
+     HELPERS
+     ----------------------------------------------------- */
+
+  function escapeHTML(value) {
+
+    return String(value ?? "")
+      .replaceAll("&","&amp;")
+      .replaceAll("<","&lt;")
+      .replaceAll(">","&gt;")
+      .replaceAll('"',"&quot;")
+      .replaceAll("'","&#039;");
+
+  }
+
+
+  function formatDate(date) {
+
+    try {
+
+      return new Intl.DateTimeFormat(
+        "fr-FR",
+        {
+          dateStyle:"medium",
+          timeStyle:"short"
+        }
+      ).format(
+        new Date(date)
+      );
+
+    } catch {
+
+      return String(date);
+
+    }
+
+  }
+
+
+  /* -----------------------------------------------------
+     PATCH AFFICHAGE PRODUITS
+     ----------------------------------------------------- */
+
+  function enhanceProducts() {
+
+    const products =
+      document.querySelectorAll(
+        ".product"
+      );
+
+    products.forEach(card => {
+
+      const productId =
+        card.dataset.product;
+
+      const product =
+        getProduct(productId);
+
+      if (!product) {
+        return;
+      }
+
+      const quantity =
+        getStock(productId);
+
+      const price =
+        getPrice(product);
+
+      const priceElement =
+        card.querySelector(".price");
+
+      if (
+        priceElement &&
+        price !== product.price
+      ) {
+
+        priceElement.innerHTML = `
+          <span class="nova-old-price">
+            ${formatMoney(product.price)}
+          </span>
+          ${formatMoney(price)}
+        `;
+
+      }
+
+      const pic =
+        card.querySelector(".pic");
+
+      if (
+        pic &&
+        price !== product.price &&
+        !pic.querySelector(".nova-sale")
+      ) {
+
+        const sale =
+          document.createElement("span");
+
+        sale.className =
+          "nova-sale";
+
+        sale.textContent =
+          "PROMO";
+
+        pic.appendChild(sale);
+
+      }
+
+      const info =
+        card.querySelector(".info");
+
+      if (!info) {
+        return;
+      }
+
+      let stockElement =
+        info.querySelector(
+          ".nova-stock"
+        );
+
+      if (!stockElement) {
+
+        stockElement =
+          document.createElement("div");
+
+        stockElement.className =
+          "nova-stock";
+
+        const rating =
+          info.querySelector(
+            ".rating"
+          );
+
+        if (rating) {
+          rating.insertAdjacentElement(
+            "afterend",
+            stockElement
+          );
+        } else {
+          info.appendChild(
+            stockElement
+          );
+        }
+
+      }
+
+      stockElement.innerHTML =
+        stockLabel(quantity);
+
+      const add =
+        card.querySelector(
+          "[data-add]"
+        );
+
+      if (add) {
+
+        if (quantity <= 0) {
+
+          add.disabled = true;
+
+          add.classList.add(
+            "nova-buy-disabled"
+          );
+
+          add.textContent =
+            "×";
+
+        } else {
+
+          add.disabled = false;
+
+          add.classList.remove(
+            "nova-buy-disabled"
+          );
+
+          add.textContent =
+            "+";
+
+        }
+
+      }
+
+    });
+
+  }
+
+
+  /* -----------------------------------------------------
+     PATCH PANIER
+     ----------------------------------------------------- */
+
+  function validateCartStock() {
+
+    if (!Array.isArray(NS.cart)) {
+      return;
+    }
+
+    let changed = false;
+
+    NS.cart.forEach(item => {
+
+      const available =
+        getStock(item.id);
+
+      if (
+        item.quantity > available
+      ) {
+
+        item.quantity =
+          available;
+
+        changed = true;
+
+      }
+
+    });
+
+    if (changed) {
+
+      NS.cart =
+        NS.cart.filter(
+          item => item.quantity > 0
+        );
+
+      try {
+        localStorage.setItem(
+          "novashop_cart",
+          JSON.stringify(NS.cart)
+        );
+      } catch {}
+
+    }
+
+  }
+
+
+  /* -----------------------------------------------------
+     INTERCEPTION AJOUT PANIER
+     ----------------------------------------------------- */
+
+  document.addEventListener(
+    "click",
+    event => {
+
+      const addButton =
+        event.target.closest(
+          "[data-add]"
+        );
+
+      if (!addButton) {
+        return;
+      }
+
+      const productId =
+        addButton.dataset.add;
+
+      const available =
+        getStock(productId);
+
+      if (available <= 0) {
+
+        event.preventDefault();
+        event.stopImmediatePropagation();
+
+        addNotification(
+          "Produit indisponible",
+          "Ce produit est actuellement en rupture de stock.",
+          "stock"
+        );
+
+        return;
+
+      }
+
+      /*
+        On réduit le stock après l'ajout.
+        Le script principal s'occupe du panier.
+      */
+
+      setTimeout(() => {
+
+        const cart =
+          load(
+            "novashop_cart",
+            []
+          );
+
+        const item =
+          cart.find(
+            entry =>
+              entry.id === productId
+          );
+
+        if (item) {
+
+          const previousStock =
+            getStock(productId);
+
+          /*
+            On ne descend pas sous zéro.
+          */
+
+          stock[productId] =
+            Math.max(
+              0,
+              previousStock - 1
+            );
+
+          save(
+            STOCK_KEY,
+            stock
+          );
+
+          if (
+            getStock(productId) <= 3 &&
+            getStock(productId) > 0
+          ) {
+
+            addNotification(
+              "Stock faible",
+              `${getProduct(productId)?.name || "Produit"} : plus que ${getStock(productId)} en stock.`,
+              "stock"
+            );
+
+          }
+
+          enhanceProducts();
+
+        }
+
+      },50);
+
+    },
+    true
+  );
+
+
+  /* -----------------------------------------------------
+     COMMANDE
+     ----------------------------------------------------- */
+
+  const originalCreateOrder =
+    NS.createOrder;
+
+  if (
+    typeof originalCreateOrder ===
+    "function"
+  ) {
+
+    NS.createOrder =
+      function enhancedCreateOrder() {
+
+        validateCartStock();
+
+        const cart =
+          load(
+            "novashop_cart",
+            []
+          );
+
+        if (!cart.length) {
+
+          if (
+            typeof originalCreateOrder ===
+            "function"
+          ) {
+            return originalCreateOrder();
+          }
+
+          return;
+        }
+
+        const items =
+          cart.map(
+            item => {
+
+              const product =
+                getProduct(item.id);
+
+              return {
+                id:item.id,
+                quantity:item.quantity,
+                price:getPrice(product)
+              };
+
+            }
+          );
+
+        /*
+          Le système principal crée
+          réellement la commande.
+        */
+
+        const result =
+          originalCreateOrder();
+
+        items.forEach(item => {
+
+          const available =
+            getStock(item.id);
+
+          stock[item.id] =
+            Math.max(
+              0,
+              available - item.quantity
+            );
+
+        });
+
+        save(
+          STOCK_KEY,
+          stock
+        );
+
+        addNotification(
+          "Commande créée",
+          "Ta commande NovaShop a bien été enregistrée.",
+          "order"
+        );
+
+        enhanceProducts();
+
+        return result;
+
+      };
+
+  }
+
+
+  /* -----------------------------------------------------
+     BOUTON NOTIFICATIONS
+     ----------------------------------------------------- */
+
+  function createNotificationButton() {
+
+    if (
+      document.getElementById(
+        "notificationButton"
+      )
+    ) {
+      return;
+    }
+
+    const actions =
+      document.querySelector(
+        ".actions"
+      );
+
+    if (!actions) {
+      return;
+    }
+
+    const button =
+      document.createElement("button");
+
+    button.id =
+      "notificationButton";
+
+    button.className =
+      "icon";
+
+    button.title =
+      "Notifications";
+
+    button.style.position =
+      "relative";
+
+    button.innerHTML =
+      "🔔";
+
+    actions.insertBefore(
+      button,
+      actions.firstChild
+    );
+
+    button.addEventListener(
+      "click",
+      event => {
+
+        event.stopPropagation();
+
+        toggleNotifications();
+
+      }
+    );
+
+    updateNotificationBadge();
+
+  }
+
+
+  /* -----------------------------------------------------
+     RECHERCHE RAPIDE
+     ----------------------------------------------------- */
+
+  function improveSearch() {
+
+    const input =
+      document.getElementById(
+        "searchInput"
+      );
+
+    if (!input) {
+      return;
+    }
+
+    let suggestions =
+      document.getElementById(
+        "novaSearchSuggestions"
+      );
+
+    if (!suggestions) {
+
+      suggestions =
+        document.createElement("div");
+
+      suggestions.id =
+        "novaSearchSuggestions";
+
+      suggestions.style.cssText = `
+        position:absolute;
+        left:0;
+        right:0;
+        top:48px;
+        background:#fff;
+        border:1px solid #e5e7eb;
+        border-radius:8px;
+        box-shadow:0 15px 40px rgba(0,0,0,.1);
+        overflow:hidden;
+        z-index:2500;
+        display:none;
+      `;
+
+      const wrapper =
+        input.parentElement;
+
+      if (wrapper) {
+
+        wrapper.style.position =
+          "relative";
+
+        wrapper.appendChild(
+          suggestions
+        );
+
+      }
+
+    }
+
+    input.addEventListener(
+      "input",
+      () => {
+
+        const query =
+          input.value
+            .trim()
+            .toLowerCase();
+
+        if (!query) {
+
+          suggestions.style.display =
+            "none";
+
+          return;
+
+        }
+
+        const matches =
+          (NS.products || [])
+            .filter(product =>
+              product.name
+                .toLowerCase()
+                .includes(query) ||
+              product.brand
+                .toLowerCase()
+                .includes(query)
+            )
+            .slice(0,5);
+
+        if (!matches.length) {
+
+          suggestions.innerHTML = `
+            <div style="
+              padding:14px;
+              color:#6b7280;
+            ">
+              Aucun produit trouvé
+            </div>
+          `;
+
+        } else {
+
+          suggestions.innerHTML =
+            matches.map(
+              product => `
+                <button
+                  data-search-product="${product.id}"
+                  style="
+                    width:100%;
+                    padding:11px 13px;
+                    border:0;
+                    background:#fff;
+                    text-align:left;
+                    cursor:pointer;
+                    display:flex;
+                    justify-content:space-between;
+                    gap:10px;
+                  "
+                >
+                  <span>
+                    ${escapeHTML(
+                      product.name
+                    )}
+                  </span>
+
+                  <strong>
+                    ${formatMoney(
+                      getPrice(product)
+                    )}
+                  </strong>
+
+                </button>
+              `
+            ).join("");
+
+        }
+
+        suggestions.style.display =
+          "block";
+
+      }
+    );
+
+  }
+
+
+  document.addEventListener(
+    "click",
+    event => {
+
+      const productButton =
+        event.target.closest(
+          "[data-search-product]"
+        );
+
+      if (productButton) {
+
+        const productId =
+          productButton.dataset
+            .searchProduct;
+
+        if (
+          typeof NS.openProduct ===
+          "function"
+        ) {
+          NS.openProduct(
+            productId
+          );
+        }
+
+        const suggestions =
+          document.getElementById(
+            "novaSearchSuggestions"
+          );
+
+        if (suggestions) {
+          suggestions.style.display =
+            "none";
+        }
+
+        return;
+      }
+
+      const suggestions =
+        document.getElementById(
+          "novaSearchSuggestions"
+        );
+
+      const input =
+        document.getElementById(
+          "searchInput"
+        );
+
+      if (
+        suggestions &&
+        input &&
+        !suggestions.contains(
+          event.target
+        ) &&
+        event.target !== input
+      ) {
+
+        suggestions.style.display =
+          "none";
+
+      }
+
+      const panel =
+        document.getElementById(
+          "novaNotifications"
+        );
+
+      const notificationButton =
+        document.getElementById(
+          "notificationButton"
+        );
+
+      if (
+        panel &&
+        notificationButton &&
+        !panel.contains(event.target) &&
+        !notificationButton.contains(
+          event.target
+        )
+      ) {
+
+        panel.style.display =
+          "none";
+
+      }
+
+    }
+  );
+
+
+  document.addEventListener(
+    "click",
+    event => {
+
+      if (
+        event.target.id ===
+        "markNotificationsRead"
+      ) {
+
+        markNotificationsRead();
+
+      }
+
+    }
+  );
+
+
+  /* -----------------------------------------------------
+     PATCH PRODUCT MODAL
+     ----------------------------------------------------- */
+
+  document.addEventListener(
+    "click",
+    event => {
+
+      const add =
+        event.target.closest(
+          "[data-detail-add]"
+        );
+
+      if (!add) {
+        return;
+      }
+
+      const productId =
+        add.dataset.detailAdd;
+
+      const quantity =
+        getStock(productId);
+
+      if (quantity <= 0) {
+
+        event.preventDefault();
+        event.stopImmediatePropagation();
+
+        addNotification(
+          "Rupture de stock",
+          "Ce produit ne peut pas être ajouté pour le moment.",
+          "stock"
+        );
+
+        return;
+
+      }
+
+      setTimeout(() => {
+
+        const current =
+          getStock(productId);
+
+        stock[productId] =
+          Math.max(
+            0,
+            current - 1
+          );
+
+        save(
+          STOCK_KEY,
+          stock
+        );
+
+        enhanceProducts();
+
+      },50);
+
+    },
+    true
+  );
+
+
+  /* -----------------------------------------------------
+     FINAL INIT
+     ----------------------------------------------------- */
+
+  addFinalStyles();
+
+  createNotificationPanel();
+
+  createNotificationButton();
+
+  improveSearch();
+
+  validateCartStock();
+
+  renderNotifications();
+
+  setTimeout(
+    enhanceProducts,
+    100
+  );
+
+  setTimeout(
+    enhanceProducts,
+    600
+  );
+
+  setTimeout(
+    enhanceProducts,
+    1500
+  );
+
+
+  /* -----------------------------------------------------
+     API FINAL
+     ----------------------------------------------------- */
+
+  NS.stock = stock;
+  NS.promotions = promotions;
+  NS.notifications = notifications;
+
+  NS.getStock =
+    getStock;
+
+  NS.getPrice =
+    getPrice;
+
+  NS.addNotification =
+    addNotification;
+
+  NS.toggleNotifications =
+    toggleNotifications;
+
+  NS.enhanceProducts =
+    enhanceProducts;
+
+  window.NovaShop =
+    NS;
+
+})();
