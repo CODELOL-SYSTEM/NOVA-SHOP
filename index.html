@@ -2,25 +2,23 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#ffffff">
-<title>NovaShop • Marketplace Gaming</title>
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="theme-color" content="#111827">
+<title>NovaShop</title>
 
 <style>
 :root{
   --bg:#f5f6f8;
-  --surface:#ffffff;
-  --surface2:#f0f2f5;
-  --text:#17191c;
-  --muted:#69707a;
-  --line:#e2e5e9;
+  --card:#fff;
+  --text:#15171a;
+  --muted:#6b7280;
+  --line:#e3e6ea;
   --blue:#1466ff;
-  --blue2:#0b55db;
-  --green:#0a9f55;
+  --blue2:#0d54d8;
+  --green:#0b9951;
   --red:#e53935;
-  --orange:#ff8a00;
-  --shadow:0 8px 28px rgba(20,25,35,.08);
-  --radius:18px;
+  --dark:#111827;
+  --shadow:0 10px 35px rgba(0,0,0,.08);
 }
 
 *{
@@ -29,20 +27,13 @@
   padding:0;
 }
 
-html{
-  scroll-behavior:smooth;
-}
-
 body{
-  font-family:Inter,Arial,Helvetica,sans-serif;
+  font-family:Inter,Arial,sans-serif;
   background:var(--bg);
   color:var(--text);
-  min-height:100vh;
 }
 
-button,
-input,
-select{
+button,input,select,textarea{
   font:inherit;
 }
 
@@ -50,36 +41,23 @@ button{
   cursor:pointer;
 }
 
-img{
-  max-width:100%;
-}
-
-a{
-  color:inherit;
-  text-decoration:none;
-}
-
-/* TOP */
-
 .topbar{
   height:34px;
   background:#111827;
-  color:#fff;
+  color:white;
   display:flex;
-  align-items:center;
   justify-content:center;
+  align-items:center;
   font-size:12px;
-  font-weight:600;
+  font-weight:700;
 }
-
-/* HEADER */
 
 .header{
   position:sticky;
   top:0;
   z-index:100;
-  background:rgba(255,255,255,.94);
-  backdrop-filter:blur(18px);
+  background:rgba(255,255,255,.96);
+  backdrop-filter:blur(15px);
   border-bottom:1px solid var(--line);
 }
 
@@ -87,17 +65,16 @@ a{
   max-width:1450px;
   margin:auto;
   min-height:72px;
-  padding:10px 22px;
+  padding:10px 20px;
   display:flex;
   align-items:center;
-  gap:18px;
+  gap:16px;
 }
 
 .logo{
   font-size:25px;
   font-weight:950;
-  letter-spacing:-1.2px;
-  white-space:nowrap;
+  letter-spacing:-1.5px;
 }
 
 .logo span{
@@ -106,64 +83,57 @@ a{
 
 .search{
   flex:1;
-  display:flex;
-  min-width:180px;
   max-width:720px;
+  display:flex;
   margin:auto;
 }
 
 .search input{
-  width:100%;
+  flex:1;
   height:44px;
   border:1px solid var(--line);
   border-right:0;
   border-radius:12px 0 0 12px;
+  padding:0 14px;
   outline:none;
-  padding:0 15px;
-  background:#fff;
-}
-
-.search input:focus{
-  border-color:#9bbcff;
 }
 
 .search button{
-  width:54px;
+  width:55px;
   border:0;
+  border-radius:0 12px 12px 0;
   background:var(--blue);
   color:white;
-  border-radius:0 12px 12px 0;
-  font-size:18px;
+  font-size:20px;
 }
 
-.header-actions{
+.actions{
   display:flex;
-  gap:8px;
   align-items:center;
+  gap:7px;
 }
 
-.icon-btn{
-  min-width:44px;
-  height:44px;
+.btn{
+  min-height:42px;
   border:1px solid var(--line);
-  background:#fff;
-  border-radius:12px;
+  background:white;
+  border-radius:11px;
   padding:0 12px;
-  font-weight:750;
+  font-weight:800;
 }
 
-.icon-btn:hover{
-  background:var(--surface2);
+.btn:hover{
+  background:#f0f2f5;
 }
 
 .admin-btn{
   display:none;
   background:#111827;
-  color:#fff;
+  color:white;
   border-color:#111827;
 }
 
-.cart-btn{
+.cart{
   position:relative;
 }
 
@@ -171,149 +141,117 @@ a{
   position:absolute;
   right:-5px;
   top:-6px;
+  background:#ef3030;
+  color:white;
+  border-radius:50%;
   min-width:20px;
   height:20px;
-  border-radius:50%;
-  background:#ff3030;
-  color:white;
-  font-size:11px;
   display:flex;
   align-items:center;
   justify-content:center;
+  font-size:10px;
   font-weight:900;
 }
-
-/* CATEGORIES */
 
 .categories{
   max-width:1450px;
   margin:auto;
-  padding:0 22px 13px;
+  padding:0 20px 13px;
   display:flex;
   gap:8px;
   overflow:auto;
-  scrollbar-width:none;
-}
-
-.categories::-webkit-scrollbar{
-  display:none;
 }
 
 .category{
-  flex:none;
+  white-space:nowrap;
   border:1px solid var(--line);
-  background:#fff;
+  background:white;
   padding:8px 14px;
   border-radius:999px;
-  font-size:13px;
-  font-weight:750;
+  font-size:12px;
+  font-weight:800;
 }
 
-.category.active,
-.category:hover{
+.category.active{
   background:#111827;
-  color:#fff;
+  color:white;
   border-color:#111827;
 }
-
-/* MAIN */
 
 main{
   max-width:1450px;
   margin:auto;
-  padding:28px 22px 70px;
+  padding:25px 20px 70px;
 }
 
-/* HERO */
-
 .hero{
+  min-height:310px;
   border-radius:25px;
   background:
-    radial-gradient(circle at 85% 20%,rgba(20,102,255,.25),transparent 28%),
-    linear-gradient(135deg,#111827,#1b2535);
+    radial-gradient(circle at 80% 20%,rgba(20,102,255,.28),transparent 30%),
+    linear-gradient(135deg,#101722,#202b3b);
   color:white;
-  min-height:300px;
   padding:48px;
   display:flex;
   align-items:center;
   overflow:hidden;
-  position:relative;
   box-shadow:var(--shadow);
 }
 
-.hero:after{
-  content:"";
-  position:absolute;
-  width:360px;
-  height:360px;
-  right:-130px;
-  bottom:-170px;
-  border-radius:50%;
-  border:60px solid rgba(255,255,255,.05);
-}
-
-.hero-content{
-  position:relative;
-  z-index:2;
-  max-width:720px;
-}
-
 .hero small{
-  color:#9ebcff;
-  font-weight:850;
+  color:#9dbbff;
+  font-weight:900;
   text-transform:uppercase;
   letter-spacing:1.5px;
 }
 
 .hero h1{
-  font-size:clamp(35px,5vw,65px);
+  font-size:clamp(38px,5vw,65px);
+  max-width:750px;
   line-height:.98;
   letter-spacing:-3px;
   margin:14px 0;
 }
 
 .hero p{
-  color:#c7ced8;
-  font-size:17px;
-  line-height:1.6;
+  color:#c9d0da;
   max-width:620px;
+  line-height:1.6;
 }
 
 .hero-actions{
   display:flex;
-  gap:10px;
-  margin-top:25px;
+  gap:9px;
+  margin-top:24px;
 }
 
 .primary{
   border:0;
   background:var(--blue);
-  color:#fff;
+  color:white;
+  border-radius:11px;
   padding:12px 18px;
-  border-radius:12px;
-  font-weight:850;
+  font-weight:900;
 }
 
 .primary:hover{
   background:var(--blue2);
 }
 
-.secondary{
-  border:1px solid rgba(255,255,255,.2);
+.hero-secondary{
+  border:1px solid rgba(255,255,255,.25);
   background:rgba(255,255,255,.08);
-  color:#fff;
+  color:white;
+  border-radius:11px;
   padding:12px 18px;
-  border-radius:12px;
   font-weight:800;
 }
 
-/* PRODUCTS */
-
 .products-head{
-  margin:38px 0 18px;
   display:flex;
-  align-items:center;
   justify-content:space-between;
+  align-items:center;
+  margin:35px 0 18px;
   gap:15px;
 }
 
@@ -321,55 +259,47 @@ main{
   font-size:25px;
 }
 
-.products-meta{
+.results{
   color:var(--muted);
-  font-size:13px;
+  font-size:12px;
   margin-top:4px;
 }
 
 .sort{
   height:42px;
   border:1px solid var(--line);
-  background:#fff;
   border-radius:11px;
+  background:white;
   padding:0 12px;
-  outline:none;
 }
 
-.products-grid{
+.grid{
   display:grid;
-  grid-template-columns:repeat(4,minmax(0,1fr));
+  grid-template-columns:repeat(4,1fr);
   gap:18px;
 }
 
-/* CARD */
-
-.product-card{
-  background:#fff;
+.card{
+  background:var(--card);
   border:1px solid var(--line);
   border-radius:17px;
   overflow:hidden;
-  box-shadow:0 3px 14px rgba(0,0,0,.035);
-  transition:.2s ease;
-  min-width:0;
+  transition:.2s;
 }
 
-.product-card:hover{
+.card:hover{
   transform:translateY(-4px);
-  box-shadow:0 14px 35px rgba(0,0,0,.11);
+  box-shadow:var(--shadow);
 }
 
-.product-image-wrap{
-  height:245px;
+.image-box{
+  height:240px;
   background:#f7f7f8;
   position:relative;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  padding:20px;
+  padding:18px;
 }
 
-.product-image{
+.image-box img{
   width:100%;
   height:100%;
   object-fit:contain;
@@ -377,55 +307,48 @@ main{
 
 .favorite{
   position:absolute;
-  top:11px;
-  right:11px;
+  top:10px;
+  right:10px;
   width:36px;
   height:36px;
   border:1px solid var(--line);
-  background:#fff;
+  background:white;
   border-radius:50%;
-  font-size:17px;
-  z-index:2;
+  font-size:18px;
 }
 
 .favorite.active{
-  color:#e62e4f;
+  color:#e52f50;
 }
 
-.product-body{
+.card-body{
   padding:15px;
 }
 
-.product-category{
-  color:var(--blue);
-  text-transform:uppercase;
+.category-name{
   font-size:10px;
+  color:var(--blue);
   font-weight:900;
-  letter-spacing:.8px;
+  text-transform:uppercase;
 }
 
-.product-title{
+.title{
   font-size:15px;
+  font-weight:850;
   line-height:1.35;
-  font-weight:800;
-  margin:7px 0;
   min-height:41px;
+  margin:7px 0;
 }
 
 .rating{
-  color:#f6a800;
+  color:#f5a400;
   font-size:13px;
-}
-
-.rating span{
-  color:#777;
-  margin-left:4px;
 }
 
 .price{
   font-size:21px;
   font-weight:950;
-  margin-top:10px;
+  margin-top:9px;
 }
 
 .card-actions{
@@ -439,17 +362,15 @@ main{
   height:40px;
   border-radius:10px;
   border:1px solid var(--line);
-  background:#fff;
+  background:white;
   font-weight:800;
 }
 
 .card-actions .add{
   background:#111827;
-  color:#fff;
+  color:white;
   border-color:#111827;
 }
-
-/* EMPTY */
 
 .empty{
   display:none;
@@ -458,46 +379,37 @@ main{
   color:var(--muted);
 }
 
-.empty-icon{
-  font-size:45px;
-  margin-bottom:10px;
-}
-
-/* OVERLAY */
-
 .overlay{
+  display:none;
   position:fixed;
   inset:0;
-  background:rgba(0,0,0,.52);
-  backdrop-filter:blur(5px);
   z-index:300;
-  display:none;
+  background:rgba(0,0,0,.55);
+  backdrop-filter:blur(5px);
 }
 
 .overlay.show{
   display:block;
 }
 
-/* MODAL */
-
 .modal{
+  display:none;
   position:fixed;
   z-index:301;
   left:50%;
   top:50%;
   transform:translate(-50%,-50%) scale(.96);
-  width:min(680px,calc(100% - 28px));
+  width:min(720px,calc(100% - 25px));
   max-height:90vh;
   overflow:auto;
-  background:#fff;
-  border-radius:22px;
+  background:white;
+  border-radius:21px;
   box-shadow:0 30px 100px rgba(0,0,0,.3);
-  display:none;
 }
 
 .modal.show{
   display:block;
-  animation:modalIn .2s ease forwards;
+  animation:modalIn .2s forwards;
 }
 
 @keyframes modalIn{
@@ -509,13 +421,13 @@ main{
 .modal-head{
   position:sticky;
   top:0;
-  z-index:2;
-  background:#fff;
+  z-index:3;
+  background:white;
   border-bottom:1px solid var(--line);
-  padding:17px 20px;
+  padding:16px 19px;
   display:flex;
-  align-items:center;
   justify-content:space-between;
+  align-items:center;
 }
 
 .modal-head h3{
@@ -523,11 +435,11 @@ main{
 }
 
 .close{
-  width:36px;
-  height:36px;
   border:0;
-  background:#f0f2f4;
-  border-radius:10px;
+  width:35px;
+  height:35px;
+  border-radius:9px;
+  background:#eef0f3;
   font-size:18px;
 }
 
@@ -535,39 +447,28 @@ main{
   padding:20px;
 }
 
-/* FORMS */
-
 .form{
   display:grid;
   gap:12px;
 }
 
 .form label{
+  display:block;
   font-size:12px;
   font-weight:850;
-  color:#444b55;
+  margin-bottom:5px;
 }
 
 .form input,
 .form select,
 .form textarea{
   width:100%;
-  min-height:44px;
+  min-height:43px;
   border:1px solid var(--line);
-  border-radius:11px;
-  padding:10px 12px;
+  border-radius:10px;
+  padding:9px 11px;
   outline:none;
-  background:#fff;
-}
-
-.form textarea{
-  resize:vertical;
-}
-
-.form input:focus,
-.form select:focus,
-.form textarea:focus{
-  border-color:#86aaff;
+  background:white;
 }
 
 .form-row{
@@ -576,30 +477,27 @@ main{
   gap:12px;
 }
 
-.auth-tabs{
+.tabs{
   display:grid;
   grid-template-columns:1fr 1fr;
-  gap:6px;
-  background:#f1f3f5;
+  gap:5px;
+  background:#f0f2f5;
   padding:5px;
-  border-radius:12px;
-  margin-bottom:18px;
+  border-radius:11px;
+  margin-bottom:17px;
 }
 
-.auth-tab{
+.tab{
   border:0;
   background:transparent;
   padding:10px;
-  border-radius:9px;
+  border-radius:8px;
   font-weight:800;
 }
 
-.auth-tab.active{
-  background:#fff;
-  box-shadow:0 2px 8px rgba(0,0,0,.07);
+.tab.active{
+  background:white;
 }
-
-/* PRODUCT MODAL */
 
 .product-detail{
   display:grid;
@@ -608,13 +506,10 @@ main{
 }
 
 .detail-image{
+  min-height:280px;
   background:#f5f6f7;
   border-radius:15px;
-  min-height:280px;
-  padding:20px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
+  padding:18px;
 }
 
 .detail-image img{
@@ -636,163 +531,138 @@ main{
 
 .detail-description{
   color:var(--muted);
-  line-height:1.55;
+  line-height:1.5;
 }
 
-.review-box{
-  margin-top:20px;
+.review-section{
   border-top:1px solid var(--line);
-  padding-top:20px;
+  margin-top:20px;
+  padding-top:18px;
+}
+
+.review{
+  padding:10px 0;
+  border-bottom:1px solid var(--line);
 }
 
 .stars-input{
   display:flex;
-  gap:4px;
-  margin:8px 0;
+  gap:3px;
+  margin:7px 0;
 }
 
-.star-btn{
+.star{
   border:0;
   background:transparent;
-  font-size:25px;
   color:#ccc;
+  font-size:25px;
 }
 
-.star-btn.active{
-  color:#ffad00;
+.star.active{
+  color:#ffac00;
 }
-
-.review{
-  padding:12px 0;
-  border-bottom:1px solid var(--line);
-}
-
-.review strong{
-  font-size:13px;
-}
-
-.review p{
-  margin-top:5px;
-  color:#555;
-  font-size:13px;
-}
-
-/* CART */
 
 .cart-item{
   display:grid;
-  grid-template-columns:70px 1fr auto;
+  grid-template-columns:65px 1fr auto;
   gap:12px;
-  align-items:center;
   padding:12px 0;
   border-bottom:1px solid var(--line);
+  align-items:center;
 }
 
-.cart-item-img{
-  width:70px;
-  height:70px;
-  border-radius:10px;
-  background:#f5f5f5;
+.cart-item img{
+  width:65px;
+  height:65px;
   object-fit:contain;
-  padding:5px;
+  background:#f5f5f5;
+  border-radius:9px;
 }
 
 .qty{
   display:flex;
+  gap:6px;
   align-items:center;
-  gap:7px;
-  margin-top:6px;
+  margin-top:5px;
 }
 
 .qty button{
   width:27px;
   height:27px;
   border:1px solid var(--line);
-  background:#fff;
-  border-radius:7px;
+  background:white;
+  border-radius:6px;
 }
 
 .cart-total{
   display:flex;
   justify-content:space-between;
-  padding-top:18px;
   font-size:21px;
   font-weight:950;
+  margin-top:17px;
 }
 
-/* CHECKOUT */
-
 .checkout-summary{
-  background:#f6f7f9;
-  padding:15px;
-  border-radius:13px;
+  background:#f5f6f8;
+  padding:14px;
+  border-radius:12px;
   margin-bottom:15px;
 }
 
-.checkout-line{
+.summary-line{
   display:flex;
   justify-content:space-between;
   padding:5px 0;
 }
 
-.promo-row{
+.promo{
   display:flex;
-  gap:8px;
+  gap:7px;
 }
 
-.promo-row input{
+.promo input{
   flex:1;
 }
 
 .promo-message{
-  margin-top:7px;
   font-size:12px;
-  font-weight:750;
+  font-weight:800;
+  margin-top:5px;
 }
 
-.promo-valid{
+.valid{
   color:var(--green);
 }
 
-.promo-invalid{
+.invalid{
   color:var(--red);
 }
 
-/* ORDERS */
-
-.order-card{
+.order{
   border:1px solid var(--line);
-  border-radius:16px;
-  padding:16px;
+  border-radius:15px;
+  padding:15px;
   margin-bottom:12px;
-  background:#fff;
 }
 
 .order-top{
   display:flex;
   justify-content:space-between;
-  gap:15px;
-  margin-bottom:12px;
-}
-
-.order-id{
-  font-weight:950;
+  gap:10px;
 }
 
 .status{
-  display:inline-flex;
-  align-items:center;
-  padding:6px 9px;
+  background:#edf3ff;
+  color:#1454b8;
   border-radius:999px;
-  background:#eef3ff;
-  color:#1556c0;
+  padding:6px 9px;
   font-size:11px;
   font-weight:900;
 }
 
-.delivery-box{
+.delivery{
   background:#f5f7fa;
-  border-radius:13px;
+  border-radius:12px;
   padding:13px;
   margin-top:12px;
 }
@@ -814,66 +684,66 @@ main{
   font-weight:950;
 }
 
-.truck-progress{
+.progress{
   height:7px;
-  background:#e5e8ec;
+  background:#e3e7eb;
   border-radius:999px;
   overflow:hidden;
-  margin:11px 0;
+  margin-top:10px;
 }
 
-.truck-progress span{
+.progress span{
   display:block;
   height:100%;
   background:var(--blue);
-  border-radius:999px;
-  transition:width .5s ease;
 }
 
-/* DASHBOARD */
-
-.dashboard-stats{
+.stats{
   display:grid;
   grid-template-columns:repeat(3,1fr);
-  gap:12px;
+  gap:10px;
   margin-bottom:20px;
 }
 
 .stat{
   border:1px solid var(--line);
-  border-radius:15px;
-  padding:15px;
+  border-radius:13px;
+  padding:14px;
   background:#fafafa;
 }
 
-.stat-label{
+.stat small{
   color:var(--muted);
-  font-size:12px;
   font-weight:700;
 }
 
-.stat-value{
-  font-size:25px;
-  font-weight:950;
+.stat strong{
+  display:block;
+  font-size:24px;
   margin-top:5px;
 }
 
 .admin-order{
   border:1px solid var(--line);
-  border-radius:17px;
-  padding:17px;
+  border-radius:16px;
+  padding:16px;
   margin-bottom:14px;
 }
 
 .admin-order h4{
-  font-size:16px;
-  margin-bottom:12px;
+  margin-bottom:5px;
+}
+
+.client{
+  color:var(--muted);
+  font-size:11px;
+  margin-bottom:13px;
 }
 
 .admin-grid{
   display:grid;
   grid-template-columns:1fr 1fr;
-  gap:11px;
+  gap:10px;
 }
 
 .admin-field{
@@ -884,16 +754,16 @@ main{
 .admin-field label{
   font-size:11px;
   font-weight:850;
-  color:#5e6671;
+  color:#626a75;
 }
 
 .admin-field input,
 .admin-field select{
+  min-height:41px;
   width:100%;
-  min-height:42px;
   border:1px solid var(--line);
-  border-radius:10px;
-  padding:8px 10px;
+  border-radius:9px;
+  padding:8px;
   outline:none;
 }
 
@@ -901,23 +771,15 @@ main{
   grid-column:1/-1;
 }
 
-.save-delivery{
+.save{
   width:100%;
   height:43px;
-  margin-top:12px;
   border:0;
   border-radius:10px;
   background:#111827;
-  color:#fff;
+  color:white;
   font-weight:900;
-}
-
-.admin-section{
-  margin-top:25px;
-}
-
-.admin-section h4{
-  margin-bottom:10px;
+  margin-top:11px;
 }
 
 .promo-admin{
@@ -927,22 +789,15 @@ main{
   border-bottom:1px solid var(--line);
 }
 
-/* INVOICE */
-
-.invoice{
-  background:#fff;
-}
-
 .invoice-head{
   display:flex;
   justify-content:space-between;
-  gap:20px;
   border-bottom:2px solid #111827;
-  padding-bottom:18px;
+  padding-bottom:15px;
 }
 
 .invoice-logo{
-  font-size:25px;
+  font-size:24px;
   font-weight:950;
 }
 
@@ -952,7 +807,7 @@ main{
 
 .invoice-meta{
   text-align:right;
-  font-size:12px;
+  font-size:11px;
   color:#666;
 }
 
@@ -960,45 +815,45 @@ main{
   display:grid;
   grid-template-columns:1fr 1fr;
   gap:20px;
-  margin:22px 0;
+  margin:20px 0;
+  font-size:13px;
 }
 
 .invoice-table{
   width:100%;
   border-collapse:collapse;
-  font-size:13px;
+  font-size:12px;
 }
 
 .invoice-table th,
 .invoice-table td{
-  padding:9px;
+  padding:8px;
   border-bottom:1px solid #ddd;
   text-align:left;
 }
 
 .invoice-total{
-  margin-left:auto;
   width:260px;
-  margin-top:20px;
+  max-width:100%;
+  margin-left:auto;
+  margin-top:18px;
 }
 
 .invoice-total div{
   display:flex;
   justify-content:space-between;
-  padding:5px 0;
+  padding:5px;
 }
 
 .invoice-grand{
   border-top:2px solid #111;
-  margin-top:7px;
-  padding-top:9px!important;
+  margin-top:5px;
+  padding-top:8px!important;
   font-size:20px;
   font-weight:950;
 }
 
-/* SETTINGS */
-
-.setting-row{
+.setting{
   display:flex;
   justify-content:space-between;
   align-items:center;
@@ -1009,9 +864,9 @@ main{
 .switch{
   width:47px;
   height:26px;
-  border-radius:999px;
   border:0;
-  background:#ccd1d8;
+  border-radius:999px;
+  background:#ccd1d7;
   position:relative;
 }
 
@@ -1019,7 +874,7 @@ main{
   content:"";
   width:20px;
   height:20px;
-  background:#fff;
+  background:white;
   position:absolute;
   top:3px;
   left:3px;
@@ -1035,23 +890,21 @@ main{
   left:24px;
 }
 
-/* TOAST */
-
 .toast{
   position:fixed;
   z-index:1000;
   left:50%;
   bottom:25px;
   transform:translate(-50%,20px);
-  background:#111827;
-  color:#fff;
-  padding:12px 17px;
-  border-radius:12px;
-  font-size:13px;
-  font-weight:800;
   opacity:0;
   pointer-events:none;
-  transition:.25s;
+  background:#111827;
+  color:white;
+  padding:12px 17px;
+  border-radius:11px;
+  font-size:13px;
+  font-weight:800;
+  transition:.2s;
 }
 
 .toast.show{
@@ -1059,11 +912,41 @@ main{
   transform:translate(-50%,0);
 }
 
-/* RESPONSIVE */
+body.dark{
+  --bg:#090d12;
+  --card:#11161d;
+  --text:#f4f6f8;
+  --muted:#9ba4af;
+  --line:#29313b;
+}
+
+body.dark .header,
+body.dark .modal,
+body.dark .modal-head,
+body.dark .btn,
+body.dark .category,
+body.dark .search input,
+body.dark .sort,
+body.dark .form input,
+body.dark .form select,
+body.dark .form textarea,
+body.dark .card-actions button,
+body.dark .favorite{
+  background:#11161d;
+  color:#f4f6f8;
+}
+
+body.dark .image-box,
+body.dark .detail-image,
+body.dark .delivery,
+body.dark .checkout-summary,
+body.dark .stat{
+  background:#181e26;
+}
 
 @media(max-width:1150px){
-  .products-grid{
-    grid-template-columns:repeat(3,minmax(0,1fr));
+  .grid{
+    grid-template-columns:repeat(3,1fr);
   }
 }
 
@@ -1072,44 +955,31 @@ main{
     flex-wrap:wrap;
   }
 
-  .logo{
-    order:1;
-  }
-
-  .header-actions{
-    order:2;
-    margin-left:auto;
-  }
-
   .search{
     order:3;
     flex-basis:100%;
   }
 
-  .products-grid{
-    grid-template-columns:repeat(2,minmax(0,1fr));
-  }
-
-  .hero{
-    padding:35px 25px;
+  .grid{
+    grid-template-columns:repeat(2,1fr);
   }
 
   .product-detail{
     grid-template-columns:1fr;
   }
 
-  .dashboard-stats{
+  .stats{
     grid-template-columns:1fr;
   }
 }
 
 @media(max-width:560px){
-  main{
-    padding:18px 12px 50px;
-  }
-
   .header-main{
     padding:10px 12px;
+  }
+
+  main{
+    padding:18px 12px;
   }
 
   .categories{
@@ -1117,12 +987,12 @@ main{
     padding-right:12px;
   }
 
-  .products-grid{
+  .grid{
     grid-template-columns:1fr;
   }
 
   .hero{
-    min-height:330px;
+    padding:32px 23px;
   }
 
   .hero h1{
@@ -1138,62 +1008,6 @@ main{
   .admin-full{
     grid-column:auto;
   }
-
-  .header-actions .optional-mobile{
-    display:none;
-  }
-}
-
-/* DARK */
-
-body.dark{
-  --bg:#0b0f14;
-  --surface:#11161d;
-  --surface2:#1a2028;
-  --text:#f4f6f8;
-  --muted:#9ba4af;
-  --line:#28303a;
-}
-
-body.dark .header,
-body.dark .modal,
-body.dark .modal-head,
-body.dark .product-card,
-body.dark .icon-btn,
-body.dark .category,
-body.dark .search input,
-body.dark .sort,
-body.dark .form input,
-body.dark .form select,
-body.dark .form textarea,
-body.dark .card-actions button,
-body.dark .favorite,
-body.dark .cart-item,
-body.dark .order-card,
-body.dark .admin-order,
-body.dark .stat,
-body.dark .invoice{
-  background:#11161d;
-  color:#f4f6f8;
-}
-
-body.dark .modal-head{
-  border-color:#28303a;
-}
-
-body.dark .auth-tabs,
-body.dark .delivery-box,
-body.dark .checkout-summary{
-  background:#191f27;
-}
-
-body.dark .secondary{
-  color:#fff;
-}
-
-body.dark .close{
-  background:#202731;
-  color:#fff;
 }
 
 @media print{
@@ -1208,16 +1022,16 @@ body.dark .close{
 
   #invoiceModal{
     position:absolute;
-    left:0;
     top:0;
+    left:0;
     width:100%;
     max-height:none;
-    box-shadow:none;
     transform:none!important;
+    box-shadow:none;
   }
 
   .modal-head,
-  .invoice-actions{
+  .print-button{
     display:none!important;
   }
 }
@@ -1227,10 +1041,11 @@ body.dark .close{
 <body>
 
 <div class="topbar">
-  🚚 Livraison suivie • Marketplace gaming NovaShop
+🚚 Livraison suivie • NovaShop
 </div>
 
 <header class="header">
+
   <div class="header-main">
 
     <div class="logo">
@@ -1242,31 +1057,33 @@ body.dark .close{
       <button id="searchButton">⌕</button>
     </div>
 
-    <div class="header-actions">
+    <div class="actions">
 
-      <button class="icon-btn" id="accountButton">👤</button>
+      <button class="btn" id="accountButton">🔐</button>
 
-      <button class="icon-btn optional-mobile" id="ordersButton">
+      <button class="btn" id="ordersButton" style="display:none">
         📦
       </button>
 
-      <button class="icon-btn admin-btn" id="adminButton">
+      <button class="btn admin-btn" id="adminButton">
         🛠️ Dashboard
       </button>
 
-      <button class="icon-btn" id="settingsButton">
+      <button class="btn" id="settingsButton">
         ⚙️
       </button>
 
-      <button class="icon-btn cart-btn" id="cartButton">
+      <button class="btn cart" id="cartButton">
         🛒
         <span class="cart-count" id="cartCount">0</span>
       </button>
 
     </div>
+
   </div>
 
-  <nav class="categories" id="categories">
+  <nav class="categories">
+
     <button class="category active" data-category="Tous">Tous</button>
     <button class="category" data-category="PC Gamer">PC Gamer</button>
     <button class="category" data-category="Composants">Composants</button>
@@ -1280,57 +1097,73 @@ body.dark .close{
     <button class="category" data-category="Écrans">Écrans</button>
     <button class="category" data-category="Streaming">Streaming</button>
     <button class="category" data-category="Manettes">Manettes</button>
+
   </nav>
+
 </header>
 
 <main>
 
-  <section class="hero">
-    <div class="hero-content">
-      <small>NovaShop Marketplace</small>
-      <h1>Le matériel gaming, simplement.</h1>
-      <p>
-        PC, composants, périphériques et accessoires gaming dans une interface
-        rapide et moderne.
-      </p>
+<section class="hero">
 
-      <div class="hero-actions">
-        <button class="primary" id="heroProducts">
-          Découvrir les produits
-        </button>
+  <div>
 
-        <button class="secondary" id="heroOrders">
-          Suivre une commande
-        </button>
+    <small>NovaShop Marketplace</small>
+
+    <h1>
+      Le matériel gaming, simplement.
+    </h1>
+
+    <p>
+      PC, composants, périphériques et accessoires gaming
+      dans une marketplace moderne et rapide.
+    </p>
+
+    <div class="hero-actions">
+
+      <button class="primary" id="heroProducts">
+        Découvrir les produits
+      </button>
+
+      <button class="hero-secondary" id="heroOrders">
+        Suivre une commande
+      </button>
+
+    </div>
+
+  </div>
+
+</section>
+
+<section>
+
+  <div class="products-head">
+
+    <div>
+      <h2>Produits</h2>
+      <div class="results" id="resultsCount">
+        0 produit
       </div>
     </div>
-  </section>
 
-  <section>
-    <div class="products-head">
-      <div>
-        <h2>Produits</h2>
-        <div class="products-meta" id="resultsCount">
-          0 produit
-        </div>
-      </div>
+    <select class="sort" id="sortSelect">
+      <option value="relevance">Pertinence</option>
+      <option value="priceAsc">Prix croissant</option>
+      <option value="priceDesc">Prix décroissant</option>
+      <option value="name">Nom A-Z</option>
+    </select>
 
-      <select class="sort" id="sortSelect">
-        <option value="relevance">Pertinence</option>
-        <option value="priceAsc">Prix croissant</option>
-        <option value="priceDesc">Prix décroissant</option>
-        <option value="name">Nom A-Z</option>
-      </select>
-    </div>
+  </div>
 
-    <div class="products-grid" id="productsGrid"></div>
+  <div class="grid" id="productsGrid"></div>
 
-    <div class="empty" id="emptyState">
-      <div class="empty-icon">🔎</div>
-      <h3>Aucun produit trouvé</h3>
-      <p>Essaie une autre recherche ou une autre catégorie.</p>
-    </div>
-  </section>
+  <div class="empty" id="emptyState">
+    <div style="font-size:45px">🔎</div>
+    <h3>Aucun produit trouvé</h3>
+    <p>Essaie une autre recherche.</p>
+  </div>
+
+</section>
 
 </main>
 
@@ -1339,6 +1172,7 @@ body.dark .close{
 <!-- AUTH -->
 
 <div class="modal" id="authModal">
+
   <div class="modal-head">
     <h3>Compte NovaShop</h3>
     <button class="close" data-close="authModal">×</button>
@@ -1346,16 +1180,23 @@ body.dark .close{
 
   <div class="modal-content">
 
-    <div class="auth-tabs">
-      <button class="auth-tab active" id="loginTab">Connexion</button>
-      <button class="auth-tab" id="signupTab">Créer un compte</button>
+    <div class="tabs">
+
+      <button class="tab active" id="loginTab">
+        Connexion
+      </button>
+
+      <button class="tab" id="signupTab">
+        Inscription
+      </button>
+
     </div>
 
     <form class="form" id="loginForm">
 
       <div>
         <label>E-mail</label>
-        <input id="loginEmail" type="email" required placeholder="exemple@gmail.com">
+        <input id="loginEmail" type="email" required>
       </div>
 
       <div>
@@ -1367,7 +1208,7 @@ body.dark .close{
         Se connecter
       </button>
 
-      <button class="icon-btn" type="button" id="googleButton">
+      <button class="btn" type="button" id="googleButton">
         🌐 Continuer avec Google
       </button>
 
@@ -1377,12 +1218,12 @@ body.dark .close{
 
       <div>
         <label>E-mail / Gmail *</label>
-        <input id="signupEmail" type="email" required placeholder="exemple@gmail.com">
+        <input id="signupEmail" type="email" required>
       </div>
 
       <div>
         <label>Téléphone *</label>
-        <input id="signupPhone" type="tel" required placeholder="+33 6...">
+        <input id="signupPhone" type="tel" required>
       </div>
 
       <div>
@@ -1399,40 +1240,46 @@ body.dark .close{
         Créer mon compte
       </button>
 
-      <button class="icon-btn" type="button" id="googleSignupButton">
+      <button class="btn" type="button" id="googleSignupButton">
         🌐 Créer avec Google
       </button>
 
     </form>
 
   </div>
+
 </div>
 
 <!-- ACCOUNT -->
 
 <div class="modal" id="accountModal">
+
   <div class="modal-head">
     <h3>Mon compte</h3>
     <button class="close" data-close="accountModal">×</button>
   </div>
 
   <div class="modal-content" id="accountContent"></div>
+
 </div>
 
 <!-- PRODUCT -->
 
 <div class="modal" id="productModal">
+
   <div class="modal-head">
     <h3>Produit</h3>
     <button class="close" data-close="productModal">×</button>
   </div>
 
   <div class="modal-content" id="productContent"></div>
+
 </div>
 
 <!-- CART -->
 
 <div class="modal" id="cartModal">
+
   <div class="modal-head">
     <h3>Panier</h3>
     <button class="close" data-close="cartModal">×</button>
@@ -1447,16 +1294,19 @@ body.dark .close{
       <span id="cartTotal">0,00 €</span>
     </div>
 
-    <button class="primary" id="checkoutButton" style="width:100%;margin-top:15px">
+    <button class="primary" id="checkoutButton"
+      style="width:100%;margin-top:15px">
       Passer la commande
     </button>
 
   </div>
+
 </div>
 
 <!-- CHECKOUT -->
 
 <div class="modal" id="checkoutModal">
+
   <div class="modal-head">
     <h3>Finaliser la commande</h3>
     <button class="close" data-close="checkoutModal">×</button>
@@ -1465,20 +1315,22 @@ body.dark .close{
   <div class="modal-content">
 
     <div class="checkout-summary">
-      <div class="checkout-line">
+
+      <div class="summary-line">
         <span>Sous-total</span>
-        <strong id="checkoutSubtotal">0,00 €</strong>
+        <strong id="checkoutSubtotal">0 €</strong>
       </div>
 
-      <div class="checkout-line">
+      <div class="summary-line">
         <span>Réduction</span>
-        <strong id="checkoutDiscount">0,00 €</strong>
+        <strong id="checkoutDiscount">0 €</strong>
       </div>
 
-      <div class="checkout-line">
+      <div class="summary-line">
         <span>Total</span>
-        <strong id="checkoutTotal">0,00 €</strong>
+        <strong id="checkoutTotal">0 €</strong>
       </div>
+
     </div>
 
     <form class="form" id="checkoutForm">
@@ -1499,7 +1351,7 @@ body.dark .close{
 
       <div>
         <label>Adresse *</label>
-        <input id="address" required placeholder="Adresse de livraison">
+        <input id="address" required>
       </div>
 
       <div class="form-row">
@@ -1517,88 +1369,107 @@ body.dark .close{
       </div>
 
       <div>
+
         <label>Code promotionnel</label>
 
-        <div class="promo-row">
-          <input id="promoCode" placeholder="Ex : NOVA100">
-          <button class="icon-btn" type="button" id="applyPromo">
+        <div class="promo">
+
+          <input id="promoCode" placeholder="ECRIS TON CODE DE REDUC ">
+
+          <button class="btn" type="button" id="applyPromo">
             Appliquer
           </button>
+
         </div>
 
         <div class="promo-message" id="promoMessage"></div>
+
       </div>
 
-      <button class="primary" type="submit" id="payButton">
+      <button class="primary" id="payButton" type="submit">
         💳 Valider la commande
       </button>
 
     </form>
 
   </div>
+
 </div>
 
 <!-- ORDERS -->
 
 <div class="modal" id="ordersModal">
+
   <div class="modal-head">
     <h3>Mes commandes</h3>
     <button class="close" data-close="ordersModal">×</button>
   </div>
 
   <div class="modal-content" id="ordersContent"></div>
+
 </div>
 
 <!-- DASHBOARD -->
 
 <div class="modal" id="dashboardModal">
+
   <div class="modal-head">
+
     <h3>🛠️ Dashboard NovaShop</h3>
-    <button class="close" data-close="dashboardModal">×</button>
+
+    <button class="close" data-close="dashboardModal">
+      ×
+    </button>
+
   </div>
 
   <div class="modal-content">
 
-    <div class="dashboard-stats">
+    <div class="stats">
 
       <div class="stat">
-        <div class="stat-label">Commandes</div>
-        <div class="stat-value" id="statOrders">0</div>
+        <small>Commandes</small>
+        <strong id="statOrders">0</strong>
       </div>
 
       <div class="stat">
-        <div class="stat-label">Commandes gratuites</div>
-        <div class="stat-value" id="statFree">0</div>
+        <small>Commandes gratuites</small>
+        <strong id="statFree">0</strong>
       </div>
 
       <div class="stat">
-        <div class="stat-label">Valeur catalogue</div>
-        <div class="stat-value" id="statCatalog">0 €</div>
+        <small>Catalogue</small>
+        <strong id="statCatalog">0 €</strong>
       </div>
 
     </div>
 
-    <div class="admin-section">
-      <h4>🚚 Gestion complète des livraisons</h4>
-      <p style="font-size:12px;color:#69707a;margin-bottom:15px">
-        Modifie la position du camion, la durée restante, la destination,
-        le statut, l'arrivée prévue et le numéro de suivi.
-      </p>
+    <h3 style="margin-bottom:5px">
+      🚚 Gestion des livraisons
+    </h3>
 
-      <div id="adminOrders"></div>
-    </div>
+    <p style="font-size:12px;color:#6b7280;margin-bottom:15px">
+      Tu peux modifier directement chaque élément de la livraison.
+    </p>
 
-    <div class="admin-section">
-      <h4>🎟️ Codes promotionnels</h4>
+    <div id="adminOrders"></div>
+
+    <div style="margin-top:25px">
+
+      <h3>🎟️ Codes promotionnels</h3>
+
       <div id="adminPromos"></div>
+
     </div>
 
   </div>
+
 </div>
 
 <!-- INVOICE -->
 
 <div class="modal" id="invoiceModal">
+
   <div class="modal-head">
     <h3>Facture</h3>
     <button class="close" data-close="invoiceModal">×</button>
@@ -1608,16 +1479,20 @@ body.dark .close{
 
     <div id="invoiceContent"></div>
 
-    <button class="primary invoice-actions" id="printInvoice" style="margin-top:20px">
-      🖨️ Imprimer la facture
+    <button class="primary print-button"
+      id="printInvoice"
+      style="margin-top:20px">
+      🖨️ Imprimer
     </button>
 
   </div>
+
 </div>
 
 <!-- SETTINGS -->
 
 <div class="modal" id="settingsModal">
+
   <div class="modal-head">
     <h3>Paramètres</h3>
     <button class="close" data-close="settingsModal">×</button>
@@ -1625,29 +1500,34 @@ body.dark .close{
 
   <div class="modal-content">
 
-    <div class="setting-row">
+    <div class="setting">
+
       <div>
         <strong>🌙 Mode sombre</strong>
-        <div style="font-size:12px;color:#69707a">
-          Modifier l'apparence de NovaShop
+        <div style="font-size:11px;color:#6b7280">
+          Apparence de NovaShop
         </div>
       </div>
 
       <button class="switch" id="darkSwitch"></button>
+
     </div>
 
-    <div class="setting-row">
+    <div class="setting">
+
       <div>
         <strong>🔊 Sons</strong>
-        <div style="font-size:12px;color:#69707a">
-          Petit son lors des actions
+        <div style="font-size:11px;color:#6b7280">
+          Sons des boutons
         </div>
       </div>
 
       <button class="switch" id="soundSwitch"></button>
+
     </div>
 
   </div>
+
 </div>
 
 <div class="toast" id="toast"></div>
