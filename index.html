@@ -382,69 +382,6 @@ header{
   margin-top:8px;
 }
 
-.admin-question{
-  background:#101925;
-  border:1px solid #293b52;
-  border-radius:14px;
-  padding:16px;
-  margin-bottom:12px;
-}
-
-.question-head{
-  display:flex;
-  justify-content:space-between;
-  gap:10px;
-  flex-wrap:wrap;
-}
-
-.question-user{
-  color:#6ea4ff;
-  font-weight:bold;
-}
-
-.question-date{
-  color:#71809a;
-  font-size:12px;
-}
-
-.message{
-  margin-top:12px;
-  padding:12px;
-  border-radius:12px;
-  line-height:1.45;
-}
-
-.message.user{
-  background:#15263e;
-}
-
-.message.admin{
-  background:#17351f;
-}
-
-.message-author{
-  font-size:11px;
-  color:#8294ad;
-  margin-bottom:5px;
-}
-
-.chat{
-  max-height:400px;
-  overflow:auto;
-  padding-right:4px;
-}
-
-.chat-input{
-  margin-top:14px;
-  display:flex;
-  gap:8px;
-}
-
-.chat-input textarea{
-  flex:1;
-  min-height:55px;
-}
-
 .bottom-bar{
   position:fixed;
   z-index:200;
@@ -470,14 +407,6 @@ header{
 
 .bottom-btn:hover{
   background:#1c2e46;
-}
-
-.question-badge{
-  background:#4d8dff;
-  padding:2px 7px;
-  border-radius:999px;
-  font-size:11px;
-  margin-left:4px;
 }
 
 .toast{
@@ -509,6 +438,7 @@ header{
 }
 
 @media(max-width:800px){
+
   .header-inner{
     flex-wrap:wrap;
   }
@@ -537,6 +467,7 @@ header{
     padding:11px 7px;
     font-size:12px;
   }
+
 }
 </style>
 </head>
@@ -544,6 +475,7 @@ header{
 <body>
 
 <header>
+
   <div class="header-inner">
 
     <div class="logo">
@@ -558,58 +490,135 @@ header{
     >
 
     <div class="nav-buttons">
-      <button class="nav-btn" id="accountBtn">👤</button>
-      <button class="nav-btn" id="ordersBtn">📦</button>
-      <button class="nav-btn" id="cartBtn">🛒 <span id="cartCount">0</span></button>
-      <button class="nav-btn" id="adminBtn" style="display:none">👑</button>
+
+      <button
+        class="nav-btn"
+        id="accountBtn"
+      >
+        👤
+      </button>
+
+      <button
+        class="nav-btn"
+        id="ordersBtn"
+      >
+        📦
+      </button>
+
+      <button
+        class="nav-btn"
+        id="cartBtn"
+      >
+        🛒 <span id="cartCount">0</span>
+      </button>
+
+      <button
+        class="nav-btn"
+        id="adminBtn"
+        style="display:none"
+      >
+        👑
+      </button>
+
     </div>
 
   </div>
+
 </header>
 
+
 <section class="hero">
-  <h1>NovaShop</h1>
-  <p>Ton espace shopping gaming et high-tech.</p>
+
+  <h1>
+    NovaShop
+  </h1>
+
+  <p>
+    Ton espace shopping gaming et high-tech.
+  </p>
+
 </section>
 
-<div class="categories" id="categories"></div>
 
-<main class="products" id="products"></main>
+<div
+  class="categories"
+  id="categories"
+></div>
+
+
+<main
+  class="products"
+  id="products"
+></main>
+
 
 <div class="bottom-bar">
 
-  <button class="bottom-btn" id="questionsBtn">
-    💬 Questions
-    <span id="questionBadge" class="question-badge" style="display:none">0</span>
-  </button>
-
-  <button class="bottom-btn" id="bottomCartBtn">
+  <button
+    class="bottom-btn"
+    id="bottomCartBtn"
+  >
     🛒 Panier
   </button>
 
-  <button class="bottom-btn" id="bottomAccountBtn">
+  <button
+    class="bottom-btn"
+    id="bottomAccountBtn"
+  >
     👤 Compte
   </button>
 
 </div>
 
-<div id="toast" class="toast"></div>
+
+<div
+  id="toast"
+  class="toast"
+></div>
+
 
 <!-- AUTH -->
 
-<div class="modal" id="authModal">
+<div
+  class="modal"
+  id="authModal"
+>
+
   <div class="modal-box">
 
-    <button class="close" data-close="authModal">×</button>
+    <button
+      class="close"
+      data-close="authModal"
+    >
+      ×
+    </button>
 
-    <div class="modal-title">Compte NovaShop</div>
-
-    <div class="auth-tabs">
-      <button class="auth-tab active" id="loginTab">Connexion</button>
-      <button class="auth-tab" id="registerTab">Créer un compte</button>
+    <div class="modal-title">
+      Compte NovaShop
     </div>
 
-    <form class="form" id="authForm">
+    <div class="auth-tabs">
+
+      <button
+        class="auth-tab active"
+        id="loginTab"
+      >
+        Connexion
+      </button>
+
+      <button
+        class="auth-tab"
+        id="registerTab"
+      >
+        Créer un compte
+      </button>
+
+    </div>
+
+    <form
+      class="form"
+      id="authForm"
+    >
 
       <input
         id="authEmail"
@@ -625,145 +634,271 @@ header{
         required
       >
 
-      <button class="btn primary" type="submit" id="authSubmit">
+      <button
+        class="btn primary"
+        type="submit"
+        id="authSubmit"
+      >
         Se connecter
       </button>
 
     </form>
 
-    <div id="authInfo" style="margin-top:15px;color:#71809a;font-size:13px;"></div>
+    <div
+      id="authInfo"
+      style="
+        margin-top:15px;
+        color:#71809a;
+        font-size:13px;
+      "
+    ></div>
 
   </div>
+
 </div>
+
 
 <!-- ACCOUNT -->
 
-<div class="modal" id="accountModal">
+<div
+  class="modal"
+  id="accountModal"
+>
+
   <div class="modal-box">
 
-    <button class="close" data-close="accountModal">×</button>
+    <button
+      class="close"
+      data-close="accountModal"
+    >
+      ×
+    </button>
 
-    <div class="modal-title">👤 Mon compte</div>
+    <div class="modal-title">
+      👤 Mon compte
+    </div>
 
     <div id="accountContent"></div>
 
   </div>
+
 </div>
+
 
 <!-- PRODUCT REVIEWS -->
 
-<div class="modal" id="reviewsModal">
+<div
+  class="modal"
+  id="reviewsModal"
+>
+
   <div class="modal-box">
 
-    <button class="close" data-close="reviewsModal">×</button>
+    <button
+      class="close"
+      data-close="reviewsModal"
+    >
+      ×
+    </button>
 
-    <div class="modal-title" id="reviewsTitle">
+    <div
+      class="modal-title"
+      id="reviewsTitle"
+    >
       Avis
     </div>
 
-    <div id="reviewsContent"></div>
+    <div
+      id="reviewsContent"
+    ></div>
 
   </div>
+
 </div>
+
 
 <!-- CART -->
 
-<div class="modal" id="cartModal">
+<div
+  class="modal"
+  id="cartModal"
+>
+
   <div class="modal-box">
 
-    <button class="close" data-close="cartModal">×</button>
+    <button
+      class="close"
+      data-close="cartModal"
+    >
+      ×
+    </button>
 
-    <div class="modal-title">🛒 Mon panier</div>
+    <div class="modal-title">
+      🛒 Mon panier
+    </div>
 
     <div id="cartContent"></div>
 
   </div>
+
 </div>
+
 
 <!-- CHECKOUT -->
 
-<div class="modal" id="checkoutModal">
+<div
+  class="modal"
+  id="checkoutModal"
+>
+
   <div class="modal-box">
 
-    <button class="close" data-close="checkoutModal">×</button>
+    <button
+      class="close"
+      data-close="checkoutModal"
+    >
+      ×
+    </button>
 
-    <div class="modal-title">💳 Paiement</div>
+    <div class="modal-title">
+      💳 Paiement
+    </div>
 
-    <form class="form" id="checkoutForm">
+    <form
+      class="form"
+      id="checkoutForm"
+    >
 
-      <input id="checkoutName" placeholder="Nom complet" required>
+      <input
+        id="checkoutName"
+        placeholder="Nom complet"
+        required
+      >
 
-      <input id="checkoutAddress" placeholder="Adresse complète" required>
+      <input
+        id="checkoutAddress"
+        placeholder="Adresse complète"
+        required
+      >
 
-      <input id="checkoutCity" placeholder="Ville" required>
+      <input
+        id="checkoutCity"
+        placeholder="Ville"
+        required
+      >
 
-      <input id="checkoutPostal" placeholder="Code postal" required>
+      <input
+        id="checkoutPostal"
+        placeholder="Code postal"
+        required
+      >
 
-      <select id="checkoutPayment">
-        <option value="card">Carte bancaire</option>
+      <select
+        id="checkoutPayment"
+      >
+
+        <option value="card">
+          Carte bancaire
+        </option>
+
       </select>
 
-      <button class="btn primary" type="submit">
+      <button
+        class="btn primary"
+        type="submit"
+      >
         Confirmer la commande
       </button>
 
     </form>
 
   </div>
+
 </div>
+
 
 <!-- ORDERS -->
 
-<div class="modal" id="ordersModal">
+<div
+  class="modal"
+  id="ordersModal"
+>
+
   <div class="modal-box">
 
-    <button class="close" data-close="ordersModal">×</button>
+    <button
+      class="close"
+      data-close="ordersModal"
+    >
+      ×
+    </button>
 
-    <div class="modal-title">📦 Mes commandes</div>
+    <div class="modal-title">
+      📦 Mes commandes
+    </div>
 
-    <div id="ordersContent"></div>
-
-  </div>
-</div>
-
-<!-- QUESTIONS USER -->
-
-<div class="modal" id="questionsModal">
-  <div class="modal-box">
-
-    <button class="close" data-close="questionsModal">×</button>
-
-    <div class="modal-title">💬 Questions & discussions</div>
-
-    <div id="questionsContent"></div>
+    <div
+      id="ordersContent"
+    ></div>
 
   </div>
+
 </div>
+
 
 <!-- ADMIN -->
 
-<div class="modal" id="adminModal">
+<div
+  class="modal"
+  id="adminModal"
+>
+
   <div class="modal-box">
 
-    <button class="close" data-close="adminModal">×</button>
+    <button
+      class="close"
+      data-close="adminModal"
+    >
+      ×
+    </button>
 
-    <div class="modal-title">👑 Dashboard Admin</div>
+    <div class="modal-title">
+      👑 Dashboard Admin
+    </div>
 
-    <div id="adminContent"></div>
+    <div
+      id="adminContent"
+    ></div>
 
   </div>
+
 </div>
+
 
 <!-- ADMIN LOGIN CODE -->
 
-<div class="modal" id="adminCodeModal">
+<div
+  class="modal"
+  id="adminCodeModal"
+>
+
   <div class="modal-box">
 
-    <button class="close" data-close="adminCodeModal">×</button>
+    <button
+      class="close"
+      data-close="adminCodeModal"
+    >
+      ×
+    </button>
 
-    <div class="modal-title">🔐 Accès administrateur</div>
+    <div class="modal-title">
+      🔐 Accès administrateur
+    </div>
 
-    <form class="form" id="adminCodeForm">
+    <form
+      class="form"
+      id="adminCodeForm"
+    >
 
       <input
         id="adminCode"
@@ -772,16 +907,23 @@ header{
         required
       >
 
-      <button class="btn primary">
+      <button
+        class="btn primary"
+      >
         Accéder au dashboard
       </button>
 
     </form>
 
   </div>
+
 </div>
 
-<script type="module" src="app.js"></script>
+
+<script
+  type="module"
+  src="app.js"
+></script>
 
 </body>
 </html>
