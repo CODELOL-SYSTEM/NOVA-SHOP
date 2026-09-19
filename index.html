@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="theme-color" content="#111827">
 <title>NovaShop</title>
 
 <style>
@@ -21,6 +22,8 @@
   --primary:#111827;
   --accent:#ff6a00;
   --green:#16a34a;
+  --red:#dc2626;
+  --blue:#2563eb;
   --shadow:0 8px 30px rgba(0,0,0,.08);
 }
 
@@ -39,6 +42,7 @@ body{
   background:var(--bg);
   color:var(--text);
   min-height:100vh;
+  transition:.2s;
 }
 
 button,input,select{
@@ -48,6 +52,11 @@ button,input,select{
 button{
   cursor:pointer;
   border:0;
+}
+
+button:disabled{
+  opacity:.5;
+  cursor:not-allowed;
 }
 
 .topbar{
@@ -106,7 +115,7 @@ header{
 .search button{
   padding:0 18px;
   background:var(--accent);
-  color:white;
+  color:#fff;
   border-radius:0 10px 10px 0;
 }
 
@@ -178,9 +187,8 @@ main{
 .hero{
   min-height:300px;
   border-radius:22px;
-  background:
-    linear-gradient(120deg,#111827,#263244);
-  color:white;
+  background:linear-gradient(120deg,#111827,#263244);
+  color:#fff;
   padding:55px;
   display:flex;
   align-items:center;
@@ -217,11 +225,18 @@ main{
 }
 
 .secondary{
-  background:#fff;
-  color:#111827;
+  background:var(--bg);
+  color:var(--text);
+  border:1px solid var(--border);
   padding:13px 19px;
   border-radius:10px;
   font-weight:bold;
+}
+
+.hero .secondary{
+  background:#fff;
+  color:#111827;
+  border:0;
 }
 
 .products-head{
@@ -288,6 +303,7 @@ select{
   border-radius:50%;
   background:#fff;
   border:1px solid #ddd;
+  z-index:2;
 }
 
 .product-info{
@@ -335,7 +351,7 @@ select{
 
 .add{
   background:var(--accent);
-  color:white;
+  color:#fff;
 }
 
 .empty{
@@ -359,7 +375,7 @@ select{
   left:50%;
   top:50%;
   transform:translate(-50%,-50%);
-  width:min(720px,calc(100vw - 30px));
+  width:min(780px,calc(100vw - 30px));
   max-height:90vh;
   overflow:auto;
   background:var(--card);
@@ -379,6 +395,10 @@ select{
   display:flex;
   justify-content:space-between;
   align-items:center;
+  position:sticky;
+  top:0;
+  background:var(--card);
+  z-index:2;
 }
 
 .close{
@@ -483,6 +503,87 @@ select{
   gap:12px;
 }
 
+.checkout-field{
+  display:grid;
+  gap:6px;
+}
+
+.checkout-field.full{
+  grid-column:1/-1;
+}
+
+.checkout-field label{
+  font-size:13px;
+  font-weight:bold;
+}
+
+.checkout-field input{
+  width:100%;
+  padding:12px;
+  border-radius:9px;
+  border:1px solid var(--border);
+  background:var(--bg);
+  color:var(--text);
+}
+
+.address-status{
+  display:none;
+  padding:12px;
+  border-radius:10px;
+  margin-top:4px;
+  font-size:13px;
+}
+
+.address-status.show{
+  display:block;
+}
+
+.address-status.success{
+  background:#dcfce7;
+  color:#166534;
+  border:1px solid #86efac;
+}
+
+.address-status.error{
+  background:#fee2e2;
+  color:#991b1b;
+  border:1px solid #fca5a5;
+}
+
+.address-status.loading{
+  background:#dbeafe;
+  color:#1e40af;
+  border:1px solid #93c5fd;
+}
+
+body.dark .address-status.success{
+  background:#052e16;
+  color:#bbf7d0;
+}
+
+body.dark .address-status.error{
+  background:#450a0a;
+  color:#fecaca;
+}
+
+body.dark .address-status.loading{
+  background:#172554;
+  color:#bfdbfe;
+}
+
+.address-result{
+  display:none;
+  margin-top:8px;
+  padding:12px;
+  border:1px solid var(--border);
+  border-radius:10px;
+  background:var(--bg);
+}
+
+.address-result.show{
+  display:block;
+}
+
 .admin-grid{
   display:grid;
   grid-template-columns:1fr 1fr;
@@ -518,6 +619,16 @@ select{
   font-weight:bold;
 }
 
+.delete{
+  width:100%;
+  padding:12px;
+  border-radius:9px;
+  background:var(--red);
+  color:#fff;
+  font-weight:bold;
+  margin-top:8px;
+}
+
 .stats{
   display:grid;
   grid-template-columns:repeat(3,1fr);
@@ -543,6 +654,8 @@ select{
   padding:13px;
   border-radius:10px;
   margin-top:12px;
+  display:grid;
+  gap:7px;
 }
 
 .countdown{
@@ -556,14 +669,46 @@ select{
   background:#d8dce2;
   border-radius:10px;
   overflow:hidden;
-  margin-top:10px;
+  margin-top:5px;
 }
 
 .progress span{
   display:block;
   height:100%;
   background:var(--accent);
-  width:30%;
+  width:0%;
+  transition:width .4s;
+}
+
+.order-status{
+  display:inline-flex;
+  width:max-content;
+  padding:5px 9px;
+  border-radius:999px;
+  font-size:12px;
+  font-weight:bold;
+  background:#e5e7eb;
+  color:#111827;
+}
+
+.status-prep{
+  background:#fef3c7;
+  color:#92400e;
+}
+
+.status-transit{
+  background:#dbeafe;
+  color:#1e40af;
+}
+
+.status-imminent{
+  background:#ffedd5;
+  color:#9a3412;
+}
+
+.status-delivered{
+  background:#dcfce7;
+  color:#166534;
 }
 
 .invoice{
@@ -591,6 +736,40 @@ select{
   text-align:left;
 }
 
+.notice{
+  padding:13px;
+  border-radius:10px;
+  background:var(--bg);
+  border:1px solid var(--border);
+  margin-bottom:15px;
+}
+
+.notice.red{
+  background:#fee2e2;
+  color:#991b1b;
+  border-color:#fca5a5;
+}
+
+.notice.green{
+  background:#dcfce7;
+  color:#166534;
+  border-color:#86efac;
+}
+
+.dashboard-title{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  margin-bottom:15px;
+}
+
+.live{
+  font-size:12px;
+  color:var(--green);
+  font-weight:bold;
+}
+
 .toast{
   position:fixed;
   right:20px;
@@ -603,6 +782,7 @@ select{
   transform:translateY(100px);
   opacity:0;
   transition:.25s;
+  max-width:360px;
 }
 
 .toast.show{
@@ -639,6 +819,11 @@ select{
   .stats{
     grid-template-columns:1fr;
   }
+
+  .checkout-field.full,
+  .admin-full{
+    grid-column:auto;
+  }
 }
 
 @media(max-width:550px){
@@ -658,6 +843,19 @@ select{
   .header-actions{
     width:100%;
     justify-content:space-between;
+  }
+
+  .header-actions .icon-btn{
+    padding:9px;
+  }
+
+  .hero-buttons{
+    flex-direction:column;
+  }
+
+  .invoice-head{
+    flex-direction:column;
+    gap:10px;
   }
 }
 
@@ -685,12 +883,16 @@ select{
 
 <body>
 
-<div class="topbar">🚚 Livraison suivie • NovaShop</div>
+<div class="topbar">
+  🚚 Livraison suivie en temps réel • NovaShop
+</div>
 
 <header>
   <div class="header-inner">
 
-    <div class="logo">NOVA<span>SHOP</span></div>
+    <div class="logo">
+      NOVA<span>SHOP</span>
+    </div>
 
     <div class="search">
       <input id="searchInput" placeholder="Rechercher un produit...">
@@ -702,7 +904,9 @@ select{
       <button class="icon-btn" id="ordersButton" style="display:none">📦</button>
       <button class="icon-btn" id="adminButton" style="display:none">👑 Dashboard</button>
       <button class="icon-btn" id="settingsButton">⚙️</button>
-      <button class="icon-btn" id="cartButton">🛒 <span class="cart-count" id="cartCount">0</span></button>
+      <button class="icon-btn" id="cartButton">
+        🛒 <span class="cart-count" id="cartCount">0</span>
+      </button>
     </div>
 
   </div>
@@ -717,6 +921,7 @@ select{
     <button class="category" data-category="Stockage">Stockage</button>
     <button class="category" data-category="Alimentations">Alimentations</button>
     <button class="category" data-category="Boîtiers">Boîtiers</button>
+    <button class="category" data-category="Refroidissement">Refroidissement</button>
     <button class="category" data-category="Écrans">Écrans</button>
     <button class="category" data-category="Streaming">Streaming</button>
     <button class="category" data-category="Manettes">Manettes</button>
@@ -731,8 +936,13 @@ select{
     <p>PC, composants, périphériques et accessoires gaming.</p>
 
     <div class="hero-buttons">
-      <button class="primary" id="heroProducts">Voir les produits</button>
-      <button class="secondary" id="heroOrders">Mes commandes</button>
+      <button class="primary" id="heroProducts">
+        Voir les produits
+      </button>
+
+      <button class="secondary" id="heroOrders">
+        Mes commandes
+      </button>
     </div>
   </div>
 </section>
@@ -781,17 +991,25 @@ select{
     </div>
 
     <form class="form" id="loginForm">
+
       <label>E-mail</label>
       <input id="loginEmail" type="email" required>
 
       <label>Mot de passe</label>
       <input id="loginPassword" type="password" required>
 
-      <button class="primary" type="submit">Se connecter</button>
-      <button class="secondary" type="button" id="googleButton">🔵 Continuer avec Google</button>
+      <button class="primary" type="submit">
+        Se connecter
+      </button>
+
+      <button class="secondary" type="button" id="googleButton">
+        🔵 Continuer avec Google
+      </button>
+
     </form>
 
     <form class="form hidden" id="signupForm">
+
       <label>E-mail / Gmail *</label>
       <input id="signupEmail" type="email" required>
 
@@ -804,8 +1022,14 @@ select{
       <label>Confirmation *</label>
       <input id="signupConfirm" type="password" required>
 
-      <button class="primary" type="submit">Créer mon compte</button>
-      <button class="secondary" type="button" id="googleSignupButton">🔵 Créer avec Google</button>
+      <button class="primary" type="submit">
+        Créer mon compte
+      </button>
+
+      <button class="secondary" type="button" id="googleSignupButton">
+        🔵 Créer avec Google
+      </button>
+
     </form>
 
   </div>
@@ -814,31 +1038,40 @@ select{
 <!-- ACCOUNT -->
 
 <div class="modal" id="accountModal">
+
   <div class="modal-header">
     <strong>Mon compte</strong>
     <button class="close" data-close="accountModal">✕</button>
   </div>
+
   <div class="modal-body" id="accountContent"></div>
+
 </div>
 
 <!-- PRODUCT -->
 
 <div class="modal" id="productModal">
+
   <div class="modal-header">
     <strong>Produit</strong>
     <button class="close" data-close="productModal">✕</button>
   </div>
+
   <div class="modal-body" id="productContent"></div>
+
 </div>
 
 <!-- CART -->
 
 <div class="modal" id="cartModal">
+
   <div class="modal-header">
     <strong>Mon panier</strong>
     <button class="close" data-close="cartModal">✕</button>
   </div>
+
   <div class="modal-body">
+
     <div id="cartContent"></div>
 
     <div class="total">
@@ -849,12 +1082,15 @@ select{
     <button class="primary" style="width:100%" id="checkoutButton">
       Passer la commande
     </button>
+
   </div>
+
 </div>
 
 <!-- CHECKOUT -->
 
 <div class="modal" id="checkoutModal">
+
   <div class="modal-header">
     <strong>Finaliser la commande</strong>
     <button class="close" data-close="checkoutModal">✕</button>
@@ -877,75 +1113,125 @@ select{
       <span id="checkoutTotal">0,00 €</span>
     </div>
 
+    <div class="notice">
+      📍 Ton adresse sera vérifiée avant le paiement
+    </div>
+
     <form class="form" id="checkoutForm">
 
       <div class="checkout-grid">
 
-        <div>
+        <div class="checkout-field">
           <label>Nom complet</label>
           <input id="fullName" required>
         </div>
 
-        <div>
+        <div class="checkout-field">
           <label>Pays</label>
           <input id="country" value="France" required>
         </div>
 
-        <div>
+        <div class="checkout-field full">
           <label>Adresse</label>
-          <input id="address" required>
+          <input id="address" placeholder="Ex : 10 rue de Paris" required>
         </div>
 
-        <div>
+        <div class="checkout-field">
           <label>Code postal</label>
-          <input id="postalCode" required>
+          <input id="postalCode" inputmode="numeric" maxlength="5" required>
         </div>
 
-        <div>
+        <div class="checkout-field">
           <label>Ville</label>
-          <input id="city" required>
+          <input id="city" placeholder="Ex : Lille" required>
         </div>
 
       </div>
 
-      <label>Code promotionnel</label>
-      <input id="promoCode" placeholder="Ex : NOVA100">
+      <button
+        type="button"
+        class="secondary"
+        id="verifyAddressButton"
+      >
+        📍 Vérifier mon adresse
+      </button>
 
-      <button type="button" class="secondary" id="applyPromo">
+      <div
+        class="address-status"
+        id="addressStatus"
+      ></div>
+
+      <div
+        class="address-result"
+        id="addressResult"
+      ></div>
+
+      <label>Code promotionnel</label>
+
+      <input
+        id="promoCode"
+        placeholder="Ex : NOVA100"
+      >
+
+      <button
+        type="button"
+        class="secondary"
+        id="applyPromo"
+      >
         Appliquer
       </button>
 
       <div id="promoMessage"></div>
 
-      <button type="submit" class="primary" id="payButton">
-        Continuer vers PayPal
+      <button
+        type="submit"
+        class="primary"
+        id="payButton"
+        disabled
+      >
+        🔒 Vérifie ton adresse pour continuer
       </button>
 
     </form>
+
   </div>
+
 </div>
 
 <!-- ORDERS -->
 
 <div class="modal" id="ordersModal">
+
   <div class="modal-header">
     <strong>Mes commandes</strong>
     <button class="close" data-close="ordersModal">✕</button>
   </div>
+
   <div class="modal-body" id="ordersContent"></div>
+
 </div>
 
 <!-- DASHBOARD -->
 
 <div class="modal" id="dashboardModal">
+
   <div class="modal-header">
-    <strong>👑 Dashboard NovaShop</strong>
-    <button class="close" data-close="dashboardModal">✕</button>
+
+    <div>
+      <strong>👑 Dashboard NovaShop</strong>
+      <div class="live">● Synchronisation Firestore active</div>
+    </div>
+
+    <button class="close" data-close="dashboardModal">
+      ✕
+    </button>
+
   </div>
 
   <div class="modal-body">
 
     <div class="stats">
+
       <div class="stat">
         Commandes
         <strong id="statOrders">0</strong>
@@ -960,40 +1246,59 @@ select{
         Valeur catalogue
         <strong id="statCatalog">0 €</strong>
       </div>
+
     </div>
 
     <h3>📦 Gestion des livraisons</h3>
+
     <div id="adminOrders"></div>
 
-    <h3 style="margin-top:25px">🎟️ Codes promotionnels</h3>
+    <h3 style="margin-top:25px">
+      🎟️ Codes promotionnels
+    </h3>
+
     <div id="adminPromos"></div>
 
   </div>
+
 </div>
 
 <!-- INVOICE -->
 
 <div class="modal" id="invoiceModal">
+
   <div class="modal-header">
     <strong>Facture NovaShop</strong>
-    <button class="close" data-close="invoiceModal">✕</button>
+    <button class="close" data-close="invoiceModal">
+      ✕
+    </button>
   </div>
 
   <div class="modal-body">
+
     <div id="invoiceContent"></div>
 
-    <button class="primary" id="printInvoice" style="margin-top:20px;width:100%">
+    <button
+      class="primary"
+      id="printInvoice"
+      style="margin-top:20px;width:100%"
+    >
       🖨️ Imprimer
     </button>
+
   </div>
+
 </div>
 
 <!-- SETTINGS -->
 
 <div class="modal" id="settingsModal">
+
   <div class="modal-header">
     <strong>⚙️ Paramètres</strong>
-    <button class="close" data-close="settingsModal">✕</button>
+    <button class="close" data-close="settingsModal">
+      ✕
+    </button>
   </div>
 
   <div class="modal-body">
@@ -1011,6 +1316,7 @@ select{
     </label>
 
   </div>
+
 </div>
 
 <div class="toast" id="toast"></div>
