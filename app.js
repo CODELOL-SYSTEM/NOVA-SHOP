@@ -1,1846 +1,3034 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
 
-<title>NovaShop</title>
+import {
+  getAuth,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  signOut,
+  onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
 
-<script>
-(function(){
-  const theme = localStorage.getItem("novaThemeChoice") || "dark";
+import {
+  getFirestore,
+  collection,
+  addDoc,
+  getDocs,
+  query,
+  where,
+  serverTimestamp,
+  deleteDoc,
+  doc
+} from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
 
-  if(theme === "light"){
+
+/* =========================================================
+   FIREBASE
+========================================================= */
+
+const firebaseConfig = {
+  apiKey: "AIzaSy5vAkAEfIBpfLyhxgO7uvNdJ67KYKWD0",
+  authDomain: "novashop-4ee63.firebaseapp.com",
+  projectId: "novashop-4ee63",
+  storageBucket: "novashop-4ee63.firebasestorage.app",
+  messagingSenderId: "1044964015809",
+  appId: "1:1044964015809:web:4eafe0b1aede48f8539e40",
+  measurementId: "G-XNY5X2VMY9"
+};
+
+const firebaseApp = initializeApp(firebaseConfig);
+
+const auth = getAuth(firebaseApp);
+const db = getFirestore(firebaseApp);
+
+
+/* =========================================================
+   ADMIN
+========================================================= */
+
+const ADMIN_EMAIL = "pc2alex.les@gmail.com";
+const ADMIN_CODE = "NOVA-ADMIN-2026";
+const ADMIN_ACCESS_KEY = "novaAdminAuthorized";
+
+
+/* =========================================================
+   DOM
+========================================================= */
+
+const $ = id => document.getElementById(id);
+
+const searchInput = $("searchInput");
+const categoriesEl = $("categories");
+const productsGrid = $("productsGrid");
+const productCount = $("productCount");
+
+const cartBtn = $("cartBtn");
+const cartBadge = $("cartBadge");
+const cartOverlay = $("cartOverlay");
+const cartDrawer = $("cartDrawer");
+const cartClose = $("cartClose");
+const cartItems = $("cartItems");
+const cartTotal = $("cartTotal");
+const checkoutBtn = $("checkoutBtn");
+
+const settingsBtn = $("settingsBtn");
+const accountBtn = $("accountBtn");
+const ordersBtn = $("ordersBtn");
+const adminBtn = $("adminBtn");
+
+const modal = $("modal");
+const modalContent = $("modalContent");
+const modalTitle = $("modalTitle");
+const modalClose = $("modalClose");
+
+const toastContainer = $("toastContainer");
+
+const heroShopBtn = $("heroShopBtn");
+const heroSearchBtn = $("heroSearchBtn");
+
+
+/* =========================================================
+   STATE
+========================================================= */
+
+let currentUser = null;
+let authMode = "login";
+
+let selectedCategory = "Toutes";
+let searchValue = "";
+
+let cart =
+  JSON.parse(
+    localStorage.getItem("novaCart") || "[]"
+  );
+
+let reviewsCache = {};
+
+let language =
+  localStorage.getItem("novaLanguage") || "fr";
+
+let themeChoice =
+  localStorage.getItem("novaThemeChoice") || "dark";
+
+let animationsEnabled =
+  localStorage.getItem("novaAnimations") !== "false";
+
+
+const FALLBACK_IMAGE =
+  "https://placehold.co/800x800/111827/ffffff?text=NovaShop";
+
+
+/* =========================================================
+   43 PRODUITS
+========================================================= */
+
+const products = [
+
+  {
+    id:"p1",
+    name:"Gigabyte B650 AORUS Elite AX",
+    category:"Composants",
+    price:189.99,
+    image:"https://m.media-amazon.com/images/I/81JFKzNyl+L._AC_SL1500_.jpg"
+  },
+
+  {
+    id:"p2",
+    name:"PC Gamer AMD Ryzen 7 7800X3D | RX 9070 XT | 32 Go DDR5",
+    category:"PC Gamer",
+    price:2237.65,
+    image:"https://www.memorypc.fr/thumbnail/53/79/73/1786604635/019f8f1c2c6972a8a3ea1ee9516a0652_1784812416_800x800.png"
+  },
+
+  {
+    id:"p3",
+    name:"HyperX Cloud II",
+    category:"Casques",
+    price:49.99,
+    image:"https://fr.hyperx.com/cdn/shop/files/hyperx_cloud_ii_red_1_main.jpg?v=1764129756"
+  },
+
+  {
+    id:"p4",
+    name:"TECORS Clavier Gamer Mécanique 60% AZERTY",
+    category:"Claviers",
+    price:30,
+    image:"https://m.media-amazon.com/images/I/71-lhAU97VL._AC_SL1500_.jpg"
+  },
+
+  {
+    id:"p5",
+    name:"Clavier Magnétique 65% Celshading Noir",
+    category:"Claviers",
+    price:120.90,
+    image:"https://tryhard-gear.com/cdn/shop/files/TestCelshadingnoirV2.webp?v=1762273866&width=832"
+  },
+
+  {
+    id:"p6",
+    name:"Ajazz AJ199 MAX Carbon Fiber Wireless Gaming Mouse",
+    category:"Souris",
+    price:49.99,
+    image:"https://ae-pic-a1.aliexpress-media.com/kf/S1e981b53ccfe4e1391cd5b5deb4fce87o.png_960x960.png_.avif"
+  },
+
+  {
+    id:"p7",
+    name:"Logitech G PRO X2 Superstrike Blanc et Noir",
+    category:"Souris",
+    price:150.99,
+    image:"https://static.fnac-static.com/multimedia/Images/FR/MDM/7a/34/bc/29111418/1540-1.jpg"
+  },
+
+  {
+    id:"p8",
+    name:"Samsung 990 PRO 1TB",
+    category:"Stockage",
+    price:249.99,
+    image:"https://content.pearl.fr/media/cache/default/article_ultralarge_high_nocrop/shared/images/articles/M/MW1/disque-dur-interne-ssd-990-pro-pcie-nvme-m-2-2280-1-to-ref_MW1148_2.jpg"
+  },
+
+  {
+    id:"p9",
+    name:"Samsung 990 PRO 2TB",
+    category:"Stockage",
+    price:199.93,
+    image:"https://pc.comparer.fr/500x500/310191422.webp"
+  },
+
+  {
+    id:"p10",
+    name:"CORSAIR RM1000x EU",
+    category:"Alimentations",
+    price:159.90,
+    image:"https://assets.corsair.com/image/upload/c_pad,q_85,h_608,w_608,f_auto/products/Power-Supply-Units/base-rmx-2024-config/gallery/black/1000/RM1000x_2024_01.webp"
+  },
+
+  {
+    id:"p11",
+    name:"CORSAIR RM850x EU",
+    category:"Alimentations",
+    price:134.90,
+    image:"https://assets.corsair.com/image/upload/c_pad,q_85,h_608,w_608,f_auto/products/Power-Supply-Units/base-rmx-2024-config/gallery/black/850/RM850x_2024_01.webp"
+  },
+
+  {
+    id:"p12",
+    name:"Corsair Frame 5000D RS ARGB Noir",
+    category:"Boîtiers",
+    price:159.90,
+    image:"https://media.ldlc.com/r1600/ld/products/00/06/26/05/LD0006260502.jpg"
+  },
+
+  {
+    id:"p13",
+    name:"ARCTIC Liquid Freezer III Pro 360 A-RGB Black",
+    category:"Refroidissement",
+    price:129.90,
+    image:"https://cdn.idealo.com/folder/Product/206182/0/206182034/s4_produktbild_gross/arctic-liquid-freezer-iii-pro-360-a-rgb-black.jpg"
+  },
+
+  {
+    id:"p14",
+    name:"Samsung 27 QD-OLED Odyssey G6",
+    category:"Écrans",
+    price:399.95,
+    image:"https://media.ldlc.com/r705/ld/products/00/06/32/99/LD0006329977.jpg"
+  },
+
+  {
+    id:"p15",
+    name:"ELGATO Wave Mic Arm Pro",
+    category:"Streaming",
+    price:229.90,
+    image:"https://www.digit-photo.com/images/produits/ELGATO10AAT9901/1.jpg"
+  },
+
+  {
+    id:"p16",
+    name:"Sony DualSense Cosmic Red PS5/PC",
+    category:"Manettes",
+    price:74.90,
+    image:"https://media.carrefour.fr/media/referential/media/cc07d7de4b9e4bea8c063e8f9bb46d94/p_200x200/0711719023005_0.jpg"
+  },
+
+  {
+    id:"p17",
+    name:"ASUS TUF Gaming B650-PLUS",
+    category:"Composants",
+    price:179.90,
+    image:"https://media.materiel.net/r550/products/MN0005986139.jpg"
+  },
+
+  {
+    id:"p18",
+    name:"MSI MAG B650 Tomahawk WiFi",
+    category:"Composants",
+    price:189.90,
+    image:"https://m.media-amazon.com/images/I/71TYAcZ4J8L._AC_SL1200_.jpg"
+  },
+
+  {
+    id:"p19",
+    name:"KOORUI Ecran PC Gamer 27 Pouces 200Hz IPS QHD HDR400 1ms HDMI 2.0/DP1.4",
+    category:"Écrans",
+    price:74.99,
+    image:"https://m.media-amazon.com/images/I/71CJ1DF-8sL._AC_SL1500_.jpg"
+  },
+
+  {
+    id:"p20",
+    name:'iiyama 23.8" LED - G-Master GB2471HS-B1 Red Eagle',
+    category:"Écrans",
+    price:65.99,
+    image:"https://media.ldlc.com/r1600/ld/products/00/06/34/20/LD0006342033.jpg"
+  },
+
+  {
+    id:"p21",
+    name:"SONGMICS Chaise de jeu ergonomique avec repose-pieds capacité 150 kg gris ardoise",
+    category:"Chaises gaming",
+    price:129.99,
+    image:"https://static.songmics.fr/fit-in/1000x1000/image/Product/B34OBG077G01/B34OBG077G01-1.jpg"
+  },
+
+  {
+    id:"p22",
+    name:"Dowinx Série Luxe Suède LS-66D68E Blanc",
+    category:"Chaises gaming",
+    price:79.99,
+    image:"https://eu.dowinx.com/cdn/shop/files/11_5f72b693-5f79-4d06-b48a-7cb2b2f0244a.png?v=1752139814&width=1220"
+  },
+
+  {
+    id:"p23",
+    name:"Chaise GTPLAYER Ergonomique Gaming Soutien Lombaire Repose-pieds",
+    category:"Chaises gaming",
+    price:109.99,
+    image:"https://thumb.pccomponentes.com/w-530-530/articles/1118/11186247/167-silla-gaming-gtplayer-ergonomica-con-reposapies-y-soporte-lumbar-4d.jpg"
+  },
+
+  {
+    id:"p24",
+    name:"Desk Lite - Height-Adjustable Desk",
+    category:"Bureaux gaming",
+    price:110.99,
+    image:"https://yaasa.com/cdn/shop/files/yaasa-desk-lite_nr01_black_100_01-04545-01_1200x.jpg?v=1753169928"
+  },
+
+  {
+    id:"p25",
+    name:"EUREKA ERGONOMIC Bureau Gaming LED 182x76cm en Forme d'Aile, assis-debout électrique",
+    category:"Bureaux gaming",
+    price:86.99,
+    image:"https://m.media-amazon.com/images/I/71Gd5G3wRsL._AC_SL1500_.jpg"
+  },
+
+  {
+    id:"p26",
+    name:"Bureau gaming d’angle HOMCOM réversible support écran, étagère maille réglable, noir",
+    category:"Bureaux gaming",
+    price:44.99,
+    image:"https://cdn.manomano.com/pim-media/images/medium/74eca1cb1cefa063c8f600ee293ae6ee826794f8.jpg"
+  },
+
+  {
+    id:"p27",
+    name:"Logitech G Pro X 2 Lightspeed Noir + Repose casque",
+    category:"Casques",
+    price:99.99,
+    image:"https://static.fnac-static.com/multimedia/Images/FR/MDMFR/MDM/6d/e9/6e/24045933/1540-1/tsp20260429154901/Casque-PC-gaming-sans-fil-Logitech-G-Pro-X-2-Lightspeed-Noir-Repose-casque.jpg"
+  },
+
+  {
+    id:"p28",
+    name:"Razer BlackShark V2 Pro 2023 Noir",
+    category:"Casques",
+    price:75.99,
+    image:"https://media.ldlc.com/r1600/ld/products/00/06/07/71/LD0006077125.jpg"
+  },
+
+  {
+    id:"p29",
+    name:"beyerdynamic DT-990 Pro 250 Ohm",
+    category:"Casques",
+    price:60.99,
+    image:"https://thumbs.static-thomann.de/thumb/padthumb600x600/pics/bdb/_10/106865/18443258_800.jpg"
+  },
+
+  {
+    id:"p30",
+    name:"Logitech PRO X TKL Rapid Noir, filaire AZERTY, sans pavé numérique",
+    category:"Claviers",
+    price:78.99,
+    image:"https://static.fnac-static.com/multimedia/Images/FR/MDM/6a/89/8f/26184042/1540-1.jpg"
+  },
+
+  {
+    id:"p31",
+    name:"QwertyKey75 HE Striker, Magnetic Hall Effect, Rapid Trigger, Snap Tap, Full RGB",
+    category:"Claviers",
+    price:56.99,
+    image:"https://cdn.shopify.com/s/files/1/0814/2530/1746/files/QK75-HE-STRIKER-qwertykey-tastatura-mecanica-gaming-hotswap-2025_1eee355b-72ca-46e6-a458-751384d0595c_1800x.webp?v=1771799537"
+  },
+
+  {
+    id:"p32",
+    name:"GravaStar Mercury K1 Clavier Gamer sans Fil en Aluminium, Noir Dégradé",
+    category:"Claviers",
+    price:91.99,
+    image:"https://m.media-amazon.com/images/I/6144lt2l5JL._AC_SL1200_.jpg"
+  },
+
+  {
+    id:"p33",
+    name:"ATTACK SHARK R11 Ultra, fibre de carbone, 8000Hz, 49g, 42000 DPI, black forged",
+    category:"Souris",
+    price:26.99,
+    image:"https://m.media-amazon.com/images/I/71bMz15SqcL._AC_SL1500_.jpg"
+  },
+
+  {
+    id:"p34",
+    name:"HyperX QuadCast 2 – Microphone USB – RGB",
+    category:"Microphones",
+    price:98.99,
+    image:"https://fr.hyperx.com/cdn/shop/files/hyperx_quadcast_2_872v1aa_main_1_2d47a555-f537-457b-9002-8b9e9010dc00.jpg?v=1763067608"
+  },
+
+  {
+    id:"p35",
+    name:"Shure SM7 dB",
+    category:"Microphones",
+    price:121.99,
+    image:"https://thumbs.static-thomann.de/thumb/padthumb600x600/pics/bdb/_57/573672/18492412_800.jpg"
+  },
+
+  {
+    id:"p36",
+    name:"Razer Seiren V3 Chroma Noir",
+    category:"Microphones",
+    price:13.99,
+    image:"https://media.ldlc.com/r1600/ld/products/00/06/13/25/LD0006132588.jpg"
+  },
+
+  {
+    id:"p37",
+    name:"Stairville LED Pixel Rail 40 RGB MKII",
+    category:"Éclairage RGB",
+    price:18.90,
+    image:"https://thumbs.static-thomann.de/thumb/padthumb600x600/pics/bdb/_44/449739/14448905_800.jpg"
+  },
+
+  {
+    id:"p38",
+    name:"Govee LED Strip Light RGBIC Wi-Fi + Bluetooth 5m Matter",
+    category:"Éclairage RGB",
+    price:0,
+    image:"https://static.fnac-static.com/multimedia/Images/FR/MDM/ab/7a/9d/27097771/1520-2/tsp20260429155350/Ruban-LED-Govee-LED-Strip-Light-RGBIC-Wi-Fi-avec-BT-5M-Matter.jpg"
+  },
+
+  {
+    id:"p39",
+    name:"Lampe de plafond hexagone nid d’abeille LED 2.4m x 4.8m contour bleu 550W 6500K 230V",
+    category:"Éclairage RGB",
+    price:91.10,
+    image:"https://www.discount-autosport.com/wp-content/webp-express/webp-images/uploads/2025/02/lampe-hexagone-plafond-led-4m80-contour-bleu-.jpg.webp"
+  },
+
+  {
+    id:"p40",
+    name:"GIGABYTE GeForce RTX 5050 WINDFORCE OC 8G",
+    category:"Cartes graphiques",
+    price:147,
+    image:"https://m.media-amazon.com/images/I/41kmHFMFPOL._SL500_.jpg"
+  },
+
+  {
+    id:"p41",
+    name:"MSI GeForce RTX 3050 LP E 6G OC",
+    category:"Cartes graphiques",
+    price:100,
+    image:"https://encrypted-tbn1.gstatic.com/shopping?q=tbn:ANd9GcTCe_rha_tAAHPWnQ8VV7GIvF-uSqUaEyU61TSnwgM4CK8g3-x_3Hq4wOgH36Ri63eAiWHsvhmRJHzVrUQR9-IwMx31WH0w"
+  },
+
+  {
+    id:"p42",
+    name:"ASUS Dual Radeon RX 7600 EVO OC Edition 8GB GDDR6",
+    category:"Cartes graphiques",
+    price:140,
+    image:"https://m.media-amazon.com/images/I/81QItJufypL._AC_SL1500_.jpg"
+  },
+
+  {
+    id:"p43",
+    name:"PC Gamer Fixe, Ryzen 7 5700G, Vega 8, 16G DDR4, 1T SSD",
+    category:"PC Gamer",
+    price:650,
+    image:"https://m.media-amazon.com/images/I/81M3iU5S4QL._AC_SL1500_.jpg",
+    newProduct:true
+  }
+
+];
+
+
+/* =========================================================
+   TRADUCTIONS
+========================================================= */
+
+const translations = {
+
+  fr:{
+    search:"Rechercher un produit...",
+    all:"Toutes",
+    products:"produits",
+    add:"Ajouter",
+    details:"Voir",
+    reviews:"avis",
+    new:"Nouveau",
+    cart:"Panier",
+    emptyCart:"Votre panier est vide.",
+    total:"Total",
+    checkout:"Commander",
+    account:"Compte",
+    login:"Connexion",
+    register:"Créer un compte",
+    logout:"Déconnexion",
+    email:"Adresse e-mail",
+    password:"Mot de passe",
+    confirmPassword:"Confirmer le mot de passe",
+    orders:"Mes commandes",
+    noOrders:"Aucune commande.",
+    settings:"Paramètres",
+    theme:"Thème",
+    dark:"Sombre",
+    light:"Clair",
+    auto:"Automatique",
+    language:"Langue",
+    french:"Français",
+    english:"English",
+    animations:"Animations",
+    admin:"Administration",
+    adminCode:"Code administrateur",
+    added:"Produit ajouté au panier !",
+    removed:"Produit retiré du panier.",
+    loginRequired:"Connectez-vous pour continuer.",
+    orderSuccess:"Commande enregistrée !",
+    adminActivated:"Mode administrateur activé.",
+    adminRemoved:"Autorisation administrateur supprimée.",
+    invalidLogin:"Identifiants incorrects.",
+    accountCreated:"Compte créé avec succès.",
+    passwordMismatch:"Les mots de passe ne correspondent pas.",
+    noResults:"Aucun produit trouvé.",
+    demoReviews:"Avis de démonstration affichés pour présenter le fonctionnement du site."
+  },
+
+  en:{
+    search:"Search for a product...",
+    all:"All",
+    products:"products",
+    add:"Add",
+    details:"View",
+    reviews:"reviews",
+    new:"New",
+    cart:"Cart",
+    emptyCart:"Your cart is empty.",
+    total:"Total",
+    checkout:"Checkout",
+    account:"Account",
+    login:"Login",
+    register:"Create account",
+    logout:"Logout",
+    email:"Email address",
+    password:"Password",
+    confirmPassword:"Confirm password",
+    orders:"My orders",
+    noOrders:"No orders.",
+    settings:"Settings",
+    theme:"Theme",
+    dark:"Dark",
+    light:"Light",
+    auto:"Automatic",
+    language:"Language",
+    french:"Français",
+    english:"English",
+    animations:"Animations",
+    admin:"Administration",
+    adminCode:"Administrator code",
+    added:"Product added to cart!",
+    removed:"Product removed from cart.",
+    loginRequired:"Please log in to continue.",
+    orderSuccess:"Order saved!",
+    adminActivated:"Administrator mode activated.",
+    adminRemoved:"Administrator authorization removed.",
+    invalidLogin:"Incorrect credentials.",
+    accountCreated:"Account created successfully.",
+    passwordMismatch:"Passwords do not match.",
+    noResults:"No product found.",
+    demoReviews:"Demo reviews are displayed to demonstrate the website functionality."
+  }
+
+};
+
+
+function t(key){
+  return translations[language]?.[key]
+    || translations.fr[key]
+    || key;
+}
+
+
+/* =========================================================
+   THEME
+========================================================= */
+
+function applyTheme(){
+
+  if(themeChoice === "light"){
     document.documentElement.dataset.theme = "light";
-  }else if(theme === "auto"){
+  }
+
+  else if(themeChoice === "auto"){
+
     document.documentElement.dataset.theme =
       window.matchMedia("(prefers-color-scheme: light)").matches
         ? "light"
         : "dark";
-  }else{
+
+  }
+
+  else{
     document.documentElement.dataset.theme = "dark";
   }
-})();
-</script>
 
-<style>
-
-:root{
-  --bg:#070b12;
-  --bg2:#0b111c;
-  --card:#0f1724;
-  --card2:#121c2b;
-  --border:rgba(255,255,255,.08);
-  --text:#f7f9fc;
-  --muted:#8e9bad;
-  --blue:#3187ff;
-  --blue2:#1769d6;
-  --blue-soft:rgba(49,135,255,.12);
-  --green:#27c985;
-  --red:#ff5c68;
-  --shadow:0 20px 60px rgba(0,0,0,.28);
-}
-
-html[data-theme="light"]{
-  --bg:#f4f7fb;
-  --bg2:#ffffff;
-  --card:#ffffff;
-  --card2:#f7f9fc;
-  --border:rgba(15,23,42,.09);
-  --text:#111827;
-  --muted:#667085;
-  --blue:#1769d6;
-  --blue2:#0e55b3;
-  --blue-soft:rgba(23,105,214,.09);
-  --shadow:0 18px 50px rgba(15,23,42,.10);
-}
-
-*{
-  box-sizing:border-box;
-}
-
-html{
-  scroll-behavior:smooth;
-}
-
-body{
-  margin:0;
-  background:
-    radial-gradient(circle at 50% -20%,rgba(49,135,255,.12),transparent 35%),
-    var(--bg);
-  color:var(--text);
-  font-family:
-    Inter,
-    ui-sans-serif,
-    system-ui,
-    -apple-system,
-    BlinkMacSystemFont,
-    "Segoe UI",
-    sans-serif;
-  min-height:100vh;
-}
-
-body.drawer-open{
-  overflow:hidden;
-}
-
-button,
-input{
-  font:inherit;
-}
-
-button{
-  cursor:pointer;
-}
-
-button:focus-visible,
-input:focus-visible{
-  outline:2px solid var(--blue);
-  outline-offset:2px;
-}
-
-/* =========================================================
-   HEADER
-========================================================= */
-
-.site-header{
-  position:sticky;
-  top:0;
-  z-index:1000;
-  height:74px;
-  border-bottom:1px solid var(--border);
-  background:rgba(7,11,18,.82);
-  backdrop-filter:blur(18px);
-}
-
-html[data-theme="light"] .site-header{
-  background:rgba(255,255,255,.86);
-}
-
-.header-inner{
-  width:min(1440px,calc(100% - 36px));
-  height:100%;
-  margin:auto;
-  display:flex;
-  align-items:center;
-  gap:22px;
-}
-
-.logo{
-  display:flex;
-  align-items:center;
-  gap:10px;
-  color:var(--text);
-  text-decoration:none;
-  font-size:21px;
-  font-weight:850;
-  letter-spacing:-.7px;
-  white-space:nowrap;
-}
-
-.logo-mark{
-  width:35px;
-  height:35px;
-  border-radius:11px;
-  display:grid;
-  place-items:center;
-  color:white;
-  background:linear-gradient(145deg,#3c99ff,#1259c5);
-  box-shadow:0 7px 24px rgba(49,135,255,.3);
-  font-size:17px;
-}
-
-.header-search{
-  flex:1;
-  max-width:560px;
-  position:relative;
-}
-
-.header-search input{
-  width:100%;
-  height:43px;
-  border:1px solid var(--border);
-  border-radius:12px;
-  background:var(--card);
-  color:var(--text);
-  padding:0 16px 0 42px;
-  transition:.2s ease;
-}
-
-.header-search input::placeholder{
-  color:var(--muted);
-}
-
-.header-search input:focus{
-  border-color:rgba(49,135,255,.55);
-  box-shadow:0 0 0 4px rgba(49,135,255,.08);
-}
-
-.search-icon{
-  position:absolute;
-  left:15px;
-  top:50%;
-  transform:translateY(-50%);
-  color:var(--muted);
-  pointer-events:none;
-}
-
-.header-actions{
-  margin-left:auto;
-  display:flex;
-  align-items:center;
-  gap:7px;
-}
-
-.icon-btn{
-  position:relative;
-  width:41px;
-  height:41px;
-  border:1px solid transparent;
-  border-radius:11px;
-  color:var(--muted);
-  background:transparent;
-  display:grid;
-  place-items:center;
-  transition:.2s ease;
-  font-size:17px;
-}
-
-.icon-btn:hover{
-  color:var(--text);
-  background:var(--blue-soft);
-  border-color:var(--border);
-  transform:translateY(-1px);
-}
-
-.icon-btn.logged-in{
-  color:var(--blue);
-}
-
-.cart-badge{
-  position:absolute;
-  right:-3px;
-  top:-3px;
-  min-width:19px;
-  height:19px;
-  padding:0 5px;
-  border-radius:99px;
-  background:var(--blue);
-  color:white;
-  font-size:10px;
-  font-weight:850;
-  display:none;
-  place-items:center;
-  border:2px solid var(--bg);
-}
-
-.cart-badge.visible{
-  display:grid;
-}
-
-/* =========================================================
-   HERO
-========================================================= */
-
-.hero{
-  width:min(1440px,calc(100% - 36px));
-  margin:34px auto 0;
-  min-height:360px;
-  border:1px solid var(--border);
-  border-radius:25px;
-  overflow:hidden;
-  position:relative;
-  background:
-    radial-gradient(circle at 80% 25%,rgba(49,135,255,.24),transparent 30%),
-    radial-gradient(circle at 65% 100%,rgba(36,90,180,.13),transparent 35%),
-    linear-gradient(120deg,var(--card),var(--bg2));
-  box-shadow:var(--shadow);
-}
-
-.hero-content{
-  position:relative;
-  z-index:2;
-  padding:64px;
-  max-width:720px;
-}
-
-.hero-kicker{
-  display:inline-flex;
-  align-items:center;
-  gap:8px;
-  padding:7px 11px;
-  border-radius:99px;
-  color:#80b9ff;
-  background:rgba(49,135,255,.10);
-  border:1px solid rgba(49,135,255,.18);
-  font-size:12px;
-  font-weight:800;
-  margin-bottom:19px;
-}
-
-.hero h1{
-  margin:0;
-  font-size:clamp(40px,5vw,68px);
-  line-height:.98;
-  letter-spacing:-3.5px;
-  max-width:700px;
-}
-
-.hero h1 span{
-  color:var(--blue);
-}
-
-.hero p{
-  color:var(--muted);
-  line-height:1.65;
-  max-width:590px;
-  margin:22px 0 28px;
-  font-size:16px;
-}
-
-.hero-buttons{
-  display:flex;
-  gap:11px;
-  flex-wrap:wrap;
-}
-
-.primary-btn,
-.secondary-btn{
-  height:45px;
-  border-radius:11px;
-  padding:0 18px;
-  font-weight:800;
-  border:1px solid var(--border);
-  transition:.2s ease;
-}
-
-.primary-btn{
-  color:white;
-  background:linear-gradient(135deg,#398fff,#1769d6);
-  border-color:transparent;
-  box-shadow:0 8px 25px rgba(49,135,255,.22);
-}
-
-.primary-btn:hover{
-  transform:translateY(-2px);
-  box-shadow:0 12px 32px rgba(49,135,255,.3);
-}
-
-.secondary-btn{
-  background:var(--card);
-  color:var(--text);
-}
-
-.secondary-btn:hover{
-  background:var(--card2);
-  transform:translateY(-2px);
-}
-
-.hero-glow{
-  position:absolute;
-  right:-100px;
-  bottom:-140px;
-  width:500px;
-  height:500px;
-  border-radius:50%;
-  background:rgba(49,135,255,.09);
-  filter:blur(30px);
-}
-
-/* =========================================================
-   TRUST
-========================================================= */
-
-.trust-row{
-  width:min(1440px,calc(100% - 36px));
-  margin:18px auto 0;
-  display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:10px;
-}
-
-.trust-card{
-  border:1px solid var(--border);
-  background:var(--card);
-  border-radius:15px;
-  padding:17px;
-  display:flex;
-  align-items:center;
-  gap:12px;
-}
-
-.trust-icon{
-  width:38px;
-  height:38px;
-  flex:none;
-  display:grid;
-  place-items:center;
-  border-radius:10px;
-  background:var(--blue-soft);
-  color:var(--blue);
-}
-
-.trust-card strong{
-  display:block;
-  font-size:13px;
-}
-
-.trust-card span{
-  display:block;
-  color:var(--muted);
-  font-size:11px;
-  margin-top:3px;
-}
-
-/* =========================================================
-   PRODUCTS SECTION
-========================================================= */
-
-.products-section{
-  width:min(1440px,calc(100% - 36px));
-  margin:55px auto 80px;
-}
-
-.section-head{
-  display:flex;
-  justify-content:space-between;
-  align-items:flex-end;
-  gap:20px;
-  margin-bottom:22px;
-}
-
-.section-title{
-  margin:0;
-  font-size:30px;
-  letter-spacing:-1.2px;
-}
-
-.section-subtitle{
-  color:var(--muted);
-  margin:7px 0 0;
-  font-size:14px;
-}
-
-.product-count{
-  color:var(--muted);
-  font-size:13px;
-}
-
-/* =========================================================
-   CATEGORIES
-========================================================= */
-
-.categories{
-  display:flex;
-  gap:8px;
-  overflow-x:auto;
-  padding-bottom:8px;
-  margin-bottom:22px;
-  scrollbar-width:none;
-}
-
-.categories::-webkit-scrollbar{
-  display:none;
-}
-
-.category-btn{
-  flex:none;
-  height:37px;
-  padding:0 14px;
-  border:1px solid var(--border);
-  border-radius:9px;
-  background:var(--card);
-  color:var(--muted);
-  font-size:12px;
-  font-weight:750;
-  transition:.2s ease;
-}
-
-.category-btn:hover{
-  color:var(--text);
-  border-color:rgba(49,135,255,.25);
-}
-
-.category-btn.active{
-  color:white;
-  background:var(--blue);
-  border-color:var(--blue);
-}
-
-/* =========================================================
-   PRODUCT GRID
-========================================================= */
-
-.products-grid{
-  display:grid;
-  grid-template-columns:repeat(4,minmax(0,1fr));
-  gap:16px;
-}
-
-.product-card{
-  min-width:0;
-  border:1px solid var(--border);
-  border-radius:17px;
-  background:var(--card);
-  overflow:hidden;
-  transition:
-    transform .22s ease,
-    border-color .22s ease,
-    box-shadow .22s ease;
-}
-
-.product-card:hover{
-  transform:translateY(-4px);
-  border-color:rgba(49,135,255,.24);
-  box-shadow:0 18px 42px rgba(0,0,0,.18);
-}
-
-.product-image-wrap{
-  height:245px;
-  position:relative;
-  background:
-    radial-gradient(circle at 50% 40%,rgba(255,255,255,.05),transparent 45%),
-    var(--card2);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  overflow:hidden;
-}
-
-.product-image{
-  width:100%;
-  height:100%;
-  object-fit:contain;
-  padding:21px;
-  transition:transform .35s ease;
-}
-
-.product-card:hover .product-image{
-  transform:scale(1.035);
-}
-
-.product-badge{
-  position:absolute;
-  z-index:2;
-  left:13px;
-  top:13px;
-  padding:6px 9px;
-  border-radius:7px;
-  color:white;
-  background:#1976ed;
-  font-size:10px;
-  font-weight:850;
-  box-shadow:0 5px 15px rgba(25,118,237,.22);
-}
-
-.product-info{
-  padding:17px;
-}
-
-.product-category{
-  color:var(--blue);
-  font-size:10px;
-  text-transform:uppercase;
-  letter-spacing:.65px;
-  font-weight:850;
-  margin-bottom:7px;
-}
-
-.product-name{
-  margin:0;
-  min-height:45px;
-  font-size:14px;
-  line-height:1.45;
-  font-weight:760;
-  letter-spacing:-.15px;
-}
-
-.product-rating{
-  display:flex;
-  align-items:center;
-  gap:7px;
-  margin-top:10px;
-  color:var(--muted);
-  font-size:11px;
-}
-
-.stars{
-  color:#ffb72b;
-  letter-spacing:1px;
-  font-size:12px;
-}
-
-.review-number{
-  color:var(--muted);
-}
-
-.product-bottom{
-  display:flex;
-  justify-content:space-between;
-  align-items:flex-end;
-  gap:10px;
-  margin-top:17px;
-}
-
-.product-price{
-  font-size:19px;
-  line-height:1;
-  letter-spacing:-.5px;
-  white-space:nowrap;
-}
-
-.product-actions{
-  display:flex;
-  gap:6px;
-}
-
-.product-view-btn,
-.product-add-btn{
-  height:33px;
-  border-radius:8px;
-  padding:0 10px;
-  font-size:10px;
-  font-weight:850;
-  transition:.18s ease;
-}
-
-.product-view-btn{
-  background:transparent;
-  color:var(--muted);
-  border:1px solid var(--border);
-}
-
-.product-view-btn:hover{
-  color:var(--text);
-  background:var(--card2);
-}
-
-.product-add-btn{
-  background:var(--blue);
-  color:white;
-  border:1px solid var(--blue);
-}
-
-.product-add-btn:hover{
-  background:var(--blue2);
-  transform:translateY(-1px);
-}
-
-.empty-products{
-  grid-column:1/-1;
-  text-align:center;
-  padding:80px 20px;
-  border:1px solid var(--border);
-  border-radius:18px;
-  background:var(--card);
-}
-
-.empty-icon{
-  font-size:34px;
-  margin-bottom:12px;
-}
-
-/* =========================================================
-   FOOTER
-========================================================= */
-
-footer{
-  border-top:1px solid var(--border);
-  background:var(--bg2);
-}
-
-.footer-inner{
-  width:min(1440px,calc(100% - 36px));
-  margin:auto;
-  padding:40px 0;
-  display:flex;
-  justify-content:space-between;
-  gap:25px;
-  color:var(--muted);
-  font-size:12px;
-}
-
-.footer-brand{
-  color:var(--text);
-  font-weight:850;
-}
-
-/* =========================================================
-   CART
-========================================================= */
-
-.cart-overlay{
-  position:fixed;
-  inset:0;
-  z-index:2000;
-  background:rgba(0,0,0,.5);
-  opacity:0;
-  visibility:hidden;
-  transition:.25s ease;
-}
-
-.cart-overlay.open{
-  opacity:1;
-  visibility:visible;
-}
-
-.cart-drawer{
-  position:fixed;
-  z-index:2001;
-  top:0;
-  right:0;
-  width:min(400px,100%);
-  height:100dvh;
-  background:var(--bg2);
-  border-left:1px solid var(--border);
-  transform:translateX(100%);
-  transition:transform .3s cubic-bezier(.2,.8,.2,1);
-  display:flex;
-  flex-direction:column;
-  box-shadow:-20px 0 60px rgba(0,0,0,.25);
-}
-
-.cart-drawer.open{
-  transform:translateX(0);
-}
-
-.cart-header{
-  height:72px;
-  padding:0 20px;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  border-bottom:1px solid var(--border);
-}
-
-.cart-header h2{
-  margin:0;
-  font-size:18px;
-}
-
-.cart-close{
-  width:35px;
-  height:35px;
-  border:0;
-  border-radius:9px;
-  background:var(--card);
-  color:var(--muted);
-  font-size:20px;
-}
-
-.cart-items{
-  flex:1;
-  overflow:auto;
-  padding:16px;
-}
-
-.cart-empty{
-  height:100%;
-  display:grid;
-  place-content:center;
-  text-align:center;
-  color:var(--muted);
-}
-
-.cart-empty-icon{
-  font-size:42px;
-  margin-bottom:12px;
-}
-
-.cart-item{
-  display:flex;
-  gap:12px;
-  padding:13px 0;
-  border-bottom:1px solid var(--border);
-}
-
-.cart-item img{
-  width:68px;
-  height:68px;
-  border-radius:10px;
-  object-fit:contain;
-  background:var(--card);
-  padding:6px;
-  flex:none;
-}
-
-.cart-item-info{
-  min-width:0;
-  flex:1;
-}
-
-.cart-item-info strong{
-  display:block;
-  font-size:12px;
-  line-height:1.4;
-}
-
-.cart-item-info > span{
-  display:block;
-  margin-top:5px;
-  color:var(--blue);
-  font-weight:800;
-  font-size:12px;
-}
-
-.cart-item-controls{
-  display:flex;
-  align-items:center;
-  gap:7px;
-  margin-top:10px;
-}
-
-.cart-item-controls button{
-  width:25px;
-  height:25px;
-  border-radius:7px;
-  border:1px solid var(--border);
-  background:var(--card);
-  color:var(--text);
-}
-
-.cart-item-controls span{
-  min-width:18px;
-  text-align:center;
-  font-size:11px;
-  font-weight:800;
-}
-
-.cart-item-controls .cart-remove{
-  margin-left:auto;
-  color:var(--red);
-}
-
-.cart-footer{
-  padding:18px;
-  border-top:1px solid var(--border);
-  background:var(--bg2);
-}
-
-.cart-total-row{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  margin-bottom:13px;
-}
-
-.cart-total-row span{
-  color:var(--muted);
-  font-size:13px;
-}
-
-.cart-total-row strong{
-  font-size:21px;
-}
-
-.checkout-btn{
-  width:100%;
-  height:46px;
-  border:0;
-  border-radius:11px;
-  color:white;
-  background:var(--blue);
-  font-weight:850;
-  transition:.2s ease;
-}
-
-.checkout-btn:hover{
-  background:var(--blue2);
-  transform:translateY(-1px);
-}
-
-/* =========================================================
-   MODAL
-========================================================= */
-
-.modal{
-  position:fixed;
-  inset:0;
-  z-index:3000;
-  background:rgba(0,0,0,.6);
-  backdrop-filter:blur(5px);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  padding:20px;
-  opacity:0;
-  visibility:hidden;
-  transition:.2s ease;
-}
-
-.modal.open{
-  opacity:1;
-  visibility:visible;
-}
-
-.modal-box{
-  width:min(920px,100%);
-  max-height:90dvh;
-  overflow:auto;
-  border:1px solid var(--border);
-  border-radius:20px;
-  background:var(--bg2);
-  box-shadow:0 30px 100px rgba(0,0,0,.35);
-  transform:translateY(10px) scale(.985);
-  transition:.22s ease;
-}
-
-.modal.open .modal-box{
-  transform:translateY(0) scale(1);
-}
-
-.modal-header{
-  min-height:64px;
-  padding:0 20px;
-  border-bottom:1px solid var(--border);
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-}
-
-.modal-header h2{
-  margin:0;
-  font-size:18px;
-}
-
-.modal-close{
-  width:35px;
-  height:35px;
-  border:0;
-  border-radius:9px;
-  background:var(--card);
-  color:var(--muted);
-  font-size:20px;
-}
-
-.modal-content{
-  padding:22px;
-}
-
-/* =========================================================
-   PRODUCT MODAL
-========================================================= */
-
-.product-modal{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:30px;
-}
-
-.product-modal-image{
-  min-height:450px;
-  border-radius:16px;
-  background:var(--card);
-  display:grid;
-  place-items:center;
-  overflow:hidden;
 }
 
-.product-modal-image img{
-  width:100%;
-  height:100%;
-  max-height:500px;
-  object-fit:contain;
-  padding:30px;
-}
-
-.product-modal-info{
-  padding:8px 0;
-}
-
-.modal-category{
-  color:var(--blue);
-  text-transform:uppercase;
-  font-size:10px;
-  font-weight:850;
-  letter-spacing:.7px;
-}
-
-.product-modal-info h2{
-  margin:9px 0 15px;
-  font-size:28px;
-  line-height:1.15;
-}
-
-.modal-price{
-  font-size:26px;
-  font-weight:900;
-}
-
-.modal-rating{
-  margin-top:10px;
-  color:#ffb72b;
-  font-size:13px;
-}
-
-.demo-review-note{
-  color:var(--muted);
-  font-size:10px;
-  line-height:1.5;
-  padding:10px;
-  border-radius:9px;
-  background:var(--card);
-  margin:17px 0;
-}
-
-.review{
-  padding:13px 0;
-  border-bottom:1px solid var(--border);
-}
-
-.review-top{
-  display:flex;
-  justify-content:space-between;
-  gap:10px;
-  font-size:12px;
-}
-
-.review-top span{
-  color:#ffb72b;
-}
-
-.review p{
-  margin:6px 0 0;
-  color:var(--muted);
-  font-size:12px;
-  line-height:1.5;
-}
-
-.modal-add-btn{
-  width:100%;
-  height:46px;
-  border:0;
-  border-radius:10px;
-  margin-top:18px;
-  color:white;
-  background:var(--blue);
-  font-weight:850;
-}
-
-/* =========================================================
-   AUTH / SETTINGS / ADMIN
-========================================================= */
-
-.auth-form,
-.admin-code-form{
-  max-width:430px;
-  margin:auto;
-}
-
-.auth-form label,
-.admin-code-form label{
-  display:block;
-  color:var(--muted);
-  font-size:12px;
-  font-weight:700;
-  margin-bottom:15px;
-}
-
-.auth-form input,
-.admin-code-form input{
-  width:100%;
-  height:44px;
-  margin-top:7px;
-  border:1px solid var(--border);
-  border-radius:10px;
-  background:var(--card);
-  color:var(--text);
-  padding:0 13px;
-}
-
-.auth-submit{
-  width:100%;
-  height:45px;
-  border:0;
-  border-radius:10px;
-  color:white;
-  background:var(--blue);
-  font-weight:850;
-  margin-top:5px;
-}
-
-.auth-switch{
-  width:100%;
-  margin-top:10px;
-  height:40px;
-  border:1px solid var(--border);
-  border-radius:9px;
-  background:transparent;
-  color:var(--muted);
-  font-size:12px;
-}
-
-.account-panel{
-  text-align:center;
-  padding:25px;
-}
-
-.account-avatar{
-  width:65px;
-  height:65px;
-  display:grid;
-  place-items:center;
-  margin:0 auto 15px;
-  border-radius:50%;
-  background:var(--blue-soft);
-  font-size:25px;
-}
-
-.account-panel h3{
-  font-size:14px;
-  word-break:break-all;
-}
-
-.danger-btn{
-  min-height:42px;
-  padding:0 15px;
-  border:1px solid rgba(255,92,104,.2);
-  border-radius:9px;
-  background:rgba(255,92,104,.08);
-  color:var(--red);
-  font-weight:800;
-}
-
-.settings-section{
-  padding:18px 0;
-  border-bottom:1px solid var(--border);
-}
-
-.settings-section:last-child{
-  border-bottom:0;
-}
-
-.settings-section h3{
-  margin:0 0 11px;
-  font-size:13px;
-}
-
-.settings-options{
-  display:flex;
-  gap:8px;
-  flex-wrap:wrap;
-}
-
-.settings-options button{
-  min-height:38px;
-  padding:0 13px;
-  border-radius:9px;
-  border:1px solid var(--border);
-  background:var(--card);
-  color:var(--muted);
-  font-size:12px;
-  font-weight:750;
-}
-
-.settings-options button.active{
-  color:white;
-  background:var(--blue);
-  border-color:var(--blue);
-}
-
-.toggle-row{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  padding:12px;
-  border-radius:10px;
-  background:var(--card);
-}
-
-.toggle-row input{
-  accent-color:var(--blue);
-}
-
-.admin-header{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:20px;
-  margin-bottom:25px;
-}
-
-.admin-label{
-  color:var(--blue);
-  font-size:10px;
-  font-weight:900;
-  letter-spacing:1px;
-}
-
-.admin-header h2{
-  margin:5px 0 0;
-}
-
-.admin-stat{
-  text-align:center;
-  padding:15px 22px;
-  border:1px solid var(--border);
-  border-radius:12px;
-  background:var(--card);
-}
-
-.admin-stat strong{
-  display:block;
-  font-size:25px;
-}
-
-.admin-stat span{
-  color:var(--muted);
-  font-size:10px;
-}
-
-.admin-actions{
-  display:flex;
-  gap:9px;
-  flex-wrap:wrap;
-  margin-bottom:20px;
-}
-
-.admin-order-card{
-  display:flex;
-  justify-content:space-between;
-  gap:20px;
-  padding:14px;
-  border:1px solid var(--border);
-  border-radius:11px;
-  background:var(--card);
-  margin-bottom:8px;
-}
 
-.admin-order-card span{
-  display:block;
-  color:var(--muted);
-  font-size:11px;
-  margin-top:4px;
-}
+function applyAnimations(){
 
-.orders-list{
-  display:grid;
-  gap:10px;
-}
+  document.documentElement.classList.toggle(
+    "no-animations",
+    !animationsEnabled
+  );
 
-.order-card{
-  border:1px solid var(--border);
-  border-radius:12px;
-  background:var(--card);
-  padding:15px;
 }
 
-.order-header{
-  display:flex;
-  justify-content:space-between;
-  gap:15px;
-}
 
-.order-header span{
-  color:var(--blue);
-  font-weight:850;
-}
+applyTheme();
+applyAnimations();
 
-.order-products{
-  margin-top:10px;
-  color:var(--muted);
-  font-size:11px;
-  line-height:1.7;
-}
 
 /* =========================================================
    TOAST
 ========================================================= */
 
-.toast-container{
-  position:fixed;
-  z-index:5000;
-  right:18px;
-  bottom:18px;
-  display:flex;
-  flex-direction:column;
-  gap:8px;
+function toast(message,type="success"){
+
+  if(!toastContainer) return;
+
+  const el =
+    document.createElement("div");
+
+  el.className =
+    `toast toast-${type}`;
+
+  el.textContent =
+    message;
+
+  toastContainer.appendChild(el);
+
+  requestAnimationFrame(() => {
+    el.classList.add("show");
+  });
+
+  setTimeout(() => {
+
+    el.classList.remove("show");
+
+    setTimeout(() => {
+      el.remove();
+    },250);
+
+  },2600);
+
 }
 
-.toast{
-  min-width:240px;
-  max-width:360px;
-  padding:12px 14px;
-  border:1px solid var(--border);
-  border-radius:10px;
-  background:var(--card2);
-  color:var(--text);
-  box-shadow:0 15px 40px rgba(0,0,0,.25);
-  font-size:12px;
-  font-weight:700;
-  transform:translateY(12px);
-  opacity:0;
-  transition:.25s ease;
-}
-
-.toast.show{
-  transform:translateY(0);
-  opacity:1;
-}
-
-.toast-error{
-  border-color:rgba(255,92,104,.3);
-}
 
 /* =========================================================
-   CART FLY ANIMATION
+   PRICE
 ========================================================= */
 
-.cart-fly-image{
-  border-radius:10px;
-  object-fit:contain;
-  background:var(--card);
-  padding:5px;
-  box-shadow:0 12px 35px rgba(0,0,0,.35);
+function formatPrice(price){
+
+  if(price === 0){
+    return language === "fr"
+      ? "Prix à venir"
+      : "Price coming soon";
+  }
+
+  return new Intl.NumberFormat(
+    language === "fr"
+      ? "fr-FR"
+      : "en-US",
+    {
+      style:"currency",
+      currency:"EUR"
+    }
+  ).format(price);
+
 }
+
 
 /* =========================================================
-   NO ANIMATIONS
+   HTML ESCAPE
 ========================================================= */
 
-html.no-animations *,
-html.no-animations *::before,
-html.no-animations *::after{
-  animation:none!important;
-  transition:none!important;
+function escapeHTML(value){
+
+  return String(value)
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
+
 }
+
 
 /* =========================================================
-   RESPONSIVE
+   AVIS
 ========================================================= */
 
-@media(max-width:1150px){
+/*
+  Les nombres sont volontairement plus réalistes :
+  entre 132 et 1735 avis.
+*/
 
-  .products-grid{
-    grid-template-columns:repeat(3,minmax(0,1fr));
+function generateReviewData(product){
+
+  if(reviewsCache[product.id]){
+    return reviewsCache[product.id];
   }
+
+  const seed =
+    product.id
+      .split("")
+      .reduce(
+        (sum,char) =>
+          sum + char.charCodeAt(0),
+        0
+      );
+
+  const reviewCount =
+    132 +
+    (
+      seed * 73 +
+      product.name.length * 31
+    ) % 1604;
+
+  const rating =
+    4.2 +
+    ((seed % 8) / 10);
+
+  const roundedRating =
+    Math.min(5,Number(rating.toFixed(1)));
+
+  const data = {
+    count:reviewCount,
+    rating:roundedRating
+  };
+
+  reviewsCache[product.id] = data;
+
+  return data;
 
 }
 
-@media(max-width:850px){
 
-  .header-inner{
-    width:calc(100% - 22px);
-    gap:10px;
-  }
+function renderStars(rating){
 
-  .logo span{
-    display:none;
-  }
+  const rounded =
+    Math.round(rating);
 
-  .header-search{
-    max-width:none;
-  }
-
-  .header-actions{
-    gap:2px;
-  }
-
-  .icon-btn{
-    width:37px;
-    height:37px;
-  }
-
-  .hero,
-  .trust-row,
-  .products-section{
-    width:calc(100% - 22px);
-  }
-
-  .hero-content{
-    padding:42px 30px;
-  }
-
-  .hero h1{
-    letter-spacing:-2px;
-  }
-
-  .trust-row{
-    grid-template-columns:repeat(2,1fr);
-  }
-
-  .products-grid{
-    grid-template-columns:repeat(2,minmax(0,1fr));
-  }
+  return (
+    "★".repeat(rounded) +
+    "☆".repeat(5-rounded)
+  );
 
 }
 
-@media(max-width:600px){
 
-  .site-header{
-    height:auto;
-  }
+/* =========================================================
+   CATEGORIES
+========================================================= */
 
-  .header-inner{
-    min-height:64px;
-    flex-wrap:wrap;
-    padding:10px 0;
-  }
+function getCategories(){
 
-  .header-search{
-    order:3;
-    flex-basis:100%;
-  }
-
-  .header-actions{
-    margin-left:auto;
-  }
-
-  .hero{
-    margin-top:15px;
-    min-height:390px;
-  }
-
-  .hero-content{
-    padding:34px 22px;
-  }
-
-  .hero h1{
-    font-size:39px;
-  }
-
-  .hero p{
-    font-size:14px;
-  }
-
-  .trust-row{
-    grid-template-columns:1fr 1fr;
-  }
-
-  .trust-card{
-    padding:13px;
-  }
-
-  .trust-icon{
-    width:32px;
-    height:32px;
-  }
-
-  .trust-card strong{
-    font-size:11px;
-  }
-
-  .trust-card span{
-    font-size:9px;
-  }
-
-  .products-section{
-    margin-top:40px;
-  }
-
-  .section-title{
-    font-size:24px;
-  }
-
-  .products-grid{
-    grid-template-columns:1fr;
-  }
-
-  .product-image-wrap{
-    height:275px;
-  }
-
-  .product-name{
-    min-height:auto;
-  }
-
-  .product-bottom{
-    align-items:center;
-  }
-
-  .product-price{
-    font-size:18px;
-  }
-
-  .product-view-btn,
-  .product-add-btn{
-    height:36px;
-    padding:0 12px;
-  }
-
-  .product-modal{
-    grid-template-columns:1fr;
-    gap:18px;
-  }
-
-  .product-modal-image{
-    min-height:280px;
-  }
-
-  .product-modal-info h2{
-    font-size:22px;
-  }
-
-  .footer-inner{
-    flex-direction:column;
-  }
-
-  .admin-header{
-    align-items:flex-start;
-    flex-direction:column;
-  }
+  return [
+    ...new Set(
+      products.map(product => product.category)
+    )
+  ];
 
 }
 
-</style>
-</head>
 
-<body>
+function renderCategories(){
 
-<!-- ======================================================
-     HEADER
-====================================================== -->
+  if(!categoriesEl) return;
 
-<header class="site-header">
+  categoriesEl.innerHTML = "";
 
-  <div class="header-inner">
+  const allButton =
+    document.createElement("button");
 
-    <a href="#" class="logo">
-      <span class="logo-mark">N</span>
-      <span>NovaShop</span>
-    </a>
+  allButton.className =
+    "category-btn " +
+    (
+      selectedCategory === "Toutes"
+        ? "active"
+        : ""
+    );
 
-    <div class="header-search">
+  allButton.textContent =
+    t("all");
 
-      <span class="search-icon">⌕</span>
+  allButton.addEventListener(
+    "click",
+    () => {
 
-      <input
-        id="searchInput"
-        type="search"
-        placeholder="Rechercher un produit..."
-        autocomplete="off"
-      >
+      selectedCategory = "Toutes";
 
-    </div>
+      renderCategories();
+      renderProducts();
 
-    <div class="header-actions">
+    }
+  );
 
-      <button
-        class="icon-btn"
-        id="settingsBtn"
-        title="Paramètres"
-      >
-        ⚙
-      </button>
+  categoriesEl.appendChild(allButton);
 
-      <button
-        class="icon-btn"
-        id="accountBtn"
-        title="Compte"
-      >
-        ◯
-      </button>
 
-      <button
-        class="icon-btn"
-        id="ordersBtn"
-        title="Commandes"
-      >
-        ▣
-      </button>
+  getCategories().forEach(category => {
 
-      <button
-        class="icon-btn"
-        id="adminBtn"
-        title="Administration"
-        style="display:none"
-      >
-        ◆
-      </button>
+    const button =
+      document.createElement("button");
 
-      <button
-        class="icon-btn"
-        id="cartBtn"
-        title="Panier"
-      >
-        🛒
-        <span
-          class="cart-badge"
-          id="cartBadge"
+    button.className =
+      "category-btn " +
+      (
+        selectedCategory === category
+          ? "active"
+          : ""
+      );
+
+    button.textContent =
+      category;
+
+    button.addEventListener(
+      "click",
+      () => {
+
+        selectedCategory =
+          category;
+
+        renderCategories();
+        renderProducts();
+
+      }
+    );
+
+    categoriesEl.appendChild(button);
+
+  });
+
+}
+
+
+/* =========================================================
+   FILTER
+========================================================= */
+
+function filteredProducts(){
+
+  const term =
+    searchValue
+      .trim()
+      .toLowerCase();
+
+  return products.filter(product => {
+
+    const categoryMatch =
+      selectedCategory === "Toutes" ||
+      product.category === selectedCategory;
+
+    const searchMatch =
+      !term ||
+      product.name.toLowerCase().includes(term) ||
+      product.category.toLowerCase().includes(term);
+
+    return categoryMatch && searchMatch;
+
+  });
+
+}
+
+
+/* =========================================================
+   PRODUCT CARD
+========================================================= */
+
+function productCard(product){
+
+  const reviews =
+    generateReviewData(product);
+
+  return `
+
+    <article
+      class="product-card"
+      data-product-id="${product.id}"
+    >
+
+      <div class="product-image-wrap">
+
+        ${
+          product.newProduct
+            ? `
+              <span class="product-badge">
+                ${t("new")}
+              </span>
+            `
+            : ""
+        }
+
+        <img
+          class="product-image"
+          src="${product.image}"
+          alt="${escapeHTML(product.name)}"
+          loading="lazy"
+          onerror="this.onerror=null;this.src='${FALLBACK_IMAGE}'"
         >
-          0
-        </span>
-      </button>
 
-    </div>
-
-  </div>
-
-</header>
-
-
-<!-- ======================================================
-     HERO
-====================================================== -->
-
-<section class="hero">
-
-  <div class="hero-glow"></div>
-
-  <div class="hero-content">
-
-    <div class="hero-kicker">
-      ✦ LA BOUTIQUE HIGH-TECH
-    </div>
-
-    <h1>
-      Ton setup.<br>
-      <span>Ton univers.</span>
-    </h1>
-
-    <p>
-      PC gaming, composants, écrans, périphériques,
-      streaming et accessoires sélectionnés pour
-      construire un setup qui te ressemble.
-    </p>
-
-    <div class="hero-buttons">
-
-      <button
-        class="primary-btn"
-        id="heroShopBtn"
-      >
-        Voir les produits
-      </button>
-
-      <button
-        class="secondary-btn"
-        id="heroSearchBtn"
-      >
-        Rechercher
-      </button>
-
-    </div>
-
-  </div>
-
-</section>
-
-
-<!-- ======================================================
-     TRUST
-====================================================== -->
-
-<section class="trust-row">
-
-  <div class="trust-card">
-    <div class="trust-icon">🔒</div>
-    <div>
-      <strong>Paiement sécurisé</strong>
-      <span>Transactions protégées</span>
-    </div>
-  </div>
-
-  <div class="trust-card">
-    <div class="trust-icon">↩</div>
-    <div>
-      <strong>Retours simples</strong>
-      <span>Conditions clairement indiquées</span>
-    </div>
-  </div>
-
-  <div class="trust-card">
-    <div class="trust-icon">★</div>
-    <div>
-      <strong>Avis clients</strong>
-      <span>Découvrez les évaluations</span>
-    </div>
-  </div>
-
-  <div class="trust-card">
-    <div class="trust-icon">⚡</div>
-    <div>
-      <strong>Support</strong>
-      <span>Une boutique pensée pour vous</span>
-    </div>
-  </div>
-
-</section>
-
-
-<!-- ======================================================
-     PRODUCTS
-====================================================== -->
-
-<main
-  class="products-section"
-  id="products"
->
-
-  <div class="section-head">
-
-    <div>
-
-      <h2 class="section-title">
-        Produits populaires
-      </h2>
-
-      <p class="section-subtitle">
-        Trouve ton prochain élément de setup.
-      </p>
-
-    </div>
-
-    <span
-      class="product-count"
-      id="productCount"
-    >
-      43 produits
-    </span>
-
-  </div>
-
-
-  <div
-    class="categories"
-    id="categories"
-  ></div>
-
-
-  <div
-    class="products-grid"
-    id="productsGrid"
-  ></div>
-
-</main>
-
-
-<!-- ======================================================
-     FOOTER
-====================================================== -->
-
-<footer>
-
-  <div class="footer-inner">
-
-    <div>
-      <div class="footer-brand">
-        NovaShop
       </div>
 
-      <div>
-        High-tech & gaming.
+
+      <div class="product-info">
+
+        <div class="product-category">
+          ${escapeHTML(product.category)}
+        </div>
+
+
+        <h3 class="product-name">
+          ${escapeHTML(product.name)}
+        </h3>
+
+
+        <div class="product-rating">
+
+          <span class="stars">
+            ${renderStars(reviews.rating)}
+          </span>
+
+          <strong>
+            ${reviews.rating.toFixed(1)}
+          </strong>
+
+          <span class="review-number">
+            (${reviews.count.toLocaleString(
+              language === "fr"
+                ? "fr-FR"
+                : "en-US"
+            )} ${t("reviews")})
+          </span>
+
+        </div>
+
+
+        <div class="product-bottom">
+
+          <strong class="product-price">
+            ${formatPrice(product.price)}
+          </strong>
+
+
+          <div class="product-actions">
+
+            <button
+              class="product-view-btn"
+              data-view="${product.id}"
+            >
+              ${t("details")}
+            </button>
+
+            <button
+              class="product-add-btn"
+              data-add="${product.id}"
+            >
+              ${t("add")}
+            </button>
+
+          </div>
+
+        </div>
+
       </div>
-    </div>
 
-    <div>
-      © 2026 NovaShop
-    </div>
+    </article>
 
-  </div>
+  `;
 
-</footer>
+}
 
 
-<!-- ======================================================
-     CART
-====================================================== -->
+/* =========================================================
+   RENDER PRODUCTS
+========================================================= */
 
-<div
-  class="cart-overlay"
-  id="cartOverlay"
-></div>
+function renderProducts(){
 
-<aside
-  class="cart-drawer"
-  id="cartDrawer"
->
+  if(!productsGrid) return;
 
-  <div class="cart-header">
+  const list =
+    filteredProducts();
 
-    <h2>
-      Panier
-    </h2>
+  if(productCount){
 
-    <button
-      class="cart-close"
-      id="cartClose"
-    >
-      ×
-    </button>
+    productCount.textContent =
+      `${list.length} ${t("products")}`;
 
-  </div>
+  }
 
 
-  <div
-    class="cart-items"
-    id="cartItems"
-  ></div>
+  if(!list.length){
+
+    productsGrid.innerHTML = `
+
+      <div class="empty-products">
+
+        <div class="empty-icon">
+          🔎
+        </div>
+
+        <h3>
+          ${t("noResults")}
+        </h3>
+
+      </div>
+
+    `;
+
+    return;
+
+  }
 
 
-  <div class="cart-footer">
-
-    <div class="cart-total-row">
-
-      <span>
-        Total
-      </span>
-
-      <strong id="cartTotal">
-        0,00 €
-      </strong>
-
-    </div>
-
-    <button
-      class="checkout-btn"
-      id="checkoutBtn"
-    >
-      Commander
-    </button>
-
-  </div>
-
-</aside>
+  productsGrid.innerHTML =
+    list
+      .map(productCard)
+      .join("");
 
 
-<!-- ======================================================
-     MODAL
-====================================================== -->
+  bindProductButtons();
 
-<div
-  class="modal"
-  id="modal"
->
+}
 
-  <div class="modal-box">
 
-    <div class="modal-header">
+/* =========================================================
+   PRODUCT BUTTONS
+========================================================= */
 
-      <h2 id="modalTitle">
-        NovaShop
-      </h2>
+function bindProductButtons(){
 
-      <button
-        class="modal-close"
-        id="modalClose"
+  document
+    .querySelectorAll("[data-add]")
+    .forEach(button => {
+
+      button.addEventListener(
+        "click",
+        () => {
+
+          const product =
+            products.find(
+              p => p.id === button.dataset.add
+            );
+
+          if(!product) return;
+
+          addToCart(
+            product,
+            button
+          );
+
+        }
+      );
+
+    });
+
+
+  document
+    .querySelectorAll("[data-view]")
+    .forEach(button => {
+
+      button.addEventListener(
+        "click",
+        () => {
+
+          const product =
+            products.find(
+              p => p.id === button.dataset.view
+            );
+
+          if(!product) return;
+
+          openProductModal(product);
+
+        }
+      );
+
+    });
+
+}
+
+
+/* =========================================================
+   CART
+========================================================= */
+
+function saveCart(){
+
+  localStorage.setItem(
+    "novaCart",
+    JSON.stringify(cart)
+  );
+
+}
+
+
+function cartQuantity(){
+
+  return cart.reduce(
+    (sum,item) =>
+      sum + item.quantity,
+    0
+  );
+
+}
+
+
+function updateCartBadge(){
+
+  if(!cartBadge) return;
+
+  const quantity =
+    cartQuantity();
+
+  cartBadge.textContent =
+    quantity;
+
+  cartBadge.classList.toggle(
+    "visible",
+    quantity > 0
+  );
+
+}
+
+
+function addToCart(
+  product,
+  sourceButton = null
+){
+
+  const existing =
+    cart.find(
+      item => item.id === product.id
+    );
+
+  if(existing){
+    existing.quantity++;
+  }else{
+    cart.push({
+      id:product.id,
+      quantity:1
+    });
+  }
+
+  saveCart();
+
+  renderCart();
+  updateCartBadge();
+
+  animateProductToCart(
+    sourceButton
+  );
+
+  toast(
+    t("added")
+  );
+
+}
+
+
+function removeFromCart(id){
+
+  cart =
+    cart.filter(
+      item => item.id !== id
+    );
+
+  saveCart();
+
+  renderCart();
+  updateCartBadge();
+
+  toast(
+    t("removed")
+  );
+
+}
+
+
+function changeQuantity(
+  id,
+  amount
+){
+
+  const item =
+    cart.find(
+      item => item.id === id
+    );
+
+  if(!item) return;
+
+  item.quantity += amount;
+
+  if(item.quantity <= 0){
+
+    removeFromCart(id);
+    return;
+
+  }
+
+  saveCart();
+
+  renderCart();
+  updateCartBadge();
+
+}
+
+
+function getCartTotal(){
+
+  return cart.reduce(
+    (total,item) => {
+
+      const product =
+        products.find(
+          p => p.id === item.id
+        );
+
+      if(!product) return total;
+
+      return total +
+        product.price * item.quantity;
+
+    },
+    0
+  );
+
+}
+
+
+/* =========================================================
+   CART RENDER
+========================================================= */
+
+function renderCart(){
+
+  if(!cartItems) return;
+
+  if(!cart.length){
+
+    cartItems.innerHTML = `
+
+      <div class="cart-empty">
+
+        <div class="cart-empty-icon">
+          🛒
+        </div>
+
+        <p>
+          ${t("emptyCart")}
+        </p>
+
+      </div>
+
+    `;
+
+    if(cartTotal){
+      cartTotal.textContent =
+        formatPrice(0);
+    }
+
+    return;
+
+  }
+
+
+  cartItems.innerHTML =
+    cart
+      .map(item => {
+
+        const product =
+          products.find(
+            p => p.id === item.id
+          );
+
+        if(!product) return "";
+
+        return `
+
+          <div class="cart-item">
+
+            <img
+              src="${product.image}"
+              alt="${escapeHTML(product.name)}"
+              onerror="this.onerror=null;this.src='${FALLBACK_IMAGE}'"
+            >
+
+
+            <div class="cart-item-info">
+
+              <strong>
+                ${escapeHTML(product.name)}
+              </strong>
+
+              <span>
+                ${formatPrice(product.price)}
+              </span>
+
+
+              <div class="cart-item-controls">
+
+                <button
+                  data-cart-minus="${product.id}"
+                >
+                  −
+                </button>
+
+                <span>
+                  ${item.quantity}
+                </span>
+
+                <button
+                  data-cart-plus="${product.id}"
+                >
+                  +
+                </button>
+
+                <button
+                  class="cart-remove"
+                  data-cart-remove="${product.id}"
+                >
+                  ×
+                </button>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        `;
+
+      })
+      .join("");
+
+
+  if(cartTotal){
+
+    cartTotal.textContent =
+      formatPrice(
+        getCartTotal()
+      );
+
+  }
+
+
+  document
+    .querySelectorAll("[data-cart-minus]")
+    .forEach(button => {
+
+      button.addEventListener(
+        "click",
+        () =>
+          changeQuantity(
+            button.dataset.cartMinus,
+            -1
+          )
+      );
+
+    });
+
+
+  document
+    .querySelectorAll("[data-cart-plus]")
+    .forEach(button => {
+
+      button.addEventListener(
+        "click",
+        () =>
+          changeQuantity(
+            button.dataset.cartPlus,
+            1
+          )
+      );
+
+    });
+
+
+  document
+    .querySelectorAll("[data-cart-remove]")
+    .forEach(button => {
+
+      button.addEventListener(
+        "click",
+        () =>
+          removeFromCart(
+            button.dataset.cartRemove
+          )
+      );
+
+    });
+
+}
+
+
+/* =========================================================
+   CART DRAWER
+========================================================= */
+
+function openCart(){
+
+  cartOverlay.classList.add("open");
+  cartDrawer.classList.add("open");
+
+  document.body.classList.add(
+    "drawer-open"
+  );
+
+}
+
+
+function closeCart(){
+
+  cartDrawer.classList.remove("open");
+  cartOverlay.classList.remove("open");
+
+  document.body.classList.remove(
+    "drawer-open"
+  );
+
+}
+
+
+/* =========================================================
+   PRODUCT -> CART
+========================================================= */
+
+function animateProductToCart(
+  sourceButton
+){
+
+  if(!animationsEnabled) return;
+  if(!sourceButton) return;
+  if(!cartBtn) return;
+
+  const card =
+    sourceButton.closest(
+      ".product-card"
+    );
+
+  if(!card) return;
+
+  const image =
+    card.querySelector(
+      ".product-image"
+    );
+
+  if(!image) return;
+
+  const start =
+    image.getBoundingClientRect();
+
+  const target =
+    cartBtn.getBoundingClientRect();
+
+  const clone =
+    image.cloneNode(true);
+
+  clone.className =
+    "cart-fly-image";
+
+  clone.style.position = "fixed";
+  clone.style.left = `${start.left}px`;
+  clone.style.top = `${start.top}px`;
+  clone.style.width = `${Math.min(start.width,110)}px`;
+  clone.style.height = `${Math.min(start.height,110)}px`;
+  clone.style.zIndex = "99999";
+  clone.style.pointerEvents = "none";
+
+  document.body.appendChild(clone);
+
+  const x =
+    target.left +
+    target.width / 2 -
+    start.left -
+    start.width / 2;
+
+  const y =
+    target.top +
+    target.height / 2 -
+    start.top -
+    start.height / 2;
+
+
+  clone
+    .animate(
+      [
+        {
+          transform:"translate(0,0) scale(1)",
+          opacity:1
+        },
+        {
+          transform:
+            `translate(${x*.65}px,${y*.65}px) scale(.7)`,
+          opacity:.8
+        },
+        {
+          transform:
+            `translate(${x}px,${y}px) scale(.18)`,
+          opacity:0
+        }
+      ],
+      {
+        duration:620,
+        easing:"cubic-bezier(.2,.75,.25,1)"
+      }
+    )
+    .finished
+    .then(
+      () => clone.remove()
+    )
+    .catch(
+      () => clone.remove()
+    );
+
+
+  cartBtn.animate(
+    [
+      {
+        transform:"scale(1)"
+      },
+      {
+        transform:"scale(1.08)"
+      },
+      {
+        transform:"scale(1)"
+      }
+    ],
+    {
+      duration:320
+    }
+  );
+
+}
+
+
+/* =========================================================
+   MODALS
+========================================================= */
+
+function openModal(
+  title,
+  html
+){
+
+  modalTitle.textContent =
+    title;
+
+  modalContent.innerHTML =
+    html;
+
+  modal.classList.add("open");
+
+}
+
+
+function closeModal(){
+
+  modal.classList.remove("open");
+
+}
+
+
+/* =========================================================
+   PRODUCT MODAL
+========================================================= */
+
+function openProductModal(product){
+
+  const reviews =
+    generateReviewData(product);
+
+  openModal(
+    product.name,
+
+    `
+
+      <div class="product-modal">
+
+        <div class="product-modal-image">
+
+          <img
+            src="${product.image}"
+            alt="${escapeHTML(product.name)}"
+            onerror="this.onerror=null;this.src='${FALLBACK_IMAGE}'"
+          >
+
+        </div>
+
+
+        <div class="product-modal-info">
+
+          <span class="modal-category">
+            ${escapeHTML(product.category)}
+          </span>
+
+
+          <h2>
+            ${escapeHTML(product.name)}
+          </h2>
+
+
+          <div class="modal-price">
+            ${formatPrice(product.price)}
+          </div>
+
+
+          <div class="modal-rating">
+
+            ${renderStars(reviews.rating)}
+
+            <strong>
+              ${reviews.rating.toFixed(1)}/5
+            </strong>
+
+            · ${reviews.count.toLocaleString(
+              language === "fr"
+                ? "fr-FR"
+                : "en-US"
+            )} ${t("reviews")}
+
+          </div>
+
+
+          <p class="demo-review-note">
+            ${t("demoReviews")}
+          </p>
+
+
+          <div>
+
+            <div class="review">
+
+              <div class="review-top">
+                <strong>Lucas</strong>
+                <span>★★★★★</span>
+              </div>
+
+              <p>
+                Très bon produit, correspond bien à la description.
+              </p>
+
+            </div>
+
+
+            <div class="review">
+
+              <div class="review-top">
+                <strong>Thomas</strong>
+                <span>★★★★★</span>
+              </div>
+
+              <p>
+                Produit reçu rapidement et bonne qualité.
+              </p>
+
+            </div>
+
+
+            <div class="review">
+
+              <div class="review-top">
+                <strong>Max</strong>
+                <span>★★★★☆</span>
+              </div>
+
+              <p>
+                Très satisfait de mon achat.
+              </p>
+
+            </div>
+
+          </div>
+
+
+          <button
+            class="modal-add-btn"
+            id="modalAddProduct"
+          >
+            ${t("add")}
+          </button>
+
+        </div>
+
+      </div>
+
+    `
+  );
+
+
+  $("modalAddProduct")
+    .addEventListener(
+      "click",
+      () => {
+
+        addToCart(product);
+
+        closeModal();
+
+      }
+    );
+
+}
+
+
+/* =========================================================
+   SETTINGS
+========================================================= */
+
+function openSettings(){
+
+  openModal(
+    t("settings"),
+
+    `
+
+      <div class="settings-section">
+
+        <h3>
+          ${t("theme")}
+        </h3>
+
+        <div class="settings-options">
+
+          <button
+            data-theme-option="dark"
+            class="${themeChoice==="dark"?"active":""}"
+          >
+            🌙 ${t("dark")}
+          </button>
+
+          <button
+            data-theme-option="light"
+            class="${themeChoice==="light"?"active":""}"
+          >
+            ☀️ ${t("light")}
+          </button>
+
+          <button
+            data-theme-option="auto"
+            class="${themeChoice==="auto"?"active":""}"
+          >
+            🖥️ ${t("auto")}
+          </button>
+
+        </div>
+
+      </div>
+
+
+      <div class="settings-section">
+
+        <h3>
+          ${t("language")}
+        </h3>
+
+        <div class="settings-options">
+
+          <button
+            data-language-option="fr"
+            class="${language==="fr"?"active":""}"
+          >
+            🇫🇷 ${t("french")}
+          </button>
+
+          <button
+            data-language-option="en"
+            class="${language==="en"?"active":""}"
+          >
+            🇬🇧 ${t("english")}
+          </button>
+
+        </div>
+
+      </div>
+
+
+      <div class="settings-section">
+
+        <h3>
+          ${t("animations")}
+        </h3>
+
+        <label class="toggle-row">
+
+          <span>
+            ${t("animations")}
+          </span>
+
+          <input
+            type="checkbox"
+            id="animationsToggle"
+            ${animationsEnabled ? "checked" : ""}
+          >
+
+        </label>
+
+      </div>
+
+    `
+  );
+
+
+  document
+    .querySelectorAll("[data-theme-option]")
+    .forEach(button => {
+
+      button.addEventListener(
+        "click",
+        () => {
+
+          themeChoice =
+            button.dataset.themeOption;
+
+          localStorage.setItem(
+            "novaThemeChoice",
+            themeChoice
+          );
+
+          applyTheme();
+
+          openSettings();
+
+        }
+      );
+
+    });
+
+
+  document
+    .querySelectorAll("[data-language-option]")
+    .forEach(button => {
+
+      button.addEventListener(
+        "click",
+        () => {
+
+          language =
+            button.dataset.languageOption;
+
+          localStorage.setItem(
+            "novaLanguage",
+            language
+          );
+
+          applyLanguage();
+
+          openSettings();
+
+        }
+      );
+
+    });
+
+
+  const animationsToggle =
+    $("animationsToggle");
+
+  if(animationsToggle){
+
+    animationsToggle.addEventListener(
+      "change",
+      () => {
+
+        animationsEnabled =
+          animationsToggle.checked;
+
+        localStorage.setItem(
+          "novaAnimations",
+          String(animationsEnabled)
+        );
+
+        applyAnimations();
+
+      }
+    );
+
+  }
+
+}
+
+
+/* =========================================================
+   LANGUAGE
+========================================================= */
+
+function applyLanguage(){
+
+  searchInput.placeholder =
+    t("search");
+
+  renderCategories();
+  renderProducts();
+  renderCart();
+  updateCartBadge();
+  updateUserUI();
+
+}
+
+
+/* =========================================================
+   ACCOUNT
+========================================================= */
+
+function openAccount(){
+
+  if(currentUser){
+
+    openAccountPanel();
+    return;
+
+  }
+
+  authMode = "login";
+
+  renderAuthModal();
+
+}
+
+
+function renderAuthModal(){
+
+  const register =
+    authMode === "register";
+
+  openModal(
+    register
+      ? t("register")
+      : t("login"),
+
+    `
+
+      <form
+        id="authForm"
+        class="auth-form"
       >
-        ×
-      </button>
 
-    </div>
+        <label>
 
-    <div
-      class="modal-content"
-      id="modalContent"
-    ></div>
+          ${t("email")}
 
-  </div>
+          <input
+            type="email"
+            id="authEmail"
+            required
+          >
 
-</div>
-
-
-<!-- ======================================================
-     TOAST
-====================================================== -->
-
-<div
-  class="toast-container"
-  id="toastContainer"
-></div>
+        </label>
 
 
-<script type="module" src="./app.js"></script>
+        <label>
 
-</body>
-</html>
+          ${t("password")}
+
+          <input
+            type="password"
+            id="authPassword"
+            required
+          >
+
+        </label>
+
+
+        ${
+          register
+            ? `
+
+              <label>
+
+                ${t("confirmPassword")}
+
+                <input
+                  type="password"
+                  id="authConfirmPassword"
+                  required
+                >
+
+              </label>
+
+            `
+            : ""
+        }
+
+
+        <button
+          type="submit"
+          class="auth-submit"
+        >
+          ${
+            register
+              ? t("register")
+              : t("login")
+          }
+        </button>
+
+
+        <button
+          type="button"
+          class="auth-switch"
+          id="authSwitch"
+        >
+          ${
+            register
+              ? t("login")
+              : t("register")
+          }
+        </button>
+
+      </form>
+
+    `
+  );
+
+
+  $("authForm")
+    .addEventListener(
+      "submit",
+      handleAuth
+    );
+
+
+  $("authSwitch")
+    .addEventListener(
+      "click",
+      () => {
+
+        authMode =
+          authMode === "login"
+            ? "register"
+            : "login";
+
+        renderAuthModal();
+
+      }
+    );
+
+}
+
+
+async function handleAuth(event){
+
+  event.preventDefault();
+
+  const email =
+    $("authEmail")
+      .value
+      .trim();
+
+  const password =
+    $("authPassword")
+      .value;
+
+
+  try{
+
+    if(authMode === "register"){
+
+      const confirm =
+        $("authConfirmPassword")
+          .value;
+
+      if(password !== confirm){
+
+        toast(
+          t("passwordMismatch"),
+          "error"
+        );
+
+        return;
+
+      }
+
+      await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+
+      toast(
+        t("accountCreated")
+      );
+
+      closeModal();
+
+      return;
+
+    }
+
+
+    await signInWithEmailAndPassword(
+      auth,
+      email,
+      password
+    );
+
+    closeModal();
+
+  }
+
+  catch(error){
+
+    console.error(error);
+
+    toast(
+      t("invalidLogin"),
+      "error"
+    );
+
+  }
+
+}
+
+
+function openAccountPanel(){
+
+  openModal(
+    t("account"),
+
+    `
+
+      <div class="account-panel">
+
+        <div class="account-avatar">
+          👤
+        </div>
+
+        <h3>
+          ${escapeHTML(
+            currentUser.email
+          )}
+        </h3>
+
+        <button
+          class="danger-btn"
+          id="logoutBtn"
+        >
+          ${t("logout")}
+        </button>
+
+      </div>
+
+    `
+  );
+
+
+  $("logoutBtn")
+    .addEventListener(
+      "click",
+      async () => {
+
+        await signOut(auth);
+
+        closeModal();
+
+      }
+    );
+
+}
+
+
+/* =========================================================
+   ORDERS
+========================================================= */
+
+async function openOrders(){
+
+  if(!currentUser){
+
+    toast(
+      t("loginRequired"),
+      "error"
+    );
+
+    openAccount();
+
+    return;
+
+  }
+
+
+  openModal(
+    t("orders"),
+    `<p>Chargement...</p>`
+  );
+
+
+  try{
+
+    const q =
+      query(
+        collection(db,"orders"),
+        where(
+          "userId",
+          "==",
+          currentUser.uid
+        )
+      );
+
+    const snapshot =
+      await getDocs(q);
+
+    const orders =
+      snapshot.docs
+        .map(item => ({
+          id:item.id,
+          ...item.data()
+        }));
+
+
+    orders.sort(
+      (a,b) =>
+        (b.createdAt?.seconds || 0) -
+        (a.createdAt?.seconds || 0)
+    );
+
+
+    if(!orders.length){
+
+      modalContent.innerHTML = `
+        <div class="empty-products">
+          <div class="empty-icon">📦</div>
+          <p>${t("noOrders")}</p>
+        </div>
+      `;
+
+      return;
+
+    }
+
+
+    modalContent.innerHTML = `
+
+      <div class="orders-list">
+
+        ${orders.map(order => `
+
+          <div class="order-card">
+
+            <div class="order-header">
+
+              <strong>
+                #${order.id.slice(0,8)}
+              </strong>
+
+              <span>
+                ${formatPrice(order.total || 0)}
+              </span>
+
+            </div>
+
+
+            <div class="order-products">
+
+              ${
+                Array.isArray(order.items)
+                  ? order.items
+                      .map(item => `
+                        <div>
+                          ${escapeHTML(item.name)}
+                          × ${item.quantity}
+                        </div>
+                      `)
+                      .join("")
+                  : ""
+              }
+
+            </div>
+
+          </div>
+
+        `).join("")}
+
+      </div>
+
+    `;
+
+  }
+
+  catch(error){
+
+    console.error(error);
+
+    modalContent.innerHTML =
+      "<p>Impossible de charger les commandes.</p>";
+
+  }
+
+}
+
+
+/* =========================================================
+   CHECKOUT
+========================================================= */
+
+async function checkout(){
+
+  if(!currentUser){
+
+    toast(
+      t("loginRequired"),
+      "error"
+    );
+
+    closeCart();
+    openAccount();
+
+    return;
+
+  }
+
+
+  if(!cart.length){
+
+    toast(
+      t("emptyCart"),
+      "error"
+    );
+
+    return;
+
+  }
+
+
+  const items =
+    cart.map(item => {
+
+      const product =
+        products.find(
+          p => p.id === item.id
+        );
+
+      return {
+        id:product.id,
+        name:product.name,
+        price:product.price,
+        quantity:item.quantity
+      };
+
+    });
+
+
+  try{
+
+    await addDoc(
+      collection(db,"orders"),
+      {
+        userId:currentUser.uid,
+        userEmail:currentUser.email,
+        items,
+        total:getCartTotal(),
+        createdAt:serverTimestamp()
+      }
+    );
+
+
+    cart = [];
+
+    saveCart();
+
+    renderCart();
+    updateCartBadge();
+
+    closeCart();
+
+    toast(
+      t("orderSuccess")
+    );
+
+  }
+
+  catch(error){
+
+    console.error(error);
+
+    toast(
+      "Erreur lors de la commande.",
+      "error"
+    );
+
+  }
+
+}
+
+
+/* =========================================================
+   ADMIN
+========================================================= */
+
+function isAdminAuthorized(){
+
+  return (
+    localStorage.getItem(
+      ADMIN_ACCESS_KEY
+    ) === "true"
+  );
+
+}
+
+
+function openAdmin(){
+
+  if(
+    !currentUser ||
+    currentUser.email !== ADMIN_EMAIL
+  ){
+
+    toast(
+      "Accès administrateur refusé.",
+      "error"
+    );
+
+    return;
+
+  }
+
+
+  if(!isAdminAuthorized()){
+
+    openAdminCode();
+
+    return;
+
+  }
+
+
+  openAdminDashboard();
+
+}
+
+
+function openAdminCode(){
+
+  openModal(
+    t("admin"),
+
+    `
+
+      <form
+        id="adminCodeForm"
+        class="admin-code-form"
+      >
+
+        <label>
+
+          ${t("adminCode")}
+
+          <input
+            type="password"
+            id="adminCodeInput"
+            required
+          >
+
+        </label>
+
+
+        <button
+          type="submit"
+          class="auth-submit"
+        >
+          ${t("admin")}
+        </button>
+
+      </form>
+
+    `
+  );
+
+
+  $("adminCodeForm")
+    .addEventListener(
+      "submit",
+      event => {
+
+        event.preventDefault();
+
+        const code =
+          $("adminCodeInput").value;
+
+        if(code !== ADMIN_CODE){
+
+          toast(
+            "Code incorrect.",
+            "error"
+          );
+
+          return;
+
+        }
+
+
+        localStorage.setItem(
+          ADMIN_ACCESS_KEY,
+          "true"
+        );
+
+        toast(
+          t("adminActivated")
+        );
+
+        openAdminDashboard();
+
+      }
+    );
+
+}
+
+
+async function openAdminDashboard(){
+
+  openModal(
+    t("admin"),
+
+    `
+
+      <div class="admin-header">
+
+        <div>
+
+          <span class="admin-label">
+            ADMIN
+          </span>
+
+          <h2>
+            NovaShop Dashboard
+          </h2>
+
+        </div>
+
+
+        <div class="admin-stat">
+
+          <strong>
+            ${products.length}
+          </strong>
+
+          <span>
+            Produits
+          </span>
+
+        </div>
+
+      </div>
+
+
+      <div class="admin-actions">
+
+        <button
+          class="danger-btn"
+          id="removeAdminAuth"
+        >
+          Supprimer l'autorisation
+        </button>
+
+        <button
+          class="danger-btn"
+          id="deleteOrdersBtn"
+        >
+          Supprimer toutes les commandes
+        </button>
+
+      </div>
+
+
+      <div id="adminOrders">
+        Chargement...
+      </div>
+
+    `
+  );
+
+
+  $("removeAdminAuth")
+    .addEventListener(
+      "click",
+      () => {
+
+        localStorage.removeItem(
+          ADMIN_ACCESS_KEY
+        );
+
+        toast(
+          t("adminRemoved")
+        );
+
+        closeModal();
+
+      }
+    );
+
+
+  $("deleteOrdersBtn")
+    .addEventListener(
+      "click",
+      deleteAllOrders
+    );
+
+
+  loadAdminOrders();
+
+}
+
+
+async function loadAdminOrders(){
+
+  const container =
+    $("adminOrders");
+
+  if(!container) return;
+
+  try{
+
+    const snapshot =
+      await getDocs(
+        collection(db,"orders")
+      );
+
+    const orders =
+      snapshot.docs.map(item => ({
+        id:item.id,
+        ...item.data()
+      }));
+
+
+    if(!orders.length){
+
+      container.innerHTML =
+        "<p>Aucune commande.</p>";
+
+      return;
+
+    }
+
+
+    container.innerHTML =
+      orders
+        .map(order => `
+
+          <div class="admin-order-card">
+
+            <div>
+
+              <strong>
+                #${order.id.slice(0,8)}
+              </strong>
+
+              <span>
+                ${escapeHTML(
+                  order.userEmail || ""
+                )}
+              </span>
+
+            </div>
+
+            <strong>
+              ${formatPrice(order.total || 0)}
+            </strong>
+
+          </div>
+
+        `)
+        .join("");
+
+  }
+
+  catch(error){
+
+    console.error(error);
+
+    container.innerHTML =
+      "<p>Erreur de chargement.</p>";
+
+  }
+
+}
+
+
+async function deleteAllOrders(){
+
+  if(
+    !confirm(
+      "Supprimer toutes les commandes ?"
+    )
+  ) return;
+
+
+  try{
+
+    const snapshot =
+      await getDocs(
+        collection(db,"orders")
+      );
+
+
+    for(
+      const item of snapshot.docs
+    ){
+
+      await deleteDoc(
+        doc(
+          db,
+          "orders",
+          item.id
+        )
+      );
+
+    }
+
+
+    toast(
+      "Toutes les commandes ont été supprimées."
+    );
+
+    openAdminDashboard();
+
+  }
+
+  catch(error){
+
+    console.error(error);
+
+    toast(
+      "Erreur lors de la suppression.",
+      "error"
+    );
+
+  }
+
+}
+
+
+/* =========================================================
+   USER UI
+========================================================= */
+
+function updateUserUI(){
+
+  if(currentUser){
+
+    accountBtn.classList.add(
+      "logged-in"
+    );
+
+    accountBtn.title =
+      currentUser.email;
+
+  }else{
+
+    accountBtn.classList.remove(
+      "logged-in"
+    );
+
+    accountBtn.title =
+      t("account");
+
+  }
+
+
+  if(adminBtn){
+
+    adminBtn.style.display =
+      currentUser &&
+      currentUser.email === ADMIN_EMAIL
+        ? ""
+        : "none";
+
+  }
+
+}
+
+
+/* =========================================================
+   EVENTS
+========================================================= */
+
+searchInput.addEventListener(
+  "input",
+  event => {
+
+    searchValue =
+      event.target.value;
+
+    renderProducts();
+
+  }
+);
+
+
+cartBtn.addEventListener(
+  "click",
+  openCart
+);
+
+
+cartClose.addEventListener(
+  "click",
+  closeCart
+);
+
+
+cartOverlay.addEventListener(
+  "click",
+  closeCart
+);
+
+
+checkoutBtn.addEventListener(
+  "click",
+  checkout
+);
+
+
+settingsBtn.addEventListener(
+  "click",
+  openSettings
+);
+
+
+accountBtn.addEventListener(
+  "click",
+  openAccount
+);
+
+
+ordersBtn.addEventListener(
+  "click",
+  openOrders
+);
+
+
+adminBtn.addEventListener(
+  "click",
+  openAdmin
+);
+
+
+modalClose.addEventListener(
+  "click",
+  closeModal
+);
+
+
+modal.addEventListener(
+  "click",
+  event => {
+
+    if(event.target === modal){
+      closeModal();
+    }
+
+  }
+);
+
+
+document.addEventListener(
+  "keydown",
+  event => {
+
+    if(event.key === "Escape"){
+
+      closeModal();
+      closeCart();
+
+    }
+
+  }
+);
+
+
+/* =========================================================
+   HERO
+========================================================= */
+
+heroShopBtn.addEventListener(
+  "click",
+  () => {
+
+    $("products").scrollIntoView({
+      behavior:"smooth"
+    });
+
+  }
+);
+
+
+heroSearchBtn.addEventListener(
+  "click",
+  () => {
+
+    searchInput.focus();
+
+    searchInput.scrollIntoView({
+      behavior:"smooth",
+      block:"center"
+    });
+
+  }
+);
+
+
+/* =========================================================
+   SYSTEM THEME
+========================================================= */
+
+if(window.matchMedia){
+
+  window
+    .matchMedia(
+      "(prefers-color-scheme: light)"
+    )
+    .addEventListener(
+      "change",
+      () => {
+
+        if(themeChoice === "auto"){
+          applyTheme();
+        }
+
+      }
+    );
+
+}
+
+
+/* =========================================================
+   AUTH STATE
+========================================================= */
+
+onAuthStateChanged(
+  auth,
+  user => {
+
+    currentUser = user;
+
+    updateUserUI();
+
+  }
+);
+
+
+/* =========================================================
+   INIT
+========================================================= */
+
+function init(){
+
+  console.log(
+    "🚀 NovaShop chargé"
+  );
+
+  console.log(
+    `📦 ${products.length} produits chargés`
+  );
+
+  renderCategories();
+
+  renderProducts();
+
+  renderCart();
+
+  updateCartBadge();
+
+  applyLanguage();
+
+  updateUserUI();
+
+}
+
+
+init();
+
+
+/* =========================================================
+   DEBUG API
+========================================================= */
+
+window.NovaShop = {
+
+  products,
+
+  get cart(){
+    return cart;
+  },
+
+  get user(){
+    return currentUser;
+  },
+
+  addToCart,
+
+  removeFromCart,
+
+  renderProducts,
+
+  renderCart,
+
+  openCart,
+
+  closeCart,
+
+  openSettings,
+
+  openAccount,
+
+  openOrders,
+
+  openAdmin,
+
+  clearCart(){
+
+    cart = [];
+
+    saveCart();
+
+    renderCart();
+
+    updateCartBadge();
+
+  }
+
+};
+
+console.log(
+  "✅ NovaShop : 43 produits disponibles"
+);
