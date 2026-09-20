@@ -1,5 +1,6 @@
 // ==========================================
-// NOVASHOP - FIREBASE CONFIG
+// NOVASHOP - APP.JS
+// FIREBASE + AUTHENTIFICATION
 // ==========================================
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
@@ -17,8 +18,8 @@ import {
   collection,
   addDoc,
   getDocs,
-  doc,
   getDoc,
+  doc,
   updateDoc,
   deleteDoc,
   query,
@@ -29,7 +30,7 @@ import {
 
 
 // ==========================================
-// CONFIG EXACTE DE TON PROJET
+// FIREBASE CONFIG
 // ==========================================
 
 const firebaseConfig = {
@@ -55,13 +56,11 @@ const db = getFirestore(app);
 
 
 // ==========================================
-// TEST
+// TEST FIREBASE
 // ==========================================
 
-console.log("🔥 NOVASHOP FIREBASE");
-console.log("Projet Firebase :", firebaseConfig.projectId);
-console.log("Auth :", auth);
-console.log("Firestore :", db);
+console.log("🔥 NOVASHOP FIREBASE OK");
+console.log("Projet :", firebaseConfig.projectId);
 
 
 // ==========================================
@@ -70,25 +69,6 @@ console.log("Firestore :", db);
 
 function $(id) {
   return document.getElementById(id);
-}
-
-
-// ==========================================
-// MESSAGE AUTH
-// ==========================================
-
-function authMessage(message) {
-
-  const element =
-    $("authMessage") ||
-    $("loginMessage") ||
-    $("registerMessage");
-
-  if (element) {
-    element.textContent = message;
-  }
-
-  console.log(message);
 }
 
 
@@ -109,13 +89,32 @@ function showToast(message) {
 
   toast.classList.add("show");
 
-  clearTimeout(window.__novaToast);
+  clearTimeout(window.novaToastTimer);
 
-  window.__novaToast = setTimeout(() => {
+  window.novaToastTimer = setTimeout(() => {
 
     toast.classList.remove("show");
 
   }, 3000);
+}
+
+
+// ==========================================
+// MESSAGE AUTH
+// ==========================================
+
+function authMessage(message) {
+
+  const box =
+    $("authMessage") ||
+    $("loginMessage") ||
+    $("registerMessage");
+
+  if (box) {
+    box.textContent = message;
+  }
+
+  console.log(message);
 }
 
 
@@ -129,67 +128,105 @@ function firebaseAuthError(error) {
 
   const code = error?.code || "";
 
-  let message = "Erreur Firebase.";
+  let message = "Une erreur est survenue.";
 
-  switch (code) {
+  if (
+    code === "auth/api-key-not-valid" ||
+    code === "auth/invalid-api-key"
+  ) {
 
-    case "auth/api-key-not-valid":
-    case "auth/invalid-api-key":
-      message =
-        "La clé API Firebase est refusée. Vérifie la clé dans Firebase > Project settings > Your apps.";
-      break;
+    message =
+      "❌ La clé API Firebase n'est pas valide.";
 
-    case "auth/operation-not-allowed":
-      message =
-        "Email/mot de passe n'est pas activé dans Firebase.";
-      break;
+  }
 
-    case "auth/unauthorized-domain":
-      message =
-        "Le domaine de ton site n'est pas autorisé dans Firebase.";
-      break;
+  else if (
+    code === "auth/operation-not-allowed"
+  ) {
 
-    case "auth/email-already-in-use":
-      message =
-        "Cet email possède déjà un compte.";
-      break;
+    message =
+      "❌ Active Email/Password dans Firebase Authentication.";
 
-    case "auth/invalid-email":
-      message =
-        "Adresse email invalide.";
-      break;
+  }
 
-    case "auth/weak-password":
-      message =
-        "Mot de passe trop faible. Minimum 6 caractères.";
-      break;
+  else if (
+    code === "auth/unauthorized-domain"
+  ) {
 
-    case "auth/invalid-credential":
-    case "auth/wrong-password":
-    case "auth/user-not-found":
-      message =
-        "Email ou mot de passe incorrect.";
-      break;
+    message =
+      "❌ Le domaine de ce site n'est pas autorisé dans Firebase.";
 
-    case "auth/too-many-requests":
-      message =
-        "Trop de tentatives. Réessaie plus tard.";
-      break;
+  }
 
-    case "auth/network-request-failed":
-      message =
-        "Erreur réseau. Vérifie ta connexion.";
-      break;
+  else if (
+    code === "auth/email-already-in-use"
+  ) {
 
-    case "auth/user-disabled":
-      message =
-        "Ce compte a été désactivé.";
-      break;
+    message =
+      "❌ Cet email possède déjà un compte.";
 
-    default:
-      message =
-        error?.message ||
-        `Erreur Firebase : ${code}`;
+  }
+
+  else if (
+    code === "auth/invalid-email"
+  ) {
+
+    message =
+      "❌ Adresse email invalide.";
+
+  }
+
+  else if (
+    code === "auth/weak-password"
+  ) {
+
+    message =
+      "❌ Mot de passe trop faible. Minimum 6 caractères.";
+
+  }
+
+  else if (
+    code === "auth/invalid-credential" ||
+    code === "auth/wrong-password" ||
+    code === "auth/user-not-found"
+  ) {
+
+    message =
+      "❌ Email ou mot de passe incorrect.";
+
+  }
+
+  else if (
+    code === "auth/too-many-requests"
+  ) {
+
+    message =
+      "❌ Trop de tentatives. Réessaie plus tard.";
+
+  }
+
+  else if (
+    code === "auth/network-request-failed"
+  ) {
+
+    message =
+      "❌ Erreur réseau. Vérifie Internet.";
+
+  }
+
+  else if (
+    code === "auth/user-disabled"
+  ) {
+
+    message =
+      "❌ Ce compte est désactivé.";
+
+  }
+
+  else {
+
+    message =
+      `❌ Erreur Firebase : ${code || error?.message || "inconnue"}`;
 
   }
 
@@ -199,7 +236,7 @@ function firebaseAuthError(error) {
 
 
 // ==========================================
-// CRÉER UN COMPTE
+// CRÉATION DE COMPTE
 // ==========================================
 
 async function register() {
@@ -218,6 +255,7 @@ async function register() {
     );
 
     return;
+
   }
 
 
@@ -228,6 +266,7 @@ async function register() {
     );
 
     return;
+
   }
 
 
@@ -238,17 +277,19 @@ async function register() {
     );
 
     return;
+
   }
 
 
   try {
 
     console.log(
-      "Création du compte...",
+      "🟡 Création du compte...",
       email
     );
 
-    const result =
+
+    const credential =
       await createUserWithEmailAndPassword(
         auth,
         email,
@@ -258,20 +299,23 @@ async function register() {
 
     console.log(
       "✅ COMPTE CRÉÉ",
-      result.user.uid
+      credential.user.uid
     );
 
 
     authMessage(
-      "Compte créé avec succès ✓"
+      "✅ Compte créé avec succès !"
     );
+
 
     showToast(
       "Compte créé avec succès ✓"
     );
 
 
-  } catch (error) {
+  }
+
+  catch (error) {
 
     firebaseAuthError(error);
 
@@ -300,6 +344,7 @@ async function login() {
     );
 
     return;
+
   }
 
 
@@ -310,18 +355,19 @@ async function login() {
     );
 
     return;
+
   }
 
 
   try {
 
     console.log(
-      "Connexion...",
+      "🟡 Connexion...",
       email
     );
 
 
-    const result =
+    const credential =
       await signInWithEmailAndPassword(
         auth,
         email,
@@ -331,20 +377,23 @@ async function login() {
 
     console.log(
       "✅ CONNECTÉ",
-      result.user.uid
+      credential.user.uid
     );
 
 
     authMessage(
-      "Connexion réussie ✓"
+      "✅ Connexion réussie !"
     );
+
 
     showToast(
       "Connexion réussie ✓"
     );
 
 
-  } catch (error) {
+  }
+
+  catch (error) {
 
     firebaseAuthError(error);
 
@@ -367,10 +416,12 @@ async function logout() {
       "Déconnexion réussie ✓"
     );
 
-  } catch (error) {
+  }
+
+  catch (error) {
 
     console.error(
-      "Erreur déconnexion :",
+      "❌ Erreur déconnexion :",
       error
     );
 
@@ -380,29 +431,33 @@ async function logout() {
 
 
 // ==========================================
-// SURVEILLER LA CONNEXION
+// UTILISATEUR ACTUEL
 // ==========================================
 
 let currentUser = null;
+
 
 onAuthStateChanged(
   auth,
   (user) => {
 
-    currentUser = user || null;
+    currentUser =
+      user || null;
 
 
     if (user) {
 
       console.log(
-        "👤 Utilisateur connecté :",
+        "👤 CONNECTÉ :",
         user.email
       );
 
-    } else {
+    }
+
+    else {
 
       console.log(
-        "👤 Aucun utilisateur connecté"
+        "👤 NON CONNECTÉ"
       );
 
     }
@@ -412,17 +467,153 @@ onAuthStateChanged(
 
 
 // ==========================================
-// DISPONIBLE POUR LE HTML
+// FIRESTORE : AJOUTER UNE COMMANDE
 // ==========================================
 
-window.register = register;
+async function createOrder(orderData) {
 
-window.login = login;
+  try {
 
-window.logout = logout;
+    if (!auth.currentUser) {
+
+      throw new Error(
+        "Utilisateur non connecté."
+      );
+
+    }
+
+
+    const order = {
+
+      ...orderData,
+
+      userId:
+        auth.currentUser.uid,
+
+      email:
+        auth.currentUser.email,
+
+      createdAt:
+        serverTimestamp(),
+
+      status:
+        "pending"
+
+    };
+
+
+    const result =
+      await addDoc(
+        collection(db, "orders"),
+        order
+      );
+
+
+    console.log(
+      "✅ Commande enregistrée :",
+      result.id
+    );
+
+
+    return result.id;
+
+  }
+
+  catch (error) {
+
+    console.error(
+      "❌ Erreur commande :",
+      error
+    );
+
+    throw error;
+
+  }
+
+}
+
+
+// ==========================================
+// FIRESTORE : COMMANDES DE L'UTILISATEUR
+// ==========================================
+
+async function getMyOrders() {
+
+  if (!auth.currentUser) {
+    return [];
+  }
+
+
+  try {
+
+    const q =
+      query(
+        collection(db, "orders"),
+        where(
+          "userId",
+          "==",
+          auth.currentUser.uid
+        )
+      );
+
+
+    const snapshot =
+      await getDocs(q);
+
+
+    return snapshot.docs.map(
+      item => ({
+        id: item.id,
+        ...item.data()
+      })
+    );
+
+  }
+
+  catch (error) {
+
+    console.error(
+      "❌ Erreur récupération commandes :",
+      error
+    );
+
+    return [];
+
+  }
+
+}
+
+
+// ==========================================
+// EXPORT GLOBAL
+// ==========================================
+
+window.login =
+  login;
+
+window.register =
+  register;
+
+window.logout =
+  logout;
+
+window.createOrder =
+  createOrder;
+
+window.getMyOrders =
+  getMyOrders;
 
 window.firebaseAuthError =
   firebaseAuthError;
 
-window.currentUser =
-  currentUser;
+window.showToast =
+  showToast;
+
+
+// ==========================================
+// FIN FIREBASE
+// ==========================================
+
+console.log(
+  "🚀 NovaShop prêt."
+);
