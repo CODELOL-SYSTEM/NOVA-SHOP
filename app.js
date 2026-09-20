@@ -1,4 +1,6 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
+import {
+  initializeApp
+} from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
 
 import {
   getAuth,
@@ -58,14 +60,13 @@ const $ = id => document.getElementById(id);
 
 const searchInput = $("searchInput");
 const categoriesEl = $("categories");
-const productsGrid = $("productsGrid");
-const productCount = $("productCount");
+const productsGrid = $("productGrid");
 
 const cartBtn = $("cartBtn");
 const cartBadge = $("cartBadge");
-const cartOverlay = $("cartOverlay");
+const cartOverlay = $("overlay");
 const cartDrawer = $("cartDrawer");
-const cartClose = $("cartClose");
+const cartClose = $("closeCart");
 const cartItems = $("cartItems");
 const cartTotal = $("cartTotal");
 const checkoutBtn = $("checkoutBtn");
@@ -75,14 +76,22 @@ const accountBtn = $("accountBtn");
 const ordersBtn = $("ordersBtn");
 const adminBtn = $("adminBtn");
 
-const modal = $("modal");
+const modal = $("modalLayer");
 const modalContent = $("modalContent");
 const modalClose = $("modalClose");
 
-const toastContainer = $("toastContainer");
+const toastContainer = $("toast");
 
-const heroShopBtn = $("heroShopBtn");
-const heroSearchBtn = $("heroSearchBtn");
+const heroCartBtn = $("heroCartBtn");
+
+
+/* =========================================================
+   PROTECTION DOM
+========================================================= */
+
+function exists(el){
+  return !!el;
+}
 
 
 /* =========================================================
@@ -92,13 +101,6 @@ const heroSearchBtn = $("heroSearchBtn");
 const FALLBACK_IMAGE =
   "https://placehold.co/800x800/111827/ffffff?text=NovaShop";
 
-
-/*
-  Toutes les images externes passent par wsrv.nl.
-
-  Cela évite beaucoup de problèmes de hotlink / CORS /
-  blocage des images par certains hébergeurs.
-*/
 
 function imageUrl(url){
 
@@ -120,28 +122,6 @@ function imageUrl(url){
 }
 
 
-/*
-  Image sécurisée pour HTML.
-*/
-
-function imageSrc(url){
-
-  return escapeAttribute(
-    imageUrl(url)
-  );
-
-}
-
-
-/*
-  Petit système de secours supplémentaire.
-
-  Si le proxy ne répond pas, on essaye directement
-  l'image originale.
-
-  Si l'originale échoue également, fallback NovaShop.
-*/
-
 function imageError(img, original){
 
   if(!img) return;
@@ -152,14 +132,23 @@ function imageError(img, original){
   if(stage === "proxy"){
 
     img.dataset.imageStage = "original";
-    img.src = original || FALLBACK_IMAGE;
-    return;
 
+    if(original){
+      img.src = original;
+    }else{
+      img.src = FALLBACK_IMAGE;
+    }
+
+    return;
   }
 
   img.dataset.imageStage = "fallback";
   img.src = FALLBACK_IMAGE;
+}
 
+
+function imageSrc(url){
+  return escapeAttribute(imageUrl(url));
 }
 
 
@@ -525,7 +514,6 @@ let currentUser = null;
 let selectedCategory = "Toutes";
 let searchValue = "";
 let cart = [];
-let reviewsCache = {};
 
 
 /* =========================================================
@@ -536,13 +524,13 @@ function loadCart(){
 
   try{
 
-    const data =
+    const saved =
       JSON.parse(
         localStorage.getItem("novaCart") || "[]"
       );
 
-    if(Array.isArray(data)){
-      cart = data;
+    if(Array.isArray(saved)){
+      cart = saved;
     }
 
   }catch{
@@ -574,24 +562,29 @@ loadCart();
 function applyTheme(){
 
   const choice =
-    localStorage.getItem("novaThemeChoice") || "dark";
+    localStorage.getItem(
+      "novaThemeChoice"
+    ) || "dark";
 
   document.body.classList.remove("light");
 
   if(choice === "light"){
+
     document.body.classList.add("light");
+
   }
 
   if(choice === "auto"){
 
-    const isLight =
+    if(
       window.matchMedia &&
       window.matchMedia(
         "(prefers-color-scheme: light)"
-      ).matches;
+      ).matches
+    ){
 
-    if(isLight){
       document.body.classList.add("light");
+
     }
 
   }
@@ -603,10 +596,12 @@ applyTheme();
 
 
 /* =========================================================
-   CURRENCY
+   MONEY
 ========================================================= */
 
 function money(value){
+
+  value = Number(value) || 0;
 
   if(value === 0){
     return "Prix à venir";
@@ -643,7 +638,9 @@ function reviewData(product){
 
   return {
     count,
-    rating:Number(rating.toFixed(1))
+    rating:Number(
+      rating.toFixed(1)
+    )
   };
 
 }
@@ -656,7 +653,7 @@ function starsHTML(rating){
 
   let html = "";
 
-  for(let i=1;i<=5;i++){
+  for(let i = 1; i <= 5; i++){
 
     html +=
       i <= rounded
@@ -690,45 +687,21 @@ function getCategories(){
 
 function renderCategories(){
 
+  if(!categoriesEl) return;
+
   categoriesEl.innerHTML =
     getCategories()
-      .map(category => {
+      .map(category => `
 
-        const active =
-          category === selectedCategory
-            ? "active"
-            : "";
+        <button
+          class="category ${category === selectedCategory ? "active" : ""}"
+          data-category="${escapeAttribute(category)}"
+        >
+          ${escapeHTML(category)}
+        </button>
 
-        return `
-          <button
-            class="category-btn ${active}"
-            data-category="${escapeHTML(category)}"
-          >
-            ${escapeHTML(category)}
-          </button>
-        `;
-
-      })
+      `)
       .join("");
-
-  categoriesEl
-    .querySelectorAll("[data-category]")
-    .forEach(button => {
-
-      button.addEventListener(
-        "click",
-        () => {
-
-          selectedCategory =
-            button.dataset.category;
-
-          renderCategories();
-          renderProducts();
-
-        }
-      );
-
-    });
 
 }
 
@@ -744,24 +717,58 @@ function filteredProducts(){
       .trim()
       .toLowerCase();
 
-  return products.filter(product => {
+  let list =
+    products.filter(product => {
 
-    const categoryOK =
-      selectedCategory === "Toutes" ||
-      product.category === selectedCategory;
+      const categoryOK =
+        selectedCategory === "Toutes" ||
+        product.category === selectedCategory;
 
-    const searchOK =
-      !search ||
-      product.name
-        .toLowerCase()
-        .includes(search) ||
-      product.category
-        .toLowerCase()
-        .includes(search);
+      const searchOK =
+        !search ||
+        product.name
+          .toLowerCase()
+          .includes(search) ||
+        product.category
+          .toLowerCase()
+          .includes(search);
 
-    return categoryOK && searchOK;
+      return categoryOK && searchOK;
 
-  });
+    });
+
+  const sort =
+    $("sortSelect")?.value || "default";
+
+  if(sort === "priceAsc"){
+
+    list.sort(
+      (a,b) =>
+        a.price - b.price
+    );
+
+  }
+
+  if(sort === "priceDesc"){
+
+    list.sort(
+      (a,b) =>
+        b.price - a.price
+    );
+
+  }
+
+  if(sort === "rating"){
+
+    list.sort(
+      (a,b) =>
+        reviewData(b).rating -
+        reviewData(a).rating
+    );
+
+  }
+
+  return list;
 
 }
 
@@ -775,27 +782,38 @@ function productCardHTML(product){
   const reviews =
     reviewData(product);
 
-  const originalImage =
-    escapeAttribute(product.image);
-
-  const proxiedImage =
-    imageSrc(product.image);
-
   return `
 
-    <article class="product-card">
+    <article class="product">
 
-      <div class="product-image">
+      <div class="product-img">
 
         ${
           product.new
-            ? `<span class="new-badge">Nouveau</span>`
+            ? `
+              <span
+                style="
+                  position:absolute;
+                  top:12px;
+                  left:12px;
+                  z-index:2;
+                  background:#25d695;
+                  color:#03150e;
+                  padding:5px 9px;
+                  border-radius:999px;
+                  font-size:11px;
+                  font-weight:900;
+                "
+              >
+                Nouveau
+              </span>
+            `
             : ""
         }
 
         <img
-          src="${proxiedImage}"
-          data-original="${originalImage}"
+          src="${imageSrc(product.image)}"
+          data-original="${escapeAttribute(product.image)}"
           alt="${escapeAttribute(product.name)}"
           loading="lazy"
           decoding="async"
@@ -807,13 +825,13 @@ function productCardHTML(product){
 
       <div class="product-body">
 
-        <div class="product-category">
+        <div class="product-cat">
           ${escapeHTML(product.category)}
         </div>
 
-        <div class="product-name">
+        <h3>
           ${escapeHTML(product.name)}
-        </div>
+        </h3>
 
         <div class="rating">
 
@@ -821,13 +839,13 @@ function productCardHTML(product){
             ${starsHTML(reviews.rating)}
           </span>
 
-          <span class="rating-score">
+          <span>
             ${reviews.rating
               .toFixed(1)
               .replace(".",",")}
           </span>
 
-          <span class="rating-count">
+          <span>
             · ${reviews.count.toLocaleString("fr-FR")} avis
           </span>
 
@@ -835,31 +853,33 @@ function productCardHTML(product){
 
         <div class="product-bottom">
 
-          <div class="price ${
-            product.price === 0
-              ? "free"
-              : ""
-          }">
+          <div
+            class="price"
+            style="
+              font-size:19px;
+              font-weight:950;
+            "
+          >
             ${money(product.price)}
           </div>
 
-        </div>
+          <div class="product-actions">
 
-        <div class="product-actions">
+            <button
+              class="view-btn"
+              data-view="${product.id}"
+            >
+              Voir
+            </button>
 
-          <button
-            class="btn btn-secondary btn-small view-btn"
-            data-view="${product.id}"
-          >
-            Voir
-          </button>
+            <button
+              class="add-btn"
+              data-add="${product.id}"
+            >
+              🛒 Ajouter
+            </button>
 
-          <button
-            class="btn btn-primary btn-small add-btn"
-            data-add="${product.id}"
-          >
-            🛒 Ajouter
-          </button>
+          </div>
 
         </div>
 
@@ -873,113 +893,139 @@ function productCardHTML(product){
 
 
 /* =========================================================
-   PRODUCTS
+   RENDER PRODUCTS
 ========================================================= */
 
 function renderProducts(){
 
+  if(!productsGrid) return;
+
   const list =
     filteredProducts();
 
-  productCount.textContent =
-    `${list.length} produit${
-      list.length > 1 ? "s" : ""
-    }`;
+  productsGrid.innerHTML =
+    list.length
+      ? list.map(productCardHTML).join("")
+      : `
 
-  if(!list.length){
+        <div
+          style="
+            grid-column:1/-1;
+            text-align:center;
+            padding:50px 20px;
+          "
+        >
 
-    productsGrid.innerHTML = `
+          <div
+            style="
+              font-size:40px;
+              margin-bottom:12px;
+            "
+          >
+            🔎
+          </div>
 
-      <div class="empty">
+          <h3>
+            Aucun produit trouvé
+          </h3>
 
-        <div class="empty-icon">
-          ⌕
+          <p
+            style="
+              color:var(--muted);
+              margin:10px 0 20px;
+            "
+          >
+            Essaie une autre recherche ou une autre catégorie.
+          </p>
+
+          <button
+            class="secondary"
+            id="resetFilters"
+          >
+            Réinitialiser
+          </button>
+
         </div>
 
-        <h3>
-          Aucun produit trouvé
-        </h3>
+      `;
 
-        <p>
-          Essaie une autre recherche ou une autre catégorie.
-        </p>
+}
 
-        <button
-          class="btn btn-secondary btn-small"
-          id="resetFilters"
-        >
-          Réinitialiser
-        </button>
 
-      </div>
+/* =========================================================
+   PRODUCT CLICK SYSTEM
+========================================================= */
 
-    `;
+if(productsGrid){
 
-    $("resetFilters").onclick = () => {
+  productsGrid.addEventListener(
+    "click",
+    event => {
 
-      searchValue = "";
-      searchInput.value = "";
-      selectedCategory = "Toutes";
+      const viewButton =
+        event.target.closest(
+          "[data-view]"
+        );
 
-      renderCategories();
-      renderProducts();
+      const addButton =
+        event.target.closest(
+          "[data-add]"
+        );
 
-    };
+      const resetButton =
+        event.target.closest(
+          "#resetFilters"
+        );
 
-    return;
+      if(viewButton){
 
-  }
+        openProduct(
+          viewButton.dataset.view
+        );
 
-  productsGrid.innerHTML =
-    list
-      .map(productCardHTML)
-      .join("");
+        return;
 
-  productsGrid
-    .querySelectorAll("[data-view]")
-    .forEach(button => {
+      }
 
-      button.addEventListener(
-        "click",
-        () => {
+      if(addButton){
 
-          openProduct(
-            button.dataset.view
+        const product =
+          products.find(
+            p =>
+              p.id ===
+              addButton.dataset.add
+          );
+
+        if(product){
+
+          addToCart(
+            product,
+            addButton
           );
 
         }
-      );
 
-    });
+        return;
 
-  productsGrid
-    .querySelectorAll("[data-add]")
-    .forEach(button => {
+      }
 
-      button.addEventListener(
-        "click",
-        event => {
+      if(resetButton){
 
-          const product =
-            products.find(
-              p =>
-                p.id ===
-                button.dataset.add
-            );
+        searchValue = "";
 
-          if(product){
-
-            addToCart(
-              product,
-              event.currentTarget
-            );
-
-          }
-
+        if(searchInput){
+          searchInput.value = "";
         }
-      );
 
-    });
+        selectedCategory = "Toutes";
+
+        renderCategories();
+        renderProducts();
+
+      }
+
+    }
+  );
 
 }
 
@@ -1000,50 +1046,60 @@ function openProduct(id){
   const reviews =
     reviewData(product);
 
-  const demoReviews = [
-
-    {
-      name:"Client NovaShop",
-      text:"Produit conforme à la présentation. Bonne expérience générale."
-    },
-
-    {
-      name:"Client vérifié",
-      text:"Fiche claire et produit intéressant pour un setup gaming."
-    },
-
-    {
-      name:"Utilisateur",
-      text:"Bonne présentation et informations faciles à trouver."
-    }
-
-  ];
-
   modalContent.innerHTML = `
 
-    <div class="product-modal">
+    <div
+      style="
+        display:grid;
+        grid-template-columns:1fr 1fr;
+        gap:25px;
+      "
+    >
 
-      <div class="modal-image">
+      <div
+        style="
+          min-height:330px;
+          background:#fff;
+          border-radius:16px;
+          overflow:hidden;
+        "
+      >
 
         <img
           src="${imageSrc(product.image)}"
           data-original="${escapeAttribute(product.image)}"
           alt="${escapeAttribute(product.name)}"
-          loading="eager"
-          decoding="async"
-          referrerpolicy="no-referrer"
+          style="
+            width:100%;
+            height:330px;
+            object-fit:contain;
+            padding:20px;
+          "
           onerror="imageError(this,this.dataset.original)"
         >
 
       </div>
 
-      <div class="modal-info">
+      <div>
 
-        <div class="product-category">
+        <div
+          style="
+            color:#5ea7ff;
+            font-size:12px;
+            font-weight:900;
+            text-transform:uppercase;
+            margin-bottom:10px;
+          "
+        >
           ${escapeHTML(product.category)}
         </div>
 
-        <h2>
+        <h2
+          style="
+            line-height:1.2;
+            margin-bottom:12px;
+          "
+        >
           ${escapeHTML(product.name)}
         </h2>
 
@@ -1053,63 +1109,100 @@ function openProduct(id){
             ${starsHTML(reviews.rating)}
           </span>
 
-          <span class="rating-score">
+          <strong>
             ${reviews.rating
               .toFixed(1)
               .replace(".",",")}
-          </span>
+          </strong>
 
-          <span class="rating-count">
+          <span>
             · ${reviews.count.toLocaleString("fr-FR")} avis
           </span>
 
         </div>
 
-        <div class="modal-price">
+        <div
+          style="
+            font-size:27px;
+            font-weight:950;
+            margin:18px 0;
+          "
+        >
           ${money(product.price)}
         </div>
 
         <button
-          class="btn btn-primary btn-wide"
+          class="primary"
           id="modalAdd"
+          style="width:100%"
         >
           🛒 Ajouter au panier
         </button>
 
-        <div style="margin-top:20px">
+        <div
+          style="
+            margin-top:25px;
+            border-top:1px solid var(--line);
+            padding-top:20px;
+          "
+        >
 
-          <strong style="font-size:13px">
+          <strong>
             Avis clients
           </strong>
 
-          ${demoReviews
-            .map(review => `
+          <div
+            style="
+              margin-top:12px;
+              padding:13px;
+              border:1px solid var(--line);
+              border-radius:12px;
+            "
+          >
+            <strong>
+              Client NovaShop
+            </strong>
 
-              <div class="review-box">
+            <div class="stars">
+              ★★★★★
+            </div>
 
-                <div class="review-head">
+            <p
+              style="
+                color:var(--muted);
+                margin-top:6px;
+              "
+            >
+              Produit conforme à la présentation.
+              Bonne expérience générale.
+            </p>
+          </div>
 
-                  <span class="review-author">
-                    ${escapeHTML(review.name)}
-                  </span>
+          <div
+            style="
+              margin-top:10px;
+              padding:13px;
+              border:1px solid var(--line);
+              border-radius:12px;
+            "
+          >
+            <strong>
+              Client vérifié
+            </strong>
 
-                  <span class="stars">
-                    ★★★★★
-                  </span>
+            <div class="stars">
+              ★★★★★
+            </div>
 
-                </div>
-
-                <div class="review-text">
-                  ${escapeHTML(review.text)}
-                </div>
-
-              </div>
-
-            `)
-            .join("")}
-
-          <div class="demo-note">
-            Les avis affichés ici sont des avis de démonstration.
+            <p
+              style="
+                color:var(--muted);
+                margin-top:6px;
+              "
+            >
+              Fiche claire et produit intéressant
+              pour un setup gaming.
+            </p>
           </div>
 
         </div>
@@ -1141,34 +1234,52 @@ function openProduct(id){
 
 function openModal(){
 
+  if(!modal) return;
+
   modal.classList.add("open");
-  document.body.style.overflow = "hidden";
+
+  document.body.style.overflow =
+    "hidden";
 
 }
 
 
 function closeModal(){
 
+  if(!modal) return;
+
   modal.classList.remove("open");
-  document.body.style.overflow = "";
+
+  document.body.style.overflow =
+    "";
 
 }
 
 
-modalClose.onclick =
-  closeModal;
+if(modalClose){
+
+  modalClose.onclick =
+    closeModal;
+
+}
 
 
-modal.addEventListener(
-  "click",
-  event => {
+if(modal){
 
-    if(event.target === modal){
-      closeModal();
+  modal.addEventListener(
+    "click",
+    event => {
+
+      if(event.target === modal){
+
+        closeModal();
+
+      }
+
     }
+  );
 
-  }
-);
+}
 
 
 /* =========================================================
@@ -1218,7 +1329,8 @@ function removeFromCart(id){
 
   cart =
     cart.filter(
-      item => item.id !== id
+      item =>
+        item.id !== id
     );
 
   saveCart();
@@ -1234,7 +1346,8 @@ function changeQuantity(
 
   const item =
     cart.find(
-      item => item.id === id
+      item =>
+        item.id === id
     );
 
   if(!item) return;
@@ -1261,10 +1374,13 @@ function cartDetailed(){
 
       const product =
         products.find(
-          p => p.id === item.id
+          p =>
+            p.id === item.id
         );
 
-      if(!product) return null;
+      if(!product){
+        return null;
+      }
 
       return {
         ...product,
@@ -1283,6 +1399,8 @@ function cartDetailed(){
 
 function renderCart(){
 
+  if(!cartItems) return;
+
   const items =
     cartDetailed();
 
@@ -1293,118 +1411,14 @@ function renderCart(){
       0
     );
 
-  cartBadge.textContent =
-    count > 99
-      ? "99+"
-      : count;
+  if(cartBadge){
 
-  if(!items.length){
-
-    cartItems.innerHTML = `
-
-      <div class="empty">
-
-        <div class="empty-icon">
-          🛒
-        </div>
-
-        <h3>
-          Ton panier est vide
-        </h3>
-
-        <p>
-          Ajoute un produit pour commencer.
-        </p>
-
-        <button
-          class="btn btn-primary btn-small"
-          id="emptyShop"
-        >
-          Voir les produits
-        </button>
-
-      </div>
-
-    `;
-
-    $("emptyShop").onclick = () => {
-
-      closeCart();
-
-      document
-        .getElementById("shop")
-        .scrollIntoView({
-          behavior:"smooth"
-        });
-
-    };
-
-    cartTotal.textContent =
-      money(0);
-
-    return;
+    cartBadge.textContent =
+      count > 99
+        ? "99+"
+        : count;
 
   }
-
-  cartItems.innerHTML =
-    items
-      .map(item => `
-
-        <div class="cart-item">
-
-          <img
-            src="${imageSrc(item.image)}"
-            data-original="${escapeAttribute(item.image)}"
-            alt=""
-            loading="lazy"
-            decoding="async"
-            referrerpolicy="no-referrer"
-            onerror="imageError(this,this.dataset.original)"
-          >
-
-          <div>
-
-            <div class="cart-item-name">
-              ${escapeHTML(item.name)}
-            </div>
-
-            <div class="cart-item-price">
-              ${money(item.price)}
-            </div>
-
-            <div class="qty">
-
-              <button
-                data-minus="${item.id}"
-              >
-                −
-              </button>
-
-              <span>
-                ${item.qty}
-              </span>
-
-              <button
-                data-plus="${item.id}"
-              >
-                +
-              </button>
-
-            </div>
-
-          </div>
-
-          <button
-            class="remove"
-            data-remove="${item.id}"
-          >
-            Suppr.
-          </button>
-
-        </div>
-
-      `)
-      .join("");
 
   let total = 0;
 
@@ -1420,64 +1434,219 @@ function renderCart(){
 
   });
 
-  cartTotal.textContent =
-    money(total);
+  if(cartTotal){
 
-  cartItems
-    .querySelectorAll("[data-minus]")
-    .forEach(button => {
+    cartTotal.textContent =
+      money(total);
 
-      button.onclick = () => {
+  }
 
-        changeQuantity(
-          button.dataset.minus,
-          -1
-        );
+  if(!items.length){
 
-      };
+    cartItems.innerHTML = `
 
-    });
+      <div
+        style="
+          text-align:center;
+          padding:50px 15px;
+        "
+      >
 
-  cartItems
-    .querySelectorAll("[data-plus]")
-    .forEach(button => {
+        <div
+          style="
+            font-size:45px;
+            margin-bottom:15px;
+          "
+        >
+          🛒
+        </div>
 
-      button.onclick = () => {
+        <h3>
+          Ton panier est vide
+        </h3>
 
-        changeQuantity(
-          button.dataset.plus,
-          1
-        );
+        <p
+          style="
+            color:var(--muted);
+            margin:8px 0 20px;
+          "
+        >
+          Ajoute un produit pour commencer.
+        </p>
 
-      };
+        <button
+          class="primary"
+          id="emptyShop"
+        >
+          Voir les produits
+        </button>
 
-    });
+      </div>
 
-  cartItems
-    .querySelectorAll("[data-remove]")
-    .forEach(button => {
+    `;
 
-      button.onclick = () => {
+    return;
 
-        removeFromCart(
-          button.dataset.remove
-        );
+  }
 
-      };
+  cartItems.innerHTML =
+    items.map(item => `
 
-    });
+      <div class="cart-item">
+
+        <img
+          src="${imageSrc(item.image)}"
+          data-original="${escapeAttribute(item.image)}"
+          alt=""
+          loading="lazy"
+          referrerpolicy="no-referrer"
+          onerror="imageError(this,this.dataset.original)"
+        >
+
+        <div>
+
+          <h4>
+            ${escapeHTML(item.name)}
+          </h4>
+
+          <p>
+            ${money(item.price)}
+          </p>
+
+          <div class="qty">
+
+            <button
+              data-minus="${item.id}"
+            >
+              −
+            </button>
+
+            <strong>
+              ${item.qty}
+            </strong>
+
+            <button
+              data-plus="${item.id}"
+            >
+              +
+            </button>
+
+          </div>
+
+        </div>
+
+        <button
+          data-remove="${item.id}"
+          style="
+            align-self:start;
+            border:1px solid var(--line);
+            background:transparent;
+            color:var(--danger);
+            border-radius:8px;
+            padding:6px;
+          "
+        >
+          ×
+        </button>
+
+      </div>
+
+    `).join("");
 
 }
 
 
 /* =========================================================
-   CART OPEN/CLOSE
+   CART DELEGATION
+========================================================= */
+
+if(cartItems){
+
+  cartItems.addEventListener(
+    "click",
+    event => {
+
+      const minus =
+        event.target.closest(
+          "[data-minus]"
+        );
+
+      const plus =
+        event.target.closest(
+          "[data-plus]"
+        );
+
+      const remove =
+        event.target.closest(
+          "[data-remove]"
+        );
+
+      const emptyShop =
+        event.target.closest(
+          "#emptyShop"
+        );
+
+      if(minus){
+
+        changeQuantity(
+          minus.dataset.minus,
+          -1
+        );
+
+        return;
+
+      }
+
+      if(plus){
+
+        changeQuantity(
+          plus.dataset.plus,
+          1
+        );
+
+        return;
+
+      }
+
+      if(remove){
+
+        removeFromCart(
+          remove.dataset.remove
+        );
+
+        return;
+
+      }
+
+      if(emptyShop){
+
+        closeCart();
+
+        $("shop")?.scrollIntoView({
+          behavior:"smooth"
+        });
+
+      }
+
+    }
+  );
+
+}
+
+
+/* =========================================================
+   CART OPEN / CLOSE
 ========================================================= */
 
 function openCart(){
 
-  cartOverlay.classList.add("open");
-  cartDrawer.classList.add("open");
+  if(cartOverlay){
+    cartOverlay.classList.add("open");
+  }
+
+  if(cartDrawer){
+    cartDrawer.classList.add("open");
+  }
 
   document.body.style.overflow =
     "hidden";
@@ -1487,8 +1656,13 @@ function openCart(){
 
 function closeCart(){
 
-  cartOverlay.classList.remove("open");
-  cartDrawer.classList.remove("open");
+  if(cartOverlay){
+    cartOverlay.classList.remove("open");
+  }
+
+  if(cartDrawer){
+    cartDrawer.classList.remove("open");
+  }
 
   document.body.style.overflow =
     "";
@@ -1496,18 +1670,25 @@ function closeCart(){
 }
 
 
-cartBtn.onclick =
-  openCart;
+if(cartBtn){
+  cartBtn.onclick = openCart;
+}
 
-cartClose.onclick =
-  closeCart;
+if(cartClose){
+  cartClose.onclick = closeCart;
+}
 
-cartOverlay.onclick =
-  closeCart;
+if(cartOverlay){
+  cartOverlay.onclick = closeCart;
+}
+
+if(heroCartBtn){
+  heroCartBtn.onclick = openCart;
+}
 
 
 /* =========================================================
-   CART IMAGE ANIMATION
+   CART ANIMATION
 ========================================================= */
 
 function animateToCart(
@@ -1515,7 +1696,14 @@ function animateToCart(
   image
 ){
 
-  if(!button) return;
+  const animations =
+    localStorage.getItem(
+      "novaAnimations"
+    ) !== "false";
+
+  if(!animations) return;
+
+  if(!button || !cartBtn) return;
 
   const rect =
     button.getBoundingClientRect();
@@ -1526,17 +1714,23 @@ function animateToCart(
   const img =
     document.createElement("img");
 
-  img.className = "fly";
-
   img.src =
     imageUrl(image);
 
   img.onerror = () => {
-
-    img.src =
-      FALLBACK_IMAGE;
-
+    img.src = FALLBACK_IMAGE;
   };
+
+  img.style.position = "fixed";
+  img.style.zIndex = "9999";
+  img.style.width = "46px";
+  img.style.height = "46px";
+  img.style.objectFit = "contain";
+  img.style.background = "#fff";
+  img.style.borderRadius = "10px";
+  img.style.pointerEvents = "none";
+  img.style.transition =
+    "all .55s cubic-bezier(.2,.8,.2,1)";
 
   img.style.left =
     `${rect.left + rect.width / 2 - 23}px`;
@@ -1549,19 +1743,14 @@ function animateToCart(
   requestAnimationFrame(() => {
 
     img.style.left =
-      `${target.left + target.width / 2 - 23}px`;
+      `${target.left + target.width / 2 - 13}px`;
 
     img.style.top =
-      `${target.top + target.height / 2 - 23}px`;
+      `${target.top + target.height / 2 - 13}px`;
 
-    img.style.width =
-      "26px";
-
-    img.style.height =
-      "26px";
-
-    img.style.opacity =
-      "0";
+    img.style.width = "26px";
+    img.style.height = "26px";
+    img.style.opacity = "0";
 
   });
 
@@ -1571,19 +1760,12 @@ function animateToCart(
 
     cartBtn.animate(
       [
-        {
-          transform:"scale(1)"
-        },
-        {
-          transform:"scale(1.1)"
-        },
-        {
-          transform:"scale(1)"
-        }
+        {transform:"scale(1)"},
+        {transform:"scale(1.12)"},
+        {transform:"scale(1)"}
       ],
       {
-        duration:300,
-        easing:"ease-out"
+        duration:300
       }
     );
 
@@ -1596,45 +1778,67 @@ function animateToCart(
    SEARCH
 ========================================================= */
 
-searchInput.addEventListener(
-  "input",
-  event => {
+if(searchInput){
 
-    searchValue =
-      event.target.value;
+  searchInput.addEventListener(
+    "input",
+    event => {
 
-    renderProducts();
+      searchValue =
+        event.target.value;
 
-  }
-);
+      renderProducts();
 
+    }
+  );
 
-heroShopBtn.onclick = () => {
-
-  document
-    .getElementById("shop")
-    .scrollIntoView({
-      behavior:"smooth"
-    });
-
-};
+}
 
 
-heroSearchBtn.onclick = () => {
+/* =========================================================
+   SORT
+========================================================= */
 
-  document
-    .getElementById("shop")
-    .scrollIntoView({
-      behavior:"smooth"
-    });
+const sortSelect =
+  $("sortSelect");
 
-  setTimeout(() => {
+if(sortSelect){
 
-    searchInput.focus();
+  sortSelect.addEventListener(
+    "change",
+    renderProducts
+  );
 
-  },400);
+}
 
-};
+
+/* =========================================================
+   CATEGORY CLICK
+========================================================= */
+
+if(categoriesEl){
+
+  categoriesEl.addEventListener(
+    "click",
+    event => {
+
+      const button =
+        event.target.closest(
+          "[data-category]"
+        );
+
+      if(!button) return;
+
+      selectedCategory =
+        button.dataset.category;
+
+      renderCategories();
+      renderProducts();
+
+    }
+  );
+
+}
 
 
 /* =========================================================
@@ -1643,32 +1847,27 @@ heroSearchBtn.onclick = () => {
 
 function showToast(message){
 
-  const toast =
-    document.createElement("div");
+  if(!toastContainer) return;
 
-  toast.className =
-    "toast";
-
-  toast.textContent =
+  toastContainer.textContent =
     message;
 
-  toastContainer.appendChild(
-    toast
+  toastContainer.classList.add(
+    "show"
   );
 
-  setTimeout(() => {
+  clearTimeout(
+    showToast.timer
+  );
 
-    toast.classList.add(
-      "out"
-    );
-
+  showToast.timer =
     setTimeout(() => {
 
-      toast.remove();
+      toastContainer.classList.remove(
+        "show"
+      );
 
-    },250);
-
-  },2200);
+    },2300);
 
 }
 
@@ -1696,121 +1895,175 @@ function openSettings(){
 
   modalContent.innerHTML = `
 
-    <div class="panel">
+    <div>
 
       <h2>
         Paramètres
       </h2>
 
-      <div class="setting">
+      <div
+        style="
+          margin-top:22px;
+          display:grid;
+          gap:20px;
+        "
+      >
 
-        <label>
-          Apparence
-        </label>
+        <div>
 
-        <small>
-          Choisis l'apparence de NovaShop.
-        </small>
+          <strong>
+            Apparence
+          </strong>
 
-        <select
-          class="select"
-          id="themeSelect"
-        >
-
-          <option
-            value="dark"
-            ${theme === "dark" ? "selected" : ""}
+          <p
+            style="
+              color:var(--muted);
+              font-size:13px;
+              margin:5px 0 8px;
+            "
           >
-            Sombre
-          </option>
+            Choisis l'apparence de NovaShop.
+          </p>
 
-          <option
-            value="light"
-            ${theme === "light" ? "selected" : ""}
+          <select
+            id="themeSelect"
+            style="width:100%"
           >
-            Claire
-          </option>
 
-          <option
-            value="auto"
-            ${theme === "auto" ? "selected" : ""}
+            <option
+              value="dark"
+              ${theme === "dark" ? "selected" : ""}
+            >
+              Sombre
+            </option>
+
+            <option
+              value="light"
+              ${theme === "light" ? "selected" : ""}
+            >
+              Claire
+            </option>
+
+            <option
+              value="auto"
+              ${theme === "auto" ? "selected" : ""}
+            >
+              Automatique
+            </option>
+
+          </select>
+
+        </div>
+
+        <div>
+
+          <strong>
+            Langue
+          </strong>
+
+          <p
+            style="
+              color:var(--muted);
+              font-size:13px;
+              margin:5px 0 8px;
+            "
           >
-            Automatique
-          </option>
+            Langue de l'interface.
+          </p>
 
-        </select>
-
-      </div>
-
-      <div class="setting">
-
-        <label>
-          Langue
-        </label>
-
-        <small>
-          Langue de l'interface.
-        </small>
-
-        <select
-          class="select"
-          id="languageSelect"
-        >
-
-          <option
-            value="fr"
-            ${language === "fr" ? "selected" : ""}
+          <select
+            id="languageSelect"
+            style="width:100%"
           >
-            🇫🇷 Français
-          </option>
 
-          <option
-            value="en"
-            ${language === "en" ? "selected" : ""}
+            <option
+              value="fr"
+              ${language === "fr" ? "selected" : ""}
+            >
+              🇫🇷 Français
+            </option>
+
+            <option
+              value="en"
+              ${language === "en" ? "selected" : ""}
+            >
+              🇬🇧 English
+            </option>
+
+          </select>
+
+        </div>
+
+        <div>
+
+          <strong>
+            Animations
+          </strong>
+
+          <p
+            style="
+              color:var(--muted);
+              font-size:13px;
+              margin:5px 0 10px;
+            "
           >
-            🇬🇧 English
-          </option>
-
-        </select>
-
-      </div>
-
-      <div class="setting">
-
-        <div class="switch-row">
-
-          <div>
-
-            <label>
-              Animations
-            </label>
-
-            <small>
-              Animations du panier et de l'interface.
-            </small>
-
-          </div>
+            Animations du panier et de l'interface.
+          </p>
 
           <button
-            class="switch ${animations ? "on" : ""}"
             id="animationSwitch"
+            style="
+              width:60px;
+              height:32px;
+              border:0;
+              border-radius:20px;
+              background:${animations ? "var(--blue)" : "var(--line)"};
+              position:relative;
+            "
           >
-            <span></span>
+
+            <span
+              style="
+                position:absolute;
+                top:4px;
+                left:${animations ? "32px" : "4px"};
+                width:24px;
+                height:24px;
+                border-radius:50%;
+                background:white;
+                transition:.2s;
+              "
+            ></span>
+
           </button>
 
         </div>
 
-      </div>
+        <div
+          style="
+            padding:15px;
+            border:1px solid var(--line);
+            border-radius:13px;
+            background:var(--card);
+          "
+        >
 
-      <div class="setting">
+          <strong>
+            Informations
+          </strong>
 
-        <label>
-          Informations
-        </label>
+          <p
+            style="
+              color:var(--muted);
+              font-size:13px;
+              margin-top:6px;
+            "
+          >
+            NovaShop contient actuellement
+            ${products.length} produits.
+          </p>
 
-        <small>
-          NovaShop contient actuellement ${products.length} produits.
-        </small>
+        </div>
 
       </div>
 
@@ -1859,11 +2112,7 @@ function openSettings(){
         String(!current)
       );
 
-      $("animationSwitch")
-        .classList.toggle(
-          "on",
-          !current
-        );
+      openSettings();
 
     };
 
@@ -1878,35 +2127,27 @@ function openSettings(){
 
 function applyLanguage(language){
 
+  if(!searchInput) return;
+
   if(language === "en"){
 
     searchInput.placeholder =
       "Search for a product...";
 
-    heroShopBtn.innerHTML =
-      `Discover products <span>→</span>`;
-
-    heroSearchBtn.textContent =
-      "View offers";
-
-    showToast(
-      "English interface enabled"
-    );
+    if(heroCartBtn){
+      heroCartBtn.textContent =
+        "View my cart";
+    }
 
   }else{
 
     searchInput.placeholder =
       "Rechercher un produit...";
 
-    heroShopBtn.innerHTML =
-      `Découvrir les produits <span>→</span>`;
-
-    heroSearchBtn.textContent =
-      "Voir les offres";
-
-    showToast(
-      "Interface française activée"
-    );
+    if(heroCartBtn){
+      heroCartBtn.textContent =
+        "Voir mon panier";
+    }
 
   }
 
@@ -1923,29 +2164,46 @@ function openAccount(){
 
     modalContent.innerHTML = `
 
-      <div class="panel">
+      <div>
 
         <h2>
           Mon compte
         </h2>
 
-        <div class="setting">
+        <div
+          style="
+            margin:20px 0;
+            padding:15px;
+            border:1px solid var(--line);
+            border-radius:13px;
+            background:var(--card);
+          "
+        >
 
-          <label>
+          <strong>
             Compte connecté
-          </label>
+          </strong>
 
-          <small>
+          <p
+            style="
+              color:var(--muted);
+              margin-top:7px;
+            "
+          >
             ${escapeHTML(
               currentUser.email || ""
             )}
-          </small>
+          </p>
 
         </div>
 
         <button
-          class="btn btn-danger btn-wide"
+          class="secondary"
           id="logoutBtn"
+          style="
+            width:100%;
+            color:var(--danger);
+          "
         >
           Se déconnecter
         </button>
@@ -1974,7 +2232,7 @@ function openAccount(){
         }catch(error){
 
           showToast(
-            error.message
+            authError(error.code)
           );
 
         }
@@ -1987,13 +2245,15 @@ function openAccount(){
 
   }
 
+
   let mode = "login";
+
 
   function draw(){
 
     modalContent.innerHTML = `
 
-      <div class="panel">
+      <div>
 
         <h2>
           ${
@@ -2003,22 +2263,46 @@ function openAccount(){
           }
         </h2>
 
-        <div class="form">
+        <div
+          style="
+            display:grid;
+            gap:12px;
+            margin-top:20px;
+          "
+        >
 
           <input
             id="authEmail"
             type="email"
             placeholder="Adresse e-mail"
+            style="
+              width:100%;
+              height:45px;
+              padding:0 12px;
+              border:1px solid var(--line);
+              background:var(--card);
+              color:var(--text);
+              border-radius:10px;
+            "
           >
 
           <input
             id="authPassword"
             type="password"
             placeholder="Mot de passe"
+            style="
+              width:100%;
+              height:45px;
+              padding:0 12px;
+              border:1px solid var(--line);
+              background:var(--card);
+              color:var(--text);
+              border-radius:10px;
+            "
           >
 
           <button
-            class="btn btn-primary btn-wide"
+            class="primary"
             id="authSubmit"
           >
             ${
@@ -2029,7 +2313,7 @@ function openAccount(){
           </button>
 
           <button
-            class="text-btn"
+            class="secondary"
             id="authSwitch"
           >
             ${
@@ -2044,6 +2328,7 @@ function openAccount(){
       </div>
 
     `;
+
 
     $("authSubmit").onclick =
       async () => {
@@ -2103,6 +2388,7 @@ function openAccount(){
 
       };
 
+
     $("authSwitch").onclick =
       () => {
 
@@ -2116,6 +2402,7 @@ function openAccount(){
       };
 
   }
+
 
   draw();
   openModal();
@@ -2143,13 +2430,16 @@ async function openOrders(){
 
   modalContent.innerHTML = `
 
-    <div class="panel">
+    <div>
 
       <h2>
         Mes commandes
       </h2>
 
-      <div id="ordersList">
+      <div
+        id="ordersList"
+        style="margin-top:20px"
+      >
         Chargement...
       </div>
 
@@ -2180,33 +2470,38 @@ async function openOrders(){
           id:d.id,
           ...d.data()
         }))
-        .sort((a,b) => {
+        .sort(
+          (a,b) =>
+            getTimestampValue(b.createdAt) -
+            getTimestampValue(a.createdAt)
+        );
 
-          const ta =
-            a.createdAt?.seconds || 0;
-
-          const tb =
-            b.createdAt?.seconds || 0;
-
-          return tb - ta;
-
-        });
 
     if(!orders.length){
 
       $("ordersList").innerHTML = `
 
-        <div class="empty">
+        <div
+          style="
+            text-align:center;
+            padding:40px 10px;
+          "
+        >
 
-          <div class="empty-icon">
-            ◷
+          <div style="font-size:40px">
+            📦
           </div>
 
           <h3>
             Aucune commande
           </h3>
 
-          <p>
+          <p
+            style="
+              color:var(--muted);
+              margin-top:7px;
+            "
+          >
             Tes commandes apparaîtront ici.
           </p>
 
@@ -2218,66 +2513,148 @@ async function openOrders(){
 
     }
 
+
     $("ordersList").innerHTML =
-      orders
-        .map(order => {
+      orders.map(order => {
 
-          const status =
-            order.status ||
-            "Enregistrée";
+        const status =
+          order.status ||
+          "Enregistrée";
 
-          return `
+        return `
 
-            <div class="order">
+          <div
+            style="
+              border:1px solid var(--line);
+              background:var(--card);
+              border-radius:15px;
+              padding:16px;
+              margin-bottom:12px;
+            "
+          >
 
-              <div class="order-top">
+            <div
+              style="
+                display:flex;
+                justify-content:space-between;
+                gap:10px;
+              "
+            >
 
-                <div>
+              <div>
 
-                  <div class="order-id">
-                    Commande #${escapeHTML(
-                      order.id.slice(0,8)
-                    )}
-                  </div>
+                <strong>
+                  Commande #${escapeHTML(
+                    order.id.slice(0,8)
+                  )}
+                </strong>
 
-                  <div class="order-date">
-                    ${formatTimestamp(
-                      order.createdAt
-                    )}
-                  </div>
-
-                </div>
-
-                <span class="rating-score">
-                  ${escapeHTML(status)}
-                </span>
+                <p
+                  style="
+                    color:var(--muted);
+                    font-size:12px;
+                    margin-top:5px;
+                  "
+                >
+                  ${formatTimestamp(
+                    order.createdAt
+                  )}
+                </p>
 
               </div>
 
-              <div class="order-total">
-                ${money(
-                  Number(order.total || 0)
-                )}
-              </div>
+              <span class="status">
+                ${escapeHTML(status)}
+              </span>
 
             </div>
 
-          `;
+            <div
+              style="
+                font-size:20px;
+                font-weight:900;
+                margin-top:15px;
+              "
+            >
+              ${money(
+                Number(order.total || 0)
+              )}
+            </div>
 
-        })
-        .join("");
+            ${
+              order.packageCity ||
+              order.trackingNumber ||
+              order.estimatedDelivery
+                ? `
+                  <div
+                    style="
+                      margin-top:15px;
+                      padding-top:15px;
+                      border-top:1px solid var(--line);
+                      color:var(--muted);
+                      font-size:13px;
+                      line-height:1.8;
+                    "
+                  >
+
+                    ${
+                      order.packageCity
+                        ? `📍 ${escapeHTML(order.packageCity)}<br>`
+                        : ""
+                    }
+
+                    ${
+                      order.trackingNumber
+                        ? `🚚 Suivi : ${escapeHTML(order.trackingNumber)}<br>`
+                        : ""
+                    }
+
+                    ${
+                      order.deliveryDuration
+                        ? `⏱️ ${escapeHTML(order.deliveryDuration)}<br>`
+                        : ""
+                    }
+
+                    ${
+                      order.estimatedDelivery
+                        ? `📅 Livraison estimée : ${escapeHTML(order.estimatedDelivery)}`
+                        : ""
+                    }
+
+                  </div>
+                `
+                : ""
+            }
+
+          </div>
+
+        `;
+
+      }).join("");
+
 
   }catch(error){
 
     $("ordersList").innerHTML = `
 
-      <div class="empty">
+      <div
+        style="
+          padding:15px;
+          border:1px solid var(--danger);
+          border-radius:12px;
+        "
+      >
 
-        <h3>
+        <strong>
           Impossible de charger les commandes
-        </h3>
+        </strong>
 
-        <p>
+        <p
+          style="
+            color:var(--muted);
+            margin-top:8px;
+          "
+        >
           ${escapeHTML(
             error.message
           )}
@@ -2296,104 +2673,121 @@ async function openOrders(){
    CHECKOUT
 ========================================================= */
 
-checkoutBtn.onclick =
-  async () => {
+if(checkoutBtn){
 
-    const items =
-      cartDetailed();
+  checkoutBtn.onclick =
+    async () => {
 
-    if(!items.length){
+      const items =
+        cartDetailed();
 
-      showToast(
-        "Ton panier est vide"
-      );
+      if(!items.length){
 
-      return;
+        showToast(
+          "Ton panier est vide"
+        );
 
-    }
-
-    if(!currentUser){
-
-      showToast(
-        "Connecte-toi pour passer la commande"
-      );
-
-      openAccount();
-
-      return;
-
-    }
-
-    let total = 0;
-
-    items.forEach(item => {
-
-      if(item.price > 0){
-
-        total +=
-          item.price *
-          item.qty;
+        return;
 
       }
 
-    });
+      if(!currentUser){
 
-    checkoutBtn.disabled = true;
+        showToast(
+          "Connecte-toi pour passer la commande"
+        );
 
-    try{
+        openAccount();
 
-      await addDoc(
-        collection(db,"orders"),
-        {
-          userId:currentUser.uid,
-          email:currentUser.email || "",
+        return;
 
-          items:
-            items.map(item => ({
-              id:item.id,
-              name:item.name,
-              price:item.price,
-              qty:item.qty
-            })),
+      }
 
-          total,
+      let total = 0;
 
-          status:"Enregistrée",
+      items.forEach(item => {
 
-          paymentMethod:"Non défini",
+        if(item.price > 0){
 
-          paymentStatus:"pending",
+          total +=
+            item.price *
+            item.qty;
 
-          createdAt:
-            serverTimestamp()
         }
-      );
 
-      cart = [];
+      });
 
-      saveCart();
-      renderCart();
+      checkoutBtn.disabled = true;
+      checkoutBtn.textContent =
+        "Enregistrement...";
 
-      closeCart();
+      try{
 
-      showToast(
-        "Commande enregistrée"
-      );
+        await addDoc(
+          collection(db,"orders"),
+          {
 
-    }catch(error){
+            userId:
+              currentUser.uid,
 
-      showToast(
-        "Erreur : " +
-        error.message
-      );
+            email:
+              currentUser.email || "",
 
-    }finally{
+            items:
+              items.map(item => ({
+                id:item.id,
+                name:item.name,
+                price:item.price,
+                qty:item.qty
+              })),
 
-      checkoutBtn.disabled = false;
+            total,
 
-    }
+            status:
+              "Enregistrée",
 
-  };
+            paymentMethod:
+              "Non défini",
+
+            paymentStatus:
+              "pending",
+
+            createdAt:
+              serverTimestamp()
+
+          }
+        );
+
+        cart = [];
+
+        saveCart();
+        renderCart();
+
+        closeCart();
+
+        showToast(
+          "Commande enregistrée"
+        );
+
+      }catch(error){
+
+        showToast(
+          "Erreur : " +
+          error.message
+        );
+
+      }finally{
+
+        checkoutBtn.disabled = false;
+
+        checkoutBtn.textContent =
+          "Commander";
+
+      }
+
+    };
+
+}
 
 
 /* =========================================================
@@ -2408,9 +2802,9 @@ function isAdmin(){
     currentUser.email
       .trim()
       .toLowerCase() ===
-      ADMIN_EMAIL
-        .trim()
-        .toLowerCase()
+    ADMIN_EMAIL
+      .trim()
+      .toLowerCase()
   );
 
 }
@@ -2427,7 +2821,7 @@ function adminAuthorized(){
 }
 
 
-function openAdmin(){
+async function openAdmin(){
 
   if(!currentUser){
 
@@ -2475,13 +2869,13 @@ function openAdmin(){
 
   }
 
-  renderAdmin();
+  await renderAdmin();
 
 }
 
 
 /* =========================================================
-   ADMIN ORDER STATUS
+   ADMIN STATUSES
 ========================================================= */
 
 const ORDER_STATUSES = [
@@ -2494,25 +2888,6 @@ const ORDER_STATUSES = [
 ];
 
 
-function statusClass(status){
-
-  if(status === "Livrée"){
-    return "delivered";
-  }
-
-  if(status === "En transit"){
-    return "transit";
-  }
-
-  if(status === "Livraison proche"){
-    return "nearby";
-  }
-
-  return "normal";
-
-}
-
-
 /* =========================================================
    ADMIN DASHBOARD
 ========================================================= */
@@ -2521,54 +2896,83 @@ async function renderAdmin(){
 
   modalContent.innerHTML = `
 
-    <div class="panel">
+    <div>
 
       <h2>
         Dashboard NovaShop
       </h2>
 
-      <div class="setting">
+      <div
+        style="
+          margin-top:18px;
+          padding:15px;
+          background:var(--card);
+          border:1px solid var(--line);
+          border-radius:14px;
+        "
+      >
 
-        <label>
+        <strong>
           Administrateur
-        </label>
+        </strong>
 
-        <small>
+        <p
+          style="
+            color:var(--muted);
+            margin-top:5px;
+          "
+        >
           ${escapeHTML(
             currentUser.email
           )}
-        </small>
+        </p>
 
       </div>
 
-      <div class="setting">
+      <div
+        style="
+          margin-top:10px;
+          padding:15px;
+          background:var(--card);
+          border:1px solid var(--line);
+          border-radius:14px;
+        "
+      >
 
-        <label>
+        <strong>
           Catalogue
-        </label>
+        </strong>
 
-        <small>
+        <p
+          style="
+            color:var(--muted);
+            margin-top:5px;
+          "
+        >
           ${products.length} produits actifs.
-        </small>
+        </p>
 
       </div>
 
-      <div class="setting">
+      <div
+        style="
+          display:grid;
+          gap:10px;
+          margin-top:15px;
+        "
+      >
 
         <button
-          class="btn btn-secondary btn-wide"
+          class="secondary"
           id="removeAdminAuth"
         >
           Retirer l'autorisation mémorisée
         </button>
 
-      </div>
-
-      <div class="setting">
-
         <button
-          class="btn btn-danger btn-wide"
+          class="secondary"
           id="deleteOrders"
+          style="color:var(--danger)"
         >
           Supprimer toutes les commandes
         </button>
@@ -2577,7 +2981,7 @@ async function renderAdmin(){
 
       <div
         id="adminOrders"
-        style="margin-top:20px"
+        style="margin-top:22px"
       >
         Chargement...
       </div>
@@ -2585,6 +2989,9 @@ async function renderAdmin(){
     </div>
 
   `;
+
+  openModal();
+
 
   $("removeAdminAuth").onclick =
     () => {
@@ -2605,6 +3012,8 @@ async function renderAdmin(){
   $("deleteOrders").onclick =
     async () => {
 
+      if(!isAdmin()) return;
+
       const confirmed =
         confirm(
           "Supprimer toutes les commandes ?"
@@ -2620,7 +3029,7 @@ async function renderAdmin(){
           );
 
         for(
-          const item
+          const orderDoc
           of snapshot.docs
         ){
 
@@ -2628,7 +3037,7 @@ async function renderAdmin(){
             doc(
               db,
               "orders",
-              item.id
+              orderDoc.id
             )
           );
 
@@ -2638,7 +3047,7 @@ async function renderAdmin(){
           "Commandes supprimées"
         );
 
-        renderAdmin();
+        await renderAdmin();
 
       }catch(error){
 
@@ -2664,311 +3073,387 @@ async function renderAdmin(){
           id:d.id,
           ...d.data()
         }))
-        .sort((a,b) => {
+        .sort(
+          (a,b) =>
+            getTimestampValue(b.createdAt) -
+            getTimestampValue(a.createdAt)
+        );
 
-          const ta =
-            a.createdAt?.seconds || 0;
-
-          const tb =
-            b.createdAt?.seconds || 0;
-
-          return tb-ta;
-
-        });
 
     if(!orders.length){
 
       $("adminOrders").innerHTML = `
 
-        <div class="setting">
+        <div
+          style="
+            padding:20px;
+            border:1px solid var(--line);
+            border-radius:14px;
+            text-align:center;
+          "
+        >
 
-          <label>
-            Commandes
-          </label>
+          <strong>
+            Aucune commande
+          </strong>
 
-          <small>
-            Aucune commande enregistrée.
-          </small>
+          <p
+            style="
+              color:var(--muted);
+              margin-top:6px;
+            "
+          >
+            Les commandes apparaîtront ici.
+          </p>
 
         </div>
 
       `;
 
-      openModal();
-
       return;
 
     }
 
+
     $("adminOrders").innerHTML = `
 
-      <div class="setting">
+      <div>
 
-        <label>
-          Commandes
-        </label>
-
-        <small>
+        <strong>
           ${orders.length} commande(s)
-        </small>
+        </strong>
 
       </div>
 
-      ${orders.map(order => {
+      <div
+        style="
+          display:grid;
+          gap:14px;
+          margin-top:12px;
+        "
+      >
 
-        const status =
-          order.status ||
-          "Enregistrée";
+        ${orders.map(order => {
 
-        const accepted =
-          order.paymentStatus === "accepted" ||
-          order.paymentStatus === "free";
+          const status =
+            order.status ||
+            "Enregistrée";
 
-        return `
+          const accepted =
+            order.paymentStatus === "accepted" ||
+            order.paymentStatus === "free";
 
-          <div
-            class="order"
-            style="
-              margin-top:14px;
-              padding:16px;
-              border:1px solid rgba(255,255,255,.08);
-              border-radius:14px;
-            "
-          >
+          return `
 
-            <div class="order-top">
+            <div
+              style="
+                padding:16px;
+                border:1px solid var(--line);
+                border-radius:15px;
+                background:var(--card);
+              "
+            >
 
-              <div>
+              <div
+                style="
+                  display:flex;
+                  justify-content:space-between;
+                  gap:12px;
+                "
+              >
 
-                <div class="order-id">
-                  #${escapeHTML(
-                    order.id.slice(0,8)
+                <div>
+
+                  <strong>
+                    #${escapeHTML(
+                      order.id.slice(0,8)
+                    )}
+                  </strong>
+
+                  <p
+                    style="
+                      color:var(--muted);
+                      font-size:12px;
+                      margin-top:5px;
+                    "
+                  >
+                    ${escapeHTML(
+                      order.email || ""
+                    )}
+                  </p>
+
+                  <p
+                    style="
+                      color:var(--muted);
+                      font-size:12px;
+                    "
+                  >
+                    ${formatTimestamp(
+                      order.createdAt
+                    )}
+                  </p>
+
+                </div>
+
+                <span class="status">
+                  ${escapeHTML(status)}
+                </span>
+
+              </div>
+
+
+              <div
+                style="
+                  margin-top:14px;
+                  line-height:1.8;
+                  font-size:14px;
+                "
+              >
+
+                <div>
+                  <strong>Total :</strong>
+                  ${money(
+                    Number(order.total || 0)
                   )}
                 </div>
 
-                <div class="order-date">
+                <div>
+                  <strong>Paiement :</strong>
                   ${escapeHTML(
-                    order.email || ""
+                    order.paymentMethod ||
+                    "Non défini"
                   )}
                 </div>
 
-                <div class="order-date">
-                  ${formatTimestamp(
-                    order.createdAt
+                <div>
+                  <strong>État paiement :</strong>
+                  ${escapeHTML(
+                    order.paymentStatus ||
+                    "pending"
                   )}
                 </div>
 
               </div>
 
-              <span class="rating-score">
-                ${escapeHTML(status)}
-              </span>
+
+              ${
+                order.paymentMethod === "PayPal.Me" &&
+                !accepted
+                  ? `
+                    <button
+                      class="primary"
+                      style="
+                        width:100%;
+                        margin-top:12px;
+                      "
+                      data-accept-paypal="${order.id}"
+                    >
+                      ✓ Accepter le paiement PayPal
+                    </button>
+                  `
+                  : ""
+              }
+
+
+              <div
+                style="
+                  display:grid;
+                  gap:9px;
+                  margin-top:14px;
+                "
+              >
+
+                <select
+                  data-status="${escapeAttribute(order.id)}"
+                  style="width:100%"
+                >
+
+                  ${ORDER_STATUSES.map(s => `
+
+                    <option
+                      value="${escapeAttribute(s)}"
+                      ${
+                        status === s
+                          ? "selected"
+                          : ""
+                      }
+                    >
+                      ${escapeHTML(s)}
+                    </option>
+
+                  `).join("")}
+
+                </select>
+
+
+                <input
+                  type="text"
+                  placeholder="Ville du colis"
+                  value="${escapeAttribute(
+                    order.packageCity || ""
+                  )}"
+                  data-city="${escapeAttribute(order.id)}"
+                  style="
+                    height:43px;
+                    padding:0 11px;
+                    border:1px solid var(--line);
+                    background:var(--card);
+                    color:var(--text);
+                    border-radius:10px;
+                  "
+                >
+
+
+                <input
+                  type="text"
+                  placeholder="Numéro de suivi"
+                  value="${escapeAttribute(
+                    order.trackingNumber || ""
+                  )}"
+                  data-tracking="${escapeAttribute(order.id)}"
+                  style="
+                    height:43px;
+                    padding:0 11px;
+                    border:1px solid var(--line);
+                    background:var(--card);
+                    color:var(--text);
+                    border-radius:10px;
+                  "
+                >
+
+
+                <input
+                  type="text"
+                  placeholder="Durée estimée avant livraison"
+                  value="${escapeAttribute(
+                    order.deliveryDuration || ""
+                  )}"
+                  data-duration="${escapeAttribute(order.id)}"
+                  style="
+                    height:43px;
+                    padding:0 11px;
+                    border:1px solid var(--line);
+                    background:var(--card);
+                    color:var(--text);
+                    border-radius:10px;
+                  "
+                >
+
+
+                <input
+                  type="date"
+                  value="${escapeAttribute(
+                    order.estimatedDelivery || ""
+                  )}"
+                  data-date="${escapeAttribute(order.id)}"
+                  style="
+                    height:43px;
+                    padding:0 11px;
+                    border:1px solid var(--line);
+                    background:var(--card);
+                    color:var(--text);
+                    border-radius:10px;
+                  "
+                >
+
+
+                <button
+                  class="secondary"
+                  data-save-order="${escapeAttribute(order.id)}"
+                >
+                  💾 Enregistrer le suivi
+                </button>
+
+
+                <button
+                  class="secondary"
+                  data-print-order="${escapeAttribute(order.id)}"
+                >
+                  🖨️ Imprimer la facture
+                </button>
+
+              </div>
 
             </div>
 
-            <div
-              style="
-                margin-top:12px;
-                font-size:14px;
-                line-height:1.7;
-              "
-            >
+          `;
 
-              <div>
-                <strong>Total :</strong>
-                ${money(
-                  Number(order.total || 0)
-                )}
-              </div>
+        }).join("")}
 
-              <div>
-                <strong>Paiement :</strong>
-                ${escapeHTML(
-                  order.paymentMethod ||
-                  "Non défini"
-                )}
-              </div>
-
-              <div>
-                <strong>État paiement :</strong>
-                ${escapeHTML(
-                  order.paymentStatus ||
-                  "pending"
-                )}
-              </div>
-
-            </div>
-
-            ${
-              order.paymentMethod === "PayPal.Me" &&
-              !accepted
-                ? `
-                  <button
-                    class="btn btn-primary btn-wide"
-                    style="margin-top:12px"
-                    data-accept-paypal="${order.id}"
-                  >
-                    ✓ Accepter le paiement PayPal
-                  </button>
-                `
-                : ""
-            }
-
-            <div
-              style="
-                margin-top:14px;
-                display:grid;
-                gap:10px;
-              "
-            >
-
-              <select
-                class="select"
-                data-status="${order.id}"
-              >
-
-                ${ORDER_STATUSES.map(s => `
-                  <option
-                    value="${escapeAttribute(s)}"
-                    ${
-                      status === s
-                        ? "selected"
-                        : ""
-                    }
-                  >
-                    ${escapeHTML(s)}
-                  </option>
-                `).join("")}
-
-              </select>
-
-              <input
-                class="input"
-                type="text"
-                placeholder="Ville du colis"
-                value="${escapeAttribute(
-                  order.packageCity || ""
-                )}"
-                data-city="${order.id}"
-              >
-
-              <input
-                class="input"
-                type="text"
-                placeholder="Numéro de suivi"
-                value="${escapeAttribute(
-                  order.trackingNumber || ""
-                )}"
-                data-tracking="${order.id}"
-              >
-
-              <input
-                class="input"
-                type="text"
-                placeholder="Durée estimée avant livraison"
-                value="${escapeAttribute(
-                  order.deliveryDuration || ""
-                )}"
-                data-duration="${order.id}"
-              >
-
-              <input
-                class="input"
-                type="date"
-                value="${
-                  order.estimatedDelivery || ""
-                }"
-                data-date="${order.id}"
-              >
-
-              <button
-                class="btn btn-secondary btn-wide"
-                data-save-order="${order.id}"
-              >
-                💾 Enregistrer le suivi
-              </button>
-
-              <button
-                class="btn btn-secondary btn-wide"
-                data-print-order="${order.id}"
-              >
-                🖨️ Imprimer la facture
-              </button>
-
-            </div>
-
-          </div>
-
-        `;
-
-      }).join("")}
+      </div>
 
     `;
 
 
-    $("adminOrders")
-      .querySelectorAll(
-        "[data-accept-paypal]"
-      )
-      .forEach(button => {
+    $("adminOrders").onclick =
+      event => {
 
-        button.onclick =
-          () =>
-            acceptPaypalOrder(
-              button.dataset.acceptPaypal
-            );
+        const paypal =
+          event.target.closest(
+            "[data-accept-paypal]"
+          );
 
-      });
+        const save =
+          event.target.closest(
+            "[data-save-order]"
+          );
 
-
-    $("adminOrders")
-      .querySelectorAll(
-        "[data-save-order]"
-      )
-      .forEach(button => {
-
-        button.onclick =
-          () =>
-            saveAdminOrder(
-              button.dataset.saveOrder
-            );
-
-      });
+        const print =
+          event.target.closest(
+            "[data-print-order]"
+          );
 
 
-    $("adminOrders")
-      .querySelectorAll(
-        "[data-print-order]"
-      )
-      .forEach(button => {
+        if(paypal){
 
-        button.onclick =
-          () =>
-            printAdminInvoice(
-              button.dataset.printOrder
-            );
+          acceptPaypalOrder(
+            paypal.dataset.acceptPaypal
+          );
 
-      });
+        }
+
+
+        if(save){
+
+          saveAdminOrder(
+            save.dataset.saveOrder
+          );
+
+        }
+
+
+        if(print){
+
+          printAdminInvoice(
+            print.dataset.printOrder
+          );
+
+        }
+
+      };
+
 
   }catch(error){
 
     $("adminOrders").innerHTML = `
 
-      <div class="setting">
+      <div
+        style="
+          padding:15px;
+          border:1px solid var(--danger);
+          border-radius:12px;
+        "
+      >
 
-        <small>
-          ${escapeHTML(
-            error.message
-          )}
-        </small>
+        ${escapeHTML(
+          error.message
+        )}
 
       </div>
 
     `;
 
   }
-
-  openModal();
 
 }
 
@@ -2992,8 +3477,12 @@ async function acceptPaypalOrder(
         orderId
       ),
       {
-        paymentStatus:"accepted",
-        status:"Acceptée",
+        paymentStatus:
+          "accepted",
+
+        status:
+          "Acceptée",
+
         paymentAcceptedAt:
           serverTimestamp()
       }
@@ -3003,7 +3492,7 @@ async function acceptPaypalOrder(
       "Paiement PayPal accepté"
     );
 
-    renderAdmin();
+    await renderAdmin();
 
   }catch(error){
 
@@ -3027,29 +3516,32 @@ async function saveAdminOrder(
 
   if(!isAdmin()) return;
 
+  const safe =
+    CSS.escape(orderId);
+
   const statusEl =
     document.querySelector(
-      `[data-status="${CSS.escape(orderId)}"]`
+      `[data-status="${safe}"]`
     );
 
   const cityEl =
     document.querySelector(
-      `[data-city="${CSS.escape(orderId)}"]`
+      `[data-city="${safe}"]`
     );
 
   const trackingEl =
     document.querySelector(
-      `[data-tracking="${CSS.escape(orderId)}"]`
+      `[data-tracking="${safe}"]`
     );
 
   const durationEl =
     document.querySelector(
-      `[data-duration="${CSS.escape(orderId)}"]`
+      `[data-duration="${safe}"]`
     );
 
   const dateEl =
     document.querySelector(
-      `[data-date="${CSS.escape(orderId)}"]`
+      `[data-date="${safe}"]`
     );
 
   if(!statusEl) return;
@@ -3063,6 +3555,7 @@ async function saveAdminOrder(
         orderId
       ),
       {
+
         status:
           statusEl.value,
 
@@ -3080,6 +3573,7 @@ async function saveAdminOrder(
 
         updatedAt:
           serverTimestamp()
+
       }
     );
 
@@ -3087,7 +3581,7 @@ async function saveAdminOrder(
       "Suivi de commande enregistré"
     );
 
-    renderAdmin();
+    await renderAdmin();
 
   }catch(error){
 
@@ -3118,12 +3612,13 @@ async function printAdminInvoice(
         collection(db,"orders")
       );
 
-    const orderDoc =
+    const found =
       snapshot.docs.find(
-        d => d.id === orderId
+        d =>
+          d.id === orderId
       );
 
-    if(!orderDoc){
+    if(!found){
 
       showToast(
         "Commande introuvable"
@@ -3134,8 +3629,8 @@ async function printAdminInvoice(
     }
 
     const order = {
-      id:orderDoc.id,
-      ...orderDoc.data()
+      id:found.id,
+      ...found.data()
     };
 
     printInvoiceHTML(order);
@@ -3158,7 +3653,7 @@ function printInvoiceHTML(order){
       ? order.items
       : [];
 
-  const itemRows =
+  const rows =
     items.map(item => `
 
       <tr>
@@ -3192,6 +3687,7 @@ function printInvoiceHTML(order){
 
     `).join("");
 
+
   const win =
     window.open(
       "",
@@ -3209,15 +3705,16 @@ function printInvoiceHTML(order){
 
   }
 
+
   win.document.write(`
 
-    <!doctype html>
+    <!DOCTYPE html>
 
     <html lang="fr">
 
     <head>
 
-      <meta charset="utf-8">
+      <meta charset="UTF-8">
 
       <title>
         Facture NovaShop
@@ -3240,13 +3737,21 @@ function printInvoiceHTML(order){
           color:#666;
         }
 
+        .box{
+          border:1px solid #ddd;
+          border-radius:10px;
+          padding:15px;
+          margin-top:20px;
+        }
+
         table{
           width:100%;
           border-collapse:collapse;
           margin-top:30px;
         }
 
-        th,td{
+        th,
+        td{
           padding:12px;
           border-bottom:1px solid #ddd;
           text-align:left;
@@ -3254,22 +3759,9 @@ function printInvoiceHTML(order){
 
         .total{
           text-align:right;
-          font-size:22px;
+          font-size:23px;
           font-weight:bold;
           margin-top:25px;
-        }
-
-        .box{
-          padding:15px;
-          border:1px solid #ddd;
-          border-radius:10px;
-          margin-top:20px;
-        }
-
-        @media print{
-          body{
-            padding:20px;
-          }
         }
 
       </style>
@@ -3294,7 +3786,7 @@ function printInvoiceHTML(order){
 
         #${escapeHTML(order.id)}
 
-        <br>
+        <br><br>
 
         <strong>
           Client :
@@ -3304,7 +3796,7 @@ function printInvoiceHTML(order){
           order.email || ""
         )}
 
-        <br>
+        <br><br>
 
         <strong>
           Date :
@@ -3344,7 +3836,7 @@ function printInvoiceHTML(order){
 
         <tbody>
 
-          ${itemRows}
+          ${rows}
 
         </tbody>
 
@@ -3361,7 +3853,7 @@ function printInvoiceHTML(order){
           "Non défini"
         )}
 
-        <br>
+        <br><br>
 
         <strong>
           Statut :
@@ -3410,44 +3902,40 @@ onAuthStateChanged(
   auth,
   user => {
 
-    currentUser = user;
-
-    const connectedEmail =
-      user?.email
-        ?.trim()
-        .toLowerCase() || "";
-
-    const adminEmail =
-      ADMIN_EMAIL
-        .trim()
-        .toLowerCase();
-
-    /*
-      Le bouton apparaît dès que le compte
-      admin est connecté.
-
-      Le code admin est demandé seulement
-      lorsqu'on ouvre le dashboard.
-    */
+    currentUser =
+      user;
 
     if(
-      connectedEmail === adminEmail
+      adminBtn
     ){
 
-      adminBtn.style.display =
-        "grid";
+      const connectedEmail =
+        user?.email
+          ?.trim()
+          .toLowerCase() || "";
 
-      adminBtn.title =
-        "Administration";
+      const adminEmail =
+        ADMIN_EMAIL
+          .trim()
+          .toLowerCase();
 
-    }else{
+      if(
+        connectedEmail === adminEmail
+      ){
 
-      adminBtn.style.display =
-        "none";
+        adminBtn.style.display =
+          "grid";
 
-      localStorage.removeItem(
-        ADMIN_ACCESS_KEY
-      );
+      }else{
+
+        adminBtn.style.display =
+          "none";
+
+        localStorage.removeItem(
+          ADMIN_ACCESS_KEY
+        );
+
+      }
 
     }
 
@@ -3455,17 +3943,40 @@ onAuthStateChanged(
 );
 
 
-accountBtn.onclick =
-  openAccount;
+/* =========================================================
+   BUTTONS
+========================================================= */
 
-ordersBtn.onclick =
-  openOrders;
+if(settingsBtn){
 
-settingsBtn.onclick =
-  openSettings;
+  settingsBtn.onclick =
+    openSettings;
 
-adminBtn.onclick =
-  openAdmin;
+}
+
+
+if(accountBtn){
+
+  accountBtn.onclick =
+    openAccount;
+
+}
+
+
+if(ordersBtn){
+
+  ordersBtn.onclick =
+    openOrders;
+
+}
+
+
+if(adminBtn){
+
+  adminBtn.onclick =
+    openAdmin;
+
+}
 
 
 /* =========================================================
@@ -3493,27 +4004,12 @@ document.addEventListener(
 
 function escapeHTML(value){
 
-  return String(value)
-    .replaceAll(
-      "&",
-      "&amp;"
-    )
-    .replaceAll(
-      "<",
-      "&lt;"
-    )
-    .replaceAll(
-      ">",
-      "&gt;"
-    )
-    .replaceAll(
-      '"',
-      "&quot;"
-    )
-    .replaceAll(
-      "'",
-      "&#039;"
-    );
+  return String(value ?? "")
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
 
 }
 
@@ -3532,17 +4028,26 @@ function authError(code){
     "auth/invalid-credential":
       "E-mail ou mot de passe incorrect.",
 
+    "auth/invalid-login-credentials":
+      "E-mail ou mot de passe incorrect.",
+
     "auth/email-already-in-use":
       "Cette adresse est déjà utilisée.",
 
     "auth/weak-password":
-      "Le mot de passe est trop faible.",
+      "Le mot de passe doit être plus fort.",
 
     "auth/invalid-email":
       "Adresse e-mail invalide.",
 
     "auth/network-request-failed":
-      "Problème de connexion réseau."
+      "Problème de connexion réseau.",
+
+    "auth/too-many-requests":
+      "Trop de tentatives. Réessaie plus tard.",
+
+    "auth/user-not-found":
+      "Compte introuvable."
 
   };
 
@@ -3554,11 +4059,37 @@ function authError(code){
 }
 
 
+function getTimestampValue(timestamp){
+
+  if(!timestamp) return 0;
+
+  if(
+    typeof timestamp.seconds === "number"
+  ){
+
+    return timestamp.seconds * 1000;
+
+  }
+
+  if(timestamp instanceof Date){
+
+    return timestamp.getTime();
+
+  }
+
+  return 0;
+
+}
+
+
 function formatTimestamp(
   timestamp
 ){
 
-  if(!timestamp){
+  const value =
+    getTimestampValue(timestamp);
+
+  if(!value){
 
     return "Date inconnue";
 
@@ -3566,19 +4097,15 @@ function formatTimestamp(
 
   try{
 
-    const date =
-      new Date(
-        timestamp.seconds *
-        1000
-      );
-
     return new Intl.DateTimeFormat(
       "fr-FR",
       {
         dateStyle:"medium",
         timeStyle:"short"
       }
-    ).format(date);
+    ).format(
+      new Date(value)
+    );
 
   }catch{
 
@@ -3597,31 +4124,44 @@ renderCategories();
 renderProducts();
 renderCart();
 
-const savedLanguage =
+applyLanguage(
   localStorage.getItem(
     "novaLanguage"
-  ) || "fr";
-
-applyLanguage(
-  savedLanguage
+  ) || "fr"
 );
 
 
 /* =========================================================
-   DEBUG
+   FIREBASE DEBUG
+========================================================= */
+
+console.log(
+  `%cNovaShop chargé correctement : ${products.length} produits`,
+  "font-weight:900;font-size:14px"
+);
+
+
+/* =========================================================
+   PUBLIC API
 ========================================================= */
 
 window.NovaShop = {
 
   products,
 
-  cart,
-
   openCart,
 
   closeCart,
 
   openProduct,
+
+  openAccount,
+
+  openOrders,
+
+  openSettings,
+
+  openAdmin,
 
   renderProducts,
 
@@ -3648,17 +4188,10 @@ window.NovaShop = {
         searchValue,
 
       user:
-        currentUser?.email ||
-        null
+        currentUser?.email || null
 
     };
 
   }
 
 };
-
-
-console.log(
-  `%cNovaShop chargé : ${products.length} produits`,
-  "font-weight:bold;font-size:14px"
-);
