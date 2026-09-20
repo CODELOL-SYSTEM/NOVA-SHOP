@@ -1,8 +1,3 @@
-// ============================================================
-// NOVASHOP - APP.JS COMPLET
-// Firebase + Catalogue + Panier + Comptes + Commandes
-// PayPal.Me + NOVA100 + Adresse + Factures + Admin
-// ============================================================
 
 import {
   initializeApp
