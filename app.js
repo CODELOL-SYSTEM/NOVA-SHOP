@@ -1,15 +1,15 @@
-// ================================
-// NOVASHOP - FIREBASE
-// ================================
+// ==========================================
+// NOVASHOP - FIREBASE CONFIG
+// ==========================================
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
 
 import {
   getAuth,
-  onAuthStateChanged,
-  signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
-  signOut
+  signInWithEmailAndPassword,
+  signOut,
+  onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
 
 import {
@@ -17,20 +17,20 @@ import {
   collection,
   addDoc,
   getDocs,
-  query,
-  where,
-  orderBy,
-  serverTimestamp,
   doc,
   getDoc,
   updateDoc,
-  deleteDoc
+  deleteDoc,
+  query,
+  where,
+  orderBy,
+  serverTimestamp
 } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
 
 
-// ================================
-// CONFIG FIREBASE
-// ================================
+// ==========================================
+// CONFIG EXACTE DE TON PROJET
+// ==========================================
 
 const firebaseConfig = {
   apiKey: "AIzaSyAZ5vAkAEfIBpfLyhxgO7uvNdJ67KYKWD0",
@@ -43,9 +43,9 @@ const firebaseConfig = {
 };
 
 
-// ================================
+// ==========================================
 // INITIALISATION
-// ================================
+// ==========================================
 
 const app = initializeApp(firebaseConfig);
 
@@ -54,23 +54,50 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 
 
-// ================================
-// DEBUG
-// ================================
+// ==========================================
+// TEST
+// ==========================================
 
-console.log("🔥 Firebase connecté");
-console.log("Projet :", auth.app.options.projectId);
+console.log("🔥 NOVASHOP FIREBASE");
+console.log("Projet Firebase :", firebaseConfig.projectId);
+console.log("Auth :", auth);
+console.log("Firestore :", db);
 
 
-// ================================
-// UTILITAIRES
-// ================================
+// ==========================================
+// UTILITAIRE
+// ==========================================
 
 function $(id) {
   return document.getElementById(id);
 }
 
+
+// ==========================================
+// MESSAGE AUTH
+// ==========================================
+
+function authMessage(message) {
+
+  const element =
+    $("authMessage") ||
+    $("loginMessage") ||
+    $("registerMessage");
+
+  if (element) {
+    element.textContent = message;
+  }
+
+  console.log(message);
+}
+
+
+// ==========================================
+// TOAST
+// ==========================================
+
 function showToast(message) {
+
   const toast = $("toast");
 
   if (!toast) {
@@ -79,93 +106,101 @@ function showToast(message) {
   }
 
   toast.textContent = message;
+
   toast.classList.add("show");
 
-  clearTimeout(window.__toastTimer);
+  clearTimeout(window.__novaToast);
 
-  window.__toastTimer = setTimeout(() => {
+  window.__novaToast = setTimeout(() => {
+
     toast.classList.remove("show");
+
   }, 3000);
 }
 
 
-// ================================
-// ERREURS FIREBASE AUTH
-// ================================
-
-function authMessage(message) {
-
-  const el =
-    $("authMessage") ||
-    $("loginMessage") ||
-    $("registerMessage");
-
-  if (el) {
-    el.textContent = message;
-  } else {
-    showToast(message);
-  }
-
-}
-
+// ==========================================
+// ERREURS FIREBASE
+// ==========================================
 
 function firebaseAuthError(error) {
 
-  console.error("❌ Firebase Auth :", error);
+  console.error("❌ ERREUR FIREBASE :", error);
 
   const code = error?.code || "";
 
-  const messages = {
+  let message = "Erreur Firebase.";
 
-    "auth/operation-not-allowed":
-      "Email / mot de passe n'est pas activé dans Firebase.",
+  switch (code) {
 
-    "auth/unauthorized-domain":
-      "Ce domaine n'est pas autorisé dans Firebase.",
+    case "auth/api-key-not-valid":
+    case "auth/invalid-api-key":
+      message =
+        "La clé API Firebase est refusée. Vérifie la clé dans Firebase > Project settings > Your apps.";
+      break;
 
-    "auth/invalid-email":
-      "Adresse email invalide.",
+    case "auth/operation-not-allowed":
+      message =
+        "Email/mot de passe n'est pas activé dans Firebase.";
+      break;
 
-    "auth/email-already-in-use":
-      "Un compte existe déjà avec cet email.",
+    case "auth/unauthorized-domain":
+      message =
+        "Le domaine de ton site n'est pas autorisé dans Firebase.";
+      break;
 
-    "auth/weak-password":
-      "Mot de passe trop faible. Minimum 6 caractères.",
+    case "auth/email-already-in-use":
+      message =
+        "Cet email possède déjà un compte.";
+      break;
 
-    "auth/invalid-credential":
-      "Email ou mot de passe incorrect.",
+    case "auth/invalid-email":
+      message =
+        "Adresse email invalide.";
+      break;
 
-    "auth/wrong-password":
-      "Email ou mot de passe incorrect.",
+    case "auth/weak-password":
+      message =
+        "Mot de passe trop faible. Minimum 6 caractères.";
+      break;
 
-    "auth/user-not-found":
-      "Email ou mot de passe incorrect.",
+    case "auth/invalid-credential":
+    case "auth/wrong-password":
+    case "auth/user-not-found":
+      message =
+        "Email ou mot de passe incorrect.";
+      break;
 
-    "auth/too-many-requests":
-      "Trop de tentatives. Réessaie plus tard.",
+    case "auth/too-many-requests":
+      message =
+        "Trop de tentatives. Réessaie plus tard.";
+      break;
 
-    "auth/network-request-failed":
-      "Erreur réseau. Vérifie ta connexion.",
+    case "auth/network-request-failed":
+      message =
+        "Erreur réseau. Vérifie ta connexion.";
+      break;
 
-    "auth/user-disabled":
-      "Ce compte a été désactivé.",
+    case "auth/user-disabled":
+      message =
+        "Ce compte a été désactivé.";
+      break;
 
-    "auth/invalid-api-key":
-      "La clé API Firebase est invalide."
+    default:
+      message =
+        error?.message ||
+        `Erreur Firebase : ${code}`;
 
-  };
+  }
 
-  authMessage(
-    messages[code] ||
-    `Erreur Firebase : ${code || "inconnue"}`
-  );
+  authMessage(message);
 
 }
 
 
-// ================================
-// CRÉATION DE COMPTE
-// ================================
+// ==========================================
+// CRÉER UN COMPTE
+// ==========================================
 
 async function register() {
 
@@ -208,6 +243,11 @@ async function register() {
 
   try {
 
+    console.log(
+      "Création du compte...",
+      email
+    );
+
     const result =
       await createUserWithEmailAndPassword(
         auth,
@@ -217,7 +257,7 @@ async function register() {
 
 
     console.log(
-      "✅ Compte créé :",
+      "✅ COMPTE CRÉÉ",
       result.user.uid
     );
 
@@ -226,22 +266,9 @@ async function register() {
       "Compte créé avec succès ✓"
     );
 
-
     showToast(
       "Compte créé avec succès ✓"
     );
-
-
-    setTimeout(() => {
-
-      const modal =
-        $("modalLayer");
-
-      if (modal) {
-        modal.classList.remove("open");
-      }
-
-    }, 500);
 
 
   } catch (error) {
@@ -253,9 +280,9 @@ async function register() {
 }
 
 
-// ================================
+// ==========================================
 // CONNEXION
-// ================================
+// ==========================================
 
 async function login() {
 
@@ -288,6 +315,12 @@ async function login() {
 
   try {
 
+    console.log(
+      "Connexion...",
+      email
+    );
+
+
     const result =
       await signInWithEmailAndPassword(
         auth,
@@ -297,7 +330,7 @@ async function login() {
 
 
     console.log(
-      "✅ Connecté :",
+      "✅ CONNECTÉ",
       result.user.uid
     );
 
@@ -306,22 +339,9 @@ async function login() {
       "Connexion réussie ✓"
     );
 
-
     showToast(
       "Connexion réussie ✓"
     );
-
-
-    setTimeout(() => {
-
-      const modal =
-        $("modalLayer");
-
-      if (modal) {
-        modal.classList.remove("open");
-      }
-
-    }, 500);
 
 
   } catch (error) {
@@ -333,9 +353,9 @@ async function login() {
 }
 
 
-// ================================
+// ==========================================
 // DÉCONNEXION
-// ================================
+// ==========================================
 
 async function logout() {
 
@@ -359,12 +379,11 @@ async function logout() {
 }
 
 
-// ================================
-// UTILISATEUR CONNECTÉ
-// ================================
+// ==========================================
+// SURVEILLER LA CONNEXION
+// ==========================================
 
 let currentUser = null;
-
 
 onAuthStateChanged(
   auth,
@@ -392,15 +411,18 @@ onAuthStateChanged(
 );
 
 
-// ================================
-// EXPOSER LES FONCTIONS
-// ================================
-
-window.login = login;
+// ==========================================
+// DISPONIBLE POUR LE HTML
+// ==========================================
 
 window.register = register;
+
+window.login = login;
 
 window.logout = logout;
 
 window.firebaseAuthError =
   firebaseAuthError;
+
+window.currentUser =
+  currentUser;
