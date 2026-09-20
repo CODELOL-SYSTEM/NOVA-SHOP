@@ -488,6 +488,123 @@ select{
   line-height:1.6;
 }
 
+/* FAQ */
+
+.faq-section{
+  max-width:1400px;
+  margin:auto;
+  padding:0 22px 70px;
+}
+
+.faq-head{
+  margin-bottom:25px;
+}
+
+.faq-head h2{
+  font-size:34px;
+  letter-spacing:-1px;
+  margin-bottom:7px;
+}
+
+.faq-head p{
+  color:var(--muted);
+  line-height:1.6;
+}
+
+.faq-list{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+}
+
+.faq-item{
+  border:1px solid var(--line);
+  border-radius:16px;
+  background:var(--card);
+  overflow:hidden;
+  transition:.2s;
+}
+
+.faq-item:hover{
+  border-color:rgba(45,140,255,.45);
+}
+
+.faq-item summary{
+  position:relative;
+  padding:18px 50px 18px 20px;
+  cursor:pointer;
+  font-weight:850;
+  list-style:none;
+  user-select:none;
+}
+
+.faq-item summary::-webkit-details-marker{
+  display:none;
+}
+
+.faq-item summary::after{
+  content:"+";
+  position:absolute;
+  right:18px;
+  top:12px;
+  font-size:26px;
+  font-weight:400;
+  color:var(--blue);
+  transition:.2s;
+}
+
+.faq-item[open] summary::after{
+  content:"−";
+}
+
+.faq-item p{
+  color:var(--muted);
+  line-height:1.65;
+  padding:0 20px 20px;
+}
+
+/* REFUND */
+
+.refund-section{
+  max-width:1400px;
+  margin:auto;
+  padding:0 22px 80px;
+}
+
+.refund-box{
+  display:flex;
+  align-items:flex-start;
+  gap:20px;
+  padding:28px;
+  border:1px solid var(--line);
+  border-radius:20px;
+  background:
+    radial-gradient(circle at 90% 20%,rgba(45,140,255,.12),transparent 35%),
+    var(--card);
+}
+
+.refund-icon{
+  width:55px;
+  height:55px;
+  flex:none;
+  display:grid;
+  place-items:center;
+  border-radius:15px;
+  background:rgba(45,140,255,.12);
+  color:var(--blue);
+  font-size:28px;
+  font-weight:900;
+}
+
+.refund-box h2{
+  margin-bottom:8px;
+}
+
+.refund-box p{
+  color:var(--muted);
+  line-height:1.65;
+}
+
 /* CART */
 
 .overlay{
@@ -860,6 +977,7 @@ footer{
 /* RESPONSIVE */
 
 @media(max-width:1100px){
+
   .grid{
     grid-template-columns:repeat(3,1fr);
   }
@@ -867,9 +985,11 @@ footer{
   .trust{
     grid-template-columns:repeat(2,1fr);
   }
+
 }
 
 @media(max-width:750px){
+
   header{
     height:65px;
   }
@@ -908,7 +1028,9 @@ footer{
 
   .shop,
   .marketing,
-  .trust{
+  .trust,
+  .faq-section,
+  .refund-section{
     padding-left:12px;
     padding-right:12px;
   }
@@ -949,6 +1071,18 @@ footer{
     grid-template-columns:1fr;
   }
 
+  .faq-list{
+    grid-template-columns:1fr;
+  }
+
+  .faq-head h2{
+    font-size:29px;
+  }
+
+  .refund-box{
+    padding:20px;
+  }
+
   .form-grid{
     grid-template-columns:1fr;
   }
@@ -964,6 +1098,7 @@ footer{
   .admin-controls .full{
     grid-column:auto;
   }
+
 }
 </style>
 </head>
@@ -1120,6 +1255,324 @@ footer{
       Une fois la commande acceptée, retrouve son évolution directement
       dans ton espace.
     </p>
+  </div>
+
+</section>
+
+<!-- FAQ -->
+
+<section class="faq-section">
+
+  <div class="faq-head">
+    <div class="eyebrow">Centre d'aide • NovaShop</div>
+
+    <h2>Questions fréquentes</h2>
+
+    <p>
+      Retrouve ici les réponses aux principales questions concernant
+      les commandes, paiements, livraisons et remboursements.
+    </p>
+  </div>
+
+  <div class="faq-list">
+
+    <details class="faq-item">
+      <summary>Comment passer une commande ?</summary>
+      <p>
+        Ajoute les produits souhaités à ton panier puis clique sur
+        « Commander ». Renseigne ensuite les informations demandées
+        pour finaliser ta commande.
+      </p>
+    </details>
+
+    <details class="faq-item">
+      <summary>Faut-il avoir un compte pour commander ?</summary>
+      <p>
+        Un compte peut être nécessaire pour retrouver et suivre tes
+        commandes depuis ton espace personnel.
+      </p>
+    </details>
+
+    <details class="faq-item">
+      <summary>Comment ajouter un produit au panier ?</summary>
+      <p>
+        Clique simplement sur le bouton « Ajouter » présent sur la fiche
+        du produit.
+      </p>
+    </details>
+
+    <details class="faq-item">
+      <summary>Comment modifier la quantité d'un produit ?</summary>
+      <p>
+        Ouvre ton panier puis utilise les boutons + et − à côté du produit
+        concerné.
+      </p>
+    </details>
+
+    <details class="faq-item">
+      <summary>Comment supprimer un produit du panier ?</summary>
+      <p>
+        Depuis ton panier, utilise l'option de suppression associée au
+        produit.
+      </p>
+    </details>
+
+    <details class="faq-item">
+      <summary>Quels moyens de paiement sont disponibles ?</summary>
+      <p>
+        Le paiement peut être effectué via PayPal lorsque cette option
+        est proposée lors de la commande.
+      </p>
+    </details>
+
+    <details class="faq-item">
+      <summary>Le paiement est-il sécurisé ?</summary>
+      <p>
+        Le paiement PayPal est traité par PayPal. NovaShop ne doit pas
+        demander ton mot de passe PayPal directement sur cette page.
+      </p>
+    </details>
+
+    <details class="faq-item">
+      <summary>Comment fonctionne le code NOVA100 ?</summary>
+      <p>
+        Lorsque l'offre est disponible, entre le code NOVA100 dans
+        l'espace prévu lors de la commande. Si les conditions de l'offre
+        sont respectées, le total peut être ramené à 0 €.
+      </p>
+    </details>
+
+    <details class="faq-item">
+      <summary>Pourquoi mon code promotionnel ne fonctionne pas ?</summary>
+      <p>
+        Le code peut être indisponible, expiré ou soumis à certaines
+        conditions. Vérifie également que le code a été saisi correctement.
+      </p>
+    </details>
+
+    <details class="faq-item">
+      <summary>Dois-je renseigner une adresse de livraison ?</summary>
+      <p>
+        Oui. Une adresse de livraison complète est nécessaire lorsqu'une
+        commande doit être expédiée.
+      </p>
+    </details>
+
+    <details class="faq-item">
+      <summary>Pourquoi mon adresse est-elle refusée ?</summary>
+      <p>
+        Une adresse incomplète ou contenant des informations invalides
+        peut être refusée par le système de commande.
+      </p>
+    </details>
+
+    <details class="faq-item">
+      <summary>Puis-je modifier mon adresse après la commande ?</summary>
+      <p>
+        Contacte rapidement le support. Une modification peut ne plus être
+        possible si la commande a déjà été traitée ou expédiée.
+      </p>
+    </details>
+
+    <details class="faq-item">
+      <summary>Comment suivre ma commande ?</summary>
+      <p>
+        Ouvre la section « Commandes » depuis ton compte pour consulter
+        les informations disponibles sur ta commande.
+      </p>
+    </details>
+
+    <details class="faq-item">
+      <summary>Quels sont les différents statuts d'une commande ?</summary>
+      <p>
+        Une commande peut passer par différentes étapes comme enregistrée,
+        acceptée, en préparation, expédiée ou livrée selon son avancement.
+      </p>
+    </details>
+
+    <details class="faq-item">
+      <summary>Quand ma commande est-elle expédiée ?</summary>
+      <p>
+        L'expédition intervient après le traitement et l'acceptation de
+        la commande, selon les conditions applicables.
+      </p>
+    </details>
+
+    <details class="faq-item">
+      <summary>Comment obtenir les informations de suivi ?</summary>
+      <p>
+        Lorsqu'un numéro de suivi est disponible, il peut être affiché
+        dans les informations de ta commande.
+      </p>
+    </details>
+
+    <details class="faq-item">
+      <summary>Que faire si mon colis n'arrive pas ?</summary>
+      <p>
+        Vérifie d'abord les informations de suivi puis contacte le support
+        si le délai prévu est dépassé.
+      </p>
+    </details>
+
+    <details class="faq-item">
+      <summary>Que faire si je reçois un produit incorrect ?</summary>
+      <p>
+        Contacte le support avec les informations de ta commande afin que
+        la situation puisse être examinée.
+      </p>
+    </details>
+
+    <details class="faq-item">
+      <summary>Que faire si mon produit arrive endommagé ?</summary>
+      <p>
+        Signale rapidement le problème au support et conserve les éléments
+        utiles concernant la commande et la livraison.
+      </p>
+    </details>
+
+    <details class="faq-item">
+      <summary>Puis-je demander un remboursement ?</summary>
+      <p>
+        Une demande de remboursement peut être effectuée lorsqu'elle
+        respecte les conditions de vente et les droits applicables.
+      </p>
+    </details>
+
+    <details class="faq-item">
+      <summary>Dans quel délai puis-je demander un remboursement ?</summary>
+      <p>
+        Le délai dépend de la nature de la commande et des règles
+        applicables. Consulte les conditions de vente correspondant
+        à ton achat.
+      </p>
+    </details>
+
+    <details class="faq-item">
+      <summary>Combien de temps prend un remboursement ?</summary>
+      <p>
+        Le délai dépend notamment du moyen de paiement utilisé et du
+        traitement de la demande. Le délai applicable doit être indiqué
+        dans les conditions de remboursement.
+      </p>
+    </details>
+
+    <details class="faq-item">
+      <summary>Comment savoir si mon remboursement a été effectué ?</summary>
+      <p>
+        Une confirmation peut être communiquée lorsque le remboursement
+        a été traité. Le délai d'apparition des fonds dépend ensuite
+        du moyen de paiement utilisé.
+      </p>
+    </details>
+
+    <details class="faq-item">
+      <summary>Puis-je annuler une commande ?</summary>
+      <p>
+        Contacte le support le plus rapidement possible. L'annulation
+        peut dépendre de l'état d'avancement de la commande.
+      </p>
+    </details>
+
+    <details class="faq-item">
+      <summary>Où retrouver ma facture ?</summary>
+      <p>
+        Les informations de facture peuvent être associées à ta commande
+        et utilisées pour générer ou consulter les documents disponibles.
+      </p>
+    </details>
+
+    <details class="faq-item">
+      <summary>Mes informations de livraison sont-elles nécessaires sur la facture ?</summary>
+      <p>
+        Les informations nécessaires à la facturation et à la livraison
+        peuvent apparaître sur les documents de commande selon les règles
+        applicables.
+      </p>
+    </details>
+
+    <details class="faq-item">
+      <summary>Comment contacter NovaShop ?</summary>
+      <p>
+        Utilise le moyen de contact indiqué par NovaShop pour demander
+        de l'aide concernant une commande ou un problème.
+      </p>
+    </details>
+
+    <details class="faq-item">
+      <summary>Pourquoi ma commande peut-elle être refusée ?</summary>
+      <p>
+        Une commande peut être refusée notamment si certaines informations
+        nécessaires sont manquantes ou si les conditions de commande
+        ne sont pas respectées.
+      </p>
+    </details>
+
+    <details class="faq-item">
+      <summary>Que se passe-t-il si le paiement échoue ?</summary>
+      <p>
+        La commande peut rester en attente tant que le paiement n'a pas
+        été correctement traité. Vérifie ton moyen de paiement puis
+        réessaie si nécessaire.
+      </p>
+    </details>
+
+    <details class="faq-item">
+      <summary>Pourquoi mon total est-il différent ?</summary>
+      <p>
+        Le total peut changer selon les quantités sélectionnées, les
+        promotions applicables et les produits présents dans le panier.
+      </p>
+    </details>
+
+    <details class="faq-item">
+      <summary>Le prix affiché inclut-il toutes les informations nécessaires ?</summary>
+      <p>
+        Vérifie toujours le récapitulatif final de commande avant de
+        confirmer ton achat afin de connaître le montant affiché.
+      </p>
+    </details>
+
+    <details class="faq-item">
+      <summary>Puis-je utiliser NOVA100 plusieurs fois ?</summary>
+      <p>
+        Cela dépend des conditions de l'offre. Le système peut refuser
+        le code lorsqu'il n'est plus disponible ou lorsque ses conditions
+        ne sont plus respectées.
+      </p>
+    </details>
+
+    <details class="faq-item">
+      <summary>Le code NOVA100 est-il toujours disponible ?</summary>
+      <p>
+        Non nécessairement. Une offre promotionnelle peut être limitée
+        dans le temps ou soumise à des conditions particulières.
+      </p>
+    </details>
+
+  </div>
+
+</section>
+
+<!-- REMBOURSEMENTS -->
+
+<section class="refund-section">
+
+  <div class="refund-box">
+
+    <div class="refund-icon">↩</div>
+
+    <div>
+
+      <h2>Remboursements</h2>
+
+      <p>
+        Les demandes de remboursement sont traitées conformément aux
+        conditions de vente et aux droits applicables. Le délai de
+        traitement peut dépendre du moyen de paiement utilisé.
+      </p>
+
+    </div>
+
   </div>
 
 </section>
