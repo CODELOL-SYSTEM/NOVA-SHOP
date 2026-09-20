@@ -1,4 +1,3 @@
-
 import {
   initializeApp
 } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
@@ -25,9 +24,9 @@ import {
 } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
 
 
-// ============================================================
-// FIREBASE
-// ============================================================
+/* =========================================================
+   FIREBASE
+========================================================= */
 
 const firebaseConfig = {
   apiKey: "AIzaSyAZ5vAkAEfIBpfLyhxgO7uvNdJ67KYKWD0",
@@ -44,18 +43,18 @@ const auth = getAuth(firebaseApp);
 const db = getFirestore(firebaseApp);
 
 
-// ============================================================
-// ADMIN
-// ============================================================
+/* =========================================================
+   ADMIN
+========================================================= */
 
 const ADMIN_EMAIL = "pc2alex.les@gmail.com";
 const ADMIN_CODE = "NOVA-ADMIN-2026";
 const ADMIN_ACCESS_KEY = "novaAdminAuthorized";
 
 
-// ============================================================
-// DOM
-// ============================================================
+/* =========================================================
+   DOM
+========================================================= */
 
 const $ = id => document.getElementById(id);
 
@@ -80,29 +79,23 @@ const adminBtn = $("adminBtn");
 const modal = $("modalLayer");
 const modalContent = $("modalContent");
 const modalClose = $("modalClose");
+const modalTitle = $("modalTitle");
 
 const toastContainer = $("toast");
-
 const heroCartBtn = $("heroCartBtn");
 
 
-// ============================================================
-// FALLBACK IMAGE
-// ============================================================
+/* =========================================================
+   FALLBACK IMAGE
+========================================================= */
 
 const FALLBACK_IMAGE =
   "https://placehold.co/800x800/111827/ffffff?text=NovaShop";
 
 
-// ============================================================
-// IMAGE SYSTEM
-// ============================================================
-
 function imageUrl(url) {
 
-  if (!url) {
-    return FALLBACK_IMAGE;
-  }
+  if (!url) return FALLBACK_IMAGE;
 
   if (
     url.startsWith("./") ||
@@ -113,18 +106,15 @@ function imageUrl(url) {
     return url;
   }
 
-  return "https://wsrv.nl/?url=" +
-    encodeURIComponent(url);
+  return "https://wsrv.nl/?url=" + encodeURIComponent(url);
 }
 
 
-// Exposée globalement pour les anciens onerror HTML
 window.imageError = function(img, original) {
 
   if (!img) return;
 
-  const stage =
-    img.dataset.imageStage || "proxy";
+  const stage = img.dataset.imageStage || "proxy";
 
   if (stage === "proxy") {
 
@@ -134,7 +124,6 @@ window.imageError = function(img, original) {
       img.src = original;
       return;
     }
-
   }
 
   img.dataset.imageStage = "fallback";
@@ -147,9 +136,9 @@ function imageSrc(url) {
 }
 
 
-// ============================================================
-// PRODUCTS
-// ============================================================
+/* =========================================================
+   PRODUCTS
+========================================================= */
 
 const products = [
 
@@ -334,7 +323,7 @@ const products = [
     name:"Chaise GTPLAYER Ergonomique Gaming Soutien Lombaire Repose-pieds",
     category:"Chaises gaming",
     price:109.99,
-    image:"https://thumb.pccomponentes.com/w-530-530/articles/1118/11186247/167-silla-gaming-gtplayer-ergonomica-con-reposapies-y-soporte-lumbar-4d.jpg"
+    image:"https://thumb.pccomponentes.com/w-530-530/articles/1118/11186247/167-silla-gaming-ergonomica-con-reposapies-y-soporte-lumbar-4d.jpg"
   },
 
   {
@@ -453,7 +442,7 @@ const products = [
     id:"p38",
     name:"Govee LED Strip Light RGBIC Wi-Fi + Bluetooth 5m Matter",
     category:"Éclairage RGB",
-    price:0,
+    price:8,
     image:"https://static.fnac-static.com/multimedia/Images/FR/MDM/ab/7a/9d/27097771/1520-2/tsp20260429155350/Ruban-LED-Govee-LED-Strip-Light-RGBIC-Wi-Fi-avec-BT-5M-Matter.jpg"
   },
 
@@ -501,9 +490,9 @@ const products = [
 ];
 
 
-// ============================================================
-// STATE
-// ============================================================
+/* =========================================================
+   STATE
+========================================================= */
 
 let currentUser = null;
 let selectedCategory = "Toutes";
@@ -511,105 +500,94 @@ let searchValue = "";
 let cart = [];
 
 
-// ============================================================
-// STORAGE
-// ============================================================
+/* =========================================================
+   STORAGE
+========================================================= */
 
-function loadCart() {
+function loadCart(){
 
-  try {
+  try{
 
     const saved =
-      JSON.parse(
-        localStorage.getItem("novaCart") || "[]"
-      );
+      JSON.parse(localStorage.getItem("novaCart") || "[]");
 
-    if (Array.isArray(saved)) {
+    if(Array.isArray(saved)){
       cart = saved;
     }
 
-  } catch {
+  }catch{
     cart = [];
   }
-
 }
 
-function saveCart() {
 
+function saveCart(){
   localStorage.setItem(
     "novaCart",
     JSON.stringify(cart)
   );
-
 }
+
 
 loadCart();
 
 
-// ============================================================
-// THEME
-// ============================================================
+/* =========================================================
+   THEME
+========================================================= */
 
-function applyTheme() {
+function applyTheme(){
 
   const choice =
     localStorage.getItem("novaThemeChoice") || "dark";
 
   document.body.classList.remove("light");
 
-  if (choice === "light") {
+  if(choice === "light"){
     document.body.classList.add("light");
   }
 
-  if (choice === "auto") {
+  if(choice === "auto"){
 
-    if (
+    if(
       window.matchMedia &&
-      window.matchMedia(
-        "(prefers-color-scheme: light)"
-      ).matches
-    ) {
+      window.matchMedia("(prefers-color-scheme: light)").matches
+    ){
       document.body.classList.add("light");
     }
-
   }
-
 }
+
 
 applyTheme();
 
 
-// ============================================================
-// MONEY
-// ============================================================
+/* =========================================================
+   MONEY
+========================================================= */
 
-function money(value) {
+function money(value){
 
   value = Number(value) || 0;
 
-  if (value === 0) {
+  if(value === 0){
     return "Gratuit";
   }
 
-  return new Intl.NumberFormat(
-    "fr-FR",
-    {
-      style:"currency",
-      currency:"EUR"
-    }
-  ).format(value);
-
+  return new Intl.NumberFormat("fr-FR",{
+    style:"currency",
+    currency:"EUR"
+  }).format(value);
 }
 
 
-// ============================================================
-// TOAST
-// ============================================================
+/* =========================================================
+   TOAST
+========================================================= */
 
-function showToast(message) {
+function showToast(message){
 
-  if (!toastContainer) {
-    console.log(message);
+  if(!toastContainer){
     return;
   }
 
@@ -618,25 +596,20 @@ function showToast(message) {
 
   clearTimeout(showToast.timer);
 
-  showToast.timer =
-    setTimeout(() => {
-      toastContainer.classList.remove("show");
-    },2300);
-
+  showToast.timer = setTimeout(()=>{
+    toastContainer.classList.remove("show");
+  },2300);
 }
 
 
-// ============================================================
-// REVIEWS
-// ============================================================
+/* =========================================================
+   REVIEWS
+========================================================= */
 
-function reviewData(product) {
+function reviewData(product){
 
   const number =
-    parseInt(
-      product.id.replace("p",""),
-      10
-    );
+    parseInt(product.id.replace("p",""),10);
 
   const count =
     132 + ((number * 173) % 1604);
@@ -646,21 +619,19 @@ function reviewData(product) {
 
   return {
     count,
-    rating:Number(
-      rating.toFixed(1)
-    )
+    rating:Number(rating.toFixed(1))
   };
-
 }
 
-function starsHTML(rating) {
 
-  const rounded =
-    Math.round(rating);
+function starsHTML(rating){
+
+  const rounded = Math.round(rating);
 
   let html = "";
 
-  for (let i=1; i<=5; i++) {
+  for(let i=1;i<=5;i++){
+
     html +=
       i <= rounded
         ? "★"
@@ -668,58 +639,52 @@ function starsHTML(rating) {
   }
 
   return html;
-
 }
 
 
-// ============================================================
-// CATEGORIES
-// ============================================================
+/* =========================================================
+   CATEGORIES
+========================================================= */
 
-function getCategories() {
+function getCategories(){
 
   return [
     "Toutes",
     ...new Set(
-      products.map(
-        product => product.category
-      )
+      products.map(product => product.category)
     )
   ];
-
 }
 
-function renderCategories() {
 
-  if (!categoriesEl) return;
+function renderCategories(){
+
+  if(!categoriesEl){
+    return;
+  }
 
   categoriesEl.innerHTML =
     getCategories()
       .map(category => `
-
         <button
           class="category ${category === selectedCategory ? "active" : ""}"
           data-category="${escapeAttribute(category)}"
         >
           ${escapeHTML(category)}
         </button>
-
       `)
       .join("");
-
 }
 
 
-// ============================================================
-// FILTER
-// ============================================================
+/* =========================================================
+   FILTER
+========================================================= */
 
-function filteredProducts() {
+function filteredProducts(){
 
   const search =
-    searchValue
-      .trim()
-      .toLowerCase();
+    searchValue.trim().toLowerCase();
 
   let list =
     products.filter(product => {
@@ -730,87 +695,70 @@ function filteredProducts() {
 
       const searchOK =
         !search ||
-        product.name
-          .toLowerCase()
-          .includes(search) ||
-        product.category
-          .toLowerCase()
-          .includes(search);
+        product.name.toLowerCase().includes(search) ||
+        product.category.toLowerCase().includes(search);
 
       return categoryOK && searchOK;
-
     });
 
   const sort =
     $("sortSelect")?.value || "default";
 
-  if (sort === "priceAsc") {
-
-    list.sort(
-      (a,b) => a.price - b.price
-    );
-
+  if(sort === "priceAsc"){
+    list.sort((a,b)=>a.price-b.price);
   }
 
-  if (sort === "priceDesc") {
-
-    list.sort(
-      (a,b) => b.price - a.price
-    );
-
+  if(sort === "priceDesc"){
+    list.sort((a,b)=>b.price-a.price);
   }
 
-  if (sort === "rating") {
-
+  if(sort === "rating"){
     list.sort(
-      (a,b) =>
+      (a,b)=>
         reviewData(b).rating -
         reviewData(a).rating
     );
-
   }
 
   return list;
-
 }
 
 
-// ============================================================
-// PRODUCT CARD
-// ============================================================
+/* =========================================================
+   PRODUCT CARD
+========================================================= */
 
-function productCardHTML(product) {
+function productCardHTML(product){
 
   const reviews =
     reviewData(product);
 
   return `
-
     <article class="product">
 
       <div class="product-img">
 
         ${
           product.new
-            ? `
-              <span
-                style="
-                  position:absolute;
-                  top:12px;
-                  left:12px;
-                  z-index:2;
-                  background:#25d695;
-                  color:#03150e;
-                  padding:5px 9px;
-                  border-radius:999px;
-                  font-size:11px;
-                  font-weight:900;
-                "
-              >
-                Nouveau
-              </span>
-            `
-            : ""
+          ? `
+            <span
+              style="
+                position:absolute;
+                top:12px;
+                left:12px;
+                z-index:2;
+                background:#25d695;
+                color:#03150e;
+                padding:5px 9px;
+                border-radius:999px;
+                font-size:11px;
+                font-weight:900;
+              "
+            >
+              Nouveau
+            </span>
+          `
+          : ""
         }
 
         <img
@@ -836,31 +784,24 @@ function productCardHTML(product) {
         </h3>
 
         <div class="rating">
-
           <span class="stars">
             ${starsHTML(reviews.rating)}
           </span>
 
           <span>
-            ${reviews.rating
-              .toFixed(1)
-              .replace(".",",")}
+            ${reviews.rating.toFixed(1).replace(".",",")}
           </span>
 
           <span>
             · ${reviews.count.toLocaleString("fr-FR")} avis
           </span>
-
         </div>
 
         <div class="product-bottom">
 
           <div
             class="price"
-            style="
-              font-size:19px;
-              font-weight:950;
-            "
+            style="font-size:19px"
           >
             ${money(product.price)}
           </div>
@@ -888,28 +829,29 @@ function productCardHTML(product) {
       </div>
 
     </article>
-
   `;
-
 }
 
 
-// ============================================================
-// RENDER PRODUCTS
-// ============================================================
+/* =========================================================
+   RENDER PRODUCTS
+========================================================= */
 
-function renderProducts() {
+function renderProducts(){
 
-  if (!productsGrid) return;
+  if(!productsGrid){
+    return;
+  }
 
   const list =
     filteredProducts();
 
   productsGrid.innerHTML =
     list.length
-      ? list.map(productCardHTML).join("")
-      : `
 
+      ? list.map(productCardHTML).join("")
+
+      : `
         <div
           style="
             grid-column:1/-1;
@@ -943,95 +885,97 @@ function renderProducts() {
           </button>
 
         </div>
-
       `;
-
 }
 
 
-// ============================================================
-// PRODUCT CLICK
-// ============================================================
+/* =========================================================
+   PRODUCT CLICK
+========================================================= */
 
-if (productsGrid) {
+if(productsGrid){
 
-  productsGrid.addEventListener(
-    "click",
-    event => {
+  productsGrid.addEventListener("click",event=>{
 
-      const viewButton =
-        event.target.closest("[data-view]");
+    const viewButton =
+      event.target.closest("[data-view]");
 
-      const addButton =
-        event.target.closest("[data-add]");
+    const addButton =
+      event.target.closest("[data-add]");
 
-      const resetButton =
-        event.target.closest("#resetFilters");
+    const resetButton =
+      event.target.closest("#resetFilters");
 
-      if (viewButton) {
 
-        openProduct(
-          viewButton.dataset.view
+    if(viewButton){
+
+      openProduct(
+        viewButton.dataset.view
+      );
+
+      return;
+    }
+
+
+    if(addButton){
+
+      const product =
+        products.find(
+          p =>
+            p.id ===
+            addButton.dataset.add
         );
 
-        return;
+      if(product){
 
+        addToCart(
+          product,
+          addButton
+        );
       }
 
-      if (addButton) {
-
-        const product =
-          products.find(
-            p => p.id === addButton.dataset.add
-          );
-
-        if (product) {
-          addToCart(
-            product,
-            addButton
-          );
-        }
-
-        return;
-
-      }
-
-      if (resetButton) {
-
-        searchValue = "";
-
-        if (searchInput) {
-          searchInput.value = "";
-        }
-
-        selectedCategory = "Toutes";
-
-        renderCategories();
-        renderProducts();
-
-      }
-
+      return;
     }
-  );
 
+
+    if(resetButton){
+
+      searchValue = "";
+
+      if(searchInput){
+        searchInput.value = "";
+      }
+
+      selectedCategory = "Toutes";
+
+      renderCategories();
+      renderProducts();
+    }
+
+  });
 }
 
 
-// ============================================================
-// PRODUCT MODAL
-// ============================================================
+/* =========================================================
+   PRODUCT MODAL
+========================================================= */
 
-function openProduct(id) {
+function openProduct(id){
 
   const product =
-    products.find(
-      p => p.id === id
-    );
+    products.find(p=>p.id===id);
 
-  if (!product || !modalContent) return;
+  if(!product || !modalContent){
+    return;
+  }
 
   const reviews =
     reviewData(product);
+
+  if(modalTitle){
+    modalTitle.textContent =
+      product.name;
+  }
 
   modalContent.innerHTML = `
 
@@ -1092,9 +1036,7 @@ function openProduct(id) {
           </span>
 
           <strong>
-            ${reviews.rating
-              .toFixed(1)
-              .replace(".",",")}
+            ${reviews.rating.toFixed(1).replace(".",",")}
           </strong>
 
           <span>
@@ -1121,155 +1063,93 @@ function openProduct(id) {
           🛒 Ajouter au panier
         </button>
 
-        <div
-          style="
-            margin-top:25px;
-            border-top:1px solid var(--line);
-            padding-top:20px;
-          "
-        >
-
-          <strong>
-            Avis clients
-          </strong>
-
-          <div
-            style="
-              margin-top:12px;
-              padding:13px;
-              border:1px solid var(--line);
-              border-radius:12px;
-            "
-          >
-
-            <strong>
-              Client NovaShop
-            </strong>
-
-            <div class="stars">
-              ★★★★★
-            </div>
-
-            <p
-              style="
-                color:var(--muted);
-                margin-top:6px;
-              "
-            >
-              Produit conforme à la présentation.
-              Bonne expérience générale.
-            </p>
-
-          </div>
-
-          <div
-            style="
-              margin-top:10px;
-              padding:13px;
-              border:1px solid var(--line);
-              border-radius:12px;
-            "
-          >
-
-            <strong>
-              Client vérifié
-            </strong>
-
-            <div class="stars">
-              ★★★★★
-            </div>
-
-            <p
-              style="
-                color:var(--muted);
-                margin-top:6px;
-              "
-            >
-              Fiche claire et produit intéressant
-              pour un setup gaming.
-            </p>
-
-          </div>
-
-        </div>
-
       </div>
 
     </div>
-
   `;
 
-  $("modalAdd").onclick =
-    event => {
+  const addButton =
+    $("modalAdd");
 
-      addToCart(
-        product,
-        event.currentTarget
-      );
+  if(addButton){
 
-    };
+    addButton.onclick =
+      event =>
+        addToCart(
+          product,
+          event.currentTarget
+        );
+  }
 
   openModal();
-
 }
 
 
-// ============================================================
-// MODAL
-// ============================================================
+/* =========================================================
+   MODAL
+========================================================= */
 
-function openModal() {
+function openModal(){
 
-  if (!modal) return;
+  if(!modal){
+    return;
+  }
 
   modal.classList.add("open");
-  document.body.style.overflow = "hidden";
 
+  document.body.style.overflow =
+    "hidden";
 }
 
-function closeModal() {
 
-  if (!modal) return;
+function closeModal(){
+
+  if(!modal){
+    return;
+  }
 
   modal.classList.remove("open");
+
   document.body.style.overflow = "";
-
 }
 
-if (modalClose) {
-  modalClose.onclick = closeModal;
+
+if(modalClose){
+  modalClose.onclick =
+    closeModal;
 }
 
-if (modal) {
 
-  modal.addEventListener(
-    "click",
-    event => {
+if(modal){
 
-      if (event.target === modal) {
-        closeModal();
-      }
+  modal.addEventListener("click",event=>{
 
+    if(event.target === modal){
+      closeModal();
     }
-  );
 
+  });
 }
 
 
-// ============================================================
-// CART
-// ============================================================
+/* =========================================================
+   CART
+========================================================= */
 
-function addToCart(product, sourceButton) {
+function addToCart(product,sourceButton){
 
   const existing =
     cart.find(
-      item => item.id === product.id
+      item =>
+        item.id === product.id
     );
 
-  if (existing) {
+  if(existing){
+
     existing.qty += 1;
-  } else {
+
+  }else{
+
     cart.push({
       id:product.id,
       qty:1
@@ -1279,64 +1159,66 @@ function addToCart(product, sourceButton) {
   saveCart();
   renderCart();
 
-  animateToCart(
-    sourceButton,
-    product.image
-  );
-
   showToast(
     "Produit ajouté au panier"
   );
 
+  closeModal();
 }
 
 
-function removeFromCart(id) {
+function removeFromCart(id){
 
   cart =
     cart.filter(
-      item => item.id !== id
+      item =>
+        item.id !== id
     );
 
   saveCart();
   renderCart();
-
 }
 
 
-function changeQuantity(id, delta) {
+function changeQuantity(id,delta){
 
   const item =
     cart.find(
-      item => item.id === id
+      item =>
+        item.id === id
     );
 
-  if (!item) return;
+  if(!item){
+    return;
+  }
 
   item.qty += delta;
 
-  if (item.qty <= 0) {
+  if(item.qty <= 0){
+
     removeFromCart(id);
     return;
   }
 
   saveCart();
   renderCart();
-
 }
 
 
-function cartDetailed() {
+function cartDetailed(){
 
   return cart
-    .map(item => {
+    .map(item=>{
 
       const product =
         products.find(
-          p => p.id === item.id
+          p =>
+            p.id === item.id
         );
 
-      if (!product) return null;
+      if(!product){
+        return null;
+      }
 
       return {
         ...product,
@@ -1345,69 +1227,60 @@ function cartDetailed() {
 
     })
     .filter(Boolean);
-
 }
 
 
-function getCartTotal() {
+function getCartTotal(){
 
   return cartDetailed()
     .reduce(
-      (sum,item) =>
+      (sum,item)=>
         sum +
-        (Number(item.price) || 0) *
-        Number(item.qty || 0),
+        (Number(item.price)||0) *
+        Number(item.qty||0),
       0
     );
-
 }
 
 
-// ============================================================
-// CART RENDER
-// ============================================================
+function renderCart(){
 
-function renderCart() {
-
-  if (!cartItems) return;
+  if(!cartItems){
+    return;
+  }
 
   const items =
     cartDetailed();
 
   const count =
     items.reduce(
-      (sum,item) =>
+      (sum,item)=>
         sum + item.qty,
       0
     );
 
-  if (cartBadge) {
+  if(cartBadge){
 
     cartBadge.textContent =
       count > 99
         ? "99+"
         : count;
-
   }
 
   const total =
     getCartTotal();
 
-  if (cartTotal) {
+  if(cartTotal){
     cartTotal.textContent =
       money(total);
   }
 
-  if (!items.length) {
+
+  if(!items.length){
 
     cartItems.innerHTML = `
 
-      <div
-        style="
-          text-align:center;
-          padding:50px 15px;
-        "
-      >
+      <div class="empty">
 
         <div style="font-size:45px">
           🛒
@@ -1417,53 +1290,46 @@ function renderCart() {
           Ton panier est vide
         </h3>
 
-        <p
-          style="
-            color:var(--muted);
-            margin:8px 0 20px;
-          "
-        >
-          Ajoute un produit pour commencer.
+        <p style="margin-top:8px">
+          Ajoute des produits pour commencer.
         </p>
 
         <button
           class="primary"
           id="emptyShop"
+          style="margin-top:18px"
         >
-          Voir les produits
+          Explorer la boutique
         </button>
 
       </div>
-
     `;
 
     return;
-
   }
 
+
   cartItems.innerHTML =
-    items.map(item => `
+    items.map(item=>`
 
       <div class="cart-item">
 
         <img
           src="${imageSrc(item.image)}"
           data-original="${escapeAttribute(item.image)}"
-          alt=""
-          loading="lazy"
-          referrerpolicy="no-referrer"
+          alt="${escapeAttribute(item.name)}"
           onerror="imageError(this,this.dataset.original)"
         >
 
         <div>
 
-          <h4>
+          <div class="cart-name">
             ${escapeHTML(item.name)}
-          </h4>
+          </div>
 
-          <p>
+          <div class="cart-price">
             ${money(item.price)}
-          </p>
+          </div>
 
           <div class="qty">
 
@@ -1485,38 +1351,30 @@ function renderCart() {
 
           </div>
 
+          <button
+            class="remove"
+            data-remove="${item.id}"
+          >
+            Supprimer
+          </button>
+
         </div>
 
-        <button
-          data-remove="${item.id}"
-          style="
-            align-self:start;
-            border:1px solid var(--line);
-            background:transparent;
-            color:var(--danger);
-            border-radius:8px;
-            padding:6px;
-          "
-        >
-          ×
-        </button>
+        <strong>
+          ${money(item.price * item.qty)}
+        </strong>
 
       </div>
 
     `).join("");
-
 }
 
 
-// ============================================================
-// CART EVENTS
-// ============================================================
-
-if (cartItems) {
+if(cartItems){
 
   cartItems.addEventListener(
     "click",
-    event => {
+    event=>{
 
       const minus =
         event.target.closest("[data-minus]");
@@ -1530,7 +1388,8 @@ if (cartItems) {
       const emptyShop =
         event.target.closest("#emptyShop");
 
-      if (minus) {
+
+      if(minus){
 
         changeQuantity(
           minus.dataset.minus,
@@ -1538,10 +1397,10 @@ if (cartItems) {
         );
 
         return;
-
       }
 
-      if (plus) {
+
+      if(plus){
 
         changeQuantity(
           plus.dataset.plus,
@@ -1549,417 +1408,400 @@ if (cartItems) {
         );
 
         return;
-
       }
 
-      if (remove) {
+
+      if(remove){
 
         removeFromCart(
           remove.dataset.remove
         );
 
         return;
-
       }
 
-      if (emptyShop) {
+
+      if(emptyShop){
 
         closeCart();
 
         $("shop")?.scrollIntoView({
           behavior:"smooth"
         });
-
       }
 
     }
   );
-
 }
 
 
-// ============================================================
-// CART OPEN / CLOSE
-// ============================================================
+/* =========================================================
+   CART OPEN / CLOSE
+========================================================= */
 
-function openCart() {
+function openCart(){
 
-  if (cartOverlay) {
+  if(cartOverlay){
     cartOverlay.classList.add("open");
   }
-
-  if (cartDrawer) {
-    cartDrawer.classList.add("open");
-  }
-
-  document.body.style.overflow = "hidden";
-
 }
 
-function closeCart() {
 
-  if (cartOverlay) {
+function closeCart(){
+
+  if(cartOverlay){
     cartOverlay.classList.remove("open");
   }
-
-  if (cartDrawer) {
-    cartDrawer.classList.remove("open");
-  }
-
-  document.body.style.overflow = "";
-
-}
-
-if (cartBtn) {
-  cartBtn.onclick = openCart;
-}
-
-if (cartClose) {
-  cartClose.onclick = closeCart;
-}
-
-if (cartOverlay) {
-  cartOverlay.onclick = closeCart;
-}
-
-if (heroCartBtn) {
-  heroCartBtn.onclick = openCart;
 }
 
 
-// ============================================================
-// CART ANIMATION
-// ============================================================
-
-function animateToCart(button, image) {
-
-  const animations =
-    localStorage.getItem("novaAnimations") !== "false";
-
-  if (!animations) return;
-  if (!button || !cartBtn) return;
-
-  const rect =
-    button.getBoundingClientRect();
-
-  const target =
-    cartBtn.getBoundingClientRect();
-
-  const img =
-    document.createElement("img");
-
-  img.src =
-    imageUrl(image);
-
-  img.onerror =
-    () => {
-      img.src = FALLBACK_IMAGE;
-    };
-
-  img.style.position = "fixed";
-  img.style.zIndex = "9999";
-  img.style.width = "46px";
-  img.style.height = "46px";
-  img.style.objectFit = "contain";
-  img.style.background = "#fff";
-  img.style.borderRadius = "10px";
-  img.style.pointerEvents = "none";
-  img.style.transition =
-    "all .55s cubic-bezier(.2,.8,.2,1)";
-
-  img.style.left =
-    `${rect.left + rect.width / 2 - 23}px`;
-
-  img.style.top =
-    `${rect.top + rect.height / 2 - 23}px`;
-
-  document.body.appendChild(img);
-
-  requestAnimationFrame(() => {
-
-    img.style.left =
-      `${target.left + target.width / 2 - 13}px`;
-
-    img.style.top =
-      `${target.top + target.height / 2 - 13}px`;
-
-    img.style.width = "26px";
-    img.style.height = "26px";
-    img.style.opacity = "0";
-
-  });
-
-  setTimeout(() => {
-
-    img.remove();
-
-    if (cartBtn.animate) {
-
-      cartBtn.animate(
-        [
-          {transform:"scale(1)"},
-          {transform:"scale(1.12)"},
-          {transform:"scale(1)"}
-        ],
-        {
-          duration:300
-        }
-      );
-
-    }
-
-  },600);
-
+if(cartBtn){
+  cartBtn.onclick =
+    openCart;
 }
 
 
-// ============================================================
-// SEARCH
-// ============================================================
+if(heroCartBtn){
+  heroCartBtn.onclick =
+    openCart;
+}
 
-if (searchInput) {
 
-  searchInput.addEventListener(
-    "input",
-    event => {
+if(cartClose){
+  cartClose.onclick =
+    closeCart;
+}
 
-      searchValue =
-        event.target.value;
 
-      renderProducts();
+if(cartOverlay){
+
+  cartOverlay.addEventListener(
+    "click",
+    event=>{
+
+      if(event.target === cartOverlay){
+        closeCart();
+      }
 
     }
   );
-
 }
 
 
-// ============================================================
-// SORT
-// ============================================================
+/* =========================================================
+   SEARCH
+========================================================= */
+
+if(searchInput){
+
+  searchInput.addEventListener(
+    "input",
+    ()=>{
+      searchValue =
+        searchInput.value;
+
+      renderProducts();
+    }
+  );
+}
+
+
+/* =========================================================
+   SORT
+========================================================= */
 
 const sortSelect =
   $("sortSelect");
 
-if (sortSelect) {
+if(sortSelect){
 
   sortSelect.addEventListener(
     "change",
     renderProducts
   );
-
 }
 
 
-// ============================================================
-// CATEGORY
-// ============================================================
+/* =========================================================
+   CATEGORIES
+========================================================= */
 
-if (categoriesEl) {
+if(categoriesEl){
 
   categoriesEl.addEventListener(
     "click",
-    event => {
+    event=>{
 
       const button =
         event.target.closest("[data-category]");
 
-      if (!button) return;
+      if(!button){
+        return;
+      }
 
       selectedCategory =
         button.dataset.category;
 
       renderCategories();
       renderProducts();
-
     }
   );
-
 }
 
 
-// ============================================================
-// SETTINGS
-// ============================================================
+/* =========================================================
+   ACCOUNT
+========================================================= */
 
-function openSettings() {
+function openAccount(){
 
-  const theme =
-    localStorage.getItem(
-      "novaThemeChoice"
-    ) || "dark";
+  if(currentUser){
 
-  const language =
-    localStorage.getItem(
-      "novaLanguage"
-    ) || "fr";
+    modalTitle.textContent =
+      "Mon compte";
 
-  const animations =
-    localStorage.getItem(
-      "novaAnimations"
-    ) !== "false";
+    modalContent.innerHTML = `
+
+      <div class="checkout-section">
+
+        <h3>👤 Compte connecté</h3>
+
+        <p
+          style="
+            color:var(--muted);
+            margin-bottom:16px;
+          "
+        >
+          ${escapeHTML(currentUser.email || "")}
+        </p>
+
+        <button
+          class="danger-btn"
+          id="logoutBtn"
+        >
+          Se déconnecter
+        </button>
+
+      </div>
+    `;
+
+    $("logoutBtn").onclick =
+      async ()=>{
+        try{
+          await signOut(auth);
+          closeModal();
+          showToast("Déconnexion réussie");
+        }catch{
+          showToast("Impossible de se déconnecter");
+        }
+      };
+
+    openModal();
+    return;
+  }
+
+
+  modalTitle.textContent =
+    "Connexion";
 
   modalContent.innerHTML = `
 
-    <div>
+    <div class="checkout-section">
 
-      <h2>
-        Paramètres
-      </h2>
+      <h3>🔐 Se connecter</h3>
+
+      <div class="field">
+        <label>E-mail</label>
+        <input
+          id="loginEmail"
+          type="email"
+          placeholder="ton@email.com"
+        >
+      </div>
+
+      <div class="field">
+        <label>Mot de passe</label>
+        <input
+          id="loginPassword"
+          type="password"
+          placeholder="Mot de passe"
+        >
+      </div>
 
       <div
-        style="
-          margin-top:22px;
-          display:grid;
-          gap:20px;
-        "
+        id="authMessage"
+        class="error-message"
+      ></div>
+
+      <button
+        class="primary"
+        id="loginBtn"
+        style="width:100%"
       >
+        Se connecter
+      </button>
 
-        <div>
+    </div>
 
-          <strong>
-            Apparence
-          </strong>
+    <div class="checkout-section">
 
-          <p
-            style="
-              color:var(--muted);
-              font-size:13px;
-              margin:5px 0 8px;
-            "
-          >
-            Choisis l'apparence de NovaShop.
-          </p>
+      <h3>Créer un compte</h3>
 
-          <select
-            id="themeSelect"
-            style="width:100%"
-          >
-
-            <option
-              value="dark"
-              ${theme === "dark" ? "selected" : ""}
-            >
-              Sombre
-            </option>
-
-            <option
-              value="light"
-              ${theme === "light" ? "selected" : ""}
-            >
-              Claire
-            </option>
-
-            <option
-              value="auto"
-              ${theme === "auto" ? "selected" : ""}
-            >
-              Automatique
-            </option>
-
-          </select>
-
-        </div>
-
-        <div>
-
-          <strong>
-            Langue
-          </strong>
-
-          <select
-            id="languageSelect"
-            style="width:100%;margin-top:8px"
-          >
-
-            <option
-              value="fr"
-              ${language === "fr" ? "selected" : ""}
-            >
-              🇫🇷 Français
-            </option>
-
-            <option
-              value="en"
-              ${language === "en" ? "selected" : ""}
-            >
-              🇬🇧 English
-            </option>
-
-          </select>
-
-        </div>
-
-        <div>
-
-          <strong>
-            Animations
-          </strong>
-
-          <p
-            style="
-              color:var(--muted);
-              font-size:13px;
-              margin:5px 0 10px;
-            "
-          >
-            Animations du panier et de l'interface.
-          </p>
-
-          <button
-            id="animationSwitch"
-            style="
-              width:60px;
-              height:32px;
-              border:0;
-              border-radius:20px;
-              background:${animations ? "var(--blue)" : "var(--line)"};
-              position:relative;
-            "
-          >
-
-            <span
-              style="
-                position:absolute;
-                top:4px;
-                left:${animations ? "32px" : "4px"};
-                width:24px;
-                height:24px;
-                border-radius:50%;
-                background:white;
-                transition:.2s;
-              "
-            ></span>
-
-          </button>
-
-        </div>
-
-        <div
-          style="
-            padding:15px;
-            border:1px solid var(--line);
-            border-radius:13px;
-            background:var(--card);
-          "
+      <div class="field">
+        <label>E-mail</label>
+        <input
+          id="registerEmail"
+          type="email"
+          placeholder="ton@email.com"
         >
+      </div>
 
-          <strong>
-            Informations
-          </strong>
+      <div class="field">
+        <label>Mot de passe</label>
+        <input
+          id="registerPassword"
+          type="password"
+          placeholder="6 caractères minimum"
+        >
+      </div>
 
-          <p
-            style="
-              color:var(--muted);
-              font-size:13px;
-              margin-top:6px;
-            "
+      <button
+        class="secondary"
+        id="registerBtn"
+        style="width:100%"
+      >
+        Créer mon compte
+      </button>
+
+    </div>
+  `;
+
+
+  $("loginBtn").onclick =
+    async ()=>{
+
+      const email =
+        $("loginEmail")?.value.trim();
+
+      const password =
+        $("loginPassword")?.value;
+
+      const message =
+        $("authMessage");
+
+
+      try{
+
+        await signInWithEmailAndPassword(
+          auth,
+          email,
+          password
+        );
+
+        showToast(
+          "Connexion réussie ✓"
+        );
+
+        closeModal();
+
+      }catch(error){
+
+        if(message){
+          message.textContent =
+            authError(error.code);
+        }
+      }
+    };
+
+
+  $("registerBtn").onclick =
+    async ()=>{
+
+      const email =
+        $("registerEmail")?.value.trim();
+
+      const password =
+        $("registerPassword")?.value;
+
+      const message =
+        $("authMessage");
+
+
+      try{
+
+        await createUserWithEmailAndPassword(
+          auth,
+          email,
+          password
+        );
+
+        showToast(
+          "Compte créé ✓"
+        );
+
+        closeModal();
+
+      }catch(error){
+
+        if(message){
+          message.textContent =
+            authError(error.code);
+        }
+      }
+    };
+
+
+  openModal();
+}
+
+
+/* =========================================================
+   SETTINGS
+========================================================= */
+
+function openSettings(){
+
+  modalTitle.textContent =
+    "Paramètres";
+
+  const current =
+    localStorage.getItem("novaThemeChoice") ||
+    "dark";
+
+  modalContent.innerHTML = `
+
+    <div class="checkout-section">
+
+      <h3>🎨 Apparence</h3>
+
+      <div class="field">
+
+        <label>Thème</label>
+
+        <select id="themeChoice">
+
+          <option
+            value="dark"
+            ${current==="dark" ? "selected" : ""}
           >
-            NovaShop contient actuellement
-            ${products.length} produits.
-          </p>
+            Sombre
+          </option>
 
-        </div>
+          <option
+            value="light"
+            ${current==="light" ? "selected" : ""}
+          >
+            Clair
+          </option>
+
+          <option
+            value="auto"
+            ${current==="auto" ? "selected" : ""}
+          >
+            Automatique
+          </option>
+
+        </select>
 
       </div>
 
@@ -1967,8 +1809,9 @@ function openSettings() {
 
   `;
 
-  $("themeSelect").onchange =
-    event => {
+
+  $("themeChoice").onchange =
+    event=>{
 
       localStorage.setItem(
         "novaThemeChoice",
@@ -1977,433 +1820,66 @@ function openSettings() {
 
       applyTheme();
 
+      showToast(
+        "Thème modifié ✓"
+      );
     };
 
-  $("languageSelect").onchange =
-    event => {
-
-      localStorage.setItem(
-        "novaLanguage",
-        event.target.value
-      );
-
-      applyLanguage(
-        event.target.value
-      );
-
-    };
-
-  $("animationSwitch").onclick =
-    () => {
-
-      const current =
-        localStorage.getItem(
-          "novaAnimations"
-        ) !== "false";
-
-      localStorage.setItem(
-        "novaAnimations",
-        String(!current)
-      );
-
-      openSettings();
-
-    };
 
   openModal();
-
 }
 
 
-// ============================================================
-// LANGUAGE
-// ============================================================
+/* =========================================================
+   CHECKOUT
+========================================================= */
 
-function applyLanguage(language) {
+function validateAddress(address){
 
-  if (searchInput) {
-
-    searchInput.placeholder =
-      language === "en"
-        ? "Search for a product..."
-        : "Rechercher un produit...";
-
-  }
-
-  if (heroCartBtn) {
-
-    heroCartBtn.textContent =
-      language === "en"
-        ? "View my cart"
-        : "Voir mon panier";
-
-  }
-
+  return Boolean(
+    address.firstName &&
+    address.lastName &&
+    address.street &&
+    address.postalCode &&
+    address.city &&
+    address.country
+  );
 }
 
 
-// ============================================================
-// ACCOUNT
-// ============================================================
-
-function openAccount() {
-
-  if (currentUser) {
-
-    modalContent.innerHTML = `
-
-      <div>
-
-        <h2>
-          Mon compte
-        </h2>
-
-        <div
-          style="
-            margin:20px 0;
-            padding:15px;
-            border:1px solid var(--line);
-            border-radius:13px;
-            background:var(--card);
-          "
-        >
-
-          <strong>
-            Compte connecté
-          </strong>
-
-          <p
-            style="
-              color:var(--muted);
-              margin-top:7px;
-            "
-          >
-            ${escapeHTML(
-              currentUser.email || ""
-            )}
-          </p>
-
-        </div>
-
-        <button
-          class="secondary"
-          id="logoutBtn"
-          style="
-            width:100%;
-            color:var(--danger);
-          "
-        >
-          Se déconnecter
-        </button>
-
-      </div>
-
-    `;
-
-    $("logoutBtn").onclick =
-      async () => {
-
-        try {
-
-          await signOut(auth);
-
-          localStorage.removeItem(
-            ADMIN_ACCESS_KEY
-          );
-
-          closeModal();
-
-          showToast(
-            "Déconnexion effectuée"
-          );
-
-        } catch(error) {
-
-          showToast(
-            authError(error.code)
-          );
-
-        }
-
-      };
-
-    openModal();
-    return;
-
-  }
-
-
-  let mode = "login";
-
-  function draw() {
-
-    modalContent.innerHTML = `
-
-      <div>
-
-        <h2>
-          ${
-            mode === "login"
-              ? "Connexion"
-              : "Créer un compte"
-          }
-        </h2>
-
-        <div
-          style="
-            display:grid;
-            gap:12px;
-            margin-top:20px;
-          "
-        >
-
-          <input
-            id="authEmail"
-            type="email"
-            autocomplete="email"
-            placeholder="Adresse e-mail"
-            style="
-              width:100%;
-              height:45px;
-              padding:0 12px;
-              border:1px solid var(--line);
-              background:var(--card);
-              color:var(--text);
-              border-radius:10px;
-            "
-          >
-
-          <input
-            id="authPassword"
-            type="password"
-            autocomplete="${
-              mode === "login"
-                ? "current-password"
-                : "new-password"
-            }"
-            placeholder="Mot de passe"
-            style="
-              width:100%;
-              height:45px;
-              padding:0 12px;
-              border:1px solid var(--line);
-              background:var(--card);
-              color:var(--text);
-              border-radius:10px;
-            "
-          >
-
-          <button
-            class="primary"
-            id="authSubmit"
-          >
-            ${
-              mode === "login"
-                ? "Se connecter"
-                : "Créer mon compte"
-            }
-          </button>
-
-          <button
-            class="secondary"
-            id="authSwitch"
-          >
-            ${
-              mode === "login"
-                ? "Créer un compte"
-                : "J'ai déjà un compte"
-            }
-          </button>
-
-        </div>
-
-      </div>
-
-    `;
-
-    $("authSubmit").onclick =
-      async () => {
-
-        const email =
-          $("authEmail")
-            ?.value
-            ?.trim();
-
-        const password =
-          $("authPassword")
-            ?.value || "";
-
-        if (!email || !password) {
-
-          showToast(
-            "Remplis tous les champs"
-          );
-
-          return;
-
-        }
-
-        if (
-          mode === "register" &&
-          password.length < 6
-        ) {
-
-          showToast(
-            "Mot de passe : 6 caractères minimum"
-          );
-
-          return;
-
-        }
-
-        try {
-
-          if (mode === "login") {
-
-            await signInWithEmailAndPassword(
-              auth,
-              email,
-              password
-            );
-
-          } else {
-
-            await createUserWithEmailAndPassword(
-              auth,
-              email,
-              password
-            );
-
-          }
-
-          closeModal();
-
-          showToast(
-            "Connexion réussie ✓"
-          );
-
-        } catch(error) {
-
-          console.error(
-            "Firebase Auth:",
-            error
-          );
-
-          showToast(
-            authError(error.code)
-          );
-
-        }
-
-      };
-
-    $("authSwitch").onclick =
-      () => {
-
-        mode =
-          mode === "login"
-            ? "register"
-            : "login";
-
-        draw();
-
-      };
-
-  }
-
-  draw();
-  openModal();
-
-}
-
-
-// ============================================================
-// CHECKOUT HELPERS
-// ============================================================
-
-function calculateDiscountedTotal(total, promo) {
-
-  if (
+function calculateDiscountedTotal(
+  subtotal,
+  promo
+){
+
+  if(
     String(promo || "")
       .trim()
       .toUpperCase() === "NOVA100"
-  ) {
+  ){
     return 0;
   }
 
-  return Number(total.toFixed(2));
-
+  return subtotal;
 }
 
 
-function validateAddress(address) {
-
-  if (!address) {
-    return false;
-  }
-
-  const firstName =
-    String(address.firstName || "").trim();
-
-  const lastName =
-    String(address.lastName || "").trim();
-
-  const street =
-    String(address.street || "").trim();
-
-  const postal =
-    String(address.postalCode || "").trim();
-
-  const city =
-    String(address.city || "").trim();
-
-  const country =
-    String(address.country || "").trim();
-
-  if (
-    firstName.length < 2 ||
-    lastName.length < 2 ||
-    street.length < 5 ||
-    postal.length < 4 ||
-    city.length < 2 ||
-    country.length < 2
-  ) {
-    return false;
-  }
-
-  // Vérification basique du code postal français
-  if (
-    country.toLowerCase().includes("france") &&
-    !/^\d{5}$/.test(postal)
-  ) {
-    return false;
-  }
-
-  return true;
-
-}
-
-
-// ============================================================
-// CHECKOUT MODAL
-// ============================================================
-
-function openCheckout() {
+function openCheckout(){
 
   const items =
     cartDetailed();
 
-  if (!items.length) {
+  if(!items.length){
 
     showToast(
       "Ton panier est vide"
     );
 
     return;
-
   }
 
-  if (!currentUser) {
+
+  if(!currentUser){
 
     showToast(
       "Connecte-toi pour commander"
@@ -2412,120 +1888,108 @@ function openCheckout() {
     openAccount();
 
     return;
-
   }
 
-  const subtotal =
-    getCartTotal();
 
-  modalContent.innerHTML = `
+  let paymentMode = "choice";
 
-    <div>
 
-      <h2>
-        Finaliser ma commande
-      </h2>
+  function drawCheckout(){
 
-      <p
-        style="
-          color:var(--muted);
-          margin-top:6px;
-        "
-      >
-        Livraison et paiement
-      </p>
+    const subtotal =
+      getCartTotal();
 
-      <div
-        style="
-          margin-top:20px;
-          display:grid;
-          gap:12px;
-        "
-      >
 
-        <h3>
-          📍 Adresse de livraison
-        </h3>
+    if(modalTitle){
+      modalTitle.textContent =
+        "Finaliser ma commande";
+    }
 
-        <input
-          id="checkoutFirstName"
-          type="text"
-          autocomplete="given-name"
-          placeholder="Prénom *"
-          style="width:100%"
-        >
 
-        <input
-          id="checkoutLastName"
-          type="text"
-          autocomplete="family-name"
-          placeholder="Nom *"
-          style="width:100%"
-        >
+    modalContent.innerHTML = `
 
-        <input
-          id="checkoutStreet"
-          type="text"
-          autocomplete="street-address"
-          placeholder="Adresse *"
-          style="width:100%"
-        >
+      <div class="checkout-section">
 
-        <div
-          style="
-            display:grid;
-            grid-template-columns:130px 1fr;
-            gap:10px;
-          "
-        >
+        <h3>📍 Adresse de livraison</h3>
 
-          <input
-            id="checkoutPostal"
-            type="text"
-            inputmode="numeric"
-            autocomplete="postal-code"
-            placeholder="Code postal *"
-            style="width:100%"
-          >
+        <div class="form-grid">
 
-          <input
-            id="checkoutCity"
-            type="text"
-            autocomplete="address-level2"
-            placeholder="Ville *"
-            style="width:100%"
-          >
+          <div class="field">
+            <label>Prénom</label>
+            <input
+              id="checkoutFirstName"
+              placeholder="Prénom"
+            >
+          </div>
+
+          <div class="field">
+            <label>Nom</label>
+            <input
+              id="checkoutLastName"
+              placeholder="Nom"
+            >
+          </div>
+
+          <div class="field full">
+            <label>Adresse</label>
+            <input
+              id="checkoutStreet"
+              placeholder="Adresse"
+            >
+          </div>
+
+          <div class="field">
+            <label>Code postal</label>
+            <input
+              id="checkoutPostal"
+              placeholder="59000"
+            >
+          </div>
+
+          <div class="field">
+            <label>Ville</label>
+            <input
+              id="checkoutCity"
+              placeholder="Ville"
+            >
+          </div>
+
+          <div class="field full">
+            <label>Pays</label>
+            <input
+              id="checkoutCountry"
+              value="France"
+            >
+          </div>
 
         </div>
 
-        <input
-          id="checkoutCountry"
-          type="text"
-          autocomplete="country-name"
-          value="France"
-          placeholder="Pays *"
-          style="width:100%"
-        >
+      </div>
 
-        <h3
-          style="margin-top:10px"
-        >
-          🎟️ Code promo
-        </h3>
+
+      <div class="checkout-section">
+
+        <h3>🎟️ Code promo</h3>
 
         <div
           style="
-            display:grid;
-            grid-template-columns:1fr auto;
+            display:flex;
             gap:8px;
           "
         >
 
           <input
             id="promoCode"
-            type="text"
             placeholder="Code promo"
-            style="width:100%"
+            style="
+              flex:1;
+              background:var(--card2);
+              border:1px solid var(--line);
+              color:var(--text);
+              border-radius:12px;
+              padding:13px;
+              outline:none;
+            "
           >
 
           <button
@@ -2542,260 +2006,557 @@ function openCheckout() {
           style="
             min-height:20px;
             font-size:13px;
+            margin-top:8px;
           "
         ></div>
 
+      </div>
+
+
+      <div class="checkout-section">
+
+        <h3>💳 Paiement</h3>
+
+        ${
+          paymentMode === "choice"
+
+          ? `
+
+            <div class="payment-choice">
+
+              <button
+                class="payment-button paypal-button"
+                id="paypalChoice"
+              >
+                PayPal
+              </button>
+
+              <button
+                class="payment-button"
+                id="cardChoice"
+              >
+                💳 Payer par CB
+              </button>
+
+            </div>
+
+          `
+
+          : ""
+        }
+
+      </div>
+
+
+      <div
+        style="
+          padding:16px;
+          border:1px solid var(--line);
+          border-radius:14px;
+          background:var(--card);
+        "
+      >
+
         <div
           style="
-            margin-top:5px;
-            padding:16px;
-            border:1px solid var(--line);
-            border-radius:14px;
-            background:var(--card);
+            display:flex;
+            justify-content:space-between;
           "
         >
+          <span>Sous-total</span>
+          <strong id="checkoutSubtotal">
+            ${money(subtotal)}
+          </strong>
+        </div>
 
-          <div
-            style="
-              display:flex;
-              justify-content:space-between;
-            "
-          >
+        <div
+          style="
+            display:flex;
+            justify-content:space-between;
+            margin-top:10px;
+          "
+        >
+          <span>Réduction</span>
+          <strong id="discountValue">
+            0,00 €
+          </strong>
+        </div>
 
-            <span>
-              Sous-total
-            </span>
+        <div
+          style="
+            display:flex;
+            justify-content:space-between;
+            margin-top:14px;
+            padding-top:14px;
+            border-top:1px solid var(--line);
+            font-size:20px;
+          "
+        >
+          <strong>Total</strong>
 
-            <strong>
-              ${money(subtotal)}
-            </strong>
+          <strong id="checkoutFinalTotal">
+            ${money(subtotal)}
+          </strong>
 
-          </div>
+        </div>
 
-          <div
-            style="
-              display:flex;
-              justify-content:space-between;
-              margin-top:10px;
-            "
-          >
+      </div>
 
-            <span>
-              Réduction
-            </span>
 
-            <strong
-              id="discountValue"
-            >
-              0,00 €
-            </strong>
+      <button
+        class="primary"
+        id="confirmCheckout"
+        style="
+          width:100%;
+          margin-top:14px;
+        "
+      >
+        Continuer avec PayPal
+      </button>
+    `;
 
-          </div>
 
-          <div
-            style="
-              display:flex;
-              justify-content:space-between;
-              margin-top:14px;
-              padding-top:14px;
-              border-top:1px solid var(--line);
-              font-size:20px;
-            "
-          >
+    const promoInput =
+      $("promoCode");
 
-            <strong>
-              Total
-            </strong>
+    const applyPromo =
+      $("applyPromo");
 
-            <strong
-              id="checkoutFinalTotal"
-            >
-              ${money(subtotal)}
-            </strong>
 
+    if(applyPromo){
+
+      applyPromo.onclick =
+        ()=>{
+
+          const code =
+            promoInput?.value
+              ?.trim()
+              .toUpperCase();
+
+          const message =
+            $("promoMessage");
+
+          const discount =
+            $("discountValue");
+
+          const finalTotal =
+            $("checkoutFinalTotal");
+
+
+          if(code === "NOVA100"){
+
+            if(message){
+
+              message.textContent =
+                "✓ Code NOVA100 appliqué : commande gratuite";
+
+              message.style.color =
+                "#25d695";
+            }
+
+            if(discount){
+              discount.textContent =
+                money(subtotal);
+            }
+
+            if(finalTotal){
+              finalTotal.textContent =
+                money(0);
+            }
+
+            showToast(
+              "NOVA100 activé ✓"
+            );
+
+            return;
+          }
+
+
+          if(message){
+
+            message.textContent =
+              code
+                ? "Code promo invalide."
+                : "Entre un code promo.";
+
+            message.style.color =
+              "var(--danger)";
+          }
+
+
+          if(discount){
+            discount.textContent =
+              "0,00 €";
+          }
+
+
+          if(finalTotal){
+            finalTotal.textContent =
+              money(subtotal);
+          }
+        };
+    }
+
+
+    const cardChoice =
+      $("cardChoice");
+
+    if(cardChoice){
+
+      cardChoice.onclick =
+        ()=>{
+
+          openCardPayment();
+
+        };
+    }
+
+
+    const paypalChoice =
+      $("paypalChoice");
+
+    if(paypalChoice){
+
+      paypalChoice.onclick =
+        ()=>{
+
+          const button =
+            $("confirmCheckout");
+
+          if(button){
+            button.click();
+          }
+
+        };
+    }
+
+
+    const confirm =
+      $("confirmCheckout");
+
+    if(confirm){
+
+      confirm.onclick =
+        async ()=>{
+
+          const address = {
+
+            firstName:
+              $("checkoutFirstName")
+                ?.value?.trim() || "",
+
+            lastName:
+              $("checkoutLastName")
+                ?.value?.trim() || "",
+
+            street:
+              $("checkoutStreet")
+                ?.value?.trim() || "",
+
+            postalCode:
+              $("checkoutPostal")
+                ?.value?.trim() || "",
+
+            city:
+              $("checkoutCity")
+                ?.value?.trim() || "",
+
+            country:
+              $("checkoutCountry")
+                ?.value?.trim() || ""
+          };
+
+
+          if(!validateAddress(address)){
+
+            showToast(
+              "Adresse de livraison invalide ou incomplète"
+            );
+
+            return;
+          }
+
+
+          const enteredCode =
+            $("promoCode")
+              ?.value
+              ?.trim()
+              .toUpperCase() || "";
+
+
+          const promoApplied =
+            enteredCode === "NOVA100";
+
+
+          const finalTotal =
+            calculateDiscountedTotal(
+              subtotal,
+              promoApplied
+                ? "NOVA100"
+                : ""
+            );
+
+
+          await createCheckoutOrder(
+            items,
+            subtotal,
+            finalTotal,
+            address,
+            promoApplied
+          );
+        };
+    }
+  }
+
+
+  function openCardPayment(){
+
+    modalTitle.textContent =
+      "Paiement par CB";
+
+
+    modalContent.innerHTML = `
+
+      <div class="card-box">
+
+        <div class="card-logo">
+
+          <div class="card-chip"></div>
+
+          <div class="card-number">
+            •••• •••• •••• ••••
           </div>
 
         </div>
 
-        <button
-          class="primary"
-          id="confirmCheckout"
-          style="
-            width:100%;
-            margin-top:5px;
-          "
-        >
-          Continuer
-        </button>
+
+        <div class="checkout-section">
+
+          <div class="field">
+
+            <label>
+              Nom complet
+            </label>
+
+            <input
+              id="cardDemoName"
+              type="text"
+              autocomplete="off"
+              placeholder="Nom complet"
+            >
+
+          </div>
+
+
+          <div class="field">
+
+            <label>
+              Numéro de carte
+            </label>
+
+            <input
+              id="cardDemoNumber"
+              type="text"
+              inputmode="numeric"
+              autocomplete="off"
+              maxlength="19"
+              placeholder="XXXX XXXX XXXX XXXX"
+            >
+
+          </div>
+
+
+          <div class="form-grid">
+
+            <div class="field">
+
+              <label>
+                Expiration
+              </label>
+
+              <input
+                id="cardDemoExpiry"
+                type="text"
+                inputmode="numeric"
+                autocomplete="off"
+                maxlength="5"
+                placeholder="MM/AA"
+              >
+
+            </div>
+
+
+            <div class="field">
+
+              <label>
+                CVV
+              </label>
+
+              <input
+                id="cardDemoCvv"
+                type="password"
+                inputmode="numeric"
+                autocomplete="off"
+                maxlength="4"
+                placeholder="CVV"
+              >
+
+            </div>
+
+          </div>
+
+
+          <div
+            id="cardError"
+            class="error-message"
+          ></div>
+
+
+          <button
+            class="primary"
+            id="demoCardPayButton"
+            style="width:100%"
+          >
+            💳 Valider le paiement
+          </button>
+
+
+          <button
+            class="secondary"
+            id="backToPaymentMethods"
+            style="
+              width:100%;
+              margin-top:9px;
+            "
+          >
+            ← Retour
+          </button>
+
+        </div>
 
       </div>
+    `;
 
-    </div>
 
-  `;
+    const cardNumber =
+      $("cardDemoNumber");
 
-  let promoApplied = false;
+    if(cardNumber){
 
-  $("applyPromo").onclick =
-    () => {
+      cardNumber.addEventListener(
+        "input",
+        ()=>{
 
-      const code =
-        $("promoCode")
-          ?.value
-          ?.trim()
-          .toUpperCase();
+          let value =
+            cardNumber.value
+              .replace(/\D/g,"")
+              .slice(0,16);
 
-      const message =
-        $("promoMessage");
+          value =
+            value.match(/.{1,4}/g)?.join(" ")
+            || "";
 
-      const discount =
-        $("discountValue");
-
-      const finalTotal =
-        $("checkoutFinalTotal");
-
-      if (code === "NOVA100") {
-
-        promoApplied = true;
-
-        if (message) {
-
-          message.textContent =
-            "✓ Code NOVA100 appliqué : commande gratuite";
-
-          message.style.color =
-            "#25d695";
-
+          cardNumber.value =
+            value;
         }
+      );
+    }
 
-        if (discount) {
-          discount.textContent =
-            money(subtotal);
+
+    const expiry =
+      $("cardDemoExpiry");
+
+    if(expiry){
+
+      expiry.addEventListener(
+        "input",
+        ()=>{
+
+          let value =
+            expiry.value
+              .replace(/\D/g,"")
+              .slice(0,4);
+
+          if(value.length > 2){
+
+            value =
+              value.slice(0,2) +
+              "/" +
+              value.slice(2);
+          }
+
+          expiry.value =
+            value;
         }
+      );
+    }
 
-        if (finalTotal) {
-          finalTotal.textContent =
-            money(0);
+
+    const cvv =
+      $("cardDemoCvv");
+
+    if(cvv){
+
+      cvv.addEventListener(
+        "input",
+        ()=>{
+
+          cvv.value =
+            cvv.value
+              .replace(/\D/g,"")
+              .slice(0,4);
+        }
+      );
+    }
+
+
+    $("demoCardPayButton").onclick =
+      ()=>{
+
+        const error =
+          $("cardError");
+
+        if(error){
+
+          error.textContent =
+            "Carte incorrecte";
         }
 
         showToast(
-          "NOVA100 activé ✓"
+          "Carte incorrecte"
         );
 
-        return;
 
-      }
+        /*
+          Les valeurs du formulaire ne sont :
+          - ni enregistrées
+          - ni envoyées à Firebase
+          - ni envoyées à un serveur
+          - ni ajoutées à une commande
+        */
 
-      promoApplied = false;
-
-      if (message) {
-
-        message.textContent =
-          code
-            ? "Code promo invalide."
-            : "Entre un code promo.";
-
-        message.style.color =
-          "var(--danger)";
-
-      }
-
-      if (discount) {
-        discount.textContent =
-          "0,00 €";
-      }
-
-      if (finalTotal) {
-        finalTotal.textContent =
-          money(subtotal);
-      }
-
-    };
-
-
-  $("confirmCheckout").onclick =
-    async () => {
-
-      const address = {
-
-        firstName:
-          $("checkoutFirstName")
-            ?.value
-            ?.trim() || "",
-
-        lastName:
-          $("checkoutLastName")
-            ?.value
-            ?.trim() || "",
-
-        street:
-          $("checkoutStreet")
-            ?.value
-            ?.trim() || "",
-
-        postalCode:
-          $("checkoutPostal")
-            ?.value
-            ?.trim() || "",
-
-        city:
-          $("checkoutCity")
-            ?.value
-            ?.trim() || "",
-
-        country:
-          $("checkoutCountry")
-            ?.value
-            ?.trim() || ""
-
+        $("cardDemoName").value = "";
+        $("cardDemoNumber").value = "";
+        $("cardDemoExpiry").value = "";
+        $("cardDemoCvv").value = "";
       };
 
-      if (!validateAddress(address)) {
 
-        showToast(
-          "Adresse de livraison invalide ou incomplète"
-        );
+    $("backToPaymentMethods").onclick =
+      ()=>{
+        drawCheckout();
+      };
+  }
 
-        return;
 
-      }
-
-      const enteredCode =
-        $("promoCode")
-          ?.value
-          ?.trim()
-          .toUpperCase() || "";
-
-      if (enteredCode === "NOVA100") {
-        promoApplied = true;
-      }
-
-      const finalTotal =
-        calculateDiscountedTotal(
-          subtotal,
-          promoApplied
-            ? "NOVA100"
-            : ""
-        );
-
-      await createCheckoutOrder(
-        items,
-        subtotal,
-        finalTotal,
-        address,
-        promoApplied
-      );
-
-    };
-
+  drawCheckout();
   openModal();
-
 }
 
 
-// ============================================================
-// CREATE ORDER
-// ============================================================
+/* =========================================================
+   CREATE ORDER
+========================================================= */
 
 async function createCheckoutOrder(
   items,
@@ -2803,30 +2564,31 @@ async function createCheckoutOrder(
   total,
   address,
   promoApplied
-) {
+){
 
-  if (!currentUser) {
+  if(!currentUser){
 
     showToast(
-      "Connecte-toi avant de commander"
+      "Connecte-toi pour commander"
     );
 
     return;
-
   }
 
-  const confirmButton =
+
+  const button =
     $("confirmCheckout");
 
-  if (confirmButton) {
 
-    confirmButton.disabled = true;
-    confirmButton.textContent =
-      "Création de la commande...";
+  if(button){
 
+    button.disabled = true;
+    button.textContent =
+      "Enregistrement...";
   }
 
-  try {
+
+  try{
 
     const orderData = {
 
@@ -2837,18 +2599,18 @@ async function createCheckoutOrder(
         currentUser.email || "",
 
       items:
-        items.map(item => ({
+        items.map(item=>({
           id:item.id,
           name:item.name,
-          price:Number(item.price || 0),
-          qty:Number(item.qty || 0)
+          price:item.price,
+          qty:item.qty
         })),
 
       subtotal:
-        Number(subtotal.toFixed(2)),
+        Number(subtotal),
 
       total:
-        Number(total.toFixed(2)),
+        Number(total),
 
       promoCode:
         promoApplied
@@ -2856,31 +2618,10 @@ async function createCheckoutOrder(
           : "",
 
       discount:
-        promoApplied
-          ? Number(subtotal.toFixed(2))
-          : 0,
+        Number(subtotal) -
+        Number(total),
 
-      address: {
-
-        firstName:
-          address.firstName,
-
-        lastName:
-          address.lastName,
-
-        street:
-          address.street,
-
-        postalCode:
-          address.postalCode,
-
-        city:
-          address.city,
-
-        country:
-          address.country
-
-      },
+      address,
 
       status:
         "Enregistrée",
@@ -2897,27 +2638,23 @@ async function createCheckoutOrder(
 
       createdAt:
         serverTimestamp()
-
     };
 
 
-    const created =
+    const ref =
       await addDoc(
         collection(db,"orders"),
         orderData
       );
 
 
-    // ========================================================
-    // COMMANDE GRATUITE
-    // ========================================================
-
-    if (total === 0) {
+    if(total === 0){
 
       cart = [];
 
       saveCart();
       renderCart();
+
       closeModal();
       closeCart();
 
@@ -2925,27 +2662,21 @@ async function createCheckoutOrder(
         "Commande gratuite enregistrée ✓"
       );
 
-      setTimeout(() => {
-
-        printInvoiceHTML({
-          id:created.id,
+      setTimeout(
+        ()=>printInvoiceHTML({
           ...orderData,
-          createdAt:new Date()
-        });
-
-      },400);
+          id:ref.id
+        }),
+        300
+      );
 
       return;
-
     }
 
 
-    // ========================================================
-    // PAYPAL
-    // ========================================================
-
     const paypalAmount =
-      Number(total.toFixed(2));
+      Number(total);
+
 
     const paypalURL =
       "https://paypal.me/SH0PNOVA/" +
@@ -2959,6 +2690,7 @@ async function createCheckoutOrder(
 
     saveCart();
     renderCart();
+
     closeModal();
     closeCart();
 
@@ -2967,90 +2699,85 @@ async function createCheckoutOrder(
     );
 
 
-    setTimeout(() => {
-
-      window.location.href =
-        paypalURL;
-
-    },700);
-
-
-  } catch(error) {
-
-    console.error(
-      "Erreur création commande :",
-      error
+    setTimeout(
+      ()=>{
+        window.location.href =
+          paypalURL;
+      },
+      700
     );
+
+
+  }catch(error){
+
+    console.error(error);
 
     showToast(
-      "Erreur : " +
-      (error.message || "commande impossible")
+      "Impossible d'enregistrer la commande"
     );
 
-    if (confirmButton) {
 
-      confirmButton.disabled = false;
-      confirmButton.textContent =
-        "Continuer";
+    if(button){
 
+      button.disabled = false;
+
+      button.textContent =
+        "Continuer avec PayPal";
     }
-
   }
-
 }
 
 
-// ============================================================
-// CHECKOUT BUTTON
-// ============================================================
+/* =========================================================
+   CHECKOUT BUTTON
+========================================================= */
 
-if (checkoutBtn) {
+if(checkoutBtn){
 
   checkoutBtn.onclick =
     openCheckout;
-
 }
 
 
-// ============================================================
-// ORDERS
-// ============================================================
+/* =========================================================
+   ORDERS
+========================================================= */
 
-async function openOrders() {
+async function openOrders(){
 
-  if (!currentUser) {
+  if(!currentUser){
 
     showToast(
       "Connecte-toi pour voir tes commandes"
     );
 
     openAccount();
-    return;
 
+    return;
   }
+
+
+  modalTitle.textContent =
+    "Mes commandes";
+
 
   modalContent.innerHTML = `
 
-    <div>
-
-      <h2>
-        Mes commandes
-      </h2>
-
-      <div
-        id="ordersList"
-        style="margin-top:20px"
-      >
-        Chargement...
-      </div>
-
+    <div
+      style="
+        text-align:center;
+        padding:30px;
+      "
+    >
+      Chargement...
     </div>
-
   `;
+
 
   openModal();
 
-  try {
+
+  try{
 
     const q =
       query(
@@ -3062,34 +2789,18 @@ async function openOrders() {
         )
       );
 
+
     const snapshot =
       await getDocs(q);
 
-    const orders =
-      snapshot.docs
-        .map(d => ({
-          id:d.id,
-          ...d.data()
-        }))
-        .sort(
-          (a,b) =>
-            getTimestampValue(b.createdAt) -
-            getTimestampValue(a.createdAt)
-        );
 
+    if(snapshot.empty){
 
-    if (!orders.length) {
+      modalContent.innerHTML = `
 
-      $("ordersList").innerHTML = `
+        <div class="empty">
 
-        <div
-          style="
-            text-align:center;
-            padding:40px 10px;
-          "
-        >
-
-          <div style="font-size:40px">
+          <div style="font-size:45px">
             📦
           </div>
 
@@ -3097,174 +2808,631 @@ async function openOrders() {
             Aucune commande
           </h3>
 
-          <p
-            style="
-              color:var(--muted);
-              margin-top:7px;
-            "
-          >
+          <p style="margin-top:8px">
             Tes commandes apparaîtront ici.
           </p>
 
         </div>
-
       `;
 
       return;
-
     }
 
 
-    $("ordersList").innerHTML =
-      orders.map(order => {
+    const orders =
+      snapshot.docs
+        .map(d=>({
+          id:d.id,
+          ...d.data()
+        }))
+        .sort(
+          (a,b)=>
+            getTimestampValue(b.createdAt) -
+            getTimestampValue(a.createdAt)
+        );
 
-        const status =
-          order.status ||
-          "Enregistrée";
 
-        const address =
-          order.address || {};
+    modalContent.innerHTML =
+      orders.map(order=>`
+
+        <div class="order">
+
+          <div class="order-top">
+
+            <div>
+
+              <strong>
+                Commande #${escapeHTML(order.id.slice(0,8))}
+              </strong>
+
+              <br>
+
+              <small>
+                ${formatTimestamp(order.createdAt)}
+              </small>
+
+            </div>
+
+            <strong>
+              ${money(order.total)}
+            </strong>
+
+          </div>
+
+          <div
+            style="
+              margin-top:12px;
+              color:var(--muted);
+              line-height:1.6;
+            "
+          >
+
+            <div>
+              Statut :
+              <strong style="color:var(--text)">
+                ${escapeHTML(order.status || "Enregistrée")}
+              </strong>
+            </div>
+
+            <div>
+              Paiement :
+              ${escapeHTML(order.paymentMethod || "")}
+            </div>
+
+            <div>
+              Ville :
+              ${escapeHTML(order.address?.city || "")}
+            </div>
+
+            ${
+              order.trackingNumber
+              ? `
+                <div>
+                  Suivi :
+                  ${escapeHTML(order.trackingNumber)}
+                </div>
+              `
+              : ""
+            }
+
+            ${
+              order.estimatedDelivery
+              ? `
+                <div>
+                  Livraison estimée :
+                  ${escapeHTML(order.estimatedDelivery)}
+                </div>
+              `
+              : ""
+            }
+
+          </div>
+
+        </div>
+
+      `).join("");
+
+
+  }catch(error){
+
+    console.error(error);
+
+    modalContent.innerHTML = `
+
+      <div class="error-message">
+        Impossible de charger les commandes.
+      </div>
+    `;
+  }
+}
+
+
+/* =========================================================
+   ADMIN
+========================================================= */
+
+function isAdmin(){
+
+  return Boolean(
+
+    currentUser &&
+    currentUser.email &&
+
+    currentUser.email
+      .trim()
+      .toLowerCase() ===
+
+    ADMIN_EMAIL
+      .trim()
+      .toLowerCase()
+
+  );
+}
+
+
+function adminAuthorized(){
+
+  return (
+    localStorage.getItem(
+      ADMIN_ACCESS_KEY
+    ) === "true"
+  );
+}
+
+
+async function openAdmin(){
+
+  if(!currentUser){
+
+    showToast(
+      "Connecte-toi avec le compte administrateur"
+    );
+
+    return;
+  }
+
+
+  if(!isAdmin()){
+
+    showToast(
+      "Accès administrateur refusé"
+    );
+
+    return;
+  }
+
+
+  if(!adminAuthorized()){
+
+    const code =
+      prompt(
+        "Code administrateur :"
+      );
+
+
+    if(code !== ADMIN_CODE){
+
+      showToast(
+        "Code incorrect"
+      );
+
+      return;
+    }
+
+
+    localStorage.setItem(
+      ADMIN_ACCESS_KEY,
+      "true"
+    );
+  }
+
+
+  await renderAdmin();
+}
+
+
+const ORDER_STATUSES = [
+
+  "Enregistrée",
+  "Acceptée",
+  "Préparation",
+  "En transit",
+  "Livraison proche",
+  "Livrée"
+
+];
+
+
+async function renderAdmin(){
+
+  modalTitle.textContent =
+    "Administration";
+
+
+  modalContent.innerHTML = `
+
+    <div
+      style="
+        padding:15px;
+        border:1px solid var(--line);
+        background:var(--card);
+        border-radius:15px;
+        margin-bottom:15px;
+      "
+    >
+
+      <strong>
+        🛠️ NovaShop Admin
+      </strong>
+
+      <p
+        style="
+          color:var(--muted);
+          margin-top:6px;
+        "
+      >
+        ${escapeHTML(ADMIN_EMAIL)}
+      </p>
+
+      <div
+        style="
+          display:flex;
+          gap:8px;
+          flex-wrap:wrap;
+          margin-top:12px;
+        "
+      >
+
+        <button
+          class="secondary"
+          id="removeAdminAuth"
+        >
+          Déconnecter admin
+        </button>
+
+        <button
+          class="danger-btn"
+          id="deleteAllOrders"
+        >
+          Supprimer toutes les commandes
+        </button>
+
+      </div>
+
+    </div>
+
+    <div id="adminOrders">
+      Chargement...
+    </div>
+  `;
+
+
+  openModal();
+
+
+  $("removeAdminAuth").onclick =
+    ()=>{
+      localStorage.removeItem(
+        ADMIN_ACCESS_KEY
+      );
+
+      closeModal();
+
+      showToast(
+        "Session admin fermée"
+      );
+    };
+
+
+  $("deleteAllOrders").onclick =
+    async ()=>{
+
+      const ok =
+        confirm(
+          "Supprimer toutes les commandes ?"
+        );
+
+      if(!ok){
+        return;
+      }
+
+
+      try{
+
+        const snapshot =
+          await getDocs(
+            collection(db,"orders")
+          );
+
+
+        for(const order of snapshot.docs){
+
+          await deleteDoc(
+            doc(
+              db,
+              "orders",
+              order.id
+            )
+          );
+        }
+
+
+        showToast(
+          "Commandes supprimées"
+        );
+
+        await renderAdmin();
+
+      }catch(error){
+
+        console.error(error);
+
+        showToast(
+          "Erreur lors de la suppression"
+        );
+      }
+    };
+
+
+  try{
+
+    const snapshot =
+      await getDocs(
+        collection(db,"orders")
+      );
+
+
+    const orders =
+      snapshot.docs
+        .map(d=>({
+          id:d.id,
+          ...d.data()
+        }))
+        .sort(
+          (a,b)=>
+            getTimestampValue(b.createdAt) -
+            getTimestampValue(a.createdAt)
+        );
+
+
+    const adminOrders =
+      $("adminOrders");
+
+
+    if(!orders.length){
+
+      adminOrders.innerHTML = `
+
+        <div class="empty">
+          Aucune commande.
+        </div>
+      `;
+
+      return;
+    }
+
+
+    adminOrders.innerHTML =
+      orders.map(order=>{
+
+        const accepted =
+          order.paymentStatus === "accepted" ||
+          order.paymentStatus === "free";
+
 
         return `
 
           <div
-            style="
-              border:1px solid var(--line);
-              background:var(--card);
-              border-radius:15px;
-              padding:16px;
-              margin-bottom:12px;
-            "
+            class="admin-card"
+            data-order="${order.id}"
           >
 
             <div
               style="
                 display:flex;
                 justify-content:space-between;
-                gap:10px;
+                gap:15px;
               "
             >
 
               <div>
 
                 <strong>
-                  Commande #${escapeHTML(
-                    order.id.slice(0,8)
-                  )}
+                  #${escapeHTML(order.id.slice(0,10))}
                 </strong>
 
-                <p
+                <div
                   style="
                     color:var(--muted);
                     font-size:12px;
                     margin-top:5px;
                   "
                 >
-                  ${formatTimestamp(
-                    order.createdAt
-                  )}
-                </p>
+                  ${escapeHTML(order.email || "")}
+                </div>
 
               </div>
 
-              <span class="status">
-                ${escapeHTML(status)}
-              </span>
+              <strong>
+                ${money(order.total)}
+              </strong>
 
             </div>
+
 
             <div
               style="
-                font-size:20px;
-                font-weight:900;
-                margin-top:15px;
+                color:var(--muted);
+                font-size:13px;
+                margin-top:10px;
+                line-height:1.6;
               "
             >
-              ${money(
-                Number(order.total || 0)
-              )}
+
+              <div>
+                Date :
+                ${formatTimestamp(order.createdAt)}
+              </div>
+
+              <div>
+                Paiement :
+                ${escapeHTML(order.paymentMethod || "")}
+              </div>
+
+              <div>
+                État paiement :
+                ${escapeHTML(order.paymentStatus || "")}
+              </div>
+
+              <div>
+                Promo :
+                ${escapeHTML(order.promoCode || "Aucune")}
+              </div>
+
+              <div>
+                Adresse :
+                ${escapeHTML(
+                  order.address?.street || ""
+                )}
+                ,
+                ${escapeHTML(
+                  order.address?.postalCode || ""
+                )}
+                ${escapeHTML(
+                  order.address?.city || ""
+                )}
+              </div>
+
             </div>
 
-            ${
-              order.promoCode
-                ? `
-                  <div
-                    style="
-                      margin-top:8px;
-                      color:#25d695;
-                      font-weight:800;
-                    "
-                  >
-                    🎟️ ${escapeHTML(
-                      order.promoCode
-                    )}
-                  </div>
-                `
-                : ""
-            }
 
             ${
-              address.city ||
-              order.trackingNumber ||
-              order.estimatedDelivery
-                ? `
+              order.paymentMethod === "PayPal.Me" &&
+              !accepted
 
-                  <div
-                    style="
-                      margin-top:15px;
-                      padding-top:15px;
-                      border-top:1px solid var(--line);
-                      color:var(--muted);
-                      font-size:13px;
-                      line-height:1.8;
-                    "
-                  >
+              ? `
 
-                    ${
-                      address.city
-                        ? `📍 ${escapeHTML(
-                            address.city
-                          )}<br>`
-                        : ""
-                    }
+                <button
+                  class="primary"
+                  style="
+                    width:100%;
+                    margin-top:12px;
+                  "
+                  data-accept-paypal="${order.id}"
+                >
+                  ✓ Accepter le paiement PayPal
+                </button>
 
-                    ${
-                      order.packageCity
-                        ? `📦 ${escapeHTML(
-                            order.packageCity
-                          )}<br>`
-                        : ""
-                    }
+              `
 
-                    ${
-                      order.trackingNumber
-                        ? `🚚 Suivi : ${escapeHTML(
-                            order.trackingNumber
-                          )}<br>`
-                        : ""
-                    }
-
-                    ${
-                      order.deliveryDuration
-                        ? `⏱️ ${escapeHTML(
-                            order.deliveryDuration
-                          )}<br>`
-                        : ""
-                    }
-
-                    ${
-                      order.estimatedDelivery
-                        ? `📅 Livraison estimée : ${escapeHTML(
-                            order.estimatedDelivery
-                          )}`
-                        : ""
-                    }
-
-                  </div>
-
-                `
-                : ""
+              : ""
             }
+
+
+            <div class="admin-grid">
+
+              <div class="field">
+
+                <label>
+                  Statut
+                </label>
+
+                <select data-status="${order.id}">
+
+                  ${ORDER_STATUSES.map(status=>`
+
+                    <option
+                      value="${escapeAttribute(status)}"
+                      ${
+                        order.status === status
+                          ? "selected"
+                          : ""
+                      }
+                    >
+                      ${escapeHTML(status)}
+                    </option>
+
+                  `).join("")}
+
+                </select>
+
+              </div>
+
+
+              <div class="field">
+
+                <label>
+                  Ville du colis
+                </label>
+
+                <input
+                  data-package-city="${order.id}"
+                  value="${escapeAttribute(
+                    order.packageCity || ""
+                  )}"
+                  placeholder="Paris"
+                >
+
+              </div>
+
+
+              <div class="field">
+
+                <label>
+                  Numéro de suivi
+                </label>
+
+                <input
+                  data-tracking="${order.id}"
+                  value="${escapeAttribute(
+                    order.trackingNumber || ""
+                  )}"
+                  placeholder="FR123456789"
+                >
+
+              </div>
+
+
+              <div class="field">
+
+                <label>
+                  Durée livraison
+                </label>
+
+                <input
+                  data-duration="${order.id}"
+                  value="${escapeAttribute(
+                    order.deliveryDuration || ""
+                  )}"
+                  placeholder="2-4 jours"
+                >
+
+              </div>
+
+
+              <div class="field">
+
+                <label>
+                  Livraison estimée
+                </label>
+
+                <input
+                  type="date"
+                  data-estimated="${order.id}"
+                  value="${escapeAttribute(
+                    order.estimatedDelivery || ""
+                  )}"
+                >
+
+              </div>
+
+            </div>
+
+
+            <div
+              style="
+                display:flex;
+                gap:8px;
+                flex-wrap:wrap;
+                margin-top:10px;
+              "
+            >
+
+              <button
+                class="primary"
+                data-save-order="${order.id}"
+              >
+                💾 Enregistrer
+              </button>
+
+              <button
+                class="secondary"
+                data-print-order="${order.id}"
+              >
+                🖨️ Facture
+              </button>
+
+            </div>
 
           </div>
 
@@ -3273,794 +3441,80 @@ async function openOrders() {
       }).join("");
 
 
-  } catch(error) {
+    if(adminOrders){
 
-    $("ordersList").innerHTML = `
+      adminOrders.onclick =
+        async event=>{
 
-      <div
-        style="
-          padding:15px;
-          border:1px solid var(--danger);
-          border-radius:12px;
-        "
-      >
+          const accept =
+            event.target.closest(
+              "[data-accept-paypal]"
+            );
 
-        <strong>
-          Impossible de charger les commandes
-        </strong>
+          const save =
+            event.target.closest(
+              "[data-save-order]"
+            );
 
-        <p
-          style="
-            color:var(--muted);
-            margin-top:8px;
-          "
-        >
-          ${escapeHTML(
-            error.message
-          )}
-        </p>
+          const print =
+            event.target.closest(
+              "[data-print-order]"
+            );
 
-      </div>
 
-    `;
+          if(accept){
 
-  }
+            await acceptPaypalOrder(
+              accept.dataset.acceptPaypal
+            );
 
-}
+            return;
+          }
 
 
-// ============================================================
-// ADMIN
-// ============================================================
+          if(save){
 
-function isAdmin() {
+            await saveAdminOrder(
+              save.dataset.saveOrder
+            );
 
-  return Boolean(
-    currentUser &&
-    currentUser.email &&
-    currentUser.email
-      .trim()
-      .toLowerCase() ===
-    ADMIN_EMAIL
-      .trim()
-      .toLowerCase()
-  );
+            return;
+          }
 
-}
 
+          if(print){
 
-function adminAuthorized() {
+            await printAdminInvoice(
+              print.dataset.printOrder
+            );
 
-  return (
-    localStorage.getItem(
-      ADMIN_ACCESS_KEY
-    ) === "true"
-  );
-
-}
-
-
-async function openAdmin() {
-
-  if (!currentUser) {
-
-    showToast(
-      "Connecte-toi avec le compte admin"
-    );
-
-    openAccount();
-    return;
-
-  }
-
-  if (!isAdmin()) {
-
-    showToast(
-      "Compte non autorisé"
-    );
-
-    return;
-
-  }
-
-  if (!adminAuthorized()) {
-
-    const code =
-      prompt(
-        "Code administrateur NovaShop :"
-      );
-
-    if (code !== ADMIN_CODE) {
-
-      showToast(
-        "Code administrateur incorrect"
-      );
-
-      return;
-
-    }
-
-    localStorage.setItem(
-      ADMIN_ACCESS_KEY,
-      "true"
-    );
-
-  }
-
-  await renderAdmin();
-
-}
-
-
-// ============================================================
-// ADMIN STATUS
-// ============================================================
-
-const ORDER_STATUSES = [
-  "Enregistrée",
-  "Acceptée",
-  "Préparation",
-  "En transit",
-  "Livraison proche",
-  "Livrée"
-];
-
-
-// ============================================================
-// ADMIN DASHBOARD
-// ============================================================
-
-async function renderAdmin() {
-
-  modalContent.innerHTML = `
-
-    <div>
-
-      <h2>
-        Dashboard NovaShop
-      </h2>
-
-      <div
-        style="
-          margin-top:18px;
-          padding:15px;
-          background:var(--card);
-          border:1px solid var(--line);
-          border-radius:14px;
-        "
-      >
-
-        <strong>
-          Administrateur
-        </strong>
-
-        <p
-          style="
-            color:var(--muted);
-            margin-top:5px;
-          "
-        >
-          ${escapeHTML(
-            currentUser.email
-          )}
-        </p>
-
-      </div>
-
-      <div
-        style="
-          margin-top:10px;
-          padding:15px;
-          background:var(--card);
-          border:1px solid var(--line);
-          border-radius:14px;
-        "
-      >
-
-        <strong>
-          Catalogue
-        </strong>
-
-        <p
-          style="
-            color:var(--muted);
-            margin-top:5px;
-          "
-        >
-          ${products.length} produits actifs.
-        </p>
-
-      </div>
-
-      <div
-        style="
-          display:grid;
-          gap:10px;
-          margin-top:15px;
-        "
-      >
-
-        <button
-          class="secondary"
-          id="removeAdminAuth"
-        >
-          Retirer l'autorisation mémorisée
-        </button>
-
-        <button
-          class="secondary"
-          id="deleteOrders"
-          style="color:var(--danger)"
-        >
-          Supprimer toutes les commandes
-        </button>
-
-      </div>
-
-      <div
-        id="adminOrders"
-        style="margin-top:22px"
-      >
-        Chargement...
-      </div>
-
-    </div>
-
-  `;
-
-  openModal();
-
-
-  $("removeAdminAuth").onclick =
-    () => {
-
-      localStorage.removeItem(
-        ADMIN_ACCESS_KEY
-      );
-
-      closeModal();
-
-      showToast(
-        "Autorisation administrateur supprimée"
-      );
-
-    };
-
-
-  $("deleteOrders").onclick =
-    async () => {
-
-      if (!isAdmin()) return;
-
-      const confirmed =
-        confirm(
-          "Supprimer toutes les commandes ?"
-        );
-
-      if (!confirmed) return;
-
-      try {
-
-        const snapshot =
-          await getDocs(
-            collection(db,"orders")
-          );
-
-        for (
-          const orderDoc
-          of snapshot.docs
-        ) {
-
-          await deleteDoc(
-            doc(
-              db,
-              "orders",
-              orderDoc.id
-            )
-          );
-
-        }
-
-        showToast(
-          "Commandes supprimées"
-        );
-
-        await renderAdmin();
-
-      } catch(error) {
-
-        showToast(
-          error.message
-        );
-
-      }
-
-    };
-
-
-  try {
-
-    const snapshot =
-      await getDocs(
-        collection(db,"orders")
-      );
-
-    const orders =
-      snapshot.docs
-        .map(d => ({
-          id:d.id,
-          ...d.data()
-        }))
-        .sort(
-          (a,b) =>
-            getTimestampValue(b.createdAt) -
-            getTimestampValue(a.createdAt)
-        );
-
-
-    if (!orders.length) {
-
-      $("adminOrders").innerHTML = `
-
-        <div
-          style="
-            padding:20px;
-            border:1px solid var(--line);
-            border-radius:14px;
-            text-align:center;
-          "
-        >
-
-          <strong>
-            Aucune commande
-          </strong>
-
-          <p
-            style="
-              color:var(--muted);
-              margin-top:6px;
-            "
-          >
-            Les commandes apparaîtront ici.
-          </p>
-
-        </div>
-
-      `;
-
-      return;
-
+            return;
+          }
+        };
     }
 
 
-    $("adminOrders").innerHTML = `
+  }catch(error){
 
-      <div>
-
-        <strong>
-          ${orders.length} commande(s)
-        </strong>
-
-      </div>
-
-      <div
-        style="
-          display:grid;
-          gap:14px;
-          margin-top:12px;
-        "
-      >
-
-        ${orders.map(order => {
-
-          const status =
-            order.status ||
-            "Enregistrée";
-
-          const accepted =
-            order.paymentStatus === "accepted" ||
-            order.paymentStatus === "free";
-
-          const address =
-            order.address || {};
-
-          return `
-
-            <div
-              style="
-                padding:16px;
-                border:1px solid var(--line);
-                border-radius:15px;
-                background:var(--card);
-              "
-            >
-
-              <div
-                style="
-                  display:flex;
-                  justify-content:space-between;
-                  gap:12px;
-                "
-              >
-
-                <div>
-
-                  <strong>
-                    #${escapeHTML(
-                      order.id.slice(0,8)
-                    )}
-                  </strong>
-
-                  <p
-                    style="
-                      color:var(--muted);
-                      font-size:12px;
-                      margin-top:5px;
-                    "
-                  >
-                    ${escapeHTML(
-                      order.email || ""
-                    )}
-                  </p>
-
-                  <p
-                    style="
-                      color:var(--muted);
-                      font-size:12px;
-                    "
-                  >
-                    ${formatTimestamp(
-                      order.createdAt
-                    )}
-                  </p>
-
-                </div>
-
-                <span class="status">
-                  ${escapeHTML(status)}
-                </span>
-
-              </div>
-
-
-              <div
-                style="
-                  margin-top:14px;
-                  line-height:1.8;
-                  font-size:14px;
-                "
-              >
-
-                <div>
-                  <strong>Total :</strong>
-                  ${money(
-                    Number(order.total || 0)
-                  )}
-                </div>
-
-                <div>
-                  <strong>Paiement :</strong>
-                  ${escapeHTML(
-                    order.paymentMethod ||
-                    "Non défini"
-                  )}
-                </div>
-
-                <div>
-                  <strong>État paiement :</strong>
-                  ${escapeHTML(
-                    order.paymentStatus ||
-                    "pending"
-                  )}
-                </div>
-
-                ${
-                  order.promoCode
-                    ? `
-                      <div
-                        style="color:#25d695"
-                      >
-                        🎟️ Promo :
-                        ${escapeHTML(
-                          order.promoCode
-                        )}
-                      </div>
-                    `
-                    : ""
-                }
-
-              </div>
-
-
-              ${
-                address.firstName ||
-                address.street ||
-                address.city
-                  ? `
-
-                    <div
-                      style="
-                        margin-top:14px;
-                        padding:12px;
-                        border:1px solid var(--line);
-                        border-radius:10px;
-                        font-size:13px;
-                        line-height:1.7;
-                      "
-                    >
-
-                      <strong>
-                        📍 Adresse de livraison
-                      </strong>
-
-                      <div style="margin-top:5px">
-
-                        ${escapeHTML(
-                          address.firstName || ""
-                        )}
-                        ${escapeHTML(
-                          address.lastName || ""
-                        )}<br>
-
-                        ${escapeHTML(
-                          address.street || ""
-                        )}<br>
-
-                        ${escapeHTML(
-                          address.postalCode || ""
-                        )}
-                        ${escapeHTML(
-                          address.city || ""
-                        )}<br>
-
-                        ${escapeHTML(
-                          address.country || ""
-                        )}
-
-                      </div>
-
-                    </div>
-
-                  `
-                  : ""
-              }
-
-
-              ${
-                order.paymentMethod === "PayPal.Me" &&
-                !accepted
-                  ? `
-                    <button
-                      class="primary"
-                      style="
-                        width:100%;
-                        margin-top:12px;
-                      "
-                      data-accept-paypal="${order.id}"
-                    >
-                      ✓ Accepter le paiement PayPal
-                    </button>
-                  `
-                  : ""
-              }
-
-
-              <div
-                style="
-                  display:grid;
-                  gap:9px;
-                  margin-top:14px;
-                "
-              >
-
-                <select
-                  data-status="${escapeAttribute(order.id)}"
-                  style="width:100%"
-                >
-
-                  ${ORDER_STATUSES.map(s => `
-
-                    <option
-                      value="${escapeAttribute(s)}"
-                      ${
-                        status === s
-                          ? "selected"
-                          : ""
-                      }
-                    >
-                      ${escapeHTML(s)}
-                    </option>
-
-                  `).join("")}
-
-                </select>
-
-
-                <input
-                  type="text"
-                  placeholder="Ville du colis"
-                  value="${escapeAttribute(
-                    order.packageCity || ""
-                  )}"
-                  data-city="${escapeAttribute(order.id)}"
-                  style="
-                    height:43px;
-                    padding:0 11px;
-                    border:1px solid var(--line);
-                    background:var(--card);
-                    color:var(--text);
-                    border-radius:10px;
-                  "
-                >
-
-
-                <input
-                  type="text"
-                  placeholder="Numéro de suivi"
-                  value="${escapeAttribute(
-                    order.trackingNumber || ""
-                  )}"
-                  data-tracking="${escapeAttribute(order.id)}"
-                  style="
-                    height:43px;
-                    padding:0 11px;
-                    border:1px solid var(--line);
-                    background:var(--card);
-                    color:var(--text);
-                    border-radius:10px;
-                  "
-                >
-
-
-                <input
-                  type="text"
-                  placeholder="Durée estimée avant livraison"
-                  value="${escapeAttribute(
-                    order.deliveryDuration || ""
-                  )}"
-                  data-duration="${escapeAttribute(order.id)}"
-                  style="
-                    height:43px;
-                    padding:0 11px;
-                    border:1px solid var(--line);
-                    background:var(--card);
-                    color:var(--text);
-                    border-radius:10px;
-                  "
-                >
-
-
-                <input
-                  type="date"
-                  value="${escapeAttribute(
-                    order.estimatedDelivery || ""
-                  )}"
-                  data-date="${escapeAttribute(order.id)}"
-                  style="
-                    height:43px;
-                    padding:0 11px;
-                    border:1px solid var(--line);
-                    background:var(--card);
-                    color:var(--text);
-                    border-radius:10px;
-                  "
-                >
-
-
-                <button
-                  class="secondary"
-                  data-save-order="${escapeAttribute(order.id)}"
-                >
-                  💾 Enregistrer le suivi
-                </button>
-
-
-                <button
-                  class="secondary"
-                  data-print-order="${escapeAttribute(order.id)}"
-                >
-                  🖨️ Imprimer la facture
-                </button>
-
-              </div>
-
-            </div>
-
-          `;
-
-        }).join("")}
-
-      </div>
-
-    `;
-
-
-    $("adminOrders").onclick =
-      event => {
-
-        const paypal =
-          event.target.closest(
-            "[data-accept-paypal]"
-          );
-
-        const save =
-          event.target.closest(
-            "[data-save-order]"
-          );
-
-        const print =
-          event.target.closest(
-            "[data-print-order]"
-          );
-
-
-        if (paypal) {
-
-          acceptPaypalOrder(
-            paypal.dataset.acceptPaypal
-          );
-
-          return;
-
-        }
-
-
-        if (save) {
-
-          saveAdminOrder(
-            save.dataset.saveOrder
-          );
-
-          return;
-
-        }
-
-
-        if (print) {
-
-          printAdminInvoice(
-            print.dataset.printOrder
-          );
-
-        }
-
-      };
-
-
-  } catch(error) {
+    console.error(error);
 
     $("adminOrders").innerHTML = `
 
-      <div
-        style="
-          padding:15px;
-          border:1px solid var(--danger);
-          border-radius:12px;
-        "
-      >
-
-        ${escapeHTML(
-          error.message
-        )}
-
+      <div class="error-message">
+        Impossible de charger les commandes.
       </div>
-
     `;
-
   }
-
 }
 
 
-// ============================================================
-// ACCEPT PAYPAL
-// ============================================================
+/* =========================================================
+   ACCEPT PAYPAL
+========================================================= */
 
-async function acceptPaypalOrder(orderId) {
+async function acceptPaypalOrder(orderId){
 
-  if (!isAdmin()) return;
-
-  try {
+  try{
 
     await updateDoc(
       doc(
@@ -4069,76 +3523,68 @@ async function acceptPaypalOrder(orderId) {
         orderId
       ),
       {
-
-        paymentStatus:
-          "accepted",
-
-        status:
-          "Acceptée",
-
+        paymentStatus:"accepted",
+        status:"Acceptée",
         paymentAcceptedAt:
           serverTimestamp()
-
       }
     );
 
+
     showToast(
-      "Paiement PayPal accepté"
+      "Paiement accepté ✓"
     );
 
     await renderAdmin();
 
-  } catch(error) {
+  }catch(error){
+
+    console.error(error);
 
     showToast(
-      "Erreur : " +
-      error.message
+      "Impossible d'accepter le paiement"
     );
-
   }
-
 }
 
 
-// ============================================================
-// SAVE ADMIN ORDER
-// ============================================================
+/* =========================================================
+   SAVE ADMIN ORDER
+========================================================= */
 
-async function saveAdminOrder(orderId) {
+async function saveAdminOrder(orderId){
 
-  if (!isAdmin()) return;
-
-  const safe =
-    CSS.escape(orderId);
-
-  const statusEl =
+  const status =
     document.querySelector(
-      `[data-status="${safe}"]`
-    );
+      `[data-status="${CSS.escape(orderId)}"]`
+    )?.value || "Enregistrée";
 
-  const cityEl =
+
+  const packageCity =
     document.querySelector(
-      `[data-city="${safe}"]`
-    );
+      `[data-package-city="${CSS.escape(orderId)}"]`
+    )?.value?.trim() || "";
 
-  const trackingEl =
+
+  const trackingNumber =
     document.querySelector(
-      `[data-tracking="${safe}"]`
-    );
+      `[data-tracking="${CSS.escape(orderId)}"]`
+    )?.value?.trim() || "";
 
-  const durationEl =
+
+  const deliveryDuration =
     document.querySelector(
-      `[data-duration="${safe}"]`
-    );
+      `[data-duration="${CSS.escape(orderId)}"]`
+    )?.value?.trim() || "";
 
-  const dateEl =
+
+  const estimatedDelivery =
     document.querySelector(
-      `[data-date="${safe}"]`
-    );
+      `[data-estimated="${CSS.escape(orderId)}"]`
+    )?.value || "";
 
-  if (!statusEl) return;
 
-  try {
+  try{
 
     await updateDoc(
       doc(
@@ -4147,142 +3593,87 @@ async function saveAdminOrder(orderId) {
         orderId
       ),
       {
-
-        status:
-          statusEl.value,
-
-        packageCity:
-          cityEl?.value.trim() || "",
-
-        trackingNumber:
-          trackingEl?.value.trim() || "",
-
-        deliveryDuration:
-          durationEl?.value.trim() || "",
-
-        estimatedDelivery:
-          dateEl?.value || "",
-
+        status,
+        packageCity,
+        trackingNumber,
+        deliveryDuration,
+        estimatedDelivery,
         updatedAt:
           serverTimestamp()
-
       }
     );
 
-    showToast(
-      "Suivi de commande enregistré"
-    );
-
-    await renderAdmin();
-
-  } catch(error) {
 
     showToast(
-      "Erreur : " +
-      error.message
+      "Commande mise à jour ✓"
     );
 
+  }catch(error){
+
+    console.error(error);
+
+    showToast(
+      "Erreur de mise à jour"
+    );
   }
-
 }
 
 
-// ============================================================
-// PRINT ADMIN INVOICE
-// ============================================================
+/* =========================================================
+   ADMIN INVOICE
+========================================================= */
 
-async function printAdminInvoice(orderId) {
+async function printAdminInvoice(orderId){
 
-  if (!isAdmin()) return;
-
-  try {
+  try{
 
     const snapshot =
       await getDocs(
         collection(db,"orders")
       );
+
 
     const found =
       snapshot.docs.find(
-        d => d.id === orderId
+        d =>
+          d.id === orderId
       );
 
-    if (!found) {
+
+    if(!found){
 
       showToast(
         "Commande introuvable"
       );
 
       return;
-
     }
+
 
     const order = {
       id:found.id,
       ...found.data()
     };
 
+
     printInvoiceHTML(order);
 
-  } catch(error) {
+  }catch(error){
+
+    console.error(error);
 
     showToast(
-      error.message
+      "Impossible d'imprimer la facture"
     );
-
   }
-
 }
 
 
-// ============================================================
-// INVOICE
-// ============================================================
+/* =========================================================
+   PRINT INVOICE
+========================================================= */
 
-function printInvoiceHTML(order) {
-
-  const items =
-    Array.isArray(order.items)
-      ? order.items
-      : [];
-
-  const address =
-    order.address || {};
-
-  const rows =
-    items.map(item => `
-
-      <tr>
-
-        <td>
-          ${escapeHTML(
-            item.name || ""
-          )}
-        </td>
-
-        <td>
-          ${Number(
-            item.qty || 0
-          )}
-        </td>
-
-        <td>
-          ${money(
-            Number(item.price || 0)
-          )}
-        </td>
-
-        <td>
-          ${money(
-            Number(item.price || 0) *
-            Number(item.qty || 0)
-          )}
-        </td>
-
-      </tr>
-
-    `).join("");
-
+function printInvoiceHTML(order){
 
   const win =
     window.open(
@@ -4291,15 +3682,19 @@ function printInvoiceHTML(order) {
       "width=900,height=700"
     );
 
-  if (!win) {
 
+  if(!win){
     showToast(
-      "Autorise les fenêtres popup pour imprimer."
+      "Autorise les fenêtres pop-up"
     );
-
     return;
-
   }
+
+
+  const items =
+    Array.isArray(order.items)
+      ? order.items
+      : [];
 
 
   win.document.write(`
@@ -4322,7 +3717,6 @@ function printInvoiceHTML(order) {
           font-family:Arial,sans-serif;
           padding:40px;
           color:#111;
-          background:#fff;
         }
 
         h1{
@@ -4333,21 +3727,13 @@ function printInvoiceHTML(order) {
           color:#666;
         }
 
-        .box{
-          border:1px solid #ddd;
-          border-radius:10px;
-          padding:15px;
-          margin-top:20px;
-        }
-
         table{
           width:100%;
           border-collapse:collapse;
           margin-top:30px;
         }
 
-        th,
-        td{
+        th,td{
           padding:12px;
           border-bottom:1px solid #ddd;
           text-align:left;
@@ -4355,9 +3741,15 @@ function printInvoiceHTML(order) {
 
         .total{
           text-align:right;
-          font-size:23px;
+          font-size:24px;
           font-weight:bold;
           margin-top:25px;
+        }
+
+        .box{
+          padding:15px;
+          background:#f5f5f5;
+          margin-top:20px;
         }
 
       </style>
@@ -4382,25 +3774,23 @@ function printInvoiceHTML(order) {
 
         #${escapeHTML(order.id)}
 
-        <br><br>
-
-        <strong>
-          Client :
-        </strong>
-
-        ${escapeHTML(
-          order.email || ""
-        )}
-
-        <br><br>
+        <br>
 
         <strong>
           Date :
         </strong>
 
-        ${formatTimestamp(
-          order.createdAt
+        ${escapeHTML(
+          formatTimestamp(order.createdAt)
         )}
+
+        <br>
+
+        <strong>
+          Client :
+        </strong>
+
+        ${escapeHTML(order.email || "")}
 
       </div>
 
@@ -4408,37 +3798,39 @@ function printInvoiceHTML(order) {
       <div class="box">
 
         <strong>
-          Adresse de livraison
+          Livraison
         </strong>
 
         <br><br>
 
         ${escapeHTML(
-          address.firstName || ""
-        )}
-        ${escapeHTML(
-          address.lastName || ""
+          order.address?.firstName || ""
         )}
 
-        <br>
-
         ${escapeHTML(
-          address.street || ""
+          order.address?.lastName || ""
         )}
 
         <br>
 
         ${escapeHTML(
-          address.postalCode || ""
-        )}
-        ${escapeHTML(
-          address.city || ""
+          order.address?.street || ""
         )}
 
         <br>
 
         ${escapeHTML(
-          address.country || ""
+          order.address?.postalCode || ""
+        )}
+
+        ${escapeHTML(
+          order.address?.city || ""
+        )}
+
+        <br>
+
+        ${escapeHTML(
+          order.address?.country || ""
         )}
 
       </div>
@@ -4449,30 +3841,44 @@ function printInvoiceHTML(order) {
         <thead>
 
           <tr>
-
-            <th>
-              Produit
-            </th>
-
-            <th>
-              Quantité
-            </th>
-
-            <th>
-              Prix
-            </th>
-
-            <th>
-              Total
-            </th>
-
+            <th>Produit</th>
+            <th>Prix</th>
+            <th>Qté</th>
+            <th>Total</th>
           </tr>
 
         </thead>
 
         <tbody>
 
-          ${rows}
+          ${
+            items.map(item=>`
+
+              <tr>
+
+                <td>
+                  ${escapeHTML(item.name || "")}
+                </td>
+
+                <td>
+                  ${money(item.price)}
+                </td>
+
+                <td>
+                  ${Number(item.qty || 0)}
+                </td>
+
+                <td>
+                  ${money(
+                    Number(item.price || 0) *
+                    Number(item.qty || 0)
+                  )}
+                </td>
+
+              </tr>
+
+            `).join("")
+          }
 
         </tbody>
 
@@ -4486,36 +3892,28 @@ function printInvoiceHTML(order) {
         </strong>
 
         ${escapeHTML(
-          order.paymentMethod ||
-          "Non défini"
+          order.paymentMethod || ""
         )}
 
-        <br><br>
+        <br>
 
         <strong>
           Statut :
         </strong>
 
         ${escapeHTML(
-          order.status ||
-          "Enregistrée"
+          order.status || ""
         )}
 
-        ${
-          order.promoCode
-            ? `
-              <br><br>
+        <br>
 
-              <strong>
-                Code promo :
-              </strong>
+        <strong>
+          Promo :
+        </strong>
 
-              ${escapeHTML(
-                order.promoCode
-              )}
-            `
-            : ""
-        }
+        ${escapeHTML(
+          order.promoCode || "Aucune"
+        )}
 
       </div>
 
@@ -4523,9 +3921,7 @@ function printInvoiceHTML(order) {
       <div class="total">
 
         Total :
-        ${money(
-          Number(order.total || 0)
-        )}
+        ${money(order.total)}
 
       </div>
 
@@ -4533,7 +3929,14 @@ function printInvoiceHTML(order) {
       <script>
 
         window.onload = function(){
-          window.print();
+
+          setTimeout(
+            function(){
+              window.print();
+            },
+            300
+          );
+
         };
 
       <\/script>
@@ -4544,14 +3947,14 @@ function printInvoiceHTML(order) {
 
   `);
 
-  win.document.close();
 
+  win.document.close();
 }
 
 
-// ============================================================
-// AUTH STATE
-// ============================================================
+/* =========================================================
+   AUTH STATE
+========================================================= */
 
 onAuthStateChanged(
   auth,
@@ -4560,26 +3963,30 @@ onAuthStateChanged(
     currentUser =
       user || null;
 
-    if (adminBtn) {
+
+    if(adminBtn){
 
       const connectedEmail =
         user?.email
           ?.trim()
           .toLowerCase() || "";
 
+
       const adminEmail =
         ADMIN_EMAIL
           .trim()
           .toLowerCase();
 
-      if (
-        connectedEmail === adminEmail
-      ) {
+
+      if(
+        connectedEmail ===
+        adminEmail
+      ){
 
         adminBtn.style.display =
           "grid";
 
-      } else {
+      }else{
 
         adminBtn.style.display =
           "none";
@@ -4587,49 +3994,50 @@ onAuthStateChanged(
         localStorage.removeItem(
           ADMIN_ACCESS_KEY
         );
-
       }
-
     }
 
   }
 );
 
 
-// ============================================================
-// BUTTONS
-// ============================================================
+/* =========================================================
+   BUTTONS
+========================================================= */
 
-if (settingsBtn) {
+if(settingsBtn){
   settingsBtn.onclick =
     openSettings;
 }
 
-if (accountBtn) {
+
+if(accountBtn){
   accountBtn.onclick =
     openAccount;
 }
 
-if (ordersBtn) {
+
+if(ordersBtn){
   ordersBtn.onclick =
     openOrders;
 }
 
-if (adminBtn) {
+
+if(adminBtn){
   adminBtn.onclick =
     openAdmin;
 }
 
 
-// ============================================================
-// KEYBOARD
-// ============================================================
+/* =========================================================
+   ESCAPE
+========================================================= */
 
 document.addEventListener(
   "keydown",
-  event => {
+  event=>{
 
-    if (event.key === "Escape") {
+    if(event.key === "Escape"){
 
       closeModal();
       closeCart();
@@ -4640,11 +4048,11 @@ document.addEventListener(
 );
 
 
-// ============================================================
-// HELPERS
-// ============================================================
+/* =========================================================
+   HELPERS
+========================================================= */
 
-function escapeHTML(value) {
+function escapeHTML(value){
 
   return String(value ?? "")
     .replaceAll("&","&amp;")
@@ -4652,18 +4060,16 @@ function escapeHTML(value) {
     .replaceAll(">","&gt;")
     .replaceAll('"',"&quot;")
     .replaceAll("'","&#039;");
-
 }
 
 
-function escapeAttribute(value) {
+function escapeAttribute(value){
 
   return escapeHTML(value);
-
 }
 
 
-function authError(code) {
+function authError(code){
 
   const errors = {
 
@@ -4699,116 +4105,103 @@ function authError(code) {
 
     "auth/invalid-api-key":
       "La clé API Firebase est invalide."
-
   };
+
 
   return (
     errors[code] ||
     "Une erreur est survenue."
   );
-
 }
 
 
-function getTimestampValue(timestamp) {
+/* =========================================================
+   TIMESTAMP
+========================================================= */
 
-  if (!timestamp) return 0;
+function getTimestampValue(timestamp){
 
-  if (
-    typeof timestamp.seconds === "number"
-  ) {
-
-    return timestamp.seconds * 1000;
-
+  if(!timestamp){
+    return 0;
   }
 
-  if (timestamp instanceof Date) {
+
+  if(
+    typeof timestamp.seconds === "number"
+  ){
+
+    return (
+      timestamp.seconds * 1000 +
+      Math.floor(
+        (timestamp.nanoseconds || 0) /
+        1000000
+      )
+    );
+  }
+
+
+  if(
+    timestamp instanceof Date
+  ){
 
     return timestamp.getTime();
-
   }
 
-  if (
-    typeof timestamp.toDate === "function"
-  ) {
 
-    return timestamp.toDate().getTime();
+  if(
+    typeof timestamp === "string"
+  ){
 
+    const value =
+      Date.parse(timestamp);
+
+    return Number.isNaN(value)
+      ? 0
+      : value;
   }
+
 
   return 0;
-
 }
 
 
-function formatTimestamp(timestamp) {
+function formatTimestamp(timestamp){
 
   const value =
     getTimestampValue(timestamp);
 
-  if (!value) {
+
+  if(!value){
     return "Date inconnue";
   }
 
-  try {
 
-    return new Intl.DateTimeFormat(
-      "fr-FR",
-      {
-        dateStyle:"medium",
-        timeStyle:"short"
-      }
-    ).format(
-      new Date(value)
-    );
-
-  } catch {
-
-    return "Date inconnue";
-
-  }
-
+  return new Intl.DateTimeFormat(
+    "fr-FR",
+    {
+      dateStyle:"medium",
+      timeStyle:"short"
+    }
+  ).format(
+    new Date(value)
+  );
 }
 
 
-// ============================================================
-// INITIALISATION
-// ============================================================
+/* =========================================================
+   INITIALIZATION
+========================================================= */
 
 renderCategories();
 renderProducts();
 renderCart();
 
-applyLanguage(
-  localStorage.getItem(
-    "novaLanguage"
-  ) || "fr"
-);
+applyTheme();
 
 
-// ============================================================
-// FIREBASE DEBUG
-// ============================================================
-
-console.log(
-  "🔥 NovaShop Firebase connecté"
-);
-
-console.log(
-  "📦 Catalogue :",
-  products.length,
-  "produits"
-);
-
-console.log(
-  "🆔 Projet Firebase :",
-  firebaseApp.options.projectId
-);
-
-
-// ============================================================
-// PUBLIC API
-// ============================================================
+/* =========================================================
+   PUBLIC API
+========================================================= */
 
 window.NovaShop = {
 
@@ -4838,7 +4231,7 @@ window.NovaShop = {
 
   imageUrl,
 
-  state() {
+  state(){
 
     return {
 
@@ -4858,17 +4251,6 @@ window.NovaShop = {
         currentUser?.email || null
 
     };
-
   }
 
 };
-
-
-// ============================================================
-// FIN
-// ============================================================
-
-console.log(
-  `%cNovaShop chargé correctement : ${products.length} produits`,
-  "font-weight:900;font-size:14px"
-);
