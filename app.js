@@ -4,10 +4,10 @@ import {
 
 import {
   getAuth,
-  onAuthStateChanged,
-  signInWithPopup,
   GoogleAuthProvider,
-  signOut
+  signInWithPopup,
+  signOut,
+  onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
 
 import {
@@ -15,13 +15,13 @@ import {
   collection,
   addDoc,
   getDocs,
-  deleteDoc,
-  doc,
   query,
   where,
+  updateDoc,
+  doc,
+  deleteDoc,
   serverTimestamp
 } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
-
 
 /* =========================================================
    FIREBASE
@@ -37,20 +37,25 @@ const firebaseConfig = {
   measurementId: "G-XNY5X2VMY9"
 };
 
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
-const provider = new GoogleAuthProvider();
+const firebaseApp = initializeApp(firebaseConfig);
+const auth = getAuth(firebaseApp);
+const db = getFirestore(firebaseApp);
 
+const googleProvider = new GoogleAuthProvider();
 
 /* =========================================================
-   ADMIN
+   OWNER
 ========================================================= */
 
 const ADMIN_EMAIL = "pc2alex.les@gmail.com";
 const ADMIN_CODE = "NOVA-ADMIN-2026";
 const ADMIN_ACCESS_KEY = "novaAdminAuthorized";
 
+/* =========================================================
+   PROMO
+========================================================= */
+
+const PROMO_CODE = "NOVA100";
 
 /* =========================================================
    PRODUCTS
@@ -59,407 +64,369 @@ const ADMIN_ACCESS_KEY = "novaAdminAuthorized";
 const products = [
 
 {
- id:"p1",
- name:"Gigabyte B650 AORUS Elite AX",
- category:"Composants",
- price:189.99,
- image:"https://m.media-amazon.com/images/I/81JFKzNyl+L._AC_SL1500_.jpg"
+id:"p1",
+name:"Gigabyte B650 AORUS Elite AX",
+category:"Composants",
+price:189.99,
+image:"https://m.media-amazon.com/images/I/81JFKzNyl+L._AC_SL1500_.jpg"
 },
 
 {
- id:"p2",
- name:"PC Gamer AMD Ryzen 7 7800X3D | RX 9070 XT | 32 Go DDR5",
- category:"PC Gamer",
- price:2237.65,
- image:"https://www.memorypc.fr/thumbnail/53/79/73/1786604635/019f8f1c2c6972a8a3ea1ee9516a0652_1784812416_800x800.png"
+id:"p2",
+name:"PC Gamer AMD Ryzen 7 7800X3D | RX 9070 XT | 32 Go DDR5",
+category:"PC Gamer",
+price:2237.65,
+image:"https://www.memorypc.fr/thumbnail/53/79/73/1786604635/019f8f1c2c6972a8a3ea1ee9516a0652_1784812416_800x800.png"
 },
 
 {
- id:"p3",
- name:"HyperX Cloud II",
- category:"Casques",
- price:49.99,
- image:"https://fr.hyperx.com/cdn/shop/files/hyperx_cloud_ii_red_1_main.jpg?v=1764129756"
+id:"p3",
+name:"HyperX Cloud II",
+category:"Casques",
+price:49.99,
+image:"https://fr.hyperx.com/cdn/shop/files/hyperx_cloud_ii_red_1_main.jpg?v=1764129756"
 },
 
 {
- id:"p4",
- name:"TECORS Clavier Gamer Mécanique 60% AZERTY",
- category:"Claviers",
- price:30,
- image:"https://m.media-amazon.com/images/I/71-lhAU97VL._AC_SL1500_.jpg"
+id:"p4",
+name:"TECORS Clavier Gamer Mécanique 60% AZERTY",
+category:"Claviers",
+price:30,
+image:"https://m.media-amazon.com/images/I/71-lhAU97VL._AC_SL1500_.jpg"
 },
 
 {
- id:"p5",
- name:"Clavier Magnétique 65% Celshading Noir",
- category:"Claviers",
- price:120.90,
- image:"https://tryhard-gear.com/cdn/shop/files/TestCelshadingnoirV2.webp?v=1762273866&width=832"
+id:"p5",
+name:"Clavier Magnétique 65% Celshading Noir",
+category:"Claviers",
+price:120.90,
+image:"https://tryhard-gear.com/cdn/shop/files/TestCelshadingnoirV2.webp?v=1762273866&width=832"
 },
 
 {
- id:"p6",
- name:"Ajazz AJ199 MAX Carbon Fiber Wireless Gaming Mouse",
- category:"Souris",
- price:49.99,
- image:"https://ae-pic-a1.aliexpress-media.com/kf/S1e981b53ccfe4e1391cd5b5deb4fce87o.png_960x960.png_.avif"
+id:"p6",
+name:"Ajazz AJ199 MAX Carbon Fiber Wireless Gaming Mouse",
+category:"Souris",
+price:49.99,
+image:"https://ae-pic-a1.aliexpress-media.com/kf/S1e981b53ccfe4e1391cd5b5deb4fce87o.png_960x960.png_.avif"
 },
 
 {
- id:"p7",
- name:"Logitech G PRO X2 Superstrike Blanc et Noir",
- category:"Souris",
- price:150.99,
- image:"https://static.fnac-static.com/multimedia/Images/FR/MDM/7a/34/bc/29111418/1540-1.jpg"
+id:"p7",
+name:"Logitech G PRO X2 Superstrike Blanc et Noir",
+category:"Souris",
+price:150.99,
+image:"https://static.fnac-static.com/multimedia/Images/FR/MDM/7a/34/bc/29111418/1540-1.jpg"
 },
 
 {
- id:"p8",
- name:"Samsung 990 PRO 1TB",
- category:"Stockage",
- price:249.99,
- image:"https://content.pearl.fr/media/cache/default/article_ultralarge_high_nocrop/shared/images/articles/M/MW1/disque-dur-interne-ssd-990-pro-pcie-nvme-m-2-2280-1-to-ref_MW1148_2.jpg"
+id:"p8",
+name:"Samsung 990 PRO 1TB",
+category:"Stockage",
+price:249.99,
+image:"https://content.pearl.fr/media/cache/default/article_ultralarge_high_nocrop/shared/images/articles/M/MW1/disque-dur-interne-ssd-990-pro-pcie-nvme-m-2-2280-1-to-ref_MW1148_2.jpg"
 },
 
 {
- id:"p9",
- name:"Samsung 990 PRO 2TB",
- category:"Stockage",
- price:199.93,
- image:"https://pc.comparer.fr/500x500/310191422.webp"
+id:"p9",
+name:"Samsung 990 PRO 2TB",
+category:"Stockage",
+price:199.93,
+image:"https://pc.comparer.fr/500x500/310191422.webp"
 },
 
 {
- id:"p10",
- name:"CORSAIR RM1000x EU",
- category:"Alimentations",
- price:159.90,
- image:"https://assets.corsair.com/image/upload/c_pad,q_85,h_608,w_608,f_auto/products/Power-Supply-Units/base-rmx-2024-config/gallery/black/1000/RM1000x_2024_01.webp"
+id:"p10",
+name:"CORSAIR RM1000x EU",
+category:"Alimentations",
+price:159.90,
+image:"https://assets.corsair.com/image/upload/c_pad,q_85,h_608,w_608,f_auto/products/Power-Supply-Units/base-rmx-2024-config/gallery/black/1000/RM1000x_2024_01.webp"
 },
 
 {
- id:"p11",
- name:"CORSAIR RM850x EU",
- category:"Alimentations",
- price:134.90,
- image:"https://assets.corsair.com/image/upload/c_pad,q_85,h_608,w_608,f_auto/products/Power-Supply-Units/base-rmx-2024-config/gallery/black/850/RM850x_2024_01.webp"
+id:"p11",
+name:"CORSAIR RM850x EU",
+category:"Alimentations",
+price:134.90,
+image:"https://assets.corsair.com/image/upload/c_pad,q_85,h_608,w_608,f_auto/products/Power-Supply-Units/base-rmx-2024-config/gallery/black/850/RM850x_2024_01.webp"
 },
 
 {
- id:"p12",
- name:"Corsair Frame 5000D RS ARGB Noir",
- category:"Boîtiers",
- price:159.90,
- image:"https://media.ldlc.com/r1600/ld/products/00/06/26/05/LD0006260502.jpg"
+id:"p12",
+name:"Corsair Frame 5000D RS ARGB Noir",
+category:"Boîtiers",
+price:159.90,
+image:"https://media.ldlc.com/r1600/ld/products/00/06/26/05/LD0006260502.jpg"
 },
 
 {
- id:"p13",
- name:"ARCTIC Liquid Freezer III Pro 360 A-RGB Black",
- category:"Refroidissement",
- price:129.90,
- image:"https://cdn.idealo.com/folder/Product/206182/0/206182034/s4_produktbild_gross/arctic-liquid-freezer-iii-pro-360-a-rgb-black.jpg"
+id:"p13",
+name:"ARCTIC Liquid Freezer III Pro 360 A-RGB Black",
+category:"Refroidissement",
+price:129.90,
+image:"https://cdn.idealo.com/folder/Product/206182/0/206182034/s4_produktbild_gross/arctic-liquid-freezer-iii-pro-360-a-rgb-black.jpg"
 },
 
 {
- id:"p14",
- name:"Samsung 27 QD-OLED Odyssey G6",
- category:"Écrans",
- price:399.95,
- image:"https://media.ldlc.com/r705/ld/products/00/06/32/99/LD0006329977.jpg"
+id:"p14",
+name:"Samsung 27 QD-OLED Odyssey G6",
+category:"Écrans",
+price:399.95,
+image:"https://media.ldlc.com/r705/ld/products/00/06/32/99/LD0006329977.jpg"
 },
 
 {
- id:"p15",
- name:"ELGATO Wave Mic Arm Pro",
- category:"Streaming",
- price:229.90,
- image:"https://www.digit-photo.com/images/produits/ELGATO10AAT9901/1.jpg"
+id:"p15",
+name:"ELGATO Wave Mic Arm Pro",
+category:"Streaming",
+price:229.90,
+image:"https://www.digit-photo.com/images/produits/ELGATO10AAT9901/1.jpg"
 },
 
 {
- id:"p16",
- name:"Sony DualSense Cosmic Red PS5/PC",
- category:"Manettes",
- price:74.90,
- image:"https://media.carrefour.fr/media/referential/media/cc07d7de4b9e4bea8c063e8f9bb46d94/p_200x200/0711719023005_0.jpg"
+id:"p16",
+name:"Sony DualSense Cosmic Red PS5/PC",
+category:"Manettes",
+price:74.90,
+image:"https://media.carrefour.fr/media/referential/media/cc07d7de4b9e4bea8c063e8f9bb46d94/p_200x200/0711719023005_0.jpg"
 },
 
 {
- id:"p17",
- name:"ASUS TUF Gaming B650-PLUS",
- category:"Composants",
- price:179.90,
- image:"https://media.materiel.net/r550/products/MN0005986139.jpg"
+id:"p17",
+name:"ASUS TUF Gaming B650-PLUS",
+category:"Composants",
+price:179.90,
+image:"https://media.materiel.net/r550/products/MN0005986139.jpg"
 },
 
 {
- id:"p18",
- name:"MSI MAG B650 Tomahawk WiFi",
- category:"Composants",
- price:189.90,
- image:"https://m.media-amazon.com/images/I/71TYAcZ4J8L._AC_SL1200_.jpg"
+id:"p18",
+name:"MSI MAG B650 Tomahawk WiFi",
+category:"Composants",
+price:189.90,
+image:"https://m.media-amazon.com/images/I/71TYAcZ4J8L._AC_SL1200_.jpg"
 },
 
 {
- id:"p19",
- name:"KOORUI Ecran PC Gamer 27 Pouces 200Hz IPS QHD HDR400 1ms",
- category:"Écrans",
- price:74.99,
- image:"https://m.media-amazon.com/images/I/71CJ1DF-8sL._AC_SL1500_.jpg"
+id:"p19",
+name:"KOORUI Écran PC Gamer 27 Pouces 200Hz IPS QHD HDR400 1ms",
+category:"Écrans",
+price:74.99,
+image:"https://m.media-amazon.com/images/I/71CJ1DF-8sL._AC_SL1500_.jpg"
 },
 
 {
- id:"p20",
- name:"iiyama 23.8 G-Master GB2471HS-B1 Red Eagle",
- category:"Écrans",
- price:65.99,
- image:"https://media.ldlc.com/r1600/ld/products/00/06/34/20/LD0006342033.jpg"
+id:"p20",
+name:'iiyama 23.8" LED - G-Master GB2471HS-B1 Red Eagle',
+category:"Écrans",
+price:65.99,
+image:"https://media.ldlc.com/r1600/ld/products/00/06/34/20/LD0006342033.jpg"
 },
 
 {
- id:"p21",
- name:"SONGMICS Chaise de jeu ergonomique avec repose-pieds",
- category:"Chaises gaming",
- price:129.99,
- image:"https://static.songmics.fr/fit-in/1000x1000/image/Product/B34OBG077G01/B34OBG077G01-1.jpg"
+id:"p21",
+name:"SONGMICS Chaise de jeu ergonomique avec repose-pieds",
+category:"Chaises gaming",
+price:129.99,
+image:"https://static.songmics.fr/fit-in/1000x1000/image/Product/B34OBG077G01/B34OBG077G01-1.jpg"
 },
 
 {
- id:"p22",
- name:"Dowinx Série Luxe Suède LS-66D68E Blanc",
- category:"Chaises gaming",
- price:79.99,
- image:"https://eu.dowinx.com/cdn/shop/files/11_5f72b693-5f79-4d06-b48a-7cb2b2f0244a.png?v=1752139814&width=1220"
+id:"p22",
+name:"Dowinx Série Luxe Suède LS-66D68E Blanc",
+category:"Chaises gaming",
+price:79.99,
+image:"https://eu.dowinx.com/cdn/shop/files/11_5f72b693-5f79-4d06-b48a-7cb2b2f0244a.png?v=1752139814&width=1220"
 },
 
 {
- id:"p23",
- name:"Chaise GTPLAYER Ergonomique Gaming Soutien Lombaire",
- category:"Chaises gaming",
- price:109.99,
- image:"https://thumb.pccomponentes.com/w-530-530/articles/1118/11186247/167-silla-gaming-gtplayer-ergonomica-con-reposapies-y-soporte-lumbar-4d.jpg"
+id:"p23",
+name:"Chaise GTPLAYER Ergonomique Gaming Soutien Lombaire",
+category:"Chaises gaming",
+price:109.99,
+image:"https://thumb.pccomponentes.com/w-530-530/articles/1118/11186247/167-silla-gaming-gtplayer-ergonomica-con-reposapies-y-soporte-lumbar-4d.jpg"
 },
 
 {
- id:"p24",
- name:"Desk Lite - Height-Adjustable Desk",
- category:"Bureaux gaming",
- price:110.99,
- image:"https://yaasa.com/cdn/shop/files/yaasa-desk-lite_nr01_black_100_01-04545-01_1200x.jpg?v=1753169928"
+id:"p24",
+name:"Desk Lite - Height-Adjustable Desk",
+category:"Bureaux gaming",
+price:110.99,
+image:"https://yaasa.com/cdn/shop/files/yaasa-desk-lite_nr01_black_100_01-04545-01_1200x.jpg?v=1753169928"
 },
 
 {
- id:"p25",
- name:"EUREKA ERGONOMIC Bureau Gaming LED 182x76cm",
- category:"Bureaux gaming",
- price:86.99,
- image:"https://m.media-amazon.com/images/I/71Gd5G3wRsL._AC_SL1500_.jpg"
+id:"p25",
+name:"EUREKA ERGONOMIC Bureau Gaming LED 182x76cm",
+category:"Bureaux gaming",
+price:86.99,
+image:"https://m.media-amazon.com/images/I/71Gd5G3wRsL._AC_SL1500_.jpg"
 },
 
 {
- id:"p26",
- name:"Bureau gaming d’angle HOMCOM réversible",
- category:"Bureaux gaming",
- price:44.99,
- image:"https://cdn.manomano.com/pim-media/images/medium/74eca1cb1cefa063c8f600ee293ae6ee826794f8.jpg"
+id:"p26",
+name:"Bureau gaming d’angle HOMCOM réversible",
+category:"Bureaux gaming",
+price:44.99,
+image:"https://cdn.manomano.com/pim-media/images/medium/74eca1cb1cefa063c8f600ee293ae6ee826794f8.jpg"
 },
 
 {
- id:"p27",
- name:"Logitech G Pro X 2 Lightspeed Noir + Repose casque",
- category:"Casques",
- price:99.99,
- image:"https://static.fnac-static.com/multimedia/Images/FR/MDMFR/MDM/6d/e9/6e/24045933/1540-1/tsp20260429154901/Casque-PC-gaming-sans-fil-Logitech-G-Pro-X-2-Lightspeed-Noir-Repose-casque.jpg"
+id:"p27",
+name:"Logitech G Pro X 2 Lightspeed Noir + Repose casque",
+category:"Casques",
+price:99.99,
+image:"https://static.fnac-static.com/multimedia/Images/FR/MDMFR/MDM/6d/e9/6e/24045933/1540-1/tsp20260429154901/Casque-PC-gaming-sans-fil-Logitech-G-Pro-X-2-Lightspeed-Noir-Repose-casque.jpg"
 },
 
 {
- id:"p28",
- name:"Razer BlackShark V2 Pro 2023 Noir",
- category:"Casques",
- price:75.99,
- image:"https://media.ldlc.com/r1600/ld/products/00/06/07/71/LD0006077125.jpg"
+id:"p28",
+name:"Razer BlackShark V2 Pro 2023 Noir",
+category:"Casques",
+price:75.99,
+image:"https://media.ldlc.com/r1600/ld/products/00/06/07/71/LD0006077125.jpg"
 },
 
 {
- id:"p29",
- name:"beyerdynamic DT-990 Pro 250 Ohm",
- category:"Casques",
- price:60.99,
- image:"https://thumbs.static-thomann.de/thumb/padthumb600x600/pics/bdb/_10/106865/18443258_800.jpg"
+id:"p29",
+name:"beyerdynamic DT-990 Pro 250 Ohm",
+category:"Casques",
+price:60.99,
+image:"https://thumbs.static-thomann.de/thumb/padthumb600x600/pics/bdb/_10/106865/18443258_800.jpg"
 },
 
 {
- id:"p30",
- name:"Logitech PRO X TKL Rapid Noir AZERTY",
- category:"Claviers",
- price:78.99,
- image:"https://static.fnac-static.com/multimedia/Images/FR/MDM/6a/89/8f/26184042/1540-1.jpg"
+id:"p30",
+name:"Logitech PRO X TKL Rapid Noir filaire AZERTY",
+category:"Claviers",
+price:78.99,
+image:"https://static.fnac-static.com/multimedia/Images/FR/MDM/6a/89/8f/26184042/1540-1.jpg"
 },
 
 {
- id:"p31",
- name:"QwertyKey75 HE Striker Hall Effect Rapid Trigger",
- category:"Claviers",
- price:56.99,
- image:"https://cdn.shopify.com/s/files/1/0814/2530/1746/files/QK75-HE-STRIKER-qwertykey-tastatura-mecanica-gaming-hotswap-2025_1eee355b-72ca-46e6-a458-751384d0595c_1800x.webp?v=1771799537"
+id:"p31",
+name:"QwertyKey75 HE Striker Magnetic Hall Effect",
+category:"Claviers",
+price:56.99,
+image:"https://cdn.shopify.com/s/files/1/0814/2530/1746/files/QK75-HE-STRIKER-qwertykey-tastatura-mecanica-gaming-hotswap-2025_1eee355b-72ca-46e6-a458-751384d0595c_1800x.webp?v=1771799537"
 },
 
 {
- id:"p32",
- name:"GravaStar Mercury K1 Clavier Gamer sans Fil",
- category:"Claviers",
- price:91.99,
- image:"https://m.media-amazon.com/images/I/6144lt2l5JL._AC_SL1200_.jpg"
+id:"p32",
+name:"GravaStar Mercury K1 Clavier Gamer sans Fil",
+category:"Claviers",
+price:91.99,
+image:"https://m.media-amazon.com/images/I/6144lt2l5JL._AC_SL1200_.jpg"
 },
 
 {
- id:"p33",
- name:"ATTACK SHARK R11 Ultra 8000Hz 49g 42000 DPI",
- category:"Souris",
- price:26.99,
- image:"https://m.media-amazon.com/images/I/71bMz15SqcL._AC_SL1500_.jpg"
+id:"p33",
+name:"ATTACK SHARK R11 Ultra 8000Hz 49g",
+category:"Souris",
+price:26.99,
+image:"https://m.media-amazon.com/images/I/71bMz15SqcL._AC_SL1500_.jpg"
 },
 
 {
- id:"p34",
- name:"HyperX QuadCast 2 – Microphone USB – RGB",
- category:"Microphones",
- price:98.99,
- image:"https://fr.hyperx.com/cdn/shop/files/hyperx_quadcast_2_872v1aa_main_1_2d47a555-f537-457b-9002-8b9e9010dc00.jpg?v=1763067608"
+id:"p34",
+name:"HyperX QuadCast 2 – Microphone USB – RGB",
+category:"Microphones",
+price:98.99,
+image:"https://fr.hyperx.com/cdn/shop/files/hyperx_quadcast_2_872v1aa_main_1_2d47a555-f537-457b-9002-8b9e9010dc00.jpg?v=1763067608"
 },
 
 {
- id:"p35",
- name:"Shure SM7 dB",
- category:"Microphones",
- price:121.99,
- image:"https://thumbs.static-thomann.de/thumb/padthumb600x600/pics/bdb/_57/573672/18492412_800.jpg"
+id:"p35",
+name:"Shure SM7 dB",
+category:"Microphones",
+price:121.99,
+image:"https://thumbs.static-thomann.de/thumb/padthumb600x600/pics/bdb/_57/573672/18492412_800.jpg"
 },
 
 {
- id:"p36",
- name:"Razer Seiren V3 Chroma Noir",
- category:"Microphones",
- price:13.99,
- image:"https://media.ldlc.com/r1600/ld/products/00/06/13/25/LD0006132588.jpg"
+id:"p36",
+name:"Razer Seiren V3 Chroma Noir",
+category:"Microphones",
+price:13.99,
+image:"https://media.ldlc.com/r1600/ld/products/00/06/13/25/LD0006132588.jpg"
 },
 
 {
- id:"p37",
- name:"Stairville LED Pixel Rail 40 RGB MKII",
- category:"Éclairage RGB",
- price:18.90,
- image:"https://thumbs.static-thomann.de/thumb/padthumb600x600/pics/bdb/_44/449739/14448905_800.jpg"
+id:"p37",
+name:"Stairville LED Pixel Rail 40 RGB MKII",
+category:"Éclairage RGB",
+price:18.90,
+image:"https://thumbs.static-thomann.de/thumb/padthumb600x600/pics/bdb/_44/449739/14448905_800.jpg"
 },
 
 {
- id:"p38",
- name:"Govee LED Strip Light RGBIC Wi-Fi + Bluetooth 5m Matter",
- category:"Éclairage RGB",
- price:0,
- image:"https://static.fnac-static.com/multimedia/Images/FR/MDM/ab/7a/9d/27097771/1520-2/tsp20260429155350/Ruban-LED-Govee-LED-Strip-Light-RGBIC-Wi-Fi-avec-BT-5M-Matter.jpg"
+id:"p38",
+name:"Govee LED Strip Light RGBIC Wi-Fi + Bluetooth 5m Matter",
+category:"Éclairage RGB",
+price:0,
+image:"https://static.fnac-static.com/multimedia/Images/FR/MDM/ab/7a/9d/27097771/1520-2/tsp20260429155350/Ruban-LED-Govee-LED-Strip-Light-RGBIC-Wi-Fi-avec-BT-5M-Matter.jpg"
 },
 
 {
- id:"p39",
- name:"Lampe de plafond hexagone LED 2.4m x 4.8m",
- category:"Éclairage RGB",
- price:91.10,
- image:"https://www.discount-autosport.com/wp-content/webp-express/webp-images/uploads/2025/02/lampe-hexagone-plafond-led-4m80-contour-bleu-.jpg.webp"
+id:"p39",
+name:"Lampe de plafond hexagone nid d'abeille LED",
+category:"Éclairage RGB",
+price:91.10,
+image:"https://www.discount-autosport.com/wp-content/webp-express/webp-images/uploads/2025/02/lampe-hexagone-plafond-led-4m80-contour-bleu-.jpg.webp"
 },
 
 {
- id:"p40",
- name:"GIGABYTE GeForce RTX 5050 WINDFORCE OC 8G",
- category:"Cartes graphiques",
- price:147,
- image:"https://m.media-amazon.com/images/I/41kmHFMFPOL._SL500_.jpg"
+id:"p40",
+name:"GIGABYTE GeForce RTX 5050 WINDFORCE OC 8G",
+category:"Cartes graphiques",
+price:147,
+image:"https://m.media-amazon.com/images/I/41kmHFMFPOL._SL500_.jpg"
 },
 
 {
- id:"p41",
- name:"MSI GeForce RTX 3050 LP E 6G OC",
- category:"Cartes graphiques",
- price:100,
- image:"https://encrypted-tbn1.gstatic.com/shopping?q=tbn:ANd9GcTCe_rha_tAAHPWnQ8VV7GIvF-uSqUaEyU61TSnwgM4CK8g3-x_3Hq4wOgH36Ri63eAiWHsvhmRJHzVrUQR9-IwMx31WH0w"
+id:"p41",
+name:"MSI GeForce RTX 3050 LP E 6G OC",
+category:"Cartes graphiques",
+price:100,
+image:"https://encrypted-tbn1.gstatic.com/shopping?q=tbn:ANd9GcTCe_rha_tAAHPWnQ8VV7GIvF-uSqUaEyU61TSnwgM4CK8g3-x_3Hq4wOgH36Ri63eAiWHsvhmRJHzVrUQR9-IwMx31WH0w"
 },
 
 {
- id:"p42",
- name:"ASUS Dual Radeon RX 7600 EVO OC Edition 8GB",
- category:"Cartes graphiques",
- price:140,
- image:"https://m.media-amazon.com/images/I/81QItJufypL._AC_SL1500_.jpg"
+id:"p42",
+name:"ASUS Dual Radeon RX 7600 EVO OC Edition 8GB GDDR6",
+category:"Cartes graphiques",
+price:140,
+image:"https://m.media-amazon.com/images/I/81QItJufypL._AC_SL1500_.jpg"
 },
 
 {
- id:"p43",
- name:"PC Gamer Fixe Ryzen 7 5700G Vega 8 16G DDR4 1T SSD",
- category:"PC Gamer",
- price:650,
- image:"https://m.media-amazon.com/images/I/81M3iU5S4QL._AC_SL1500_.jpg"
+id:"p43",
+name:"PC Gamer Fixe, Ryzen 7 5700G, Vega 8, 16G DDR4, 1T SSD",
+category:"PC Gamer",
+price:650,
+image:"https://m.media-amazon.com/images/I/81M3iU5S4QL._AC_SL1500_.jpg"
 }
 
 ];
-
 
 /* =========================================================
    STATE
 ========================================================= */
 
+let currentUser = null;
 let cart = JSON.parse(localStorage.getItem("novaCart") || "[]");
 
-let currentUser = null;
-
 let currentCategory = "Tous";
+let currentPromo = "";
+let currentDiscount = 0;
 
-let currentSearch = "";
-
-let currentSort = "default";
-
-let checkoutData = {
-  promo:"",
-  discount:0
-};
-
-
-/* =========================================================
-   DOM
-========================================================= */
-
-const productGrid = document.getElementById("productGrid");
-const categories = document.getElementById("categories");
-const searchInput = document.getElementById("searchInput");
-const sortSelect = document.getElementById("sortSelect");
-const productCount = document.getElementById("productCount");
-
-const cartBtn = document.getElementById("cartBtn");
-const cartDrawer = document.getElementById("cartDrawer");
-const drawerBackdrop = document.getElementById("drawerBackdrop");
-const closeCart = document.getElementById("closeCart");
-const cartItems = document.getElementById("cartItems");
-const cartBadge = document.getElementById("cartBadge");
-const cartTotal = document.getElementById("cartTotal");
-const checkoutBtn = document.getElementById("checkoutBtn");
-
-const modalBackdrop = document.getElementById("modalBackdrop");
-const modalTitle = document.getElementById("modalTitle");
-const modalContent = document.getElementById("modalContent");
-const modalClose = document.getElementById("modalClose");
-
-const toastEl = document.getElementById("toast");
-
-const adminBtn = document.getElementById("adminBtn");
-const settingsBtn = document.getElementById("settingsBtn");
-const ordersBtn = document.getElementById("ordersBtn");
-const accountBtn = document.getElementById("accountBtn");
-
+let adminOrdersCache = [];
 
 /* =========================================================
    HELPERS
 ========================================================= */
+
+const $ = id => document.getElementById(id);
 
 function money(value){
   return Number(value || 0).toLocaleString("fr-FR",{
@@ -468,23 +435,8 @@ function money(value){
   });
 }
 
-function saveCart(){
-  localStorage.setItem("novaCart",JSON.stringify(cart));
-}
-
-function toast(message){
-  toastEl.textContent = message;
-  toastEl.classList.add("show");
-
-  clearTimeout(toast._timer);
-
-  toast._timer = setTimeout(()=>{
-    toastEl.classList.remove("show");
-  },2200);
-}
-
-function escapeHTML(value){
-  return String(value)
+function escapeHtml(value){
+  return String(value ?? "")
     .replaceAll("&","&amp;")
     .replaceAll("<","&lt;")
     .replaceAll(">","&gt;")
@@ -492,206 +444,377 @@ function escapeHTML(value){
     .replaceAll("'","&#039;");
 }
 
+function showToast(message){
+  const toast = $("toast");
+  toast.textContent = message;
+  toast.classList.add("show");
+
+  clearTimeout(showToast.timer);
+
+  showToast.timer = setTimeout(()=>{
+    toast.classList.remove("show");
+  },2600);
+}
+
+function saveCart(){
+  localStorage.setItem("novaCart",JSON.stringify(cart));
+  renderCart();
+  updateCartBadge();
+}
+
 function getProduct(id){
   return products.find(p=>p.id===id);
 }
 
-function cartSubtotal(){
-  return cart.reduce((total,item)=>{
+function getSubtotal(){
+  return cart.reduce((sum,item)=>{
     const product = getProduct(item.id);
-    if(!product) return total;
-
-    return total + product.price * item.qty;
+    return sum + (product ? product.price * item.qty : 0);
   },0);
 }
 
-
-/* =========================================================
-   REVIEWS
-========================================================= */
-
-function reviewData(product){
-
-  const number = parseInt(product.id.replace("p",""),10);
-
-  const count = 132 + ((number * 173) % 1604);
-
-  const rating = 4.4 + ((number % 6) * 0.1);
-
-  return {
-    count,
-    rating:Math.min(4.9,rating)
-  };
+function makeOrderNumber(){
+  const now = Date.now().toString().slice(-8);
+  const random = Math.floor(Math.random()*900+100);
+  return `NOVA-${now}-${random}`;
 }
 
+function normalizeStatus(status){
+  return status || "accepted";
+}
+
+function statusInfo(status){
+
+  const data = {
+    pending:{
+      label:"En attente de validation",
+      index:0
+    },
+
+    accepted:{
+      label:"Commande acceptée",
+      index:1
+    },
+
+    preparing:{
+      label:"Colis préparé",
+      index:2
+    },
+
+    transit:{
+      label:"En transit",
+      index:3
+    },
+
+    nearby:{
+      label:"Livraison proche",
+      index:4
+    },
+
+    delivered:{
+      label:"Livrée",
+      index:5
+    }
+  };
+
+  return data[status] || data.accepted;
+}
+
+function formatDate(timestamp){
+
+  if(!timestamp) return "Date inconnue";
+
+  try{
+
+    const date = timestamp.toDate
+      ? timestamp.toDate()
+      : new Date(timestamp);
+
+    return date.toLocaleDateString("fr-FR",{
+      day:"2-digit",
+      month:"2-digit",
+      year:"numeric"
+    });
+
+  }catch{
+    return "Date inconnue";
+  }
+}
 
 /* =========================================================
-   CATEGORIES
+   MODALS
 ========================================================= */
+
+function openModal(id){
+  closeAll(false);
+  $(id).classList.add("active");
+  $("overlay").classList.add("active");
+}
+
+function closeAll(clear=true){
+
+  document.querySelectorAll(".modal").forEach(el=>{
+    el.classList.remove("active");
+  });
+
+  $("cartDrawer").classList.remove("open");
+  $("overlay").classList.remove("active");
+
+  if(clear){
+    currentPromo = "";
+    currentDiscount = 0;
+  }
+}
+
+$("overlay").addEventListener("click",()=>{
+  closeAll();
+});
+
+/* =========================================================
+   SHOP
+========================================================= */
+
+function scrollToShop(){
+  $("shop").scrollIntoView({
+    behavior:"smooth"
+  });
+}
+
+window.scrollToShop = scrollToShop;
 
 function renderCategories(){
 
-  const list = [
+  const categories = [
     "Tous",
     ...new Set(products.map(p=>p.category))
   ];
 
-  categories.innerHTML = list.map(cat=>`
+  $("categories").innerHTML = categories.map(category=>`
+
     <button
-      class="cat ${cat===currentCategory ? "active":""}"
-      data-category="${escapeHTML(cat)}"
+      class="category ${category===currentCategory ? "active":""}"
+      onclick="selectCategory(${JSON.stringify(category)})"
     >
-      ${escapeHTML(cat)}
+      ${escapeHtml(category)}
     </button>
+
   `).join("");
-
-  categories.querySelectorAll(".cat").forEach(btn=>{
-    btn.addEventListener("click",()=>{
-      currentCategory = btn.dataset.category;
-      renderCategories();
-      renderProducts();
-    });
-  });
 }
 
+window.selectCategory = function(category){
 
-/* =========================================================
-   PRODUCTS
-========================================================= */
+  currentCategory = category;
 
-function getVisibleProducts(){
+  renderCategories();
+  renderProducts();
 
-  let list = [...products];
+};
 
-  if(currentCategory !== "Tous"){
-    list = list.filter(p=>p.category===currentCategory);
-  }
+function getRating(product){
 
-  if(currentSearch.trim()){
-    const q = currentSearch.toLowerCase();
+  const number = parseInt(product.id.replace("p",""),10);
 
-    list = list.filter(p=>
-      p.name.toLowerCase().includes(q) ||
-      p.category.toLowerCase().includes(q)
-    );
-  }
+  const rating = 4.4 + ((number % 6) * .1);
 
-  if(currentSort==="priceAsc"){
-    list.sort((a,b)=>a.price-b.price);
-  }
+  const count = 132 + ((number * 173) % 1604);
 
-  if(currentSort==="priceDesc"){
-    list.sort((a,b)=>b.price-a.price);
-  }
-
-  if(currentSort==="name"){
-    list.sort((a,b)=>a.name.localeCompare(b.name));
-  }
-
-  return list;
+  return {
+    rating:Math.min(4.9,rating),
+    count
+  };
 }
-
 
 function renderProducts(){
 
-  const list = getVisibleProducts();
+  const search = $("searchInput").value.trim().toLowerCase();
 
-  productCount.textContent =
-    `${list.length} produit${list.length>1 ? "s":""}`;
+  let list = products.filter(product=>{
+
+    const categoryMatch =
+      currentCategory==="Tous" ||
+      product.category===currentCategory;
+
+    const searchMatch =
+      !search ||
+      product.name.toLowerCase().includes(search) ||
+      product.category.toLowerCase().includes(search);
+
+    return categoryMatch && searchMatch;
+  });
+
+  const sort = $("sortSelect").value;
+
+  if(sort==="priceAsc"){
+    list.sort((a,b)=>a.price-b.price);
+  }
+
+  if(sort==="priceDesc"){
+    list.sort((a,b)=>b.price-a.price);
+  }
+
+  if(sort==="rating"){
+    list.sort((a,b)=>getRating(b).rating-getRating(a).rating);
+  }
+
+  $("productCount").textContent =
+    `${list.length} produit${list.length>1?"s":""}`;
 
   if(!list.length){
-
-    productGrid.innerHTML = `
-      <div style="
-        grid-column:1/-1;
-        padding:60px 20px;
-        text-align:center;
-        color:#8f9bad;
-      ">
+    $("products").innerHTML = `
+      <div class="empty" style="grid-column:1/-1">
         Aucun produit trouvé.
       </div>
     `;
-
     return;
   }
 
-  productGrid.innerHTML = list.map(product=>{
+  $("products").innerHTML = list.map(product=>{
 
-    const review = reviewData(product);
+    const review = getRating(product);
 
     return `
+
       <article class="product">
 
         <div class="product-image">
           <img
-            src="${product.image}"
-            alt="${escapeHTML(product.name)}"
+            src="${escapeHtml(product.image)}"
+            alt="${escapeHtml(product.name)}"
             loading="lazy"
+            onerror="this.style.display='none'"
           >
         </div>
 
-        <div class="product-body">
+        <div class="product-info">
 
-          <div class="product-category">
-            ${escapeHTML(product.category)}
+          <div class="product-cat">
+            ${escapeHtml(product.category)}
           </div>
 
-          <div class="product-title">
-            ${escapeHTML(product.name)}
-          </div>
+          <h3>${escapeHtml(product.name)}</h3>
 
           <div class="rating">
-            ★★★★★
-            <span>${review.rating.toFixed(1)} · ${review.count.toLocaleString("fr-FR")} avis</span>
+            ★★★★☆
+            <span>
+              ${review.rating.toFixed(1).replace(".",",")}
+              · ${review.count.toLocaleString("fr-FR")} avis
+            </span>
           </div>
 
-          <div class="price">
-            ${money(product.price)}
-          </div>
+          <div class="product-bottom">
 
-          <div class="product-actions">
+            <div class="price">
+              ${money(product.price)}
+            </div>
 
-            <button
-              class="btn-small"
-              data-view="${product.id}"
-            >
-              Voir
-            </button>
+            <div class="product-actions">
 
-            <button
-              class="btn-small primary"
-              data-add="${product.id}"
-            >
-              🛒 Ajouter
-            </button>
+              <button
+                class="small-btn"
+                onclick="viewProduct('${product.id}')"
+              >
+                Voir
+              </button>
+
+              <button
+                class="small-btn primary"
+                onclick="addToCart('${product.id}')"
+              >
+                🛒
+              </button>
+
+            </div>
 
           </div>
 
         </div>
 
       </article>
+
     `;
+
   }).join("");
-
-  productGrid.querySelectorAll("[data-add]").forEach(btn=>{
-    btn.addEventListener("click",()=>{
-      addToCart(btn.dataset.add);
-    });
-  });
-
-  productGrid.querySelectorAll("[data-view]").forEach(btn=>{
-    btn.addEventListener("click",()=>{
-      openProduct(btn.dataset.view);
-    });
-  });
 }
 
+$("searchInput").addEventListener("input",renderProducts);
+$("sortSelect").addEventListener("change",renderProducts);
+
+/* =========================================================
+   PRODUCT
+========================================================= */
+
+window.viewProduct = function(id){
+
+  const product = getProduct(id);
+
+  if(!product) return;
+
+  const review = getRating(product);
+
+  $("modalTitle").textContent = product.name;
+
+  $("modalContent").innerHTML = `
+
+    <img
+      src="${escapeHtml(product.image)}"
+      style="
+        width:100%;
+        height:270px;
+        object-fit:contain;
+        background:#fff;
+        border-radius:14px;
+      "
+    >
+
+    <div style="margin-top:18px">
+
+      <div class="product-cat">
+        ${escapeHtml(product.category)}
+      </div>
+
+      <h2 style="margin:7px 0">
+        ${escapeHtml(product.name)}
+      </h2>
+
+      <div class="rating">
+        ★★★★☆
+        <span>
+          ${review.rating.toFixed(1).replace(".",",")}
+          · ${review.count.toLocaleString("fr-FR")} avis
+        </span>
+      </div>
+
+      <div style="
+        font-size:28px;
+        font-weight:900;
+        margin:18px 0
+      ">
+        ${money(product.price)}
+      </div>
+
+      <button
+        class="btn btn-primary"
+        onclick="addToCart('${product.id}');closeAll()"
+      >
+        🛒 Ajouter au panier
+      </button>
+
+    </div>
+
+  `;
+
+  openModal("modal");
+};
 
 /* =========================================================
    CART
 ========================================================= */
 
-function addToCart(id){
+window.addToCart = function(id){
+
+  const product = getProduct(id);
+
+  if(!product) return;
 
   const existing = cart.find(item=>item.id===id);
 
@@ -705,237 +828,227 @@ function addToCart(id){
   }
 
   saveCart();
-  renderCart();
 
-  toast("Produit ajouté au panier 🛒");
+  showToast(`${product.name} ajouté au panier`);
+};
 
-  cartBtn.animate(
-    [
-      {transform:"scale(1)"},
-      {transform:"scale(1.12)"},
-      {transform:"scale(1)"}
-    ],
-    {
-      duration:300
-    }
-  );
-}
+window.changeQty = function(id,delta){
 
-
-function changeQty(id,delta){
-
-  const item = cart.find(x=>x.id===id);
+  const item = cart.find(i=>i.id===id);
 
   if(!item) return;
 
   item.qty += delta;
 
   if(item.qty<=0){
-    cart = cart.filter(x=>x.id!==id);
+    cart = cart.filter(i=>i.id!==id);
   }
 
   saveCart();
-  renderCart();
-}
-
+};
 
 function renderCart(){
 
-  const count = cart.reduce((sum,item)=>sum+item.qty,0);
-
-  cartBadge.textContent = count;
-
-  const subtotal = cartSubtotal();
-
-  cartTotal.textContent = money(subtotal);
+  const container = $("cartItems");
 
   if(!cart.length){
 
-    cartItems.innerHTML = `
-      <div style="
-        padding:60px 20px;
-        text-align:center;
-        color:#8592a5;
-      ">
-        <div style="font-size:40px;margin-bottom:15px">🛒</div>
+    container.innerHTML = `
+      <div class="empty">
+        🛒<br><br>
         Ton panier est vide.
       </div>
     `;
 
-    checkoutBtn.disabled = true;
-    checkoutBtn.style.opacity = ".5";
+    $("cartTotal").textContent = money(0);
 
     return;
   }
 
-  checkoutBtn.disabled = false;
-  checkoutBtn.style.opacity = "1";
+  container.innerHTML = cart.map(item=>{
 
-  cartItems.innerHTML = cart.map(item=>{
+    const product = getProduct(item.id);
 
-    const p = getProduct(item.id);
-
-    if(!p) return "";
+    if(!product) return "";
 
     return `
+
       <div class="cart-item">
 
-        <img
-          src="${p.image}"
-          alt="${escapeHTML(p.name)}"
-        >
+        <img src="${escapeHtml(product.image)}">
 
         <div>
-          <h4>${escapeHTML(p.name)}</h4>
-          <p>${money(p.price)}</p>
+
+          <h4>${escapeHtml(product.name)}</h4>
+
+          <p>${money(product.price)}</p>
 
           <div class="qty">
 
-            <button data-minus="${p.id}">
-              −
-            </button>
+            <button onclick="changeQty('${product.id}',-1)">−</button>
 
             <strong>${item.qty}</strong>
 
-            <button data-plus="${p.id}">
-              +
-            </button>
+            <button onclick="changeQty('${product.id}',1)">+</button>
 
           </div>
+
         </div>
 
-        <strong>
-          ${money(p.price * item.qty)}
-        </strong>
+        <strong>${money(product.price*item.qty)}</strong>
 
       </div>
+
     `;
 
   }).join("");
 
-  cartItems.querySelectorAll("[data-minus]").forEach(btn=>{
-    btn.addEventListener("click",()=>{
-      changeQty(btn.dataset.minus,-1);
-    });
-  });
-
-  cartItems.querySelectorAll("[data-plus]").forEach(btn=>{
-    btn.addEventListener("click",()=>{
-      changeQty(btn.dataset.plus,1);
-    });
-  });
+  $("cartTotal").textContent = money(getSubtotal());
 }
 
+function updateCartBadge(){
 
-function openCart(){
+  const total = cart.reduce((sum,item)=>sum+item.qty,0);
 
-  cartDrawer.classList.add("open");
-  drawerBackdrop.classList.add("show");
-
+  $("cartBadge").textContent = total;
 }
 
-function closeCartDrawer(){
+$("cartBtn").addEventListener("click",()=>{
 
-  cartDrawer.classList.remove("open");
-  drawerBackdrop.classList.remove("show");
+  closeAll(false);
 
-}
+  $("cartDrawer").classList.add("open");
+  $("overlay").classList.add("active");
 
+});
 
 /* =========================================================
-   PRODUCT MODAL
+   ACCOUNT
 ========================================================= */
 
-function openProduct(id){
+$("accountBtn").addEventListener("click",()=>{
 
-  const p = getProduct(id);
+  renderAccount();
+  openModal("accountModal");
 
-  if(!p) return;
+});
 
-  const review = reviewData(p);
+function renderAccount(){
 
-  modalTitle.textContent = p.name;
+  if(!currentUser){
 
-  modalContent.innerHTML = `
+    $("accountContent").innerHTML = `
 
-    <div class="product-detail">
+      <div style="text-align:center">
 
-      <img
-        src="${p.image}"
-        alt="${escapeHTML(p.name)}"
-      >
+        <h3>Connexion</h3>
 
-      <div>
-
-        <div class="product-category">
-          ${escapeHTML(p.category)}
-        </div>
-
-        <h2 style="margin-top:7px;line-height:1.25">
-          ${escapeHTML(p.name)}
-        </h2>
-
-        <div class="rating" style="margin-top:12px">
-          ★★★★★
-          <span>
-            ${review.rating.toFixed(1)} ·
-            ${review.count.toLocaleString("fr-FR")} avis
-          </span>
-        </div>
-
-        <div class="detail-price">
-          ${money(p.price)}
-        </div>
+        <p style="color:var(--muted)">
+          Connecte-toi pour passer une commande et suivre tes achats.
+        </p>
 
         <button
           class="btn btn-primary"
-          id="modalAdd"
-          style="width:100%"
+          id="googleLogin"
         >
-          🛒 Ajouter au panier
+          Continuer avec Google
         </button>
 
       </div>
 
+    `;
+
+    $("googleLogin").onclick = loginGoogle;
+
+    return;
+  }
+
+  const isAdmin =
+    currentUser.email?.trim().toLowerCase() ===
+    ADMIN_EMAIL.trim().toLowerCase();
+
+  $("accountContent").innerHTML = `
+
+    <div>
+
+      <p>
+        <strong>${escapeHtml(currentUser.displayName || "Compte NovaShop")}</strong>
+      </p>
+
+      <p style="color:var(--muted)">
+        ${escapeHtml(currentUser.email || "")}
+      </p>
+
+      ${
+        isAdmin
+        ? `
+          <div style="
+            padding:12px;
+            border-radius:12px;
+            background:rgba(47,140,255,.1);
+            color:var(--blue2);
+            margin:15px 0;
+            font-weight:800;
+          ">
+            👑 OWNER
+          </div>
+        `
+        : ""
+      }
+
+      <button
+        class="btn btn-secondary"
+        id="logoutBtn"
+      >
+        Se déconnecter
+      </button>
+
     </div>
 
-    <div style="margin-top:25px">
-
-      <h3 style="margin-bottom:10px">
-        Avis clients
-      </h3>
-
-      <div class="review">
-        <strong>★★★★★ Client vérifié</strong>
-        <p>Produit conforme et commande reçue correctement.</p>
-      </div>
-
-      <div class="review">
-        <strong>★★★★☆ Client vérifié</strong>
-        <p>Bon rapport qualité/prix.</p>
-      </div>
-
-      <div class="review">
-        <strong>★★★★★ Client vérifié</strong>
-        <p>Très satisfait de mon achat.</p>
-      </div>
-
-    </div>
   `;
 
-  modalBackdrop.classList.add("show");
-
-  document.getElementById("modalAdd").addEventListener("click",()=>{
-    addToCart(id);
-    closeModal();
-  });
+  $("logoutBtn").onclick = logoutUser;
 }
 
+async function loginGoogle(){
 
-function closeModal(){
-  modalBackdrop.classList.remove("show");
+  try{
+
+    await signInWithPopup(auth,googleProvider);
+
+    closeAll();
+
+    showToast("Connexion réussie");
+
+  }catch(error){
+
+    console.error(error);
+
+    showToast("Connexion impossible");
+
+  }
 }
 
+async function logoutUser(){
+
+  try{
+
+    await signOut(auth);
+
+    localStorage.removeItem(ADMIN_ACCESS_KEY);
+
+    closeAll();
+
+    showToast("Déconnexion réussie");
+
+  }catch(error){
+
+    console.error(error);
+
+    showToast("Impossible de se déconnecter");
+
+  }
+}
 
 /* =========================================================
    AUTH
@@ -953,407 +1066,307 @@ onAuthStateChanged(auth,user=>{
 
   if(connectedEmail===adminEmail){
 
-    adminBtn.style.display="grid";
+    $("adminBtn").style.display = "grid";
 
-    console.log(
-      "👑 NovaShop Admin détecté :",
-      user.email
-    );
+    console.log("👑 NovaShop OWNER détecté :",user.email);
 
   }else{
 
-    adminBtn.style.display="none";
+    $("adminBtn").style.display = "none";
 
   }
 
 });
-
-
-async function login(){
-
-  try{
-
-    await signInWithPopup(auth,provider);
-
-    toast("Connexion réussie 👤");
-
-  }catch(error){
-
-    console.error(error);
-
-    toast("Connexion impossible.");
-
-  }
-
-}
-
-
-async function logout(){
-
-  try{
-
-    await signOut(auth);
-
-    localStorage.removeItem(ADMIN_ACCESS_KEY);
-
-    toast("Déconnexion effectuée.");
-
-  }catch(error){
-
-    console.error(error);
-
-  }
-
-}
-
-
-/* =========================================================
-   ACCOUNT
-========================================================= */
-
-accountBtn.addEventListener("click",()=>{
-
-  if(currentUser){
-
-    modalTitle.textContent="Mon compte";
-
-    modalContent.innerHTML=`
-
-      <div style="text-align:center;padding:15px">
-
-        <div style="font-size:45px">👤</div>
-
-        <h2 style="margin-top:10px">
-          ${escapeHTML(currentUser.displayName || "Compte NovaShop")}
-        </h2>
-
-        <p style="
-          color:#8996a8;
-          margin:8px 0 22px;
-        ">
-          ${escapeHTML(currentUser.email || "")}
-        </p>
-
-        <button
-          class="btn btn-danger"
-          id="logoutBtn"
-          style="width:100%"
-        >
-          Se déconnecter
-        </button>
-
-      </div>
-
-    `;
-
-    modalBackdrop.classList.add("show");
-
-    document.getElementById("logoutBtn")
-      .addEventListener("click",async()=>{
-        await logout();
-        closeModal();
-      });
-
-  }else{
-
-    modalTitle.textContent="Connexion";
-
-    modalContent.innerHTML=`
-
-      <div style="text-align:center;padding:20px">
-
-        <div style="font-size:45px">👤</div>
-
-        <h2 style="margin:12px 0">
-          Connecte-toi à NovaShop
-        </h2>
-
-        <p style="
-          color:#8996a8;
-          line-height:1.6;
-          margin-bottom:20px;
-        ">
-          Connecte-toi pour passer des commandes
-          et retrouver ton historique.
-        </p>
-
-        <button
-          class="btn btn-primary"
-          id="loginBtn"
-          style="width:100%"
-        >
-          Continuer avec Google
-        </button>
-
-      </div>
-
-    `;
-
-    modalBackdrop.classList.add("show");
-
-    document.getElementById("loginBtn")
-      .addEventListener("click",login);
-
-  }
-
-});
-
 
 /* =========================================================
    CHECKOUT
 ========================================================= */
 
-function openCheckout(){
+window.openCheckout = function(){
 
   if(!cart.length){
-    toast("Ton panier est vide.");
+
+    showToast("Ton panier est vide");
+
     return;
   }
 
   if(!currentUser){
 
-    modalTitle.textContent="Connexion requise";
+    closeAll();
 
-    modalContent.innerHTML=`
+    renderAccount();
 
-      <div style="text-align:center;padding:25px">
+    openModal("accountModal");
 
-        <div style="font-size:45px">🔐</div>
-
-        <h2 style="margin:12px 0">
-          Connecte-toi pour commander
-        </h2>
-
-        <p style="
-          color:#8e9bad;
-          margin-bottom:20px;
-        ">
-          Ton compte permet d'associer la commande
-          à ton historique NovaShop.
-        </p>
-
-        <button
-          class="btn btn-primary"
-          id="checkoutLogin"
-          style="width:100%"
-        >
-          Se connecter avec Google
-        </button>
-
-      </div>
-
-    `;
-
-    modalBackdrop.classList.add("show");
-
-    document.getElementById("checkoutLogin")
-      .addEventListener("click",login);
+    showToast("Connecte-toi pour commander");
 
     return;
   }
 
-  checkoutData={
-    promo:"",
-    discount:0
-  };
+  closeAll(false);
 
-  modalTitle.textContent="Finaliser la commande";
+  currentPromo = "";
+  currentDiscount = 0;
 
-  modalContent.innerHTML=`
+  $("promoCode").value = "";
 
-    <form id="checkoutForm">
+  updateCheckoutSummary();
 
-      <div class="form-grid">
+  openModal("checkoutModal");
+};
 
-        <div class="field full">
-          <label>Nom complet</label>
-          <input
-            id="fullName"
-            required
-            placeholder="Prénom Nom"
-          >
-        </div>
+function updateCheckoutSummary(){
 
-        <div class="field full">
-          <label>Adresse</label>
-          <input
-            id="address"
-            required
-            placeholder="Numéro et rue"
-          >
-        </div>
+  const subtotal = getSubtotal();
 
-        <div class="field">
-          <label>Code postal</label>
-          <input
-            id="postalCode"
-            required
-            inputmode="numeric"
-            placeholder="59000"
-          >
-        </div>
+  const discount = currentDiscount;
 
-        <div class="field">
-          <label>Ville</label>
-          <input
-            id="city"
-            required
-            placeholder="Lille"
-          >
-        </div>
+  const total = Math.max(
+    0,
+    subtotal-discount
+  );
 
-        <div class="field full">
-          <label>Téléphone</label>
-          <input
-            id="phone"
-            placeholder="Optionnel"
-          >
-        </div>
+  $("checkoutSubtotal").textContent = money(subtotal);
 
-      </div>
+  $("checkoutDiscount").textContent =
+    discount > 0
+      ? `- ${money(discount)}`
+      : money(0);
 
-      <div class="field">
+  $("checkoutTotal").textContent = money(total);
 
-        <label>Code promo</label>
+  if(currentPromo===PROMO_CODE){
 
-        <div class="promo-row">
-
-          <input
-            id="promoCode"
-            placeholder="Code promo"
-            autocomplete="off"
-          >
-
-          <button
-            type="button"
-            class="btn"
-            id="applyPromo"
-          >
-            Appliquer
-          </button>
-
-        </div>
-
-        <div class="status" id="promoStatus"></div>
-
-      </div>
-
-      <div class="checkout-summary">
-
-        <div class="summary-row">
-          <span>Sous-total</span>
-          <strong id="checkoutSubtotal">0,00 €</strong>
-        </div>
-
-        <div class="summary-row">
-          <span>Réduction</span>
-          <strong class="discount" id="checkoutDiscount">
-            - 0,00 €
-          </strong>
-        </div>
-
-        <div class="summary-row total">
-          <span>Total</span>
-          <strong id="checkoutTotal">0,00 €</strong>
-        </div>
-
-      </div>
-
-      <div id="paymentArea" class="paypal-box"></div>
-
-    </form>
-
-  `;
-
-  modalBackdrop.classList.add("show");
-
-  renderCheckoutTotal();
-
-  document
-    .getElementById("applyPromo")
-    .addEventListener("click",applyPromo);
-
-  document
-    .getElementById("promoCode")
-    .addEventListener("keydown",event=>{
-      if(event.key==="Enter"){
-        event.preventDefault();
-        applyPromo();
-      }
-    });
-
-}
-
-
-function renderCheckoutTotal(){
-
-  const subtotal = cartSubtotal();
-
-  const discount =
-    checkoutData.discount;
-
-  const total =
-    Math.max(0,subtotal-discount);
-
-  const subtotalEl =
-    document.getElementById("checkoutSubtotal");
-
-  const discountEl =
-    document.getElementById("checkoutDiscount");
-
-  const totalEl =
-    document.getElementById("checkoutTotal");
-
-  const paymentArea =
-    document.getElementById("paymentArea");
-
-  if(!subtotalEl) return;
-
-  subtotalEl.textContent=money(subtotal);
-
-  discountEl.textContent=
-    `- ${money(discount)}`;
-
-  totalEl.textContent=
-    money(total);
-
-  /*
-    NOVA100 = 100% de réduction
-    Le bouton PayPal disparaît.
-  */
-
-  if(checkoutData.promo==="NOVA100"){
-
-    paymentArea.innerHTML=`
-
-      <div class="free-box">
-        🎉 Code <strong>NOVA100</strong> appliqué.
-        Ta commande revient à <strong>0 €</strong>.
-      </div>
-
-      <button
-        type="button"
-        class="btn btn-success"
-        id="freeOrderBtn"
-        style="width:100%;margin-top:10px"
-      >
-        Valider la commande à 0 €
-      </button>
-
-    `;
-
-    document
-      .getElementById("freeOrderBtn")
-      .addEventListener("click",()=>{
-        submitFreeOrder();
-      });
+    $("paypalBtn").style.display = "none";
+    $("freeOrderBtn").style.display = "block";
 
   }else{
 
+    $("paypalBtn").style.display = "block";
+    $("freeOrderBtn").style.display = "none";
+
+  }
+}
+
+$("applyPromo").addEventListener("click",()=>{
+
+  const code =
+    $("promoCode").value.trim().toUpperCase();
+
+  if(code===PROMO_CODE){
+
+    currentPromo = PROMO_CODE;
+
+    currentDiscount = getSubtotal();
+
+    updateCheckoutSummary();
+
+    showToast("NOVA100 appliqué : commande à 0 €");
+
+    return;
+  }
+
+  currentPromo = "";
+  currentDiscount = 0;
+
+  updateCheckoutSummary();
+
+  showToast("Code promo invalide");
+
+});
+
+function getAddressData(){
+
+  const fullName = $("fullName").value.trim();
+  const address = $("address").value.trim();
+  const postalCode = $("postalCode").value.trim();
+  const city = $("city").value.trim();
+  const phone = $("phone").value.trim();
+
+  if(!fullName || !address || !postalCode || !city){
+
+    showToast("Remplis toute l'adresse de livraison");
+
+    return null;
+  }
+
+  return {
+    fullName,
+    address,
+    postalCode,
+    city,
+    phone
+  };
+}
+
+function getOrderItems(){
+
+  return cart.map(item=>{
+
+    const product = getProduct(item.id);
+
+    return {
+      productId:product.id,
+      name:product.name,
+      price:product.price,
+      quantity:item.qty,
+      image:product.image
+    };
+
+  });
+}
+
+/* =========================================================
+   NOVA100
+========================================================= */
+
+$("freeOrderBtn").addEventListener("click",async()=>{
+
+  if(currentPromo!==PROMO_CODE){
+
+    return;
+  }
+
+  const address = getAddressData();
+
+  if(!address) return;
+
+  if(!currentUser){
+
+    showToast("Connexion requise");
+
+    return;
+  }
+
+  const orderNumber = makeOrderNumber();
+
+  try{
+
+    await addDoc(collection(db,"orders"),{
+
+      orderNumber,
+
+      userId:currentUser.uid,
+      email:currentUser.email || "",
+
+      items:getOrderItems(),
+
+      subtotal:getSubtotal(),
+      discount:getSubtotal(),
+      total:0,
+
+      paymentMethod:"Promo",
+      paymentStatus:"free",
+
+      promoCode:PROMO_CODE,
+
+      address,
+
+      status:"accepted",
+
+      packageCity:address.city,
+
+      estimatedDelivery:"",
+      trackingNumber:"",
+
+      createdAt:serverTimestamp(),
+      updatedAt:serverTimestamp()
+
+    });
+
+    cart = [];
+
+    saveCart();
+
+    closeAll();
+
+    showToast("Commande NOVA100 acceptée automatiquement");
+
+    openOrders();
+
+  }catch(error){
+
+    console.error(error);
+
+    showToast("Impossible de créer la commande");
+
+  }
+
+});
+
+/* =========================================================
+   PAYPAL.ME
+========================================================= */
+
+$("paypalBtn").addEventListener("click",async()=>{
+
+  const address = getAddressData();
+
+  if(!address) return;
+
+  if(!currentUser){
+
+    showToast("Connexion requise");
+
+    return;
+  }
+
+  const subtotal = getSubtotal();
+
+  const total = Math.max(
+    0,
+    subtotal-currentDiscount
+  );
+
+  if(total<=0){
+
+    showToast("Utilise la validation à 0 €");
+
+    return;
+  }
+
+  const orderNumber = makeOrderNumber();
+
+  try{
+
+    await addDoc(collection(db,"orders"),{
+
+      orderNumber,
+
+      userId:currentUser.uid,
+      email:currentUser.email || "",
+
+      items:getOrderItems(),
+
+      subtotal,
+      discount:currentDiscount,
+      total,
+
+      paymentMethod:"PayPal.Me",
+      paymentStatus:"pending",
+
+      promoCode:currentPromo || "",
+
+      address,
+
+      status:"pending",
+
+      packageCity:address.city,
+
+      estimatedDelivery:"",
+      trackingNumber:"",
+
+      createdAt:serverTimestamp(),
+      updatedAt:serverTimestamp()
+
+    });
+
     /*
       IMPORTANT :
-      le montant est toujours recalculé depuis
-      le total réel du panier.
+      On ne marque PAS la commande comme payée ici.
+      Le client est envoyé vers PayPal.Me avec le montant.
+      OWNER pourra ensuite accepter la commande dans le dashboard.
     */
 
     const paypalAmount =
@@ -1362,582 +1375,704 @@ function renderCheckoutTotal(){
     const paypalUrl =
       `https://paypal.me/SH0PNOVA/${paypalAmount}`;
 
-    paymentArea.innerHTML=`
-
-      <button
-        type="button"
-        class="paypal-btn"
-        id="paypalBtn"
-      >
-        💳 Payer ${money(total)} avec PayPal
-      </button>
-
-      <div class="status">
-        Le lien PayPal correspond au total actuel de la commande.
-      </div>
-
-    `;
-
-    document
-      .getElementById("paypalBtn")
-      .addEventListener("click",()=>{
-        submitPayPalOrder(total,paypalUrl);
-      });
-
-  }
-
-}
-
-
-function applyPromo(){
-
-  const input =
-    document.getElementById("promoCode");
-
-  const status =
-    document.getElementById("promoStatus");
-
-  if(!input || !status) return;
-
-  const code =
-    input.value.trim().toUpperCase();
-
-  /*
-    LE SEUL CODE GRATUIT
-  */
-
-  if(code==="NOVA100"){
-
-    checkoutData.promo="NOVA100";
-
-    checkoutData.discount=
-      cartSubtotal();
-
-    status.textContent=
-      "Code accepté : réduction de 100 %.";
-
-    status.className=
-      "status ok";
-
-    renderCheckoutTotal();
-
-  }else{
-
-    checkoutData.promo="";
-
-    checkoutData.discount=0;
-
-    status.textContent=
-      code
-        ? "Code promo invalide."
-        : "Aucun code promo.";
-
-    status.className=
-      code
-        ? "status error"
-        : "status";
-
-    renderCheckoutTotal();
-
-  }
-
-}
-
-
-/* =========================================================
-   ORDER CREATION
-========================================================= */
-
-function getCheckoutAddress(){
-
-  return {
-
-    fullName:
-      document.getElementById("fullName")?.value.trim() || "",
-
-    address:
-      document.getElementById("address")?.value.trim() || "",
-
-    postalCode:
-      document.getElementById("postalCode")?.value.trim() || "",
-
-    city:
-      document.getElementById("city")?.value.trim() || "",
-
-    phone:
-      document.getElementById("phone")?.value.trim() || ""
-
-  };
-
-}
-
-
-function validateAddress(){
-
-  const address =
-    getCheckoutAddress();
-
-  if(
-    !address.fullName ||
-    !address.address ||
-    !address.postalCode ||
-    !address.city
-  ){
-
-    toast("Complète ton adresse de livraison.");
-
-    return null;
-  }
-
-  return address;
-
-}
-
-
-async function createOrder({
-  address,
-  total,
-  paymentMethod,
-  paymentStatus,
-  promoCode=""
-}){
-
-  const items =
-    cart.map(item=>{
-
-      const p=getProduct(item.id);
-
-      return {
-        productId:p.id,
-        name:p.name,
-        price:p.price,
-        quantity:item.qty,
-        image:p.image
-      };
-
-    });
-
-  const order={
-
-    userId:currentUser.uid,
-
-    email:currentUser.email || "",
-
-    customer:address,
-
-    items,
-
-    subtotal:cartSubtotal(),
-
-    discount:
-      checkoutData.discount,
-
-    total,
-
-    promoCode,
-
-    paymentMethod,
-
-    paymentStatus,
-
-    createdAt:serverTimestamp()
-
-  };
-
-  const ref =
-    await addDoc(
-      collection(db,"orders"),
-      order
+    window.open(
+      paypalUrl,
+      "_blank",
+      "noopener,noreferrer"
     );
 
-  return ref.id;
+    closeAll();
 
-}
-
-
-/* =========================================================
-   PAYPAL
-========================================================= */
-
-async function submitPayPalOrder(total,paypalUrl){
-
-  const address =
-    validateAddress();
-
-  if(!address) return;
-
-  if(total<=0){
-    return;
-  }
-
-  const btn =
-    document.getElementById("paypalBtn");
-
-  if(btn){
-
-    btn.disabled=true;
-    btn.textContent="Préparation...";
-
-  }
-
-  try{
+    showToast(
+      "Commande créée : paiement à effectuer sur PayPal"
+    );
 
     /*
-      La commande reste PENDING.
-      On ne prétend pas que PayPal a confirmé
-      le paiement simplement parce que le lien
-      a été ouvert.
+      On ne vide volontairement PAS le panier ici.
+      La commande existe et reste en attente.
     */
-
-    const orderId =
-      await createOrder({
-
-        address,
-
-        total,
-
-        paymentMethod:"PayPal.Me",
-
-        paymentStatus:"pending",
-
-        promoCode:checkoutData.promo
-
-      });
-
-    /*
-      Le montant est celui du TOTAL.
-      Exemple :
-      49.99 € -> paypal.me/SH0PNOVA/49.99
-    */
-
-    const url =
-      `${paypalUrl}`;
-
-    toast("Ouverture de PayPal...");
-
-    window.open(url,"_blank","noopener,noreferrer");
-
-    setTimeout(()=>{
-
-      closeModal();
-      closeCartDrawer();
-
-      toast(
-        `Commande ${orderId.slice(0,8)} créée.`
-      );
-
-    },700);
 
   }catch(error){
 
     console.error(error);
 
-    toast(
-      "Impossible de créer la commande."
-    );
-
-    if(btn){
-
-      btn.disabled=false;
-      btn.textContent=
-        `💳 Payer ${money(total)} avec PayPal`;
-
-    }
+    showToast("Impossible de créer la commande");
 
   }
 
-}
-
+});
 
 /* =========================================================
-   FREE ORDER
+   ORDERS CLIENT
 ========================================================= */
 
-async function submitFreeOrder(){
+$("ordersBtn").addEventListener("click",openOrders);
 
-  const address =
-    validateAddress();
-
-  if(!address) return;
-
-  if(checkoutData.promo!=="NOVA100"){
-    toast("Code promo invalide.");
-    return;
-  }
-
-  try{
-
-    const orderId =
-      await createOrder({
-
-        address,
-
-        total:0,
-
-        paymentMethod:"Promo",
-
-        paymentStatus:"free",
-
-        promoCode:"NOVA100"
-
-      });
-
-    cart=[];
-
-    saveCart();
-
-    renderCart();
-
-    closeModal();
-
-    closeCartDrawer();
-
-    toast(
-      `Commande ${orderId.slice(0,8)} validée 🎉`
-    );
-
-  }catch(error){
-
-    console.error(error);
-
-    toast(
-      "Impossible de créer la commande."
-    );
-
-  }
-
-}
-
-
-/* =========================================================
-   ORDERS
-========================================================= */
-
-async function showOrders(){
+window.openOrders = async function(){
 
   if(!currentUser){
 
-    modalTitle.textContent="Mes commandes";
+    renderAccount();
 
-    modalContent.innerHTML=`
+    openModal("accountModal");
 
-      <div style="text-align:center;padding:25px">
+    showToast("Connecte-toi pour voir tes commandes");
 
-        <div style="font-size:45px">📦</div>
+    return;
+  }
 
-        <h2 style="margin:12px 0">
-          Connecte-toi
-        </h2>
+  openModal("ordersModal");
 
-        <p style="color:#8996a8">
-          Tu dois être connecté pour voir tes commandes.
-        </p>
+  $("ordersContent").innerHTML = `
+    <div class="empty">
+      Chargement des commandes...
+    </div>
+  `;
+
+  try{
+
+    const q = query(
+      collection(db,"orders"),
+      where("userId","==",currentUser.uid)
+    );
+
+    const snapshot = await getDocs(q);
+
+    const orders = snapshot.docs
+      .map(d=>({
+        id:d.id,
+        ...d.data()
+      }))
+      .sort((a,b)=>{
+
+        const da =
+          a.createdAt?.toMillis?.() || 0;
+
+        const dbb =
+          b.createdAt?.toMillis?.() || 0;
+
+        return dbb-da;
+
+      });
+
+    renderOrders(orders);
+
+  }catch(error){
+
+    console.error(error);
+
+    $("ordersContent").innerHTML = `
+      <div class="empty">
+        Impossible de charger les commandes.
+      </div>
+    `;
+
+  }
+
+};
+
+function renderOrders(orders){
+
+  if(!orders.length){
+
+    $("ordersContent").innerHTML = `
+      <div class="empty">
+        📦<br><br>
+        Aucune commande.
+      </div>
+    `;
+
+    return;
+  }
+
+  $("ordersContent").innerHTML = orders.map(order=>{
+
+    const info = statusInfo(order.status);
+
+    const items = order.items || [];
+
+    return `
+
+      <div class="order-card">
+
+        <div class="order-top">
+
+          <div>
+
+            <div class="order-id">
+              ${escapeHtml(order.orderNumber || order.id)}
+            </div>
+
+            <div class="order-meta">
+              ${formatDate(order.createdAt)}
+            </div>
+
+          </div>
+
+          <div class="status">
+            ${escapeHtml(info.label)}
+          </div>
+
+        </div>
+
+        ${renderProgress(order.status)}
+
+        <div class="order-meta">
+
+          <strong>📍 Colis :</strong>
+          ${escapeHtml(order.packageCity || "En préparation")}
+
+          <br>
+
+          <strong>📅 Livraison :</strong>
+          ${escapeHtml(order.estimatedDelivery || "Date à définir")}
+
+          ${
+            order.trackingNumber
+            ? `
+              <br>
+              <strong>🔢 Suivi :</strong>
+              ${escapeHtml(order.trackingNumber)}
+            `
+            : ""
+          }
+
+          <br>
+
+          <strong>💳 Paiement :</strong>
+          ${escapeHtml(order.paymentMethod || "")}
+
+          ${
+            order.paymentStatus==="pending"
+            ? `
+              <br>
+              <span style="color:#ffc857">
+                ⏳ Paiement / commande en attente de validation OWNER
+              </span>
+            `
+            : ""
+          }
+
+        </div>
+
+        <div class="order-products">
+
+          ${items.map(item=>`
+
+            <div class="order-product">
+
+              <span>
+                ${escapeHtml(item.name)}
+                × ${item.quantity}
+              </span>
+
+              <strong>
+                ${money(item.price*item.quantity)}
+              </strong>
+
+            </div>
+
+          `).join("")}
+
+        </div>
+
+        <div style="
+          display:flex;
+          justify-content:space-between;
+          margin-top:14px;
+          padding-top:12px;
+          border-top:1px solid var(--line);
+        ">
+
+          <strong>Total</strong>
+
+          <strong>
+            ${money(order.total)}
+          </strong>
+
+        </div>
+
+        <div class="order-actions">
+
+          <button
+            class="small-btn primary"
+            onclick="printInvoice('${order.id}')"
+          >
+            🧾 Imprimer la facture
+          </button>
+
+        </div>
 
       </div>
 
     `;
 
-    modalBackdrop.classList.add("show");
+  }).join("");
+}
 
-    return;
-  }
+function renderProgress(status){
 
-  modalTitle.textContent="Mes commandes";
+  const current =
+    statusInfo(status).index;
 
-  modalContent.innerHTML=`
+  const steps = [
+    ["accepted","Acceptée","✓"],
+    ["preparing","Préparée","📦"],
+    ["transit","Transit","🚚"],
+    ["nearby","Proche","📍"],
+    ["delivered","Livrée","✓"]
+  ];
 
-    <div style="text-align:center;padding:25px">
-      Chargement des commandes...
-    </div>
+  return `
 
-  `;
+    <div class="progress">
 
-  modalBackdrop.classList.add("show");
+      ${steps.map((step,index)=>{
 
-  try{
+        const active =
+          current > index+1;
 
-    /*
-      Pas de orderBy ici :
-      cela évite de demander un index composite
-      userId + createdAt à Firebase.
-    */
-
-    const q =
-      query(
-        collection(db,"orders"),
-        where(
-          "userId",
-          "==",
-          currentUser.uid
-        )
-      );
-
-    const snapshot =
-      await getDocs(q);
-
-    let orders =
-      snapshot.docs.map(d=>({
-        id:d.id,
-        ...d.data()
-      }));
-
-    orders.sort((a,b)=>{
-
-      const ta =
-        a.createdAt?.seconds || 0;
-
-      const tb =
-        b.createdAt?.seconds || 0;
-
-      return tb-ta;
-
-    });
-
-    if(!orders.length){
-
-      modalContent.innerHTML=`
-
-        <div style="
-          text-align:center;
-          padding:35px;
-          color:#8d99aa;
-        ">
-
-          <div style="font-size:42px">
-            📦
-          </div>
-
-          <p style="margin-top:12px">
-            Aucune commande pour le moment.
-          </p>
-
-        </div>
-
-      `;
-
-      return;
-    }
-
-    modalContent.innerHTML =
-      orders.map(order=>{
-
-        const date =
-          order.createdAt?.toDate
-            ? order.createdAt.toDate().toLocaleString("fr-FR")
-            : "Date en attente";
-
-        const status =
-          order.paymentStatus || "pending";
+        const currentStep =
+          current === index+1;
 
         return `
 
-          <div style="
-            border:1px solid var(--line);
-            border-radius:15px;
-            padding:15px;
-            margin-bottom:12px;
-            background:#0a121c;
+          <div class="
+            progress-step
+            ${active?"done":""}
+            ${currentStep?"current":""}
           ">
 
-            <div style="
-              display:flex;
-              justify-content:space-between;
-              gap:10px;
-            ">
-
-              <strong>
-                Commande #${order.id.slice(0,8)}
-              </strong>
-
-              <strong>
-                ${money(order.total)}
-              </strong>
-
+            <div class="progress-dot">
+              ${step[2]}
             </div>
 
-            <div style="
-              color:#8290a3;
-              font-size:12px;
-              margin-top:7px;
-            ">
-              ${date}
-            </div>
-
-            <div style="
-              margin-top:10px;
-              font-size:12px;
-              color:#9aa7b8;
-            ">
-              Paiement :
-              ${escapeHTML(order.paymentMethod || "-")}
-              <br>
-              Statut :
-              ${escapeHTML(status)}
+            <div class="progress-label">
+              ${step[1]}
             </div>
 
           </div>
 
         `;
 
-      }).join("");
+      }).join("")}
+
+    </div>
+
+  `;
+}
+
+/* =========================================================
+   INVOICE
+========================================================= */
+
+window.printInvoice = async function(orderId){
+
+  if(!currentUser) return;
+
+  try{
+
+    const q = query(
+      collection(db,"orders"),
+      where("userId","==",currentUser.uid)
+    );
+
+    const snapshot = await getDocs(q);
+
+    const docSnap =
+      snapshot.docs.find(d=>d.id===orderId);
+
+    if(!docSnap){
+
+      showToast("Facture introuvable");
+
+      return;
+    }
+
+    const order = {
+      id:docSnap.id,
+      ...docSnap.data()
+    };
+
+    createInvoicePrint(order);
 
   }catch(error){
 
     console.error(error);
 
-    modalContent.innerHTML=`
+    showToast("Impossible de générer la facture");
 
-      <div style="
-        padding:25px;
-        text-align:center;
-        color:#fb7185;
-      ">
-        Impossible de charger les commandes.
+  }
+
+};
+
+function createInvoicePrint(order){
+
+  const items = order.items || [];
+
+  const itemRows = items.map(item=>`
+
+    <tr>
+
+      <td>${escapeHtml(item.name)}</td>
+
+      <td>${item.quantity}</td>
+
+      <td>${money(item.price)}</td>
+
+      <td>${money(item.price*item.quantity)}</td>
+
+    </tr>
+
+  `).join("");
+
+  const address = order.address || {};
+
+  const printWindow =
+    window.open("","_blank","width=900,height=700");
+
+  if(!printWindow){
+
+    showToast("La fenêtre d'impression a été bloquée");
+
+    return;
+  }
+
+  printWindow.document.write(`
+
+    <!DOCTYPE html>
+
+    <html>
+
+    <head>
+
+      <title>Facture ${escapeHtml(order.orderNumber)}</title>
+
+      <style>
+
+        body{
+          font-family:Arial,sans-serif;
+          margin:40px;
+          color:#111;
+        }
+
+        .top{
+          display:flex;
+          justify-content:space-between;
+          align-items:flex-start;
+          border-bottom:2px solid #111;
+          padding-bottom:20px;
+        }
+
+        h1{
+          margin:0;
+          font-size:30px;
+        }
+
+        .muted{
+          color:#666;
+        }
+
+        .grid{
+          display:grid;
+          grid-template-columns:1fr 1fr;
+          gap:30px;
+          margin:30px 0;
+        }
+
+        table{
+          width:100%;
+          border-collapse:collapse;
+          margin-top:30px;
+        }
+
+        th,td{
+          border-bottom:1px solid #ddd;
+          padding:12px 8px;
+          text-align:left;
+        }
+
+        .total{
+          margin-left:auto;
+          width:300px;
+          margin-top:25px;
+        }
+
+        .row{
+          display:flex;
+          justify-content:space-between;
+          padding:7px 0;
+        }
+
+        .grand{
+          font-size:22px;
+          font-weight:900;
+          border-top:2px solid #111;
+          margin-top:8px;
+          padding-top:12px;
+        }
+
+        @media print{
+          body{margin:20px}
+        }
+
+      </style>
+
+    </head>
+
+    <body>
+
+      <div class="top">
+
+        <div>
+
+          <h1>NOVASHOP</h1>
+
+          <p class="muted">
+            Facture client
+          </p>
+
+        </div>
+
+        <div>
+
+          <strong>
+            ${escapeHtml(order.orderNumber || "")}
+          </strong>
+
+          <br>
+
+          ${formatDate(order.createdAt)}
+
+        </div>
+
       </div>
 
-    `;
+      <div class="grid">
+
+        <div>
+
+          <strong>Client</strong>
+
+          <p>
+            ${escapeHtml(address.fullName || "")}<br>
+            ${escapeHtml(address.address || "")}<br>
+            ${escapeHtml(address.postalCode || "")}
+            ${escapeHtml(address.city || "")}
+          </p>
+
+        </div>
+
+        <div>
+
+          <strong>Paiement</strong>
+
+          <p>
+            Méthode :
+            ${escapeHtml(order.paymentMethod || "")}
+            <br>
+            Statut :
+            ${escapeHtml(order.paymentStatus || "")}
+          </p>
+
+        </div>
+
+      </div>
+
+      <table>
+
+        <thead>
+
+          <tr>
+            <th>Produit</th>
+            <th>Qté</th>
+            <th>Prix</th>
+            <th>Total</th>
+          </tr>
+
+        </thead>
+
+        <tbody>
+
+          ${itemRows}
+
+        </tbody>
+
+      </table>
+
+      <div class="total">
+
+        <div class="row">
+          <span>Sous-total</span>
+          <strong>${money(order.subtotal)}</strong>
+        </div>
+
+        <div class="row">
+          <span>Réduction</span>
+          <strong>-${money(order.discount || 0)}</strong>
+        </div>
+
+        <div class="row grand">
+          <span>Total</span>
+          <strong>${money(order.total)}</strong>
+        </div>
+
+      </div>
+
+      <p class="muted" style="margin-top:50px">
+        Merci pour votre commande chez NovaShop.
+      </p>
+
+      <script>
+        window.onload=()=>{
+          window.print();
+        };
+      <\/script>
+
+    </body>
+
+    </html>
+
+  `);
+
+  printWindow.document.close();
+}
+
+/* =========================================================
+   SETTINGS
+========================================================= */
+
+$("settingsBtn").addEventListener("click",()=>{
+
+  loadSettings();
+
+  openModal("settingsModal");
+
+});
+
+function loadSettings(){
+
+  $("themeSelect").value =
+    localStorage.getItem("novaTheme") || "dark";
+
+  $("languageSelect").value =
+    localStorage.getItem("novaLanguage") || "fr";
+
+  $("animationSelect").value =
+    localStorage.getItem("novaAnimations") || "on";
+}
+
+$("themeSelect").addEventListener("change",e=>{
+
+  const value = e.target.value;
+
+  localStorage.setItem("novaTheme",value);
+
+  applyTheme();
+
+});
+
+$("languageSelect").addEventListener("change",e=>{
+
+  localStorage.setItem(
+    "novaLanguage",
+    e.target.value
+  );
+
+  showToast(
+    e.target.value==="fr"
+      ? "Langue française sélectionnée"
+      : "English selected"
+  );
+
+});
+
+$("animationSelect").addEventListener("change",e=>{
+
+  localStorage.setItem(
+    "novaAnimations",
+    e.target.value
+  );
+
+  if(e.target.value==="off"){
+
+    document.documentElement.style.setProperty(
+      "scroll-behavior",
+      "auto"
+    );
+
+  }else{
+
+    document.documentElement.style.setProperty(
+      "scroll-behavior",
+      "smooth"
+    );
+
+  }
+
+});
+
+function applyTheme(){
+
+  const theme =
+    localStorage.getItem("novaTheme") || "dark";
+
+  if(theme==="light"){
+
+    document.body.classList.add("light");
+
+  }else if(theme==="dark"){
+
+    document.body.classList.remove("light");
+
+  }else{
+
+    const light =
+      window.matchMedia &&
+      window.matchMedia("(prefers-color-scheme: light)").matches;
+
+    document.body.classList.toggle("light",light);
 
   }
 
 }
 
-
 /* =========================================================
-   ADMIN
+   ADMIN ACCESS
 ========================================================= */
 
-adminBtn.addEventListener("click",async()=>{
+$("adminBtn").addEventListener("click",()=>{
 
   if(!currentUser){
-    toast("Connexion requise.");
-    return;
-  }
 
-  if(
-    currentUser.email.trim().toLowerCase()
-    !==
-    ADMIN_EMAIL.trim().toLowerCase()
-  ){
-
-    toast("Accès refusé.");
+    showToast("Connexion OWNER requise");
 
     return;
   }
 
-  const alreadyAuthorized =
+  const email =
+    currentUser.email?.trim().toLowerCase();
+
+  if(email!==ADMIN_EMAIL.toLowerCase()){
+
+    showToast("Accès refusé");
+
+    return;
+  }
+
+  const authorized =
     localStorage.getItem(ADMIN_ACCESS_KEY)==="true";
 
-  if(!alreadyAuthorized){
+  if(!authorized){
 
     const code =
-      prompt("Code administrateur NovaShop :");
+      prompt("Code OWNER NovaShop :");
 
     if(code!==ADMIN_CODE){
 
-      toast("Code administrateur incorrect.");
+      showToast("Code OWNER incorrect");
 
       return;
-
     }
 
     localStorage.setItem(
@@ -1951,442 +2086,526 @@ adminBtn.addEventListener("click",async()=>{
 
 });
 
+function openAdmin(){
 
-async function openAdmin(){
+  $("ordersTab").classList.add("active");
+  $("productsTab").classList.remove("active");
 
-  modalTitle.textContent="Administration NovaShop";
+  loadAdminOrders();
 
-  modalContent.innerHTML=`
-
-    <div>
-
-      <div style="
-        padding:15px;
-        border:1px solid #294a6d;
-        background:#0c1a2a;
-        border-radius:15px;
-        margin-bottom:15px;
-      ">
-
-        <strong>👑 Mode administrateur</strong>
-
-        <p style="
-          color:#8e9bad;
-          font-size:12px;
-          margin-top:6px;
-        ">
-          ${escapeHTML(currentUser.email)}
-        </p>
-
-      </div>
-
-      <div id="adminStats">
-        Chargement...
-      </div>
-
-      <button
-        class="btn btn-danger"
-        id="deleteOrdersBtn"
-        style="width:100%;margin-top:15px"
-      >
-        Supprimer toutes les commandes
-      </button>
-
-    </div>
-
-  `;
-
-  modalBackdrop.classList.add("show");
-
-  await loadAdminStats();
-
-  document
-    .getElementById("deleteOrdersBtn")
-    .addEventListener("click",deleteAllOrders);
+  openModal("adminModal");
 
 }
 
+$("ordersTab").addEventListener("click",()=>{
 
-async function loadAdminStats(){
+  $("ordersTab").classList.add("active");
+  $("productsTab").classList.remove("active");
 
-  const box =
-    document.getElementById("adminStats");
+  loadAdminOrders();
 
-  if(!box) return;
+});
+
+$("productsTab").addEventListener("click",()=>{
+
+  $("productsTab").classList.add("active");
+  $("ordersTab").classList.remove("active");
+
+  renderAdminProducts();
+
+});
+
+/* =========================================================
+   ADMIN ORDERS
+========================================================= */
+
+async function loadAdminOrders(){
+
+  if(!currentUser) return;
+
+  $("adminContent").innerHTML = `
+    <div class="empty">
+      Chargement...
+    </div>
+  `;
 
   try{
 
     const snapshot =
-      await getDocs(
-        collection(db,"orders")
-      );
+      await getDocs(collection(db,"orders"));
 
-    let revenue=0;
+    adminOrdersCache =
+      snapshot.docs
+        .map(d=>({
+          id:d.id,
+          ...d.data()
+        }))
+        .sort((a,b)=>{
 
-    snapshot.forEach(docSnap=>{
+          const da =
+            a.createdAt?.toMillis?.() || 0;
 
-      const data=docSnap.data();
+          const dbb =
+            b.createdAt?.toMillis?.() || 0;
 
-      if(data.paymentStatus!=="pending"){
-        revenue += Number(data.total || 0);
-      }
+          return dbb-da;
 
-    });
+        });
 
-    box.innerHTML=`
+    renderAdminOrders();
 
-      <div style="
-        display:grid;
-        grid-template-columns:1fr 1fr;
-        gap:10px;
-      ">
+  }catch(error){
 
-        <div style="
-          padding:18px;
-          border:1px solid var(--line);
-          border-radius:14px;
-        ">
+    console.error(error);
 
-          <strong style="font-size:25px">
-            ${snapshot.size}
-          </strong>
-
-          <div style="
-            color:#8794a6;
-            font-size:12px;
-            margin-top:5px
-          ">
-            Commandes
-          </div>
-
-        </div>
-
-        <div style="
-          padding:18px;
-          border:1px solid var(--line);
-          border-radius:14px;
-        ">
-
-          <strong style="font-size:25px">
-            ${money(revenue)}
-          </strong>
-
-          <div style="
-            color:#8794a6;
-            font-size:12px;
-            margin-top:5px
-          ">
-            Total confirmé
-          </div>
-
-        </div>
-
+    $("adminContent").innerHTML = `
+      <div class="empty">
+        Impossible de charger les commandes OWNER.
       </div>
-
     `;
 
-  }catch(error){
-
-    console.error(error);
-
-    box.textContent=
-      "Impossible de charger les statistiques.";
-
   }
 
 }
 
+function renderAdminOrders(){
 
-async function deleteAllOrders(){
+  if(!adminOrdersCache.length){
 
-  const ok =
-    confirm(
-      "Supprimer toutes les commandes ? Cette action est irréversible."
-    );
+    $("adminContent").innerHTML = `
+      <div class="empty">
+        📦<br><br>
+        Aucune commande.
+      </div>
+    `;
 
-  if(!ok) return;
+    return;
+  }
+
+  $("adminContent").innerHTML =
+    adminOrdersCache.map(order=>{
+
+      const status =
+        normalizeStatus(order.status);
+
+      const info =
+        statusInfo(status);
+
+      const address =
+        order.address || {};
+
+      return `
+
+        <div class="admin-order">
+
+          <div class="admin-order-head">
+
+            <div>
+
+              <div class="admin-order-title">
+                ${escapeHtml(order.orderNumber || order.id)}
+              </div>
+
+              <div class="admin-payment">
+                ${escapeHtml(order.email || "")}
+              </div>
+
+            </div>
+
+            <div class="status">
+              ${escapeHtml(info.label)}
+            </div>
+
+          </div>
+
+          <div class="admin-payment">
+
+            📅 ${formatDate(order.createdAt)}
+            · 💰 ${money(order.total)}
+            · 💳 ${escapeHtml(order.paymentMethod || "")}
+
+            ${
+              order.paymentStatus==="pending"
+              ? `
+                <br>
+                <strong style="color:#ffc857">
+                  ⏳ Paiement en attente
+                </strong>
+              `
+              : `
+                <br>
+                Statut paiement :
+                ${escapeHtml(order.paymentStatus || "")}
+              `
+            }
+
+          </div>
+
+          <div class="admin-payment" style="margin-top:10px">
+
+            👤
+            ${escapeHtml(address.fullName || "Client")}
+
+            <br>
+
+            📍
+            ${escapeHtml(address.address || "")},
+            ${escapeHtml(address.postalCode || "")}
+            ${escapeHtml(address.city || "")}
+
+          </div>
+
+          <div class="admin-grid">
+
+            <div class="field">
+
+              <label>Statut</label>
+
+              <select id="status-${order.id}">
+
+                <option value="pending" ${status==="pending"?"selected":""}>
+                  En attente
+                </option>
+
+                <option value="accepted" ${status==="accepted"?"selected":""}>
+                  Commande acceptée
+                </option>
+
+                <option value="preparing" ${status==="preparing"?"selected":""}>
+                  Colis préparé
+                </option>
+
+                <option value="transit" ${status==="transit"?"selected":""}>
+                  En transit
+                </option>
+
+                <option value="nearby" ${status==="nearby"?"selected":""}>
+                  Livraison proche
+                </option>
+
+                <option value="delivered" ${status==="delivered"?"selected":""}>
+                  Livrée
+                </option>
+
+              </select>
+
+            </div>
+
+            <div class="field">
+
+              <label>Ville du colis</label>
+
+              <input
+                id="city-${order.id}"
+                value="${escapeHtml(order.packageCity || "")}"
+                placeholder="Paris..."
+              >
+
+            </div>
+
+            <div class="field">
+
+              <label>Livraison prévue</label>
+
+              <input
+                id="delivery-${order.id}"
+                value="${escapeHtml(order.estimatedDelivery || "")}"
+                placeholder="Ex : 25 septembre 2026"
+              >
+
+            </div>
+
+            <div class="field">
+
+              <label>Numéro de suivi</label>
+
+              <input
+                id="tracking-${order.id}"
+                value="${escapeHtml(order.trackingNumber || "")}"
+                placeholder="NOVA123456"
+              >
+
+            </div>
+
+            <div class="field">
+
+              <label>Durée avant livraison</label>
+
+              <input
+                id="duration-${order.id}"
+                value="${escapeHtml(order.deliveryDuration || "")}"
+                placeholder="Ex : 2 jours"
+              >
+
+            </div>
+
+          </div>
+
+          <div class="admin-buttons">
+
+            ${
+              order.paymentMethod==="PayPal.Me" &&
+              order.paymentStatus==="pending"
+              ? `
+                <button
+                  class="small-btn primary"
+                  onclick="acceptPaypalOrder('${order.id}')"
+                >
+                  ✅ Accepter le paiement
+                </button>
+              `
+              : ""
+            }
+
+            <button
+              class="small-btn primary"
+              onclick="saveAdminOrder('${order.id}')"
+            >
+              💾 Enregistrer
+            </button>
+
+            <button
+              class="small-btn"
+              onclick="printAdminInvoice('${order.id}')"
+            >
+              🧾 Facture
+            </button>
+
+            ${
+              order.paymentMethod==="Promo" &&
+              order.promoCode==="NOVA100"
+              ? `
+                <span class="status">
+                  🎟️ NOVA100 · Acceptée
+                </span>
+              `
+              : ""
+            }
+
+          </div>
+
+        </div>
+
+      `;
+
+    }).join("");
+
+}
+
+window.acceptPaypalOrder = async function(orderId){
+
+  if(!checkAdmin()) return;
 
   try{
 
-    const snapshot =
-      await getDocs(
-        collection(db,"orders")
-      );
+    await updateDoc(
+      doc(db,"orders",orderId),
+      {
+        paymentStatus:"accepted",
+        status:"accepted",
+        updatedAt:serverTimestamp()
+      }
+    );
 
-    for(const item of snapshot.docs){
+    showToast("Commande PayPal acceptée");
 
-      await deleteDoc(
-        doc(db,"orders",item.id)
-      );
-
-    }
-
-    toast("Commandes supprimées.");
-
-    await loadAdminStats();
+    await loadAdminOrders();
 
   }catch(error){
 
     console.error(error);
 
-    toast(
-      "Impossible de supprimer les commandes."
-    );
+    showToast("Impossible d'accepter la commande");
 
   }
 
+};
+
+window.saveAdminOrder = async function(orderId){
+
+  if(!checkAdmin()) return;
+
+  const status =
+    $(`status-${orderId}`).value;
+
+  const packageCity =
+    $(`city-${orderId}`).value.trim();
+
+  const estimatedDelivery =
+    $(`delivery-${orderId}`).value.trim();
+
+  const trackingNumber =
+    $(`tracking-${orderId}`).value.trim();
+
+  const deliveryDuration =
+    $(`duration-${orderId}`).value.trim();
+
+  try{
+
+    const data = {
+
+      status,
+
+      packageCity,
+
+      estimatedDelivery,
+
+      trackingNumber,
+
+      deliveryDuration,
+
+      updatedAt:serverTimestamp()
+
+    };
+
+    /*
+      Si OWNER passe directement une commande
+      à "acceptée", le paiement PayPal est considéré
+      comme validé manuellement.
+    */
+
+    if(status==="accepted"){
+
+      data.paymentStatus = "accepted";
+
+    }
+
+    if(status==="delivered"){
+
+      data.paymentStatus =
+        data.paymentStatus || "accepted";
+
+    }
+
+    await updateDoc(
+      doc(db,"orders",orderId),
+      data
+    );
+
+    showToast("Commande mise à jour");
+
+    await loadAdminOrders();
+
+  }catch(error){
+
+    console.error(error);
+
+    showToast("Impossible d'enregistrer");
+
+  }
+
+};
+
+function checkAdmin(){
+
+  if(!currentUser) return false;
+
+  const email =
+    currentUser.email?.trim().toLowerCase();
+
+  if(email!==ADMIN_EMAIL.toLowerCase()){
+
+    showToast("Accès OWNER refusé");
+
+    return false;
+  }
+
+  if(
+    localStorage.getItem(ADMIN_ACCESS_KEY)!=="true"
+  ){
+
+    showToast("Autorisation OWNER requise");
+
+    return false;
+  }
+
+  return true;
 }
 
-
 /* =========================================================
-   SETTINGS
+   ADMIN PRODUCTS
 ========================================================= */
 
-function openSettings(){
+function renderAdminProducts(){
 
-  const currentTheme =
-    localStorage.getItem("novaTheme") || "dark";
+  $("adminContent").innerHTML = `
 
-  const language =
-    localStorage.getItem("novaLanguage") || "fr";
-
-  modalTitle.textContent="Paramètres";
-
-  modalContent.innerHTML=`
-
-    <div>
-
-      <div class="setting-row">
-
-        <div>
-          <strong>Apparence</strong>
-          <span>
-            Choisis l'apparence du site.
-          </span>
-        </div>
-
-        <select id="themeSelect">
-
-          <option value="dark"
-            ${currentTheme==="dark"?"selected":""}>
-            Sombre
-          </option>
-
-          <option value="light"
-            ${currentTheme==="light"?"selected":""}>
-            Clair
-          </option>
-
-          <option value="auto"
-            ${currentTheme==="auto"?"selected":""}>
-            Automatique
-          </option>
-
-        </select>
-
-      </div>
-
-      <div class="setting-row">
-
-        <div>
-          <strong>Langue</strong>
-          <span>
-            Langue de l'interface.
-          </span>
-        </div>
-
-        <select id="languageSelect">
-
-          <option value="fr"
-            ${language==="fr"?"selected":""}>
-            Français
-          </option>
-
-          <option value="en"
-            ${language==="en"?"selected":""}>
-            English
-          </option>
-
-        </select>
-
-      </div>
-
+    <div style="
+      margin-bottom:15px;
+      color:var(--muted);
+      font-size:13px;
+    ">
+      ${products.length} produits dans le catalogue NovaShop.
     </div>
+
+    ${products.map(product=>`
+
+      <div class="admin-order">
+
+        <div class="admin-order-head">
+
+          <div>
+
+            <div class="admin-order-title">
+              ${escapeHtml(product.name)}
+            </div>
+
+            <div class="admin-payment">
+              ${escapeHtml(product.category)}
+            </div>
+
+          </div>
+
+          <strong>
+            ${money(product.price)}
+          </strong>
+
+        </div>
+
+      </div>
+
+    `).join("")}
 
   `;
 
-  modalBackdrop.classList.add("show");
-
-  document
-    .getElementById("themeSelect")
-    .addEventListener("change",event=>{
-      applyTheme(event.target.value);
-    });
-
-  document
-    .getElementById("languageSelect")
-    .addEventListener("change",event=>{
-      localStorage.setItem(
-        "novaLanguage",
-        event.target.value
-      );
-
-      toast(
-        event.target.value==="fr"
-          ? "Langue française sélectionnée."
-          : "English selected."
-      );
-    });
-
 }
-
-
-function applyTheme(theme){
-
-  localStorage.setItem(
-    "novaTheme",
-    theme
-  );
-
-  if(theme==="light"){
-
-    document.body.classList.add("light");
-
-    return;
-  }
-
-  if(theme==="dark"){
-
-    document.body.classList.remove("light");
-
-    return;
-  }
-
-  const isLight =
-    window.matchMedia(
-      "(prefers-color-scheme: light)"
-    ).matches;
-
-  document.body.classList.toggle(
-    "light",
-    isLight
-  );
-
-}
-
 
 /* =========================================================
-   EVENTS
+   ADMIN INVOICE
 ========================================================= */
 
-cartBtn.addEventListener(
-  "click",
-  openCart
-);
+window.printAdminInvoice = function(orderId){
 
-closeCart.addEventListener(
-  "click",
-  closeCartDrawer
-);
+  const order =
+    adminOrdersCache.find(o=>o.id===orderId);
 
-drawerBackdrop.addEventListener(
-  "click",
-  closeCartDrawer
-);
+  if(!order){
 
-modalClose.addEventListener(
-  "click",
-  closeModal
-);
+    showToast("Commande introuvable");
 
-modalBackdrop.addEventListener(
-  "click",
-  event=>{
-    if(event.target===modalBackdrop){
-      closeModal();
-    }
+    return;
   }
-);
 
-checkoutBtn.addEventListener(
-  "click",
-  openCheckout
-);
+  createInvoicePrint(order);
 
-settingsBtn.addEventListener(
-  "click",
-  openSettings
-);
-
-ordersBtn.addEventListener(
-  "click",
-  showOrders
-);
-
-searchInput.addEventListener(
-  "input",
-  event=>{
-    currentSearch=event.target.value;
-    renderProducts();
-  }
-);
-
-sortSelect.addEventListener(
-  "change",
-  event=>{
-    currentSort=event.target.value;
-    renderProducts();
-  }
-);
-
-document
-  .getElementById("heroShop")
-  .addEventListener("click",()=>{
-    document
-      .getElementById("shop")
-      .scrollIntoView({
-        behavior:"smooth"
-      });
-  });
-
-document
-  .getElementById("heroCategories")
-  .addEventListener("click",()=>{
-    document
-      .getElementById("categories")
-      .scrollIntoView({
-        behavior:"smooth"
-      });
-  });
-
+};
 
 /* =========================================================
    INIT
 ========================================================= */
 
-applyTheme(
-  localStorage.getItem("novaTheme") || "dark"
-);
+function init(){
 
-renderCategories();
-renderProducts();
-renderCart();
+  applyTheme();
 
+  renderCategories();
 
-/* =========================================================
-   PAYPAL TOTAL EXAMPLE
+  renderProducts();
 
-   panier 49.99 €
-   =>
-   https://paypal.me/SH0PNOVA/49.99
+  renderCart();
 
-   panier 120 €
-   =>
-   https://paypal.me/SH0PNOVA/120.00
+  updateCartBadge();
 
-   NOVA100
-   =>
-   total 0 €
-   =>
-   aucun bouton PayPal
-========================================================= */
+}
+
+init();
