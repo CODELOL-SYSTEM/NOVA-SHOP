@@ -563,7 +563,7 @@ select{
   padding:0 20px 20px;
 }
 
-/* REFUND */
+/* REMBOURSEMENTS */
 
 .refund-section{
   max-width:1400px;
@@ -603,6 +603,11 @@ select{
 .refund-box p{
   color:var(--muted);
   line-height:1.65;
+}
+
+.contact-email{
+  color:var(--blue);
+  font-weight:800;
 }
 
 /* CART */
@@ -1264,6 +1269,7 @@ footer{
 <section class="faq-section">
 
   <div class="faq-head">
+
     <div class="eyebrow">Centre d'aide • NovaShop</div>
 
     <h2>Questions fréquentes</h2>
@@ -1272,6 +1278,7 @@ footer{
       Retrouve ici les réponses aux principales questions concernant
       les commandes, paiements, livraisons et remboursements.
     </p>
+
   </div>
 
   <div class="faq-list">
@@ -1334,19 +1341,11 @@ footer{
     </details>
 
     <details class="faq-item">
-      <summary>Comment fonctionne le code NOVA100 ?</summary>
+      <summary>Pourquoi mon paiement peut-il échouer ?</summary>
       <p>
-        Lorsque l'offre est disponible, entre le code NOVA100 dans
-        l'espace prévu lors de la commande. Si les conditions de l'offre
-        sont respectées, le total peut être ramené à 0 €.
-      </p>
-    </details>
-
-    <details class="faq-item">
-      <summary>Pourquoi mon code promotionnel ne fonctionne pas ?</summary>
-      <p>
-        Le code peut être indisponible, expiré ou soumis à certaines
-        conditions. Vérifie également que le code a été saisi correctement.
+        Un paiement peut échouer pour différentes raisons, notamment
+        un problème avec le moyen de paiement ou une interruption
+        pendant la transaction.
       </p>
     </details>
 
@@ -1451,8 +1450,7 @@ footer{
       <summary>Combien de temps prend un remboursement ?</summary>
       <p>
         Le délai dépend notamment du moyen de paiement utilisé et du
-        traitement de la demande. Le délai applicable doit être indiqué
-        dans les conditions de remboursement.
+        traitement de la demande.
       </p>
     </details>
 
@@ -1482,19 +1480,10 @@ footer{
     </details>
 
     <details class="faq-item">
-      <summary>Mes informations de livraison sont-elles nécessaires sur la facture ?</summary>
+      <summary>Que faire si je ne retrouve plus ma commande ?</summary>
       <p>
-        Les informations nécessaires à la facturation et à la livraison
-        peuvent apparaître sur les documents de commande selon les règles
-        applicables.
-      </p>
-    </details>
-
-    <details class="faq-item">
-      <summary>Comment contacter NovaShop ?</summary>
-      <p>
-        Utilise le moyen de contact indiqué par NovaShop pour demander
-        de l'aide concernant une commande ou un problème.
+        Vérifie que tu es connecté au bon compte puis consulte la section
+        « Commandes ». Si le problème continue, contacte le support.
       </p>
     </details>
 
@@ -1508,16 +1497,7 @@ footer{
     </details>
 
     <details class="faq-item">
-      <summary>Que se passe-t-il si le paiement échoue ?</summary>
-      <p>
-        La commande peut rester en attente tant que le paiement n'a pas
-        été correctement traité. Vérifie ton moyen de paiement puis
-        réessaie si nécessaire.
-      </p>
-    </details>
-
-    <details class="faq-item">
-      <summary>Pourquoi mon total est-il différent ?</summary>
+      <summary>Pourquoi mon total peut-il changer ?</summary>
       <p>
         Le total peut changer selon les quantités sélectionnées, les
         promotions applicables et les produits présents dans le panier.
@@ -1525,27 +1505,42 @@ footer{
     </details>
 
     <details class="faq-item">
-      <summary>Le prix affiché inclut-il toutes les informations nécessaires ?</summary>
+      <summary>Comment fonctionne la livraison ?</summary>
       <p>
-        Vérifie toujours le récapitulatif final de commande avant de
-        confirmer ton achat afin de connaître le montant affiché.
+        Les informations de livraison dépendent de la commande et sont
+        affichées lorsqu'elles sont disponibles.
       </p>
     </details>
 
     <details class="faq-item">
-      <summary>Puis-je utiliser NOVA100 plusieurs fois ?</summary>
+      <summary>Est-ce que tous les produits sont disponibles ?</summary>
       <p>
-        Cela dépend des conditions de l'offre. Le système peut refuser
-        le code lorsqu'il n'est plus disponible ou lorsque ses conditions
-        ne sont plus respectées.
+        La disponibilité peut varier selon le produit. Vérifie les
+        informations affichées au moment de la commande.
       </p>
     </details>
 
     <details class="faq-item">
-      <summary>Le code NOVA100 est-il toujours disponible ?</summary>
+      <summary>Comment contacter NovaShop ?</summary>
       <p>
-        Non nécessairement. Une offre promotionnelle peut être limitée
-        dans le temps ou soumise à des conditions particulières.
+        Pour toute question ou demande d'aide, contacte NovaShop à
+        <strong class="contact-email">helpy.nova.sh0p@gmail.com</strong>.
+      </p>
+    </details>
+
+    <details class="faq-item">
+      <summary>Que dois-je faire si j'ai une erreur sur le site ?</summary>
+      <p>
+        Actualise la page puis réessaie. Si le problème continue,
+        contacte le support avec une description de l'erreur rencontrée.
+      </p>
+    </details>
+
+    <details class="faq-item">
+      <summary>Comment obtenir de l'aide concernant une commande ?</summary>
+      <p>
+        Prépare les informations de ta commande puis contacte NovaShop
+        à l'adresse <strong class="contact-email">helpy.nova.sh0p@gmail.com</strong>.
       </p>
     </details>
 
@@ -1569,6 +1564,8 @@ footer{
         Les demandes de remboursement sont traitées conformément aux
         conditions de vente et aux droits applicables. Le délai de
         traitement peut dépendre du moyen de paiement utilisé.
+        Pour toute demande, contacte
+        <strong class="contact-email">helpy.nova.sh0p@gmail.com</strong>.
       </p>
 
     </div>
