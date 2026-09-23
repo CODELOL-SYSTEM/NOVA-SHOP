@@ -1,11 +1,12 @@
 // ============================================================
-// NOVASHOP - APP.JS COMPLET
-// Firebase Auth + Firestore
-// LANGUES : EN / FR / DE
-// ANGLAIS PAR DÉFAUT
+// NOVASHOP - APP.JS
+// PARTIE 1/3
+// Firebase Auth + Firestore + Catalogue
 // ============================================================
 
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
+import {
+  initializeApp
+} from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
 
 import {
   getAuth,
@@ -34,922 +35,69 @@ import {
 // ============================================================
 
 const firebaseConfig = {
-  apiKey: "AIzaSyAZ5vAkAEfIBpfLyhxgO7uvNdJ67KYKWD0",
-  authDomain: "novashop-4ee63.firebaseapp.com",
-  projectId: "novashop-4ee63",
-  storageBucket: "novashop-4ee63.firebasestorage.app",
-  messagingSenderId: "1044964015809",
-  appId: "1:1044964015809:web:4eafe0b1aede48f8539e40",
-  measurementId: "G-XNY5X2VMY9"
-};
 
-const firebaseApp = initializeApp(firebaseConfig);
+  apiKey:
+    "AIzaSy5vAkAEfIBpfLyhxgO7uvNdJ67KYKWD0",
 
-const auth = getAuth(firebaseApp);
-const db = getFirestore(firebaseApp);
+  authDomain:
+    "novashop-4ee63.firebaseapp.com",
 
+  projectId:
+    "novashop-4ee63",
 
-// ============================================================
-// CONFIGURATION
-// ============================================================
+  storageBucket:
+    "novashop-4ee63.firebasestorage.app",
 
-const ADMIN_EMAIL = "pc2alex.les@gmail.com";
-const ADMIN_CODE = "NOVA-ADMIN-2026";
-const ADMIN_ACCESS_KEY = "novaAdminAuthorized";
-const TEST_CARD_STORAGE_KEY = "novaTestCard";
+  messagingSenderId:
+    "1044964015809",
 
+  appId:
+    "1:1044964015809:web:4eafe0b1aede48f8539e40",
 
-// ============================================================
-// LANGUES
-// ============================================================
-
-const LANGUAGE_STORAGE_KEY = "nova_language";
-
-const LANGUAGES = {
-  en: {
-    name: "English",
-    flag: "🇬🇧"
-  },
-
-  fr: {
-    name: "Français",
-    flag: "🇫🇷"
-  },
-
-  de: {
-    name: "Deutsch",
-    flag: "🇩🇪"
-  }
-};
-
-let currentLanguage =
-  localStorage.getItem(
-    LANGUAGE_STORAGE_KEY
-  ) || "en";
-
-if(!LANGUAGES[currentLanguage]){
-  currentLanguage = "en";
-}
-
-
-const translations = {
-
-  en: {
-
-    nav: {
-      home: "Home",
-      products: "Products",
-      reviews: "Reviews",
-      faq: "FAQ",
-      account: "Account",
-      orders: "Orders",
-      admin: "Admin",
-      cart: "Cart"
-    },
-
-    hero: {
-      title1: "Your setup.",
-      title2: "Your level.",
-      description:
-        "NovaShop brings together PC components, peripherals, monitors, audio, streaming and gaming accessories.",
-      products: "View products",
-      cart: "View my cart",
-      gaming: "NovaShop Gaming",
-      subtitle: "Performance, accessories and setup."
-    },
-
-    products: {
-      title: "Products",
-      subtitle: "Find your next piece of equipment.",
-      search: "Search for a product...",
-      catalog: "Catalog",
-      product: "product",
-      products: "products",
-      noResults: "No product found",
-      noResultsText:
-        "Try another search or category.",
-      view: "View",
-      add: "Add",
-      new: "NEW",
-      removeFavorite: "Remove from favorites",
-      addFavorite: "Add to favorites"
-    },
-
-    sort: {
-      default: "Default sorting",
-      low: "Price: low to high",
-      high: "Price: high to low",
-      name: "Name A-Z",
-      newest: "Newest"
-    },
-
-    categories: {
-      all: "All"
-    },
-
-    trust: {
-      title: "Why NovaShop?",
-
-      speedTitle: "🚀 Speed",
-      speedText:
-        "A store designed to help you quickly find your equipment.",
-
-      ordersTitle: "🛡️ Orders",
-      ordersText:
-        "Find your orders from your account.",
-
-      trackingTitle: "📦 Tracking",
-      trackingText:
-        "Delivery status can be updated from the administration.",
-
-      paymentTitle: "💳 Payment",
-      paymentText:
-        "We accept credit/debit cards and PayPal."
-    },
-
-    reviews: {
-      title: "⭐ Customer reviews",
-      lucas:
-        "Very good product, fast delivery.",
-      maxime:
-        "Product as described and well packaged.",
-      enzo:
-        "Good experience on NovaShop.",
-      detailed:
-        "Detailed reviews are available from each product."
-    },
-
-    returns: {
-      title: "↩️ Returns",
-      text:
-        "For any questions about an order, contact NovaShop support:"
-    },
-
-    faq: {
-      title: "FAQ",
-
-      q1: "How do I place an order?",
-      a1:
-        "Add your products to the cart, log in, then open checkout to enter your address and payment method.",
-
-      q2: "How can I see my orders?",
-      a2:
-        "Log in and open the Orders button or the My Orders section from your account.",
-
-      q3: "How can I contact support?",
-      a3:
-        "You can contact NovaShop support at:"
-    },
-
-    footer: {
-      store: "Gaming store",
-      support: "Support:"
-    },
-
-    cart: {
-      title: "Cart",
-      total: "Total",
-      checkout: "Checkout",
-      empty: "Your cart is empty",
-      emptyText:
-        "Add products to get started.",
-      remove: "Remove"
-    },
-
-    auth: {
-      login: "Login",
-      register: "Create an account",
-      email: "Email",
-      password: "Password",
-      connect: "Log in",
-      create: "Create my account",
-      back: "Back to login",
-      accountConnected: "👤 Account connected",
-      myOrders: "📦 My orders",
-      logout: "🚪 Log out",
-      successLogin: "Login successful 👋",
-      successRegister:
-        "Account created successfully 🎉",
-      successLogout: "Logout successful.",
-      close: "Close"
-    },
-
-    orders: {
-      title: "My orders",
-      loading: "Loading orders...",
-      none: "No orders",
-      noneText:
-        "You have not placed an order yet.",
-      order: "Order",
-      status: "Status:",
-      view: "View order",
-      impossible:
-        "Unable to load orders."
-    },
-
-    order: {
-      registered: "Registered",
-      accepted: "Accepted",
-      preparation: "Preparing",
-      transit: "In transit",
-      nearDelivery: "Delivery nearby",
-      delivered: "Delivered",
-      cancelled: "Order cancelled",
-      tracking: "Tracking:",
-      estimated: "Estimated delivery:",
-      destination: "📍 Destination:",
-      trackingTitle: "Tracking",
-      products: "Products",
-      delivery: "Delivery",
-      total: "Total",
-      invoice: "🧾 View invoice"
-    },
-
-    product: {
-      addCart: "🛒 Add to cart",
-      removeFavorite: "❤️ Remove from favorites",
-      addFavorite: "♡ Add to favorites"
-    },
-
-    toast: {
-      removedFavorite:
-        "Removed from favorites.",
-      addedFavorite:
-        "Added to favorites ❤️",
-      addedCart:
-        "Product added to cart 🛒"
-    },
-
-    card: {
-      title: "💳 Card",
-      none: "No card created.",
-      generate: "Generate a card",
-      regenerate: "🔄 Generate a new card",
-      holder: "CARDHOLDER",
-      exp: "EXP",
-      cvv: "CVV"
-    },
-
-    language: {
-      title: "Language",
-      select: "Choose your language",
-      english: "English",
-      french: "Français",
-      german: "Deutsch"
-    }
-
-  },
-
-
-  fr: {
-
-    nav: {
-      home: "Accueil",
-      products: "Produits",
-      reviews: "Avis",
-      faq: "FAQ",
-      account: "Compte",
-      orders: "Commandes",
-      admin: "Admin",
-      cart: "Panier"
-    },
-
-    hero: {
-      title1: "Ton setup.",
-      title2: "Ton niveau.",
-      description:
-        "NovaShop rassemble composants PC, périphériques, écrans, audio, streaming et accessoires gaming.",
-      products: "Voir les produits",
-      cart: "Voir mon panier",
-      gaming: "NovaShop Gaming",
-      subtitle: "Performance, accessoires et setup."
-    },
-
-    products: {
-      title: "Produits",
-      subtitle: "Trouve ton prochain équipement.",
-      search: "Rechercher un produit...",
-      catalog: "Catalogue",
-      product: "produit",
-      products: "produits",
-      noResults: "Aucun produit trouvé",
-      noResultsText:
-        "Essaie une autre recherche ou catégorie.",
-      view: "Voir",
-      add: "Ajouter",
-      new: "NOUVEAU",
-      removeFavorite: "Retirer des favoris",
-      addFavorite: "Ajouter aux favoris"
-    },
-
-    sort: {
-      default: "Trier par défaut",
-      low: "Prix croissant",
-      high: "Prix décroissant",
-      name: "Nom A-Z",
-      newest: "Nouveautés"
-    },
-
-    categories: {
-      all: "Toutes"
-    },
-
-    trust: {
-      title: "Pourquoi NovaShop?",
-
-      speedTitle: "🚀 Rapidité",
-      speedText:
-        "Une boutique pensée pour trouver rapidement ton matériel.",
-
-      ordersTitle: "🛡️ Commandes",
-      ordersText:
-        "Retrouve tes commandes depuis ton compte.",
-
-      trackingTitle: "📦 Suivi",
-      trackingText:
-        "Le statut de livraison peut être mis à jour depuis l'administration.",
-
-      paymentTitle: "💳 Paiement",
-      paymentText:
-        "Nous acceptons les paiements par carte bancaire et PayPal."
-    },
-
-    reviews: {
-      title: "⭐ Avis clients",
-      lucas:
-        "Très bon produit, livraison rapide.",
-      maxime:
-        "Produit conforme et bien emballé.",
-      enzo:
-        "Bonne expérience sur NovaShop.",
-      detailed:
-        "Les avis détaillés sont accessibles depuis chaque produit."
-    },
-
-    returns: {
-      title: "↩️ Retours",
-      text:
-        "Pour toute question concernant une commande, contacte le support NovaShop:"
-    },
-
-    faq: {
-      title: "FAQ",
-
-      q1: "Comment commander?",
-      a1:
-        "Ajoute tes produits au panier, connecte-toi puis ouvre le checkout afin de renseigner ton adresse et ton mode de paiement.",
-
-      q2: "Comment voir mes commandes?",
-      a2:
-        "Connecte-toi puis ouvre le bouton Commandes ou la section Mes commandes depuis ton compte.",
-
-      q3: "Comment contacter le support?",
-      a3:
-        "Tu peux contacter le support NovaShop à:"
-    },
-
-    footer: {
-      store: "Boutique gaming",
-      support: "Support:"
-    },
-
-    cart: {
-      title: "Panier",
-      total: "Total",
-      checkout: "Passer la commande",
-      empty: "Ton panier est vide",
-      emptyText:
-        "Ajoute des produits pour commencer.",
-      remove: "Supprimer"
-    },
-
-    auth: {
-      login: "Connexion",
-      register: "Créer un compte",
-      email: "Email",
-      password: "Mot de passe",
-      connect: "Se connecter",
-      create: "Créer mon compte",
-      back: "Retour à la connexion",
-      accountConnected: "👤 Compte connecté",
-      myOrders: "📦 Mes commandes",
-      logout: "🚪 Se déconnecter",
-      successLogin: "Connexion réussie 👋",
-      successRegister:
-        "Compte créé avec succès 🎉",
-      successLogout: "Déconnexion réussie.",
-      close: "Fermer"
-    },
-
-    orders: {
-      title: "Mes commandes",
-      loading: "Chargement des commandes...",
-      none: "Aucune commande",
-      noneText:
-        "Tu n'as pas encore passé de commande.",
-      order: "Commande",
-      status: "Statut:",
-      view: "Voir la commande",
-      impossible:
-        "Impossible de charger les commandes."
-    },
-
-    order: {
-      registered: "Enregistrée",
-      accepted: "Acceptée",
-      preparation: "Préparation",
-      transit: "En transit",
-      nearDelivery: "Livraison proche",
-      delivered: "Livrée",
-      cancelled: "Commande annulée",
-      tracking: "Suivi:",
-      estimated: "Livraison estimée:",
-      destination: "📍 Destination:",
-      trackingTitle: "Suivi",
-      products: "Produits",
-      delivery: "Livraison",
-      total: "Total",
-      invoice: "🧾 Voir la facture"
-    },
-
-    product: {
-      addCart: "🛒 Ajouter au panier",
-      removeFavorite: "❤️ Retirer des favoris",
-      addFavorite: "♡ Ajouter aux favoris"
-    },
-
-    toast: {
-      removedFavorite:
-        "Retiré des favoris.",
-      addedFavorite:
-        "Ajouté aux favoris ❤️",
-      addedCart:
-        "Produit ajouté au panier 🛒"
-    },
-
-    card: {
-      title: "💳 Carte",
-      none: "Aucune carte créée.",
-      generate: "Générer une carte",
-      regenerate:
-        "🔄 Générer une nouvelle carte",
-      holder: "TITULAIRE",
-      exp: "EXP",
-      cvv: "CVV"
-    },
-
-    language: {
-      title: "Langue",
-      select: "Choisis ta langue",
-      english: "English",
-      french: "Français",
-      german: "Deutsch"
-    }
-
-  },
-
-
-  de: {
-
-    nav: {
-      home: "Startseite",
-      products: "Produkte",
-      reviews: "Bewertungen",
-      faq: "FAQ",
-      account: "Konto",
-      orders: "Bestellungen",
-      admin: "Admin",
-      cart: "Warenkorb"
-    },
-
-    hero: {
-      title1: "Dein Setup.",
-      title2: "Dein Level.",
-      description:
-        "NovaShop bietet PC-Komponenten, Peripheriegeräte, Monitore, Audio, Streaming und Gaming-Zubehör.",
-      products: "Produkte ansehen",
-      cart: "Meinen Warenkorb ansehen",
-      gaming: "NovaShop Gaming",
-      subtitle: "Leistung, Zubehör und Setup."
-    },
-
-    products: {
-      title: "Produkte",
-      subtitle: "Finde deine nächste Ausrüstung.",
-      search: "Produkt suchen...",
-      catalog: "Katalog",
-      product: "Produkt",
-      products: "Produkte",
-      noResults: "Kein Produkt gefunden",
-      noResultsText:
-        "Versuche eine andere Suche oder Kategorie.",
-      view: "Ansehen",
-      add: "Hinzufügen",
-      new: "NEU",
-      removeFavorite: "Aus Favoriten entfernen",
-      addFavorite: "Zu Favoriten hinzufügen"
-    },
-
-    sort: {
-      default: "Standardsortierung",
-      low: "Preis aufsteigend",
-      high: "Preis absteigend",
-      name: "Name A-Z",
-      newest: "Neuheiten"
-    },
-
-    categories: {
-      all: "Alle"
-    },
-
-    trust: {
-      title: "Warum NovaShop?",
-
-      speedTitle: "🚀 Schnelligkeit",
-      speedText:
-        "Ein Shop, mit dem du deine Ausrüstung schnell findest.",
-
-      ordersTitle: "🛡️ Bestellungen",
-      ordersText:
-        "Finde deine Bestellungen in deinem Konto.",
-
-      trackingTitle: "📦 Sendungsverfolgung",
-      trackingText:
-        "Der Lieferstatus kann über die Verwaltung aktualisiert werden.",
-
-      paymentTitle: "💳 Zahlung",
-      paymentText:
-        "Wir akzeptieren Kredit-/Debitkarten und PayPal."
-    },
-
-    reviews: {
-      title: "⭐ Kundenbewertungen",
-      lucas:
-        "Sehr gutes Produkt, schnelle Lieferung.",
-      maxime:
-        "Produkt wie beschrieben und gut verpackt.",
-      enzo:
-        "Gute Erfahrung mit NovaShop.",
-      detailed:
-        "Detaillierte Bewertungen sind bei jedem Produkt verfügbar."
-    },
-
-    returns: {
-      title: "↩️ Rückgaben",
-      text:
-        "Bei Fragen zu einer Bestellung kontaktiere den NovaShop-Support:"
-    },
-
-    faq: {
-      title: "FAQ",
-
-      q1: "Wie bestelle ich?",
-      a1:
-        "Lege deine Produkte in den Warenkorb, melde dich an und öffne anschließend den Checkout, um deine Adresse und Zahlungsmethode einzugeben.",
-
-      q2: "Wie kann ich meine Bestellungen sehen?",
-      a2:
-        "Melde dich an und öffne die Bestellungen oder den Bereich Meine Bestellungen in deinem Konto.",
-
-      q3: "Wie kontaktiere ich den Support?",
-      a3:
-        "Du kannst den NovaShop-Support kontaktieren unter:"
-    },
-
-    footer: {
-      store: "Gaming-Shop",
-      support: "Support:"
-    },
-
-    cart: {
-      title: "Warenkorb",
-      total: "Gesamt",
-      checkout: "Zur Kasse",
-      empty: "Dein Warenkorb ist leer",
-      emptyText:
-        "Füge Produkte hinzu, um zu beginnen.",
-      remove: "Entfernen"
-    },
-
-    auth: {
-      login: "Anmelden",
-      register: "Konto erstellen",
-      email: "E-Mail",
-      password: "Passwort",
-      connect: "Anmelden",
-      create: "Mein Konto erstellen",
-      back: "Zurück zur Anmeldung",
-      accountConnected: "👤 Konto verbunden",
-      myOrders: "📦 Meine Bestellungen",
-      logout: "🚪 Abmelden",
-      successLogin: "Anmeldung erfolgreich 👋",
-      successRegister:
-        "Konto erfolgreich erstellt 🎉",
-      successLogout: "Abmeldung erfolgreich.",
-      close: "Schließen"
-    },
-
-    orders: {
-      title: "Meine Bestellungen",
-      loading: "Bestellungen werden geladen...",
-      none: "Keine Bestellungen",
-      noneText:
-        "Du hast noch keine Bestellung aufgegeben.",
-      order: "Bestellung",
-      status: "Status:",
-      view: "Bestellung ansehen",
-      impossible:
-        "Bestellungen konnten nicht geladen werden."
-    },
-
-    order: {
-      registered: "Registriert",
-      accepted: "Akzeptiert",
-      preparation: "Vorbereitung",
-      transit: "Unterwegs",
-      nearDelivery: "Lieferung steht bevor",
-      delivered: "Geliefert",
-      cancelled: "Bestellung storniert",
-      tracking: "Sendungsverfolgung:",
-      estimated: "Voraussichtliche Lieferung:",
-      destination: "📍 Ziel:",
-      trackingTitle: "Sendungsverfolgung",
-      products: "Produkte",
-      delivery: "Lieferung",
-      total: "Gesamt",
-      invoice: "🧾 Rechnung ansehen"
-    },
-
-    product: {
-      addCart: "🛒 In den Warenkorb",
-      removeFavorite: "❤️ Aus Favoriten entfernen",
-      addFavorite: "♡ Zu Favoriten hinzufügen"
-    },
-
-    toast: {
-      removedFavorite:
-        "Aus Favoriten entfernt.",
-      addedFavorite:
-        "Zu Favoriten hinzugefügt ❤️",
-      addedCart:
-        "Produkt zum Warenkorb hinzugefügt 🛒"
-    },
-
-    card: {
-      title: "💳 Karte",
-      none: "Keine Karte erstellt.",
-      generate: "Karte erstellen",
-      regenerate:
-        "🔄 Neue Karte erstellen",
-      holder: "KARTENINHABER",
-      exp: "EXP",
-      cvv: "CVV"
-    },
-
-    language: {
-      title: "Sprache",
-      select: "Sprache auswählen",
-      english: "English",
-      french: "Français",
-      german: "Deutsch"
-    }
-
-  }
+  measurementId:
+    "G-XNY5X2VMY9"
 
 };
 
 
-// ============================================================
-// TRADUCTION
-// ============================================================
-
-function t(path){
-
-  const parts =
-    String(path)
-      .split(".");
-
-  let value =
-    translations[currentLanguage];
-
-  for(const part of parts){
-
-    if(
-      value &&
-      Object.prototype.hasOwnProperty.call(
-        value,
-        part
-      )
-    ){
-
-      value =
-        value[part];
-
-    }else{
-
-      return path;
-
-    }
-
-  }
-
-  return value;
-}
-
-
-function setLanguage(language){
-
-  if(!LANGUAGES[language]){
-    language = "en";
-  }
-
-  currentLanguage =
-    language;
-
-  localStorage.setItem(
-    LANGUAGE_STORAGE_KEY,
-    currentLanguage
-  );
-
-  document.documentElement.lang =
-    currentLanguage;
-
-  applyStaticTranslations();
-
-  renderCategories();
-  renderProducts();
-  renderCart();
-
-}
-
-
-function applyStaticTranslations(){
-
-  document
-    .querySelectorAll(
-      "[data-i18n]"
-    )
-    .forEach(element => {
-
-      const key =
-        element.dataset.i18n;
-
-      if(!key){
-        return;
-      }
-
-      element.textContent =
-        t(key);
-
-    });
-
-
-  document
-    .querySelectorAll(
-      "[data-i18n-placeholder]"
-    )
-    .forEach(element => {
-
-      const key =
-        element.dataset.i18nPlaceholder;
-
-      if(!key){
-        return;
-      }
-
-      element.placeholder =
-        t(key);
-
-    });
-
-
-  document
-    .querySelectorAll(
-      "[data-i18n-title]"
-    )
-    .forEach(element => {
-
-      const key =
-        element.dataset.i18nTitle;
-
-      if(!key){
-        return;
-      }
-
-      element.title =
-        t(key);
-
-    });
-
-
-  document.title =
-    "NovaShop";
-
-
-  updateLanguageButton();
-
-}
-
-
-function updateLanguageButton(){
-
-  const button =
-    document.getElementById(
-      "languageBtn"
-    );
-
-  if(!button){
-    return;
-  }
-
-  button.textContent =
-    `${LANGUAGES[currentLanguage].flag} ${LANGUAGES[currentLanguage].name}`;
-
-}
-
-
-// ============================================================
-// SÉLECTEUR DE LANGUE
-// ============================================================
-
-function openLanguageSelector(){
-
-  const options =
-    Object.entries(
-      LANGUAGES
-    )
-      .map(
-        ([code,language]) => `
-          <button
-            type="button"
-            class="view-btn language-option"
-            data-language="${escapeAttr(code)}"
-            style="
-              width:100%;
-              margin-top:8px;
-              text-align:left;
-            "
-          >
-            ${language.flag}
-            ${escapeHTML(language.name)}
-            ${
-              code === currentLanguage
-                ? " ✓"
-                : ""
-            }
-          </button>
-        `
-      )
-      .join("");
-
-
-  showModal(
-    t("language.title"),
-    `
-      <div>
-
-        <p style="
-          color:var(--muted);
-          margin-bottom:12px;
-        ">
-          ${escapeHTML(
-            t("language.select")
-          )}
-        </p>
-
-        ${options}
-
-      </div>
-    `
+const firebaseApp =
+  initializeApp(
+    firebaseConfig
   );
 
 
-  modalContent
-    ?.querySelectorAll(
-      ".language-option"
-    )
-    .forEach(button => {
+const auth =
+  getAuth(
+    firebaseApp
+  );
 
-      button.addEventListener(
-        "click",
-        () => {
 
-          setLanguage(
-            button.dataset.language
-          );
+const db =
+  getFirestore(
+    firebaseApp
+  );
 
-          closeModal();
 
-        }
-      );
+const ADMIN_EMAIL =
+  "pc2alex.les@gmail.com";
 
-    });
 
-}
+const ADMIN_CODE =
+  "NOVA-ADMIN-2026";
+
+
+const ADMIN_ACCESS_KEY =
+  "novaAdminAuthorized";
+
+
+const TEST_CARD_STORAGE_KEY =
+  "novaTestCard";
 
 
 // ============================================================
 // PRODUITS
+// 104 PRODUITS
+// GOOGLE PIXEL 10 SUPPRIMÉ
 // ============================================================
 
 const products = [
@@ -1080,14 +228,16 @@ const products = [
     category:"Manettes",
     price:74.90,
     image:"https://media.carrefour.fr/media/referential/media/cc07d7de4b9e4bea8c063e8f9bb46d94/p_200x200/0711719023005_0.jpg",
+
     options:{
-      "Couleur":[
+      Couleur:[
         "Rouge",
         "Blanc",
         "Noir",
         "Bleu"
       ]
     }
+
   },
 
   {
@@ -1116,7 +266,7 @@ const products = [
 
   {
     id:"p20",
-    name:"iiyama 23.8\" LED - G-Master GB2471HS-B1 Red Eagle",
+    name:'iiyama 23.8" LED - G-Master GB2471HS-B1 Red Eagle',
     category:"Écrans",
     price:65.99,
     image:"https://media.ldlc.com/r1600/ld/products/00/06/34/20/LD0006342033.jpg"
@@ -1240,7 +390,16 @@ const products = [
     category:"Microphones",
     price:121.99,
     image:"https://thumbs.static-thomann.de/thumb/padthumb600x600/pics/bdb/_57/573672/18492412_800.jpg"
-  },
+  }
+
+];
+
+
+// ============================================================
+// PRODUITS 36 À 70
+// ============================================================
+
+products.push(
 
   {
     id:"p36",
@@ -1309,7 +468,7 @@ const products = [
 
   {
     id:"p44",
-    name:"Apple iPhone 14 Pro 6,1\" 5G Double SIM 128 Go Argent",
+    name:'Apple iPhone 14 Pro 6,1" 5G Double SIM 128 Go Argent',
     category:"Smartphones",
     price:400,
     image:"https://static.fnac-static.com/multimedia/Images/FR/MDM/07/3b/32/20069127/1540-1/tsp20260630131025/Apple-iPhone-14-Pro-6-1-5G-Double-SIM-128-Go-Argent.jpg"
@@ -1317,7 +476,7 @@ const products = [
 
   {
     id:"p45",
-    name:"Apple iPhone 15 6,1\" 5G Double SIM 128 Go Noir",
+    name:'Apple iPhone 15 6,1" 5G Double SIM 128 Go Noir',
     category:"Smartphones",
     price:750,
     image:"https://static.fnac-static.com/multimedia/Images/FR/MDM/cd/f0/52/22212813/1540-1/tsp20260914144304/Apple-iPhone-15-6-1-5G-Double-SIM-128-Go-Noir.jpg"
@@ -1325,7 +484,7 @@ const products = [
 
   {
     id:"p46",
-    name:"Apple iPhone 16 6,1\" 5G 128 Go Double SIM Noir",
+    name:'Apple iPhone 16 6,1" 5G 128 Go Double SIM Noir',
     category:"Smartphones",
     price:949.99,
     image:"https://static.fnac-static.com/multimedia/Images/FR/MDMFR/MDM/fe/47/66/23480318/3756-1/tsp20260920085557/Apple-iPhone-16-6-1-5G-128-Go-Double-SIM-Noir.jpg"
@@ -1333,7 +492,7 @@ const products = [
 
   {
     id:"p47",
-    name:"Apple iPhone 17 6,3\" 5G Double SIM 256 Go Noir",
+    name:'Apple iPhone 17 6,3" 5G Double SIM 256 Go Noir',
     category:"Smartphones",
     price:1000,
     image:"https://static.fnac-static.com/multimedia/Images/FR/MDM/19/86/b6/28739097/3756-1/tsp20260909180923/Apple-iPhone-17-6-3-5G-Double-SIM-256-Go-Noir.jpg"
@@ -1341,15 +500,15 @@ const products = [
 
   {
     id:"p48",
-    name:"Apple iPhone 18 Pro 6,3\" 5G Double SIM 256 Go Noir",
+    name:'Apple iPhone 18 Pro 6,3" 5G Double SIM 256 Go Noir',
     category:"Smartphones",
     price:1199.99,
-    image:"https://static.fnac-static.com/multimedia/Images/FR/MDM/62/73/c7/29848418/1540-1/tsp20260920091102/Apple-iPhone-18-Pro-6-3-5G-Double-SIM-Noir.jpg"
+    image:"https://static.fnac-static.com/multimedia/Images/FR/MDM/62/73/c7/29848418/1540-1/tsp20260920091102/Apple-iPhone-18-Pro-6-3-5G-Double-SIM-256-Go-Noir.jpg"
   },
 
   {
     id:"p49",
-    name:"Samsung Galaxy S23 6,1\" 5G 8 Go RAM 256 Go Noir",
+    name:'Samsung Galaxy S23 6,1" 5G 8 Go RAM 256 Go Noir',
     category:"Smartphones",
     price:230,
     image:"https://static.fnac-static.com/multimedia/Images/FR/MDM/0d/c0/44/21282829/1540-1/tsp20260829031739/Smartphone-Samsung-Galaxy-S23-6-1-Nano-SIM-5G-8-Go-RAM-256-Go-Noir.jpg"
@@ -1357,7 +516,7 @@ const products = [
 
   {
     id:"p50",
-    name:"Samsung Galaxy S24 6,2\" 5G 256 Go Noir",
+    name:'Samsung Galaxy S24 6,2" 5G 256 Go Noir',
     category:"Smartphones",
     price:449.90,
     image:"https://static.fnac-static.com/multimedia/Images/FR/MDM/a6/f6/5a/22738598/1540-1/tsp20260319135101/Smartphone-Samsung-Galaxy-S24-6-2-5G-Nano-SIM-256-Go-Noir.jpg"
@@ -1365,7 +524,7 @@ const products = [
 
   {
     id:"p51",
-    name:"Samsung Galaxy S25 Edge 6,7\" 5G 256 Go Noir absolu Titane",
+    name:'Samsung Galaxy S25 Edge 6,7" 5G 256 Go Noir absolu Titane',
     category:"Smartphones",
     price:469.99,
     image:"https://static.fnac-static.com/multimedia/Images/FR/MDM/42/7b/ab/28015426/1540-1/tsp20260909180103/Smartphone-Samsung-Galaxy-S25-Edge-6-7-5G-Nano-SIM-256-Go-Noir-absolu-Titane.jpg"
@@ -1373,7 +532,7 @@ const products = [
 
   {
     id:"p52",
-    name:"Samsung Galaxy S26 6,3\" 5G 256 Go Noir + Buds4 Noir",
+    name:'Samsung Galaxy S26 6,3" 5G 256 Go Noir + Buds4 Noir',
     category:"Smartphones",
     price:650.99,
     image:"https://static.fnac-static.com/multimedia/Images/FR/MDM/e8/a2/c7/29860584/1540-1/tsp20260903144909/Pack-Smartphone-Samsung-Galaxy-S26-6-3-5G-Nano-SIM-256-Go-Noir-Buds4-Noir.jpg"
@@ -1381,7 +540,7 @@ const products = [
 
   {
     id:"p53",
-    name:"Google Pixel 8 6,2\" 5G Double SIM 128 Go Vert Sauge",
+    name:'Google Pixel 8 6,2" 5G Double SIM 128 Go Vert Sauge',
     category:"Smartphones",
     price:200,
     image:"https://static.fnac-static.com/multimedia/Images/FR/MDM/37/bc/52/22199351/1540-1/tsp20260722081937/Smartphone-Google-Pixel-8-6-2-5G-Double-SIM-128-Go-Vert-Sauge.jpg"
@@ -1389,18 +548,10 @@ const products = [
 
   {
     id:"p54",
-    name:"Google Pixel 9 6,3\" 5G Double nano-SIM 128 Go Noir Obsidienne",
+    name:'Google Pixel 9 6,3" 5G Double nano-SIM 128 Go Noir Obsidienne',
     category:"Smartphones",
     price:400,
     image:"https://static.fnac-static.com/multimedia/Images/FR/MDMFR/MDM/f6/00/6d/23920886/1540-1/tsp20260914084700/Smartphone-Google-Pixel-9-6-3-5G-Double-nano-SIM-128-Go-Noir-Obsidienne.jpg"
-  },
-
-  {
-    id:"p55",
-    name:"Google Pixel 10 6,3\" 5G Double SIM 256 Go Noir Volcanique",
-    category:"Smartphones",
-    price:600,
-    image:"https://static.fnac-static.com/multimedia/Images/FR/MDM/4a/5f/b3/28532554/1540-1/tsp20260717111851/Google-Pixel-10-6-3-5G-Double-SIM-256-Go-Noir-Volcanique.jpg"
   },
 
   {
@@ -1521,134 +672,3535 @@ const products = [
     category:"Caméras & webcams",
     price:23.99,
     image:"https://m.media-amazon.com/images/I/61bCeQBjUwL._AC_SL1500_.jpg"
-  },
-
-  {
-    id:"p71",
-    name:"Quntis Lampe Écran Pc RGB, Monitor Light Bar IM 40 cm Noir",
-    category:"Barres lumineuses pour écran",
-    price:8.99,
-    image:"https://m.media-amazon.com/images/I/71ESgk4ETPL._AC_SL1500_.jpg"
-  },
-
-  {
-    id:"p72",
-    name:"TONOR Micro Cardioïde Dynamique USB/XLR TD510+",
-    category:"Microphones",
-    price:20.99,
-    image:"https://m.media-amazon.com/images/I/61EZnm+ijZL._AC_SL1500_.jpg"
-  },
-
-  {
-    id:"p73",
-    name:"BONTEC Bras Ecran PC à Ressort à Gaz, 13-32 Pouces",
-    category:"Supports écrans / écrans / TV",
-    price:16,
-    image:"https://m.media-amazon.com/images/I/61gjjZxKbeL._AC_SL1500_.jpg"
-  },
-
-  {
-    id:"p74",
-    name:"BONTEC Support Ecran PC 2 Ecran Articulé à Ressort à Gaz, 13-32 Pouces",
-    category:"Supports écrans / écrans / TV",
-    price:29.99,
-    image:"https://m.media-amazon.com/images/I/71kZjwcU4SL._AC_SL1500_.jpg"
-  },
-
-  {
-    id:"p75",
-    name:"BONTEC Bras Ecran PC Mural à Ressort à Gaz, 13-42 Pouces, Charge 38kg",
-    category:"Supports écrans / écrans / TV",
-    price:34.99,
-    image:"https://m.media-amazon.com/images/I/71-oseIdQXL._AC_SL1500_.jpg"
-  },
-
-  {
-    id:"p76",
-    name:"KTC Écran PC Gamer Incurvé 24 Pouces FHD 240 Hz",
-    category:"Supports écrans / écrans / TV",
-    price:80,
-    image:"https://m.media-amazon.com/images/I/71wUlFXcaZL._AC_SL1500_.jpg"
-  },
-
-  {
-    id:"p77",
-    name:"KTC Écran PC Gamer Incurvé 27 Pouces QHD 180Hz",
-    category:"Supports écrans / écrans / TV",
-    price:110,
-    image:"https://m.media-amazon.com/images/I/61Rehn5YTWL._AC_SL1000_.jpg"
-  },
-
-  {
-    id:"p78",
-    name:"HKC Écran PC Gaming 34 Pouces Incurvé UWQHD 120 Hz HDR400",
-    category:"Supports écrans / écrans / TV",
-    price:170,
-    image:"https://m.media-amazon.com/images/I/71useoNrGEL._AC_SL1500_.jpg"
-  },
-
-  {
-    id:"p79",
-    name:"HKC 27 Pouces Ecran Gaming 4K Dual Mode UHD 160Hz / FHD 320Hz G27H7P",
-    category:"Supports écrans / écrans / TV",
-    price:140,
-    image:"https://m.media-amazon.com/images/I/81MjOWRE0SL._AC_SL1500_.jpg"
-  },
-
-  {
-    id:"p80",
-    name:"XIAOMI TV F 65 Pouces 2025 4K UHD Smart TV",
-    category:"Supports écrans / écrans / TV",
-    price:249.99,
-    image:"https://m.media-amazon.com/images/I/61Jk8xxkLZL._AC_SL1000_.jpg"
-  },
-
-  {
-    id:"p81",
-    name:"Xbox Manette sans fil",
-    category:"Manettes & consoles",
-    price:59.99,
-    image:"https://encrypted-tbn2.gstatic.com/shopping?q=tbn:ANd9GcQ6wIhtxNP2QaG-jop_9zEc3ocgOoyylR8yGQtaOLB03vo8XmDPnxXQ28G-mPSoQrkAa8KKzGM2epP28dnD111Wswi0WwK5SzwB6lXHJD3HehOVs4qWa_hJ",
-    options:{
-      "Couleur":[
-        "Rose",
-        "Bleu",
-        "Noir",
-        "Rouge",
-        "Blanc",
-        "Vert"
-      ]
-    }
-  },
-
-  {
-    id:"p82",
-    name:"PlayStation 5 avec 1 Manette Sans Fil DualSense",
-    category:"Manettes & consoles",
-    price:320,
-    image:"https://m.media-amazon.com/images/I/61h7VjYt-fL._AC_SL1500_.jpg",
-    options:{
-      "Console":[
-        "PS5 avec lecteur",
-        "PS5 Pro"
-      ]
-    }
-  },
-
-  {
-    id:"p83",
-    name:"Xbox Series X - 1TB Digital Edition avec 1 manette sans fil",
-    category:"Manettes & consoles",
-    price:599.99,
-    image:"https://encrypted-tbn3.gstatic.com/shopping?q=tbn:ANd9GcTcusD9yD4CjvQ0KMaGfy7gks_86ZGPuTzO_g1WC408gKBPciVCGw0ZWdXs1XwR0ShylmqAB0NldAlBiHbyg-vFex0zI51YOExZsztGXboUXrL31Z5qHNHDew"
-  },
-
-  {
-    id:"p84",
-    name:"Xbox Series S - All Digital Gaming Console - 512GB SSD",
-    category:"Manettes & consoles",
-    price:500,
-    image:"https://m.media-amazon.com/images/I/61PI59RfWvL._AC_SX425_.jpg"
   }
 
-];
+);
+
+
+// ============================================================
+// ETAT
+// ============================================================
+
+let currentUser =
+  null;
+
+
+let cart =
+  loadStorage(
+    "nova_cart",
+    []
+  );
+
+
+let favorites =
+  loadStorage(
+    "nova_favorites",
+    []
+  );
+
+
+const state = {
+
+  search:"",
+  category:"Toutes",
+  sort:"default"
+
+};
+
+
+// ============================================================
+// DOM
+// ============================================================
+
+const $ =
+  id =>
+    document.getElementById(
+      id
+    );
+
+
+const searchInput =
+  $("searchInput");
+
+
+const sortSelect =
+  $("sortSelect");
+
+
+const categoriesContainer =
+  $("categories");
+
+
+const productGrid =
+  $("productGrid");
+
+
+const productCount =
+  $("productCount");
+
+
+const cartBtn =
+  $("cartBtn");
+
+
+const heroCartBtn =
+  $("heroCartBtn");
+
+
+const cartBadge =
+  $("cartBadge");
+
+
+const cartDrawer =
+  $("cartDrawer");
+
+
+const overlay =
+  $("overlay");
+
+
+const closeCartBtn =
+  $("closeCart");
+
+
+const cartItems =
+  $("cartItems");
+
+
+const cartTotal =
+  $("cartTotal");
+
+
+const checkoutBtn =
+  $("checkoutBtn");
+
+
+const settingsBtn =
+  $("settingsBtn");
+
+
+const accountBtn =
+  $("accountBtn");
+
+
+const ordersBtn =
+  $("ordersBtn");
+
+
+const adminBtn =
+  $("adminBtn");
+
+
+const modal =
+  $("modalLayer");
+
+
+const modalTitle =
+  $("modalTitle");
+
+
+const modalContent =
+  $("modalContent");
+
+
+const modalClose =
+  $("modalClose");
+
+
+const toastElement =
+  $("toast");
+
+
+// ============================================================
+// STORAGE
+// ============================================================
+
+function loadStorage(
+  key,
+  fallback
+){
+
+  try{
+
+    const value =
+      localStorage.getItem(
+        key
+      );
+
+    if(!value){
+
+      return fallback;
+
+    }
+
+    const parsed =
+      JSON.parse(
+        value
+      );
+
+    return parsed;
+
+  }catch(error){
+
+    console.error(
+      "Storage error:",
+      error
+    );
+
+    return fallback;
+
+  }
+
+}
+
+
+function saveStorage(
+  key,
+  value
+){
+
+  try{
+
+    localStorage.setItem(
+      key,
+      JSON.stringify(
+        value
+      )
+    );
+
+  }catch(error){
+
+    console.error(
+      "Storage save error:",
+      error
+    );
+
+  }
+
+}
+
+
+function saveCart(){
+
+  saveStorage(
+    "nova_cart",
+    cart
+  );
+
+}
+
+
+function saveFavorites(){
+
+  saveStorage(
+    "nova_favorites",
+    favorites
+  );
+
+}
+
+
+// ============================================================
+// UTILITAIRES
+// ============================================================
+
+function money(
+  value
+){
+
+  const number =
+    Number(
+      value
+    );
+
+
+  return (
+
+    Number.isFinite(
+      number
+    )
+      ? number
+      : 0
+
+  ).toLocaleString(
+    "fr-FR",
+    {
+      minimumFractionDigits:2,
+      maximumFractionDigits:2
+    }
+  ) + " €";
+
+}
+
+
+function escapeHTML(
+  value
+){
+
+  return String(
+    value ?? ""
+  )
+
+    .replace(
+      /&/g,
+      "&amp;"
+    )
+
+    .replace(
+      /</g,
+      "&lt;"
+    )
+
+    .replace(
+      />/g,
+      "&gt;"
+    )
+
+    .replace(
+      /"/g,
+      "&quot;"
+    )
+
+    .replace(
+      /'/g,
+      "&#039;"
+    );
+
+}
+
+
+function escapeAttr(
+  value
+){
+
+  return escapeHTML(
+    value
+  );
+
+}
+
+
+function getProduct(
+  id
+){
+
+  return products.find(
+    product =>
+      product.id === id
+  );
+
+}
+
+
+function toast(
+  message,
+  type="info"
+){
+
+  if(!toastElement){
+
+    console.log(
+      message
+    );
+
+    return;
+
+  }
+
+
+  toastElement.textContent =
+    message;
+
+
+  toastElement.className =
+    `toast ${type}`;
+
+
+  toastElement.classList.add(
+    "show"
+  );
+
+
+  clearTimeout(
+    toastElement._timer
+  );
+
+
+  toastElement._timer =
+    setTimeout(
+      () => {
+
+        toastElement.classList.remove(
+          "show"
+        );
+
+      },
+      3000
+    );
+
+}
+
+
+// ============================================================
+// IMAGE PRODUIT
+// ============================================================
+
+function productImageHTML(
+  product
+){
+
+  if(
+    !product?.image
+  ){
+
+    return "";
+
+  }
+
+
+  return `
+
+    <img
+      src="${escapeAttr(
+        product.image
+      )}"
+      alt="${escapeAttr(
+        product.name
+      )}"
+      loading="lazy"
+      onerror="
+        this.onerror=null;
+        this.style.display='none';
+      "
+    >
+
+  `;
+
+}
+
+
+// ============================================================
+// CATEGORIES
+// ============================================================
+
+function getCategories(){
+
+  return [
+
+    "Toutes",
+
+    ...new Set(
+
+      products.map(
+        product =>
+          product.category
+      )
+
+    )
+
+  ];
+
+}
+
+
+function renderCategories(){
+
+  if(
+    !categoriesContainer
+  ){
+
+    return;
+
+  }
+
+
+  categoriesContainer.innerHTML =
+
+    getCategories()
+
+      .map(
+
+        category => `
+
+          <button
+            type="button"
+            class="category-btn ${
+              state.category === category
+                ? "active"
+                : ""
+            }"
+            data-category="${escapeAttr(
+              category
+            )}"
+          >
+
+            ${escapeHTML(
+              category
+            )}
+
+          </button>
+
+        `
+
+      )
+
+      .join("");
+
+
+  categoriesContainer
+
+    .querySelectorAll(
+      ".category-btn"
+    )
+
+    .forEach(
+
+      button => {
+
+        button.addEventListener(
+
+          "click",
+
+          () => {
+
+            state.category =
+              button.dataset.category ||
+              "Toutes";
+
+
+            renderCategories();
+
+            renderProducts();
+
+          }
+
+        );
+
+      }
+
+    );
+
+}
+
+
+// ============================================================
+// FILTRAGE
+// ============================================================
+
+function getFilteredProducts(){
+
+  let result =
+    [...products];
+
+
+  const search =
+    state.search
+      .trim()
+      .toLowerCase();
+
+
+  if(search){
+
+    result =
+      result.filter(
+
+        product =>
+
+          product.name
+            .toLowerCase()
+            .includes(
+              search
+            )
+
+          ||
+
+          product.category
+            .toLowerCase()
+            .includes(
+              search
+            )
+
+      );
+
+  }
+
+
+  if(
+    state.category !==
+    "Toutes"
+  ){
+
+    result =
+      result.filter(
+
+        product =>
+          product.category ===
+          state.category
+
+      );
+
+  }
+
+
+  if(
+    state.sort ===
+    "price-asc"
+  ){
+
+    result.sort(
+
+      (a,b) =>
+        Number(a.price) -
+        Number(b.price)
+
+    );
+
+  }
+
+
+  if(
+    state.sort ===
+    "price-desc"
+  ){
+
+    result.sort(
+
+      (a,b) =>
+        Number(b.price) -
+        Number(a.price)
+
+    );
+
+  }
+
+
+  if(
+    state.sort ===
+    "name"
+  ){
+
+    result.sort(
+
+      (a,b) =>
+        a.name.localeCompare(
+          b.name,
+          "fr"
+        )
+
+    );
+
+  }
+
+
+  if(
+    state.sort ===
+    "new"
+  ){
+
+    result.sort(
+
+      (a,b) =>
+
+        Number(
+          Boolean(
+            b.new
+          )
+        )
+
+        -
+
+        Number(
+          Boolean(
+            a.new
+          )
+        )
+
+    );
+
+  }
+
+
+  return result;
+
+}
+
+
+// ============================================================
+// PRODUITS
+// ============================================================
+
+function renderProducts(){
+
+  if(
+    !productGrid
+  ){
+
+    return;
+
+  }
+
+
+  const result =
+    getFilteredProducts();
+
+
+  if(
+    productCount
+  ){
+
+    productCount.textContent =
+
+      `${result.length} produit${
+        result.length > 1
+          ? "s"
+          : ""
+      }`;
+
+  }
+
+
+  if(
+    !result.length
+  ){
+
+    productGrid.innerHTML = `
+
+      <div
+        style="
+          grid-column:1/-1;
+          text-align:center;
+          padding:50px 20px;
+        "
+      >
+
+        <div
+          style="
+            font-size:50px;
+            margin-bottom:15px;
+          "
+        >
+          🔎
+        </div>
+
+        <h3>
+          Aucun produit trouvé
+        </h3>
+
+        <p
+          style="
+            opacity:.65;
+            margin-top:8px;
+          "
+        >
+          Essaie une autre recherche ou une autre catégorie.
+        </p>
+
+      </div>
+
+    `;
+
+    return;
+
+  }
+
+
+  productGrid.innerHTML =
+
+    result
+
+      .map(
+
+        product => {
+
+          const isFavorite =
+            favorites.includes(
+              product.id
+            );
+
+
+          return `
+
+            <article
+              class="product"
+              data-id="${escapeAttr(
+                product.id
+              )}"
+            >
+
+              <div class="product-img">
+
+                ${
+                  product.new
+
+                    ? `
+
+                      <span
+                        class="product-badge"
+                      >
+                        NOUVEAU
+                      </span>
+
+                    `
+
+                    : ""
+
+                }
+
+
+                <button
+                  type="button"
+                  class="favorite-btn ${
+                    isFavorite
+                      ? "active"
+                      : ""
+                  }"
+                  data-favorite="${escapeAttr(
+                    product.id
+                  )}"
+                  aria-label="Favori"
+                >
+
+                  ${
+                    isFavorite
+                      ? "♥"
+                      : "♡"
+                  }
+
+                </button>
+
+
+                ${productImageHTML(
+                  product
+                )}
+
+              </div>
+
+
+              <div class="product-body">
+
+                <div class="product-category">
+
+                  ${escapeHTML(
+                    product.category
+                  )}
+
+                </div>
+
+
+                <h3>
+
+                  ${escapeHTML(
+                    product.name
+                  )}
+
+                </h3>
+
+
+                <div class="price">
+
+                  ${money(
+                    product.price
+                  )}
+
+                </div>
+
+
+                <div class="product-actions">
+
+                  <button
+                    type="button"
+                    class="view-btn product-view"
+                    data-id="${escapeAttr(
+                      product.id
+                    )}"
+                  >
+                    Voir
+                  </button>
+
+
+                  <button
+                    type="button"
+                    class="add-btn product-add"
+                    data-id="${escapeAttr(
+                      product.id
+                    )}"
+                  >
+                    🛒 Ajouter
+                  </button>
+
+                </div>
+
+              </div>
+
+            </article>
+
+          `;
+
+        }
+
+      )
+
+      .join("");
+
+
+  productGrid
+
+    .querySelectorAll(
+      ".product-add"
+    )
+
+    .forEach(
+
+      button => {
+
+        button.addEventListener(
+
+          "click",
+
+          () => {
+
+            addToCart(
+              button.dataset.id
+            );
+
+          }
+
+        );
+
+      }
+
+    );
+
+
+  productGrid
+
+    .querySelectorAll(
+      ".product-view"
+    )
+
+    .forEach(
+
+      button => {
+
+        button.addEventListener(
+
+          "click",
+
+          () => {
+
+            openProduct(
+              button.dataset.id
+            );
+
+          }
+
+        );
+
+      }
+
+    );
+
+
+  productGrid
+
+    .querySelectorAll(
+      ".favorite-btn"
+    )
+
+    .forEach(
+
+      button => {
+
+        button.addEventListener(
+
+          "click",
+
+          event => {
+
+            event.stopPropagation();
+
+
+            toggleFavorite(
+              button.dataset.favorite
+            );
+
+          }
+
+        );
+
+      }
+
+    );
+
+}
+
+
+// ============================================================
+// FAVORIS
+// ============================================================
+
+function toggleFavorite(
+  id
+){
+
+  if(!id){
+
+    return;
+
+  }
+
+
+  if(
+    favorites.includes(
+      id
+    )
+  ){
+
+    favorites =
+      favorites.filter(
+        item =>
+          item !== id
+      );
+
+
+    toast(
+      "Retiré des favoris."
+    );
+
+  }else{
+
+    favorites.push(
+      id
+    );
+
+
+    toast(
+      "Ajouté aux favoris ❤️",
+      "success"
+    );
+
+  }
+
+
+  saveFavorites();
+
+  renderProducts();
+
+}
+
+
+// ============================================================
+// PANIER
+// ============================================================
+
+function getCartCount(){
+
+  return cart.reduce(
+
+    (total,item) =>
+
+      total +
+
+      Number(
+        item.quantity || 1
+      ),
+
+    0
+
+  );
+
+}
+
+
+function getCartSubtotal(){
+
+  return cart.reduce(
+
+    (total,item) => {
+
+      const product =
+        getProduct(
+          item.id
+        );
+
+
+      if(!product){
+
+        return total;
+
+      }
+
+
+      return (
+
+        total +
+
+        Number(
+          product.price || 0
+        )
+
+        *
+
+        Number(
+          item.quantity || 1
+        )
+
+      );
+
+    },
+
+    0
+
+  );
+
+}
+
+
+function addToCart(
+  id,
+  option=""
+){
+
+  const product =
+    getProduct(
+      id
+    );
+
+
+  if(!product){
+
+    toast(
+      "Produit introuvable.",
+      "error"
+    );
+
+    return;
+
+  }
+
+
+  const existing =
+    cart.find(
+
+      item =>
+
+        item.id === id &&
+
+        item.option === option
+
+    );
+
+
+  if(existing){
+
+    existing.quantity =
+
+      Number(
+        existing.quantity || 1
+      ) + 1;
+
+  }else{
+
+    cart.push({
+
+      id,
+
+      option,
+
+      quantity:1
+
+    });
+
+  }
+
+
+  saveCart();
+
+  renderCart();
+
+
+  toast(
+    "Produit ajouté au panier 🛒",
+    "success"
+  );
+
+}
+
+
+function removeFromCart(
+  id,
+  option=""
+){
+
+  cart =
+
+    cart.filter(
+
+      item =>
+
+        !(
+          item.id === id &&
+          item.option === option
+        )
+
+    );
+
+
+  saveCart();
+
+  renderCart();
+
+}
+
+
+function changeCartQuantity(
+  id,
+  option,
+  quantity
+){
+
+  const item =
+
+    cart.find(
+
+      entry =>
+
+        entry.id === id &&
+
+        entry.option === option
+
+    );
+
+
+  if(!item){
+
+    return;
+
+  }
+
+
+  item.quantity =
+
+    Math.max(
+
+      1,
+
+      Number(
+        quantity
+      ) || 1
+
+    );
+
+
+  saveCart();
+
+  renderCart();
+
+}
+
+
+function renderCart(){
+
+  if(cartBadge){
+
+    cartBadge.textContent =
+      String(
+        getCartCount()
+      );
+
+  }
+
+
+  if(cartTotal){
+
+    cartTotal.textContent =
+      money(
+        getCartSubtotal()
+      );
+
+  }
+
+
+  if(!cartItems){
+
+    return;
+
+  }
+
+
+  if(!cart.length){
+
+    cartItems.innerHTML = `
+
+      <div class="nova-empty">
+
+        <div class="nova-empty-icon">
+          🛒
+        </div>
+
+        <h3>
+          Ton panier est vide
+        </h3>
+
+        <p
+          style="
+            margin-top:8px;
+            opacity:.65;
+          "
+        >
+          Ajoute des produits pour commencer.
+        </p>
+
+      </div>
+
+    `;
+
+    return;
+
+  }
+
+
+  cartItems.innerHTML =
+
+    cart
+
+      .map(
+
+        item => {
+
+          const product =
+            getProduct(
+              item.id
+            );
+
+
+          if(!product){
+
+            return "";
+
+          }
+
+
+          return `
+
+            <div
+              class="cart-item"
+              data-id="${escapeAttr(
+                item.id
+              )}"
+            >
+
+              <div class="cart-item-image">
+
+                ${productImageHTML(
+                  product
+                )}
+
+              </div>
+
+
+              <div class="cart-item-info">
+
+                <strong>
+
+                  ${escapeHTML(
+                    product.name
+                  )}
+
+                </strong>
+
+
+                ${
+                  item.option
+
+                    ? `
+
+                      <small>
+
+                        ${escapeHTML(
+                          item.option
+                        )}
+
+                      </small>
+
+                    `
+
+                    : ""
+
+                }
+
+
+                <div class="cart-item-price">
+
+                  ${money(
+                    product.price
+                  )}
+
+                </div>
+
+
+                <div class="cart-item-controls">
+
+                  <button
+                    type="button"
+                    class="cart-minus"
+                    data-id="${escapeAttr(
+                      item.id
+                    )}"
+                    data-option="${escapeAttr(
+                      item.option || ""
+                    )}"
+                  >
+                    −
+                  </button>
+
+
+                  <span>
+
+                    ${Number(
+                      item.quantity || 1
+                    )}
+
+                  </span>
+
+
+                  <button
+                    type="button"
+                    class="cart-plus"
+                    data-id="${escapeAttr(
+                      item.id
+                    )}"
+                    data-option="${escapeAttr(
+                      item.option || ""
+                    )}"
+                  >
+                    +
+                  </button>
+
+
+                  <button
+                    type="button"
+                    class="cart-remove"
+                    data-id="${escapeAttr(
+                      item.id
+                    )}"
+                    data-option="${escapeAttr(
+                      item.option || ""
+                    )}"
+                  >
+                    🗑️
+                  </button>
+
+                </div>
+
+              </div>
+
+            </div>
+
+          `;
+
+        }
+
+      )
+
+      .join("");
+
+
+  cartItems
+
+    .querySelectorAll(
+      ".cart-minus"
+    )
+
+    .forEach(
+
+      button => {
+
+        button.addEventListener(
+
+          "click",
+
+          () => {
+
+            const id =
+              button.dataset.id;
+
+
+            const option =
+              button.dataset.option ||
+              "";
+
+
+            const item =
+
+              cart.find(
+
+                entry =>
+
+                  entry.id === id &&
+
+                  entry.option === option
+
+              );
+
+
+            if(!item){
+
+              return;
+
+            }
+
+
+            const quantity =
+              Number(
+                item.quantity || 1
+              );
+
+
+            if(
+              quantity <= 1
+            ){
+
+              removeFromCart(
+                id,
+                option
+              );
+
+            }else{
+
+              changeCartQuantity(
+                id,
+                option,
+                quantity - 1
+              );
+
+            }
+
+          }
+
+        );
+
+      }
+
+    );
+
+
+  cartItems
+
+    .querySelectorAll(
+      ".cart-plus"
+    )
+
+    .forEach(
+
+      button => {
+
+        button.addEventListener(
+
+          "click",
+
+          () => {
+
+            const id =
+              button.dataset.id;
+
+
+            const option =
+              button.dataset.option ||
+              "";
+
+
+            const item =
+
+              cart.find(
+
+                entry =>
+
+                  entry.id === id &&
+
+                  entry.option === option
+
+              );
+
+
+            if(item){
+
+              changeCartQuantity(
+
+                id,
+
+                option,
+
+                Number(
+                  item.quantity || 1
+                ) + 1
+
+              );
+
+            }
+
+          }
+
+        );
+
+      }
+
+    );
+
+
+  cartItems
+
+    .querySelectorAll(
+      ".cart-remove"
+    )
+
+    .forEach(
+
+      button => {
+
+        button.addEventListener(
+
+          "click",
+
+          () => {
+
+            removeFromCart(
+
+              button.dataset.id,
+
+              button.dataset.option ||
+              ""
+
+            );
+
+          }
+
+        );
+
+      }
+
+    );
+
+}
+
+
+// ============================================================
+// PANIER OUVERTURE / FERMETURE
+// ============================================================
+
+function openCart(){
+
+  cartDrawer?.classList.add(
+    "open"
+  );
+
+
+  overlay?.classList.add(
+    "show"
+  );
+
+}
+
+
+function closeCart(){
+
+  cartDrawer?.classList.remove(
+    "open"
+  );
+
+
+  overlay?.classList.remove(
+    "show"
+  );
+
+}
+
+
+cartBtn?.addEventListener(
+  "click",
+  openCart
+);
+
+
+heroCartBtn?.addEventListener(
+  "click",
+  openCart
+);
+
+
+closeCartBtn?.addEventListener(
+  "click",
+  closeCart
+);
+
+
+overlay?.addEventListener(
+  "click",
+  closeCart
+);
+
+
+// ============================================================
+// MODAL
+// ============================================================
+
+function showModal(
+  title,
+  content
+){
+
+  if(modalTitle){
+
+    modalTitle.textContent =
+      title;
+
+  }
+
+
+  if(modalContent){
+
+    modalContent.innerHTML =
+      content;
+
+  }
+
+
+  modal?.classList.add(
+    "show"
+  );
+
+}
+
+
+function closeModal(){
+
+  modal?.classList.remove(
+    "show"
+  );
+
+}
+
+
+modalClose?.addEventListener(
+  "click",
+  closeModal
+);
+
+
+// ============================================================
+// PRODUIT
+// ============================================================
+
+function openProduct(
+  id
+){
+
+  const product =
+    getProduct(
+      id
+    );
+
+
+  if(!product){
+
+    return;
+
+  }
+
+
+  let optionsHTML =
+    "";
+
+
+  if(product.options){
+
+    Object.entries(
+      product.options
+    )
+
+      .forEach(
+
+        ([name,values]) => {
+
+          optionsHTML += `
+
+            <label
+              for="option-${escapeAttr(
+                name
+              )}"
+            >
+
+              ${escapeHTML(
+                name
+              )}
+
+            </label>
+
+
+            <select
+              id="option-${escapeAttr(
+                name
+              )}"
+              class="product-option"
+              data-option-name="${escapeAttr(
+                name
+              )}"
+            >
+
+              ${values
+
+                .map(
+
+                  value => `
+
+                    <option
+                      value="${escapeAttr(
+                        value
+                      )}"
+                    >
+
+                      ${escapeHTML(
+                        value
+                      )}
+
+                    </option>
+
+                  `
+
+                )
+
+                .join("")
+
+              }
+
+            </select>
+
+          `;
+
+        }
+
+      );
+
+  }
+
+
+  showModal(
+
+    product.name,
+
+    `
+
+      <div class="product-modal">
+
+        <div class="product-modal-image">
+
+          ${productImageHTML(
+            product
+          )}
+
+        </div>
+
+
+        <div>
+
+          <div class="product-category">
+
+            ${escapeHTML(
+              product.category
+            )}
+
+          </div>
+
+
+          <h2>
+
+            ${escapeHTML(
+              product.name
+            )}
+
+          </h2>
+
+
+          <div class="price">
+
+            ${money(
+              product.price
+            )}
+
+          </div>
+
+
+          ${
+            optionsHTML
+
+              ? `
+
+                <div
+                  style="
+                    margin-top:18px;
+                    display:grid;
+                    gap:8px;
+                  "
+                >
+
+                  ${optionsHTML}
+
+                </div>
+
+              `
+
+              : ""
+
+          }
+
+
+          <div
+            style="
+              display:flex;
+              gap:10px;
+              margin-top:20px;
+              flex-wrap:wrap;
+            "
+          >
+
+            <button
+              type="button"
+              class="add-btn"
+              id="modalAddCart"
+              style="
+                flex:1;
+                min-width:170px;
+              "
+            >
+              🛒 Ajouter au panier
+            </button>
+
+
+            <button
+              type="button"
+              class="view-btn"
+              id="modalFavorite"
+              style="
+                flex:1;
+                min-width:170px;
+              "
+            >
+
+              ❤️ ${
+                favorites.includes(
+                  product.id
+                )
+
+                  ? "Retirer des favoris"
+
+                  : "Ajouter aux favoris"
+
+              }
+
+            </button>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    `
+
+  );
+
+
+  $("modalAddCart")
+    ?.addEventListener(
+
+      "click",
+
+      () => {
+
+        const selected =
+
+          Array.from(
+
+            document.querySelectorAll(
+              ".product-option"
+            )
+
+          )
+
+            .map(
+
+              select =>
+
+                `${select.dataset.optionName}: ${select.value}`
+
+            )
+
+            .join(
+              " | "
+            );
+
+
+        addToCart(
+
+          product.id,
+
+          selected
+
+        );
+
+      }
+
+    );
+
+
+  $("modalFavorite")
+    ?.addEventListener(
+
+      "click",
+
+      () => {
+
+        toggleFavorite(
+          product.id
+        );
+
+
+        closeModal();
+
+      }
+
+    );
+
+}
+
+
+// ============================================================
+// RECHERCHE / TRI
+// ============================================================
+
+searchInput?.addEventListener(
+
+  "input",
+
+  event => {
+
+    state.search =
+      event.target.value || "";
+
+
+    renderProducts();
+
+  }
+
+);
+
+
+sortSelect?.addEventListener(
+
+  "change",
+
+  event => {
+
+    state.sort =
+      event.target.value ||
+      "default";
+
+
+    renderProducts();
+
+  }
+
+);
+
+
+// ============================================================
+// STYLES DES BOUTONS
+// ============================================================
+
+function injectNovaStyles(){
+
+  if(
+    document.getElementById(
+      "novaInjectedStyles"
+    )
+  ){
+
+    return;
+
+  }
+
+
+  const style =
+    document.createElement(
+      "style"
+    );
+
+
+  style.id =
+    "novaInjectedStyles";
+
+
+  style.textContent = `
+
+    .view-btn,
+    .add-btn,
+    .category-btn,
+    .payment-choice{
+
+      cursor:pointer;
+
+      border:1px solid var(--line);
+
+      border-radius:10px;
+
+      padding:10px 14px;
+
+      font-weight:700;
+
+      transition:.2s ease;
+
+    }
+
+
+    .view-btn:hover,
+    .add-btn:hover,
+    .category-btn:hover,
+    .payment-choice:hover{
+
+      transform:
+        translateY(-1px);
+
+    }
+
+
+    .add-btn{
+
+      background:#2d8cff;
+
+      color:#fff;
+
+      border-color:#2d8cff;
+
+    }
+
+
+    .view-btn{
+
+      background:
+        rgba(255,255,255,.06);
+
+      color:
+        var(--text);
+
+    }
+
+
+    .category-btn{
+
+      background:
+        var(--card);
+
+      color:
+        var(--text);
+
+    }
+
+
+    .category-btn.active,
+    .payment-choice.selected{
+
+      background:#2d8cff;
+
+      color:#fff;
+
+      border-color:#2d8cff;
+
+    }
+
+
+    .product-actions{
+
+      display:flex;
+
+      gap:8px;
+
+    }
+
+
+    .product-actions button{
+
+      flex:1;
+
+    }
+
+
+    .product-badge{
+
+      position:absolute;
+
+      top:10px;
+
+      left:10px;
+
+      z-index:2;
+
+      padding:5px 8px;
+
+      border-radius:8px;
+
+      background:#25d695;
+
+      color:#04110c;
+
+      font-size:11px;
+
+      font-weight:900;
+
+    }
+
+
+    .favorite-btn{
+
+      position:absolute;
+
+      top:10px;
+
+      right:10px;
+
+      z-index:3;
+
+      width:34px;
+
+      height:34px;
+
+      border-radius:50%;
+
+      border:
+        1px solid rgba(0,0,0,.12);
+
+      background:
+        rgba(255,255,255,.9);
+
+      color:#111;
+
+      cursor:pointer;
+
+      font-size:19px;
+
+    }
+
+
+    .favorite-btn.active{
+
+      color:#ff3d71;
+
+    }
+
+
+    .product-img{
+
+      height:165px !important;
+
+      padding:12px !important;
+
+    }
+
+
+    .product-img img{
+
+      width:100%;
+
+      height:100%;
+
+      max-width:100%;
+
+      max-height:100%;
+
+      object-fit:contain;
+
+    }
+
+
+    .product-body{
+
+      padding:13px;
+
+    }
+
+
+    .product h3{
+
+      font-size:14px;
+
+      min-height:58px;
+
+    }
+
+
+    .price{
+
+      font-size:19px;
+
+      font-weight:900;
+
+      margin-top:10px;
+
+    }
+
+
+    #heroCartBtn{
+
+      cursor:pointer;
+
+    }
+
+
+    #cartBtn,
+    #settingsBtn,
+    #accountBtn,
+    #ordersBtn,
+    #adminBtn{
+
+      cursor:pointer;
+
+    }
+
+
+    button:disabled{
+
+      opacity:.5;
+
+      cursor:
+        not-allowed !important;
+
+      transform:
+        none !important;
+
+    }
+
+
+    @media(max-width:520px){
+
+      .product-img{
+
+        height:190px !important;
+
+      }
+
+
+      .product-actions{
+
+        flex-direction:column;
+
+      }
+
+    }
+
+  `;
+
+
+  document.head.appendChild(
+    style
+  );
+
+}
+
+
+injectNovaStyles();
+
+
+// ============================================================
+// AUTH
+// ============================================================
+
+function authError(
+  error
+){
+
+  const code =
+    error?.code || "";
+
+
+  const messages = {
+
+    "auth/invalid-credential":
+      "Email ou mot de passe incorrect.",
+
+    "auth/invalid-email":
+      "Adresse email invalide.",
+
+    "auth/email-already-in-use":
+      "Cette adresse email est déjà utilisée.",
+
+    "auth/weak-password":
+      "Le mot de passe est trop faible.",
+
+    "auth/user-not-found":
+      "Compte introuvable.",
+
+    "auth/wrong-password":
+      "Mot de passe incorrect.",
+
+    "auth/too-many-requests":
+      "Trop de tentatives. Réessaie plus tard."
+
+  };
+
+
+  return (
+
+    messages[code] ||
+
+    error?.message ||
+
+    "Une erreur est survenue."
+
+  );
+
+}
+
+
+// ============================================================
+// LOGIN
+// ============================================================
+
+function showLoginForm(){
+
+  showModal(
+
+    "Connexion",
+
+    `
+
+      <form id="loginForm">
+
+        <label for="loginEmail">
+          Email
+        </label>
+
+
+        <input
+          id="loginEmail"
+          type="email"
+          autocomplete="email"
+          required
+          placeholder="ton@email.com"
+        >
+
+
+        <label
+          for="loginPassword"
+          style="
+            display:block;
+            margin-top:12px;
+          "
+        >
+          Mot de passe
+        </label>
+
+
+        <input
+          id="loginPassword"
+          type="password"
+          autocomplete="current-password"
+          required
+          placeholder="Mot de passe"
+        >
+
+
+        <button
+          type="submit"
+          class="add-btn"
+          style="
+            width:100%;
+            margin-top:16px;
+          "
+        >
+          Se connecter
+        </button>
+
+
+        <button
+          type="button"
+          class="view-btn"
+          id="showRegister"
+          style="
+            width:100%;
+            margin-top:10px;
+          "
+        >
+          Créer un compte
+        </button>
+
+
+        <div
+          id="loginError"
+          style="
+            display:none;
+            color:#ff7777;
+            margin-top:12px;
+          "
+        ></div>
+
+      </form>
+
+    `
+
+  );
+
+
+  $("loginForm")
+    ?.addEventListener(
+
+      "submit",
+
+      async event => {
+
+        event.preventDefault();
+
+
+        const email =
+          $("loginEmail")
+            ?.value
+            .trim() ||
+          "";
+
+
+        const password =
+          $("loginPassword")
+            ?.value ||
+          "";
+
+
+        const error =
+          $("loginError");
+
+
+        try{
+
+          await signInWithEmailAndPassword(
+
+            auth,
+
+            email,
+
+            password
+
+          );
+
+
+          closeModal();
+
+
+          toast(
+            "Connexion réussie 👋",
+            "success"
+          );
+
+
+        }catch(err){
+
+          if(error){
+
+            error.textContent =
+              authError(
+                err
+              );
+
+
+            error.style.display =
+              "block";
+
+          }
+
+        }
+
+      }
+
+    );
+
+
+  $("showRegister")
+    ?.addEventListener(
+
+      "click",
+
+      showRegisterForm
+
+    );
+
+}
+
+
+function showRegisterForm(){
+
+  showModal(
+
+    "Créer un compte",
+
+    `
+
+      <form id="registerForm">
+
+        <label for="registerEmail">
+          Email
+        </label>
+
+
+        <input
+          id="registerEmail"
+          type="email"
+          autocomplete="email"
+          required
+        >
+
+
+        <label
+          for="registerPassword"
+          style="
+            display:block;
+            margin-top:12px;
+          "
+        >
+          Mot de passe
+        </label>
+
+
+        <input
+          id="registerPassword"
+          type="password"
+          autocomplete="new-password"
+          required
+        >
+
+
+        <button
+          type="submit"
+          class="add-btn"
+          style="
+            width:100%;
+            margin-top:16px;
+          "
+        >
+          Créer mon compte
+        </button>
+
+
+        <button
+          type="button"
+          class="view-btn"
+          id="showLogin"
+          style="
+            width:100%;
+            margin-top:10px;
+          "
+        >
+          J'ai déjà un compte
+        </button>
+
+
+        <div
+          id="registerError"
+          style="
+            display:none;
+            color:#ff7777;
+            margin-top:12px;
+          "
+        ></div>
+
+      </form>
+
+    `
+
+  );
+
+
+  $("registerForm")
+    ?.addEventListener(
+
+      "submit",
+
+      async event => {
+
+        event.preventDefault();
+
+
+        const email =
+          $("registerEmail")
+            ?.value
+            .trim() ||
+          "";
+
+
+        const password =
+          $("registerPassword")
+            ?.value ||
+          "";
+
+
+        const error =
+          $("registerError");
+
+
+        try{
+
+          await createUserWithEmailAndPassword(
+
+            auth,
+
+            email,
+
+            password
+
+          );
+
+
+          closeModal();
+
+
+          toast(
+            "Compte créé avec succès 🎉",
+            "success"
+          );
+
+
+        }catch(err){
+
+          if(error){
+
+            error.textContent =
+              authError(
+                err
+              );
+
+
+            error.style.display =
+              "block";
+
+          }
+
+        }
+
+      }
+
+    );
+
+
+  $("showLogin")
+    ?.addEventListener(
+
+      "click",
+
+      showLoginForm
+
+    );
+
+}
+
+
+// ============================================================
+// COMPTE
+// ============================================================
+
+function openAccount(){
+
+  if(!currentUser){
+
+    showLoginForm();
+
+    return;
+
+  }
+
+
+  showModal(
+
+    "Mon compte",
+
+    `
+
+      <div
+        style="
+          display:grid;
+          gap:14px;
+        "
+      >
+
+        <div
+          style="
+            padding:16px;
+            border-radius:15px;
+            background:rgba(255,255,255,.05);
+          "
+        >
+
+          <strong>
+            👤 Compte connecté
+          </strong>
+
+
+          <p
+            style="
+              margin-top:8px;
+              opacity:.75;
+            "
+          >
+
+            ${escapeHTML(
+              currentUser.email ||
+              ""
+            )}
+
+          </p>
+
+        </div>
+
+
+        <button
+          type="button"
+          class="view-btn"
+          id="accountOrders"
+        >
+          📦 Mes commandes
+        </button>
+
+
+        <button
+          type="button"
+          class="view-btn"
+          id="accountLogout"
+        >
+          🚪 Se déconnecter
+        </button>
+
+      </div>
+
+    `
+
+  );
+
+
+  $("accountOrders")
+    ?.addEventListener(
+
+      "click",
+
+      openOrders
+
+    );
+
+
+  $("accountLogout")
+    ?.addEventListener(
+
+      "click",
+
+      async () => {
+
+        try{
+
+          await signOut(
+            auth
+          );
+
+
+          closeModal();
+
+
+          toast(
+            "Déconnexion réussie."
+          );
+
+
+        }catch(error){
+
+          toast(
+            authError(
+              error
+            ),
+            "error"
+          );
+
+        }
+
+      }
+
+    );
+
+}
+
+
+// ============================================================
+// BOUTONS DU HAUT
+// ============================================================
+
+accountBtn?.addEventListener(
+  "click",
+  openAccount
+);
+
+
+ordersBtn?.addEventListener(
+  "click",
+  openOrders
+);
+
+
+settingsBtn?.addEventListener(
+  "click",
+  openSettings
+);
+
+
+adminBtn?.addEventListener(
+  "click",
+  openAdmin
+);
+
+
+// ============================================================
+// INITIALISATION
+// ============================================================
+
+function initNovaShop(){
+
+  renderCategories();
+
+  renderProducts();
+
+  renderCart();
+
+}
+
+
+// ============================================================
+// AUTH STATE
+// ============================================================
+
+onAuthStateChanged(
+
+  auth,
+
+  user => {
+
+    currentUser =
+      user || null;
+
+  }
+
+);
+
+
+// ============================================================
+// DÉMARRAGE
+// ============================================================
+
+initNovaShop();
+
+
+// ============================================================
+// FIN PARTIE 1
+// ============================================================// ============================================================
+// NOVASHOP - APP.JS
+// PARTIE 3/3
+// Paramètres + boutons + sécurité + initialisation
+// ============================================================
+
+
+// ============================================================
+// PARAMÈTRES
+// ============================================================
+
+settingsBtn?.addEventListener("click", openSettings);
+
+function getTheme(){
+
+  return localStorage.getItem("novaThemeChoice") || "dark";
+
+}
+
+function applyTheme(){
+
+  const theme = getTheme();
+
+  if(theme === "light"){
+
+    document.documentElement.dataset.theme = "light";
+
+  }else{
+
+    document.documentElement.dataset.theme = "dark";
+
+  }
+
+}
+
+function saveTheme(theme){
+
+  localStorage.setItem("novaThemeChoice", theme);
+
+  applyTheme();
+
+}
+
+function openSettings(){
+
+  const currentTheme = getTheme();
+
+  showModal(
+    "⚙️ Paramètres",
+    `
+      <div style="
+        display:flex;
+        flex-direction:column;
+        gap:18px;
+      ">
+
+        <div style="
+          background:rgba(255,255,255,.04);
+          border:1px solid rgba(255,255,255,.08);
+          border-radius:16px;
+          padding:18px;
+        ">
+
+          <h3 style="margin-bottom:12px;">
+            Apparence
+          </h3>
+
+          <div style="
+            display:flex;
+            gap:10px;
+            flex-wrap:wrap;
+          ">
+
+            <button
+              class="theme-choice"
+              data-theme-choice="dark"
+              style="
+                padding:12px 16px;
+                border-radius:10px;
+                border:1px solid rgba(255,255,255,.12);
+                background:#0b1424;
+                color:white;
+                cursor:pointer;
+              "
+            >
+              🌙 Mode sombre
+            </button>
+
+            <button
+              class="theme-choice"
+              data-theme-choice="light"
+              style="
+                padding:12px 16px;
+                border-radius:10px;
+                border:1px solid rgba(255,255,255,.12);
+                background:#f4f7fb;
+                color:#111;
+                cursor:pointer;
+              "
+            >
+              ☀️ Mode clair
+            </button>
+
+          </div>
+
+        </div>
+
+
+        <div style="
+          background:rgba(255,255,255,.04);
+          border:1px solid rgba(255,255,255,.08);
+          border-radius:16px;
+          padding:18px;
+        ">
+
+          <h3 style="margin-bottom:8px;">
+            NovaShop
+          </h3>
+
+          <p style="
+            opacity:.7;
+            line-height:1.6;
+          ">
+            Version actuelle de NovaShop.
+          </p>
+
+        </div>
+
+      </div>
+    `
+  );
+
+  document
+    .querySelectorAll(".theme-choice")
+    .forEach(button => {
+
+      const selected =
+        button.dataset.themeChoice === currentTheme;
+
+      if(selected){
+
+        button.style.outline =
+          "2px solid #2d8cff";
+
+      }
+
+      button.addEventListener("click", () => {
+
+        saveTheme(
+          button.dataset.themeChoice
+        );
+
+        openSettings();
+
+        toast(
+          button.dataset.themeChoice === "dark"
+            ? "Mode sombre activé."
+            : "Mode clair activé.",
+          "success"
+        );
+
+      });
+
+    });
+
+}
+
+
+// ============================================================
+// BOUTONS DU HAUT
+// ============================================================
+
+accountBtn?.addEventListener(
+  "click",
+  openAccount
+);
+
+ordersBtn?.addEventListener(
+  "click",
+  openOrders
+);
+
+cartBtn?.addEventListener(
+  "click",
+  openCart
+);
+
+heroCartBtn?.addEventListener(
+  "click",
+  openCart
+);
+
+closeCart?.addEventListener(
+  "click",
+  closeCart
+);
+
+modalClose?.addEventListener(
+  "click",
+  closeModal
+);
+
+
+// ============================================================
+// BOUTON VOIR MON PANIER
+// ============================================================
+
+if(heroCartBtn){
+
+  heroCartBtn.textContent =
+    "🛒 Voir mon panier";
+
+}
+
+
+// ============================================================
+// ÉTAT FIREBASE / UTILISATEUR
+// ============================================================
+
+onAuthStateChanged(
+  auth,
+  user => {
+
+    currentUser = user || null;
+
+    if(accountBtn){
+
+      if(user){
+
+        accountBtn.textContent =
+          "👤 Mon compte";
+
+      }else{
+
+        accountBtn.textContent =
+          "👤 Connexion";
+
+      }
+
+    }
+
+    if(adminBtn){
+
+      adminBtn.style.display =
+        isAdminUser()
+          ? "inline-flex"
+          : "none";
+
+    }
+
+  }
+);
+
+
+// ============================================================
+// TOUCHE ESCAPE
+// ============================================================
+
+document.addEventListener(
+  "keydown",
+  event => {
+
+    if(event.key !== "Escape"){
+      return;
+    }
+
+    closeModal();
+
+    closeCart();
+
+  }
+);
+
+
+// ============================================================
+// FERMETURE DU MODAL EN CLIQUANT À L'EXTÉRIEUR
+// ============================================================
+
+modal?.addEventListener(
+  "click",
+  event => {
+
+    if(event.target === modal){
+
+      closeModal();
+
+    }
+
+  }
+);
+
+
+// ============================================================
+// FERMETURE DU PANIER EN CLIQUANT À L'EXTÉRIEUR
+// ============================================================
+
+cartDrawer?.addEventListener(
+  "click",
+  event => {
+
+    if(event.target === cartDrawer){
+
+      closeCart();
+
+    }
+
+  }
+);
+
+
+// ============================================================
+// ERREURS JAVASCRIPT
+// ============================================================
+
+window.addEventListener(
+  "error",
+  event => {
+
+    console.error(
+      "NovaShop JS error :",
+      event.error || event.message
+    );
+
+  }
+);
+
+
+// ============================================================
+// ERREURS PROMESSES / FIREBASE
+// ============================================================
+
+window.addEventListener(
+  "unhandledrejection",
+  event => {
+
+    console.error(
+      "NovaShop Promise error :",
+      event.reason
+    );
+
+  }
+);
+
+
+// ============================================================
+// STYLE DES BOUTONS
+// ============================================================
+
+function injectNovaButtonStyles(){
+
+  if(document.getElementById("novaButtonStyles")){
+    return;
+  }
+
+  const style =
+    document.createElement("style");
+
+  style.id =
+    "novaButtonStyles";
+
+  style.textContent = `
+
+    button{
+      -webkit-tap-highlight-color:transparent;
+    }
+
+    #heroCartBtn,
+    .view-btn,
+    .add-btn{
+      cursor:pointer;
+      transition:
+        transform .18s ease,
+        filter .18s ease,
+        opacity .18s ease;
+    }
+
+    #heroCartBtn:hover,
+    .view-btn:hover,
+    .add-btn:hover{
+      transform:translateY(-1px);
+      filter:brightness(1.08);
+    }
+
+    #heroCartBtn:active,
+    .view-btn:active,
+    .add-btn:active{
+      transform:translateY(0);
+    }
+
+    button:disabled{
+      cursor:not-allowed !important;
+      opacity:.55 !important;
+      transform:none !important;
+    }
+
+    .payment-choice.selected{
+      border-color:#2d8cff !important;
+      background:rgba(45,140,255,.12) !important;
+      box-shadow:
+        0 0 0 2px rgba(45,140,255,.12);
+    }
+
+    .theme-choice{
+      transition:
+        transform .15s ease,
+        border-color .15s ease;
+    }
+
+    .theme-choice:hover{
+      transform:translateY(-1px);
+    }
+
+  `;
+
+  document.head.appendChild(style);
+
+}
+
+
+// ============================================================
+// MISE À JOUR DES BOUTONS DU HEADER
+// ============================================================
+
+function updateHeaderButtons(){
+
+  if(!cartBadge){
+    return;
+  }
+
+  const count =
+    getCartCount();
+
+  cartBadge.textContent =
+    String(count);
+
+  if(count > 0){
+
+    cartBadge.style.display =
+      "inline-flex";
+
+  }else{
+
+    cartBadge.style.display =
+      "none";
+
+  }
+
+}
+
+
+// ============================================================
+// INITIALISATION NOVASHOP
+// ============================================================
+
+function initNovaShop(){
+
+  try{
+
+    injectNovaButtonStyles();
+
+    applyTheme();
+
+    renderCategories();
+
+    renderProducts();
+
+    renderCart();
+
+    updateHeaderButtons();
+
+    if(heroCartBtn){
+
+      heroCartBtn.textContent =
+        "🛒 Voir mon panier";
+
+    }
+
+    console.log(
+      `NovaShop chargé avec succès 🚀 | ${products.length} produits`
+    );
+
+  }catch(error){
+
+    console.error(
+      "Erreur initialisation NovaShop :",
+      error
+    );
+
+    if(productGrid){
+
+      productGrid.innerHTML = `
+
+        <div style="
+          grid-column:1/-1;
+          padding:40px 20px;
+          text-align:center;
+          border-radius:18px;
+          background:rgba(255,70,70,.08);
+          border:1px solid rgba(255,70,70,.2);
+          color:#ff7777;
+        ">
+
+          <h2 style="
+            margin-bottom:10px;
+          ">
+            ❌ Erreur de chargement
+          </h2>
+
+          <p style="
+            opacity:.8;
+            line-height:1.6;
+          ">
+            Les produits n'ont pas pu être chargés.
+          </p>
+
+          <small style="
+            display:block;
+            margin-top:10px;
+            opacity:.55;
+            word-break:break-word;
+          ">
+            ${escapeHTML(
+              error?.message ||
+              "Erreur inconnue"
+            )}
+          </small>
+
+        </div>
+
+      `;
+
+    }
+
+    if(productCount){
+
+      productCount.textContent =
+        "Erreur";
+
+    }
+
+  }
+
+}
+
+
+// ============================================================
+// LANCEMENT
+// ============================================================
+
+initNovaShop();
+
+
+// ============================================================
+// API PUBLIQUE NOVASHOP
+// ============================================================
+
+window.NovaShop = {
+
+  products,
+
+  get currentUser(){
+
+    return currentUser;
+
+  },
+
+  addToCart,
+
+  removeFromCart,
+
+  changeCartQuantity,
+
+  openCart,
+
+  closeCart,
+
+  openProduct,
+
+  openAccount,
+
+  openOrders,
+
+  openSettings,
+
+  openCheckout,
+
+  openAdmin,
+
+  renderProducts,
+
+  renderCart,
+
+  getCartCount,
+
+  getCartSubtotal,
+
+  money
+
+};
+
+
+// ============================================================
+// FIN PARTIE 3/3
+// ============================================================
