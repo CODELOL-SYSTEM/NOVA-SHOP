@@ -28,7 +28,7 @@
   --shadow:0 15px 45px rgba(0,0,0,.22);
 }
 
-html[data-theme="light"]{
+body.light{
   --bg:#f4f7fb;
   --bg2:#ffffff;
   --card:#ffffff;
@@ -46,11 +46,7 @@ html{
 body{
   min-height:100vh;
   background:
-    radial-gradient(
-      circle at 10% 0%,
-      rgba(45,140,255,.12),
-      transparent 30%
-    ),
+    radial-gradient(circle at 10% 0%,rgba(45,140,255,.12),transparent 30%),
     var(--bg);
   color:var(--text);
   font-family:Arial,Helvetica,sans-serif;
@@ -59,8 +55,7 @@ body{
 
 button,
 input,
-select,
-textarea{
+select{
   font:inherit;
 }
 
@@ -78,10 +73,7 @@ a{
   margin:auto;
 }
 
-
-/* ============================================================
-   HEADER
-============================================================ */
+/* HEADER */
 
 header{
   position:sticky;
@@ -92,7 +84,7 @@ header{
   border-bottom:1px solid var(--line);
 }
 
-html[data-theme="light"] header{
+body.light header{
   background:rgba(255,255,255,.86);
 }
 
@@ -118,15 +110,9 @@ html[data-theme="light"] header{
   border-radius:11px;
   display:grid;
   place-items:center;
-  background:
-    linear-gradient(
-      135deg,
-      var(--blue),
-      #64b4ff
-    );
+  background:linear-gradient(135deg,var(--blue),#64b4ff);
   color:#fff;
-  box-shadow:
-    0 8px 25px rgba(45,140,255,.3);
+  box-shadow:0 8px 25px rgba(45,140,255,.3);
 }
 
 .search{
@@ -145,14 +131,8 @@ html[data-theme="light"] header{
   color:var(--text);
 }
 
-.search input::placeholder{
-  color:var(--muted);
-}
-
 .search input:focus{
   border-color:var(--blue);
-  box-shadow:
-    0 0 0 3px rgba(45,140,255,.10);
 }
 
 .header-actions{
@@ -168,16 +148,11 @@ html[data-theme="light"] header{
   background:var(--card);
   color:var(--text);
   position:relative;
-  transition:.18s;
 }
 
 .icon-btn:hover{
   border-color:var(--blue);
   transform:translateY(-1px);
-}
-
-.icon-btn:active{
-  transform:translateY(0);
 }
 
 .cart-badge{
@@ -196,10 +171,7 @@ html[data-theme="light"] header{
   place-items:center;
 }
 
-
-/* ============================================================
-   HERO
-============================================================ */
+/* HERO */
 
 .hero{
   padding:58px 0 34px;
@@ -216,16 +188,8 @@ html[data-theme="light"] header{
   gap:30px;
   overflow:hidden;
   background:
-    radial-gradient(
-      circle at 80% 20%,
-      rgba(45,140,255,.24),
-      transparent 32%
-    ),
-    linear-gradient(
-      135deg,
-      var(--card),
-      var(--bg2)
-    );
+    radial-gradient(circle at 80% 20%,rgba(45,140,255,.24),transparent 32%),
+    linear-gradient(135deg,var(--card),var(--bg2));
   box-shadow:var(--shadow);
 }
 
@@ -265,16 +229,10 @@ html[data-theme="light"] header{
   background:var(--card2);
   color:var(--text);
   font-weight:800;
-  transition:.18s;
 }
 
 .btn:hover{
   transform:translateY(-1px);
-  filter:brightness(1.06);
-}
-
-.btn:active{
-  transform:translateY(0);
 }
 
 .btn-primary{
@@ -289,36 +247,17 @@ html[data-theme="light"] header{
   color:#04130d;
 }
 
-.btn-danger{
-  background:var(--danger);
-  border-color:var(--danger);
-  color:#fff;
-}
-
 .hero-art{
   width:280px;
   height:280px;
-  flex:0 0 280px;
   border-radius:50%;
   background:
-    radial-gradient(
-      circle,
-      #2d8cff 0 4%,
-      transparent 5%
-    ),
-    radial-gradient(
-      circle,
-      rgba(45,140,255,.25),
-      transparent 60%
-    );
-  box-shadow:
-    0 0 90px rgba(45,140,255,.25);
+    radial-gradient(circle,#2d8cff 0 4%,transparent 5%),
+    radial-gradient(circle,rgba(45,140,255,.25),transparent 60%);
+  box-shadow:0 0 90px rgba(45,140,255,.25);
 }
 
-
-/* ============================================================
-   TOOLBAR
-============================================================ */
+/* TOOLBAR */
 
 .toolbar{
   display:flex;
@@ -336,11 +275,6 @@ html[data-theme="light"] header{
   border:1px solid var(--line);
   background:var(--card);
   color:var(--text);
-  outline:none;
-}
-
-.sort:focus{
-  border-color:var(--blue);
 }
 
 .count{
@@ -348,10 +282,7 @@ html[data-theme="light"] header{
   font-size:14px;
 }
 
-
-/* ============================================================
-   CATEGORIES
-============================================================ */
+/* CATEGORIES */
 
 .categories{
   display:flex;
@@ -370,7 +301,6 @@ html[data-theme="light"] header{
   padding:9px 14px;
   font-size:13px;
   font-weight:800;
-  transition:.18s;
 }
 
 .category.active,
@@ -380,15 +310,11 @@ html[data-theme="light"] header{
   background:var(--blue);
 }
 
-
-/* ============================================================
-   PRODUCTS
-============================================================ */
+/* PRODUCTS */
 
 .product-grid{
   display:grid;
-  grid-template-columns:
-    repeat(4,minmax(0,1fr));
+  grid-template-columns:repeat(4,minmax(0,1fr));
   gap:14px;
 }
 
@@ -398,15 +324,13 @@ html[data-theme="light"] header{
   background:var(--card);
   border:1px solid var(--line);
   border-radius:16px;
-  box-shadow:
-    0 8px 28px rgba(0,0,0,.10);
+  box-shadow:0 8px 28px rgba(0,0,0,.10);
   transition:.22s;
 }
 
 .product:hover{
   transform:translateY(-4px);
-  border-color:
-    rgba(45,140,255,.55);
+  border-color:rgba(45,140,255,.55);
 }
 
 .product-img{
@@ -508,22 +432,9 @@ html[data-theme="light"] header{
   padding:9px 12px;
   font-size:12px;
   font-weight:900;
-  transition:.18s;
 }
 
-.add:hover{
-  filter:brightness(1.08);
-  transform:translateY(-1px);
-}
-
-.add:active{
-  transform:translateY(0);
-}
-
-
-/* ============================================================
-   SECTIONS
-============================================================ */
+/* SECTIONS */
 
 .section{
   padding:70px 0;
@@ -536,8 +447,7 @@ html[data-theme="light"] header{
 
 .info-grid{
   display:grid;
-  grid-template-columns:
-    repeat(4,1fr);
+  grid-template-columns:repeat(4,1fr);
   gap:14px;
 }
 
@@ -561,8 +471,7 @@ html[data-theme="light"] header{
 
 .review-grid{
   display:grid;
-  grid-template-columns:
-    repeat(3,1fr);
+  grid-template-columns:repeat(3,1fr);
   gap:14px;
 }
 
@@ -583,10 +492,7 @@ html[data-theme="light"] header{
   line-height:1.55;
 }
 
-
-/* ============================================================
-   FAQ
-============================================================ */
+/* FAQ */
 
 .faq{
   border:1px solid var(--line);
@@ -615,10 +521,7 @@ html[data-theme="light"] header{
   line-height:1.5;
 }
 
-
-/* ============================================================
-   CART
-============================================================ */
+/* CART */
 
 .overlay{
   position:fixed;
@@ -671,8 +574,7 @@ html[data-theme="light"] header{
 
 .cart-item{
   display:grid;
-  grid-template-columns:
-    70px 1fr auto;
+  grid-template-columns:70px 1fr auto;
   gap:11px;
   padding:11px 0;
   border-bottom:1px solid var(--line);
@@ -743,10 +645,7 @@ html[data-theme="light"] header{
   margin-bottom:13px;
 }
 
-
-/* ============================================================
-   MODAL
-============================================================ */
+/* MODAL */
 
 .modal-layer{
   position:fixed;
@@ -779,14 +678,6 @@ html[data-theme="light"] header{
   justify-content:space-between;
   padding:18px;
   border-bottom:1px solid var(--line);
-  position:sticky;
-  top:0;
-  background:var(--card);
-  z-index:2;
-}
-
-.modal-head h2{
-  font-size:20px;
 }
 
 .modal-content{
@@ -800,18 +691,7 @@ html[data-theme="light"] header{
   border-radius:9px;
   background:var(--card2);
   color:var(--text);
-  transition:.18s;
 }
-
-.modal-close:hover{
-  border-color:var(--blue);
-  transform:translateY(-1px);
-}
-
-
-/* ============================================================
-   FORMS
-============================================================ */
 
 .form{
   display:grid;
@@ -830,12 +710,6 @@ html[data-theme="light"] header{
   color:var(--text);
 }
 
-.form input:focus,
-.form select:focus,
-.form textarea:focus{
-  border-color:var(--blue);
-}
-
 .form textarea{
   min-height:90px;
   resize:vertical;
@@ -846,62 +720,13 @@ html[data-theme="light"] header{
   font-weight:800;
 }
 
+/* TOAST */
 
-/* ============================================================
-   PAIEMENT
-============================================================ */
-
-.payment-options{
-  display:grid;
-  gap:10px;
-  margin-top:8px;
-}
-
-.payment-choice{
-  width:100%;
-  text-align:left;
-  padding:14px;
-  border:1px solid var(--line);
-  border-radius:12px;
-  background:var(--card2);
-  color:var(--text);
-  transition:.18s;
-}
-
-.payment-choice:hover{
-  border-color:var(--blue);
-}
-
-.payment-choice.selected{
-  border-color:var(--blue);
-  background:rgba(45,140,255,.12);
-  box-shadow:
-    0 0 0 2px rgba(45,140,255,.12);
-}
-
-.payment-choice strong{
-  display:block;
-  margin-bottom:4px;
-}
-
-.payment-choice span{
-  color:var(--muted);
-  font-size:12px;
-}
-
-
-/* ============================================================
-   TOAST
-============================================================ */
-
-#toast{
+.toast{
   position:fixed;
   right:18px;
   bottom:18px;
   z-index:500;
-}
-
-.toast{
   padding:13px 16px;
   border-radius:12px;
   background:#101b2e;
@@ -916,100 +741,13 @@ html[data-theme="light"] header{
     opacity:0;
     transform:translateY(10px);
   }
-
   to{
     opacity:1;
     transform:translateY(0);
   }
 }
 
-
-/* ============================================================
-   ORDERS
-============================================================ */
-
-.order-card{
-  border:1px solid var(--line);
-  border-radius:15px;
-  background:var(--card2);
-  padding:16px;
-  margin-bottom:12px;
-}
-
-.order-card strong{
-  font-size:14px;
-}
-
-.order-card small{
-  color:var(--muted);
-}
-
-.order-status{
-  display:inline-flex;
-  align-items:center;
-  padding:6px 9px;
-  border-radius:999px;
-  background:rgba(45,140,255,.12);
-  color:var(--blue);
-  font-size:11px;
-  font-weight:900;
-}
-
-
-/* ============================================================
-   ADMIN
-============================================================ */
-
-.admin-card{
-  border:1px solid var(--line);
-  border-radius:16px;
-  background:var(--card2);
-  padding:16px;
-  margin-bottom:12px;
-}
-
-.admin-grid{
-  display:grid;
-  grid-template-columns:
-    repeat(2,minmax(0,1fr));
-  gap:10px;
-}
-
-.admin-grid input,
-.admin-grid select{
-  width:100%;
-  min-height:42px;
-  padding:10px 12px;
-  border-radius:10px;
-  border:1px solid var(--line);
-  background:var(--card);
-  color:var(--text);
-  outline:none;
-}
-
-.admin-grid input:focus,
-.admin-grid select:focus{
-  border-color:var(--blue);
-}
-
-
-/* ============================================================
-   EMPTY
-============================================================ */
-
-.empty{
-  grid-column:1/-1;
-  padding:60px 20px;
-  text-align:center;
-  border:1px dashed var(--line);
-  border-radius:18px;
-  color:var(--muted);
-}
-
-
-/* ============================================================
-   FOOTER
-============================================================ */
+/* FOOTER */
 
 footer{
   margin-top:40px;
@@ -1025,31 +763,28 @@ footer{
   flex-wrap:wrap;
 }
 
-.footer-inner strong{
-  color:var(--text);
+.empty{
+  grid-column:1/-1;
+  padding:60px 20px;
+  text-align:center;
+  border:1px dashed var(--line);
+  border-radius:18px;
+  color:var(--muted);
 }
 
-
-/* ============================================================
-   RESPONSIVE
-============================================================ */
+/* RESPONSIVE */
 
 @media(max-width:1100px){
-
   .product-grid{
-    grid-template-columns:
-      repeat(3,minmax(0,1fr));
+    grid-template-columns:repeat(3,minmax(0,1fr));
   }
 
   .info-grid{
-    grid-template-columns:
-      repeat(2,1fr);
+    grid-template-columns:repeat(2,1fr);
   }
-
 }
 
 @media(max-width:760px){
-
   .header-inner{
     flex-wrap:wrap;
     padding:10px 0;
@@ -1058,10 +793,6 @@ footer{
   .search{
     order:3;
     flex-basis:100%;
-  }
-
-  .header-actions{
-    margin-left:auto;
   }
 
   .hero-box{
@@ -1073,22 +804,15 @@ footer{
   }
 
   .product-grid{
-    grid-template-columns:
-      repeat(2,minmax(0,1fr));
+    grid-template-columns:repeat(2,minmax(0,1fr));
   }
 
   .review-grid{
     grid-template-columns:1fr;
   }
-
-  .admin-grid{
-    grid-template-columns:1fr;
-  }
-
 }
 
 @media(max-width:520px){
-
   .container{
     width:min(100% - 20px,1400px);
   }
@@ -1104,16 +828,10 @@ footer{
 
   .hero h1{
     font-size:42px;
-    letter-spacing:-2px;
-  }
-
-  .hero p{
-    font-size:15px;
   }
 
   .product-grid{
-    grid-template-columns:
-      repeat(2,minmax(0,1fr));
+    grid-template-columns:repeat(2,minmax(0,1fr));
     gap:9px;
   }
 
@@ -1147,25 +865,11 @@ footer{
   .info-grid{
     grid-template-columns:1fr;
   }
-
-  .header-actions{
-    gap:5px;
-  }
-
-  .icon-btn{
-    width:39px;
-    height:39px;
-  }
-
 }
 </style>
 </head>
 
 <body>
-
-<!-- ============================================================
-     HEADER
-============================================================ -->
 
 <header>
   <div class="container header-inner">
@@ -1176,69 +880,35 @@ footer{
     </a>
 
     <div class="search">
-
       <input
         id="searchInput"
         type="search"
         placeholder="Rechercher un produit..."
         autocomplete="off"
-        aria-label="Rechercher un produit"
       >
-
     </div>
 
     <div class="header-actions">
 
-      <button
-        class="icon-btn"
-        id="settingsBtn"
-        title="Paramètres"
-        aria-label="Paramètres"
-      >
+      <button class="icon-btn" id="settingsBtn" title="Paramètres">
         ⚙️
       </button>
 
-      <button
-        class="icon-btn"
-        id="accountBtn"
-        title="Compte"
-        aria-label="Compte"
-      >
+      <button class="icon-btn" id="accountBtn" title="Compte">
         👤
       </button>
 
-      <button
-        class="icon-btn"
-        id="ordersBtn"
-        title="Commandes"
-        aria-label="Commandes"
-      >
+      <button class="icon-btn" id="ordersBtn" title="Commandes">
         📦
       </button>
 
-      <button
-        class="icon-btn"
-        id="adminBtn"
-        title="Administration"
-        aria-label="Administration"
-        style="display:none"
-      >
+      <button class="icon-btn" id="adminBtn" title="Administration" style="display:none">
         🛠️
       </button>
 
-      <button
-        class="icon-btn"
-        id="cartBtn"
-        title="Panier"
-        aria-label="Panier"
-      >
+      <button class="icon-btn" id="cartBtn" title="Panier">
         🛒
-        <span
-          class="cart-badge"
-          id="cartBadge"
-        >
-          0
-        </span>
+        <span class="cart-badge" id="cartBadge">0</span>
       </button>
 
     </div>
@@ -1246,442 +916,234 @@ footer{
   </div>
 </header>
 
-
-<!-- ============================================================
-     MAIN
-============================================================ -->
-
 <main>
 
-  <!-- HERO -->
-
-  <section class="hero">
-
-    <div class="container">
-
-      <div class="hero-box">
-
-        <div class="hero-text">
-
-          <h1>
-            Bienvenue sur
-            <span>NovaShop</span>
-          </h1>
-
-          <p>
-            Composants PC, périphériques gaming,
-            smartphones, écrans, accessoires
-            et bien plus.
-          </p>
-
-          <div class="hero-actions">
-
-            <button
-              class="btn btn-primary"
-              id="heroCartBtn"
-            >
-              Voir mon panier
-            </button>
-
-            <a
-              class="btn"
-              href="#products"
-            >
-              Découvrir les produits
-            </a>
-
-          </div>
-
-        </div>
-
-        <div
-          class="hero-art"
-          aria-hidden="true"
-        ></div>
-
-      </div>
-
-    </div>
-
-  </section>
-
-
-  <!-- PRODUITS -->
-
-  <section
-    id="products"
-    class="container"
-  >
-
-    <div class="toolbar">
-
-      <div>
-
-        <h2
-          class="section-title"
-          style="margin-bottom:4px"
-        >
-          Produits
-        </h2>
-
-        <span
-          class="count"
-          id="productCount"
-        >
-          0 produits
-        </span>
-
-      </div>
-
-      <select
-        class="sort"
-        id="sortSelect"
-        aria-label="Trier les produits"
-      >
-
-        <option value="default">
-          Trier par défaut
-        </option>
-
-        <option value="price-low">
-          Prix croissant
-        </option>
-
-        <option value="price-high">
-          Prix décroissant
-        </option>
-
-        <option value="name">
-          Nom A-Z
-        </option>
-
-        <option value="new">
-          Nouveautés
-        </option>
-
-      </select>
-
-    </div>
-
-    <div
-      class="categories"
-      id="categories"
-    ></div>
-
-    <div
-      class="product-grid"
-      id="productGrid"
-    ></div>
-
-  </section>
-
-
-  <!-- POURQUOI NOVASHOP -->
-
-  <section class="section">
-
-    <div class="container">
-
-      <h2 class="section-title">
-        Pourquoi NovaShop ?
-      </h2>
-
-      <div class="info-grid">
-
-        <div class="info-card">
-
-          <strong>
-            ⚡ Catalogue gaming
-          </strong>
-
-          <p>
-            Retrouvez composants PC,
-            périphériques, écrans,
-            consoles et accessoires.
-          </p>
-
-        </div>
-
-
-        <div class="info-card">
-
-          <strong>
-            🛒 Panier simple
-          </strong>
-
-          <p>
-            Ajoutez vos produits et gérez
-            facilement les quantités
-            directement depuis le panier.
-          </p>
-
-        </div>
-
-
-        <div class="info-card">
-
-          <strong>
-            🔐 Compte
-          </strong>
-
-          <p>
-            Connectez-vous avec votre compte
-            NovaShop pour retrouver vos
-            informations.
-          </p>
-
-        </div>
-
-
-        <div class="info-card">
-
-          <strong>
-            📦 Commandes
-          </strong>
-
-          <p>
-            Retrouvez vos commandes et leur
-            statut depuis votre espace personnel.
-          </p>
-
-        </div>
-
-      </div>
-
-    </div>
-
-  </section>
-
-
-  <!-- AVIS -->
-
-  <section class="section">
-
-    <div class="container">
-
-      <h2 class="section-title">
-        Avis clients
-      </h2>
-
-      <div class="review-grid">
-
-        <div class="review">
-
-          <div class="review-stars">
-            ★★★★★
-          </div>
-
-          <p>
-            Catalogue clair et produits
-            faciles à trouver.
-          </p>
-
-        </div>
-
-
-        <div class="review">
-
-          <div class="review-stars">
-            ★★★★★
-          </div>
-
-          <p>
-            Le panier est rapide et simple
-            à utiliser.
-          </p>
-
-        </div>
-
-
-        <div class="review">
-
-          <div class="review-stars">
-            ★★★★☆
-          </div>
-
-          <p>
-            Bonne présentation des produits
-            et des catégories.
-          </p>
-
-        </div>
-
-      </div>
-
-    </div>
-
-  </section>
-
-
-  <!-- CONTACT -->
-
-  <section class="section">
-
-    <div class="container">
-
-      <h2 class="section-title">
-        Retours & informations
-      </h2>
-
-      <div class="info-card">
+<section class="hero">
+  <div class="container">
+    <div class="hero-box">
+
+      <div class="hero-text">
+        <h1>Bienvenue sur <span>NovaShop</span></h1>
 
         <p>
-
-          Pour toute question concernant
-          une commande, contactez NovaShop
-          via l'adresse :
-
-          <strong style="display:inline">
-            helpy.nova.sh0p@gmail.com
-          </strong>
-
+          Composants PC, périphériques gaming, smartphones,
+          écrans, accessoires et bien plus.
         </p>
 
+        <div class="hero-actions">
+          <button class="btn btn-primary" id="heroCartBtn">
+            Voir mon panier
+          </button>
+
+          <a class="btn" href="#products">
+            Découvrir les produits
+          </a>
+        </div>
       </div>
 
+      <div class="hero-art"></div>
+
     </div>
+  </div>
+</section>
 
-  </section>
+<section id="products" class="container">
 
-
-  <!-- FAQ -->
-
-  <section class="section">
-
-    <div class="container">
-
-      <h2 class="section-title">
-        FAQ
+  <div class="toolbar">
+    <div>
+      <h2 class="section-title" style="margin-bottom:4px">
+        Produits
       </h2>
 
-      <div class="faq">
+      <span class="count" id="productCount">
+        0 produits
+      </span>
+    </div>
 
-        <details>
+    <select class="sort" id="sortSelect">
+      <option value="default">Trier par défaut</option>
+      <option value="price-low">Prix croissant</option>
+      <option value="price-high">Prix décroissant</option>
+      <option value="name">Nom A-Z</option>
+      <option value="new">Nouveautés</option>
+    </select>
+  </div>
 
-          <summary>
-            Comment ajouter un produit au panier ?
-          </summary>
+  <div class="categories" id="categories"></div>
 
-          <p>
-            Cliquez simplement sur le bouton
-            Ajouter au panier depuis la fiche
-            du produit.
-          </p>
+  <div class="product-grid" id="productGrid"></div>
 
-        </details>
+</section>
 
+<section class="section">
+  <div class="container">
 
-        <details>
+    <h2 class="section-title">
+      Pourquoi NovaShop ?
+    </h2>
 
-          <summary>
-            Comment modifier la quantité ?
-          </summary>
+    <div class="info-grid">
 
-          <p>
-            Ouvrez votre panier puis utilisez
-            les boutons + et -.
-          </p>
+      <div class="info-card">
+        <strong>⚡ Catalogue gaming</strong>
+        <p>
+          Retrouvez composants PC, périphériques,
+          écrans, consoles et accessoires.
+        </p>
+      </div>
 
-        </details>
+      <div class="info-card">
+        <strong>🛒 Panier simple</strong>
+        <p>
+          Ajoutez vos produits et gérez facilement
+          les quantités directement depuis le panier.
+        </p>
+      </div>
 
+      <div class="info-card">
+        <strong>🔐 Compte</strong>
+        <p>
+          Connectez-vous avec votre compte NovaShop
+          pour retrouver vos informations.
+        </p>
+      </div>
 
-        <details>
-
-          <summary>
-            Comment retrouver mes commandes ?
-          </summary>
-
-          <p>
-            Utilisez le bouton 📦 dans l'en-tête.
-          </p>
-
-        </details>
-
-
-        <details>
-
-          <summary>
-            Comment contacter NovaShop ?
-          </summary>
-
-          <p>
-            Vous pouvez contacter NovaShop à
-            helpy.nova.sh0p@gmail.com.
-          </p>
-
-        </details>
-
+      <div class="info-card">
+        <strong>📦 Commandes</strong>
+        <p>
+          Retrouvez vos commandes et leur statut
+          depuis votre espace personnel.
+        </p>
       </div>
 
     </div>
 
-  </section>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+
+    <h2 class="section-title">
+      Avis clients
+    </h2>
+
+    <div class="review-grid">
+
+      <div class="review">
+        <div class="review-stars">★★★★★</div>
+        <p>
+          Catalogue clair et produits faciles à trouver.
+        </p>
+      </div>
+
+      <div class="review">
+        <div class="review-stars">★★★★★</div>
+        <p>
+          Le panier est rapide et simple à utiliser.
+        </p>
+      </div>
+
+      <div class="review">
+        <div class="review-stars">★★★★☆</div>
+        <p>
+          Bonne présentation des produits et des catégories.
+        </p>
+      </div>
+
+    </div>
+
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+
+    <h2 class="section-title">
+      Retours & informations
+    </h2>
+
+    <div class="info-card">
+      <p>
+        Pour toute question concernant une commande,
+        contactez NovaShop via l'adresse :
+        <strong style="display:inline">
+          helpy.nova.sh0p@gmail.com
+        </strong>
+      </p>
+    </div>
+
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+
+    <h2 class="section-title">
+      FAQ
+    </h2>
+
+    <div class="faq">
+
+      <details>
+        <summary>Comment ajouter un produit au panier ?</summary>
+        <p>
+          Cliquez simplement sur le bouton Ajouter au panier
+          depuis la fiche du produit.
+        </p>
+      </details>
+
+      <details>
+        <summary>Comment modifier la quantité ?</summary>
+        <p>
+          Ouvrez votre panier puis utilisez les boutons + et -.
+        </p>
+      </details>
+
+      <details>
+        <summary>Comment retrouver mes commandes ?</summary>
+        <p>
+          Utilisez le bouton 📦 dans l'en-tête.
+        </p>
+      </details>
+
+      <details>
+        <summary>Comment contacter NovaShop ?</summary>
+        <p>
+          Vous pouvez contacter NovaShop à
+          helpy.nova.sh0p@gmail.com.
+        </p>
+      </details>
+
+    </div>
+
+  </div>
+</section>
 
 </main>
 
+<div class="overlay" id="overlay"></div>
 
-<!-- ============================================================
-     OVERLAY
-============================================================ -->
-
-<div
-  class="overlay"
-  id="overlay"
-></div>
-
-
-<!-- ============================================================
-     PANIER
-============================================================ -->
-
-<aside
-  class="cart-drawer"
-  id="cartDrawer"
-  aria-label="Panier"
->
+<aside class="cart-drawer" id="cartDrawer">
 
   <div class="cart-head">
+    <strong>Mon panier</strong>
 
-    <strong>
-      Mon panier
-    </strong>
-
-    <button
-      class="modal-close"
-      id="closeCart"
-      aria-label="Fermer le panier"
-    >
+    <button class="modal-close" id="closeCart">
       ✕
     </button>
-
   </div>
 
-
-  <div
-    class="cart-items"
-    id="cartItems"
-  ></div>
-
+  <div class="cart-items" id="cartItems"></div>
 
   <div class="cart-footer">
 
     <div class="cart-total">
-
-      <span>
-        Total
-      </span>
-
-      <span id="cartTotal">
-        0,00 €
-      </span>
-
+      <span>Total</span>
+      <span id="cartTotal">0,00 €</span>
     </div>
 
-    <button
-      class="btn btn-green"
-      id="checkoutBtn"
-      style="width:100%"
-    >
+    <button class="btn btn-green" id="checkoutBtn" style="width:100%">
       Commander
     </button>
 
@@ -1689,93 +1151,40 @@ footer{
 
 </aside>
 
-
-<!-- ============================================================
-     MODAL PRINCIPAL
-============================================================ -->
-
-<div
-  class="modal-layer"
-  id="modalLayer"
-  role="dialog"
-  aria-modal="true"
-  aria-labelledby="modalTitle"
->
+<div class="modal-layer" id="modalLayer">
 
   <div class="modal">
 
     <div class="modal-head">
+      <h2 id="modalTitle">NovaShop</h2>
 
-      <h2 id="modalTitle">
-        NovaShop
-      </h2>
-
-      <button
-        class="modal-close"
-        id="modalClose"
-        aria-label="Fermer"
-      >
+      <button class="modal-close" id="modalClose">
         ✕
       </button>
-
     </div>
 
-    <div
-      class="modal-content"
-      id="modalContent"
-    ></div>
+    <div class="modal-content" id="modalContent"></div>
 
   </div>
 
 </div>
 
-
-<!-- ============================================================
-     TOAST
-============================================================ -->
-
 <div id="toast"></div>
 
-
-<!-- ============================================================
-     FOOTER
-============================================================ -->
-
 <footer>
-
   <div class="container footer-inner">
-
     <div>
-
-      <strong>
-        NovaShop
-      </strong>
-
-      <div>
-        Gaming • PC • Tech
-      </div>
-
+      <strong>NovaShop</strong>
+      <div>Gaming • PC • Tech</div>
     </div>
 
-    <a
-      href="mailto:helpy.nova.sh0p@gmail.com"
-    >
+    <a href="mailto:helpy.nova.sh0p@gmail.com">
       helpy.nova.sh0p@gmail.com
     </a>
-
   </div>
-
 </footer>
 
-
-<!-- ============================================================
-     APP.JS
-============================================================ -->
-
-<script
-  type="module"
-  src="./app.js"
-></script>
+<script type="module" src="./app.js"></script>
 
 </body>
 </html>
