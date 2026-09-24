@@ -1,5 +1,5 @@
 // ============================================================
-// NOVASHOP - APP.JS (version corrigée + FR/EN)
+// NOVASHOP - APP.JS (version corrigée + FR/EN + nouveaux produits)
 // Firebase Auth + Firestore + Catalogue + Commandes + Admin
 // ============================================================
 
@@ -59,7 +59,6 @@ const LANG_KEY = "novaLang";
 const I18N = {
 
   fr:{
-    // --- HTML statique ---
     searchPlaceholder:"Rechercher un produit...",
     titleSettings:"Paramètres",
     titleAccount:"Compte",
@@ -106,7 +105,6 @@ const I18N = {
     checkout:"Commander",
     footerTag:"Gaming • PC • Tech",
 
-    // --- Catalogue ---
     prodOne:"{n} produit",
     prodMany:"{n} produits",
     noProduct:"Aucun produit trouvé",
@@ -125,7 +123,6 @@ const I18N = {
     favAdd:"Ajouter aux favoris",
     favRemove:"Retirer des favoris",
 
-    // --- Auth ---
     loginTitle:"Connexion",
     email:"Email",
     password:"Mot de passe",
@@ -149,7 +146,6 @@ const I18N = {
     authTooMany:"Trop de tentatives. Réessaie plus tard.",
     authGeneric:"Une erreur est survenue.",
 
-    // --- Commandes ---
     ordersLogin:"Connecte-toi pour voir tes commandes.",
     ordersTitle:"Mes commandes",
     ordersLoading:"Chargement des commandes...",
@@ -173,7 +169,6 @@ const I18N = {
     backOrders:"← Retour aux commandes",
     productWord:"Produit",
 
-    // --- Checkout ---
     checkoutTitle:"Finaliser la commande",
     cartEmptyToast:"Ton panier est vide 🛒",
     loginToOrder:"Connecte-toi pour commander.",
@@ -207,7 +202,6 @@ const I18N = {
     errorPrefix:"Erreur : ",
     unknown:"inconnue",
 
-    // --- Facture ---
     invoiceTitle:"Facture NovaShop",
     invoice:"FACTURE",
     gameShop:"Boutique gaming",
@@ -216,7 +210,6 @@ const I18N = {
     price:"Prix",
     invoiceBlocked:"La fenêtre de facture a été bloquée.",
 
-    // --- Admin ---
     adminDenied:"Accès administrateur refusé.",
     adminCodePrompt:"Code administrateur NovaShop :",
     adminCodeWrong:"Code administrateur incorrect.",
@@ -251,7 +244,6 @@ const I18N = {
     cardHolderLbl:"Titulaire",
     cardGenerated:"Carte générée ✅",
 
-    // --- Paramètres ---
     settingsTitle:"⚙️ Paramètres",
     appearance:"Apparence",
     dark:"🌙 Mode sombre",
@@ -262,7 +254,6 @@ const I18N = {
     version:"Version actuelle de NovaShop.",
     langChanged:"Langue : Français",
 
-    // --- Init ---
     loadErr:"❌ Erreur de chargement",
     loadErrText:"Les produits n'ont pas pu être chargés.",
     errWord:"Erreur",
@@ -477,10 +468,14 @@ const I18N = {
 const CAT_EN = {
   "Toutes":"All",
   "Composants":"Components",
+  "Composants PC":"PC components",
   "PC Gamer":"Gaming PCs",
+  "PC Gamer préconstruits":"Pre-built gaming PCs",
+  "PC portables Gaming & Travail":"Gaming & work laptops",
   "Casques":"Headsets",
   "Claviers":"Keyboards",
   "Souris":"Mice",
+  "Tapis de souris":"Mouse pads",
   "Stockage":"Storage",
   "Alimentations":"Power supplies",
   "Boîtiers":"Cases",
@@ -626,7 +621,7 @@ const products = [
   { id:"p23", name:"Chaise GTPLAYER Ergonomique Gaming Soutien Lombaire Repose-pieds", category:"Chaises gaming", price:109.99, image:"https://thumb.pccomponentes.com/w-530-530/articles/1118/11186247/167-silla-gaming-gtplayer-ergonomica-con-reposapies-y-soporte-lumbar-4d.jpg" },
   { id:"p24", name:"Desk Lite - Height-Adjustable Desk", category:"Bureaux gaming", price:110.99, image:"https://yaasa.com/cdn/shop/files/yaasa-desk-lite_nr01_black_100_01-04545-01_1200x.jpg?v=1753169928" },
   { id:"p25", name:"EUREKA ERGONOMIC Bureau Gaming LED 182x76cm en Forme d'Aile", category:"Bureaux gaming", price:86.99, image:"https://m.media-amazon.com/images/I/71Gd5G3wRsL._AC_SL1500_.jpg" },
-  { id:"p26", name:"Bureau gaming d’angle HOMCOM réversible support écran", category:"Bureaux gaming", price:44.99, image:"https://cdn.manomano.com/pim-media/images/medium/74eca1cb1cefa063c8f600ee293ae6ee826794f8.jpg" },
+  { id:"p26", name:"Bureau gaming d'angle HOMCOM réversible support écran", category:"Bureaux gaming", price:44.99, image:"https://cdn.manomano.com/pim-media/images/medium/74eca1cb1cefa063c8f600ee293ae6ee826794f8.jpg" },
   { id:"p27", name:"Logitech G Pro X 2 Lightspeed Noir + Repose casque", category:"Casques", price:99.99, image:"https://static.fnac-static.com/multimedia/Images/FR/MDMFR/MDM/6d/e9/6e/24045933/1540-1/tsp20260429154901/Casque-PC-gaming-sans-fil-Logitech-G-Pro-X-2-Lightspeed-Noir-Repose-casque.jpg" },
   { id:"p28", name:"Razer BlackShark V2 Pro 2023 Noir", category:"Casques", price:75.99, image:"https://media.ldlc.com/r1600/ld/products/00/06/07/71/LD0006077125.jpg" },
   { id:"p29", name:"beyerdynamic DT-990 Pro 250 Ohm", category:"Casques", price:60.99, image:"https://thumbs.static-thomann.de/thumb/padthumb600x600/pics/bdb/_10/106865/18443258_800.jpg" },
@@ -635,16 +630,11 @@ const products = [
   { id:"p32", name:"GravaStar Mercury K1 Clavier Gamer sans Fil en Aluminium, Noir Dégradé", category:"Claviers", price:91.99, image:"https://m.media-amazon.com/images/I/6144lt2l5JL._AC_SL1200_.jpg" },
   { id:"p33", name:"ATTACK SHARK R11 Ultra, fibre de carbone, 8000Hz, 49g, 42000 DPI", category:"Souris", price:26.99, image:"https://m.media-amazon.com/images/I/71bMz15SqcL._AC_SL1500_.jpg" },
   { id:"p34", name:"HyperX QuadCast 2 – Microphone USB – RGB", category:"Microphones", price:98.99, image:"https://fr.hyperx.com/cdn/shop/files/hyperx_quadcast_2_872v1aa_main_1_2d47a555-f537-457b-9002-8b9e9010dc00.jpg?v=1763067608" },
-  { id:"p35", name:"Shure SM7 dB", category:"Microphones", price:121.99, image:"https://thumbs.static-thomann.de/thumb/padthumb600x600/pics/bdb/_57/573672/18492412_800.jpg" }
-
-];
-
-products.push(
-
+  { id:"p35", name:"Shure SM7 dB", category:"Microphones", price:121.99, image:"https://thumbs.static-thomann.de/thumb/padthumb600x600/pics/bdb/_57/573672/18492412_800.jpg" },
   { id:"p36", name:"Razer Seiren V3 Chroma Noir", category:"Microphones", price:13.99, image:"https://media.ldlc.com/r1600/ld/products/00/06/13/25/LD0006132588.jpg" },
   { id:"p37", name:"Stairville LED Pixel Rail 40 RGB MKII", category:"Éclairage RGB", price:18.90, image:"https://thumbs.static-thomann.de/thumb/padthumb600x600/pics/bdb/_44/449739/14448905_800.jpg" },
   { id:"p38", name:"Govee LED Strip Light RGBIC Wi-Fi + Bluetooth 5m Matter", category:"Éclairage RGB", price:8, image:"https://static.fnac-static.com/multimedia/Images/FR/MDM/ab/7a/9d/27097771/1520-2/tsp20260429155350/Ruban-LED-Govee-LED-Strip-Light-RGBIC-Wi-Fi-avec-BT-5M-Matter.jpg" },
-  { id:"p39", name:"Lampe de plafond hexagone nid d’abeille LED 2.4m x 4.8m contour bleu", category:"Éclairage RGB", price:91.10, image:"https://www.discount-autosport.com/wp-content/webp-express/webp-images/uploads/2025/02/lampe-hexagone-plafond-led-4m80-contour-bleu-.jpg.webp" },
+  { id:"p39", name:"Lampe de plafond hexagone nid d'abeille LED 2.4m x 4.8m contour bleu", category:"Éclairage RGB", price:91.10, image:"https://www.discount-autosport.com/wp-content/webp-express/webp-images/uploads/2025/02/lampe-hexagone-plafond-led-4m80-contour-bleu-.jpg.webp" },
   { id:"p40", name:"GIGABYTE GeForce RTX 5050 WINDFORCE OC 8G", category:"Cartes graphiques", price:147, image:"https://m.media-amazon.com/images/I/41kmHFMFPOL._SL500_.jpg" },
   { id:"p41", name:"MSI GeForce RTX 3050 LP E 6G OC", category:"Cartes graphiques", price:100, image:"https://encrypted-tbn1.gstatic.com/shopping?q=tbn:ANd9GcTCe_rha_tAAHPWnQ8VV7GIvF-uSqUaEyU61TSnwgM4CK8g3-x_3Hq4wOgH36Ri63eAiWHsvhmRJHzVrUQR9-IwMx31WH0w" },
   { id:"p42", name:"ASUS Dual Radeon RX 7600 EVO OC Edition 8GB GDDR6", category:"Cartes graphiques", price:140, image:"https://m.media-amazon.com/images/I/81QItJufypL._AC_SL1500_.jpg" },
@@ -660,6 +650,7 @@ products.push(
   { id:"p52", name:'Samsung Galaxy S26 6,3" 5G 256 Go Noir + Buds4 Noir', category:"Smartphones", price:650.99, image:"https://static.fnac-static.com/multimedia/Images/FR/MDM/e8/a2/c7/29860584/1540-1/tsp20260903144909/Pack-Smartphone-Samsung-Galaxy-S26-6-3-5G-Nano-SIM-256-Go-Noir-Buds4-Noir.jpg" },
   { id:"p53", name:'Google Pixel 8 6,2" 5G Double SIM 128 Go Vert Sauge', category:"Smartphones", price:200, image:"https://static.fnac-static.com/multimedia/Images/FR/MDM/37/bc/52/22199351/1540-1/tsp20260722081937/Smartphone-Google-Pixel-8-6-2-5G-Double-SIM-128-Go-Vert-Sauge.jpg" },
   { id:"p54", name:'Google Pixel 9 6,3" 5G Double nano-SIM 128 Go Noir Obsidienne', category:"Smartphones", price:400, image:"https://static.fnac-static.com/multimedia/Images/FR/MDMFR/MDM/f6/00/6d/23920886/1540-1/tsp20260914084700/Smartphone-Google-Pixel-9-6-3-5G-Double-nano-SIM-128-Go-Noir-Obsidienne.jpg" },
+  { id:"p55", name:'Xiaomi 14 6,36" 5G Double SIM 256 Go Noir', category:"Smartphones", price:520, image:"https://m.media-amazon.com/images/I/61EY3-4ZfNL._AC_SL1500_.jpg" },
   { id:"p56", name:"Flashforge Adventurer 5M Pro", category:"Imprimantes 3D", price:115, image:"https://www.makershop.fr/cdn/shop/files/13458.jpg?v=1760745366&width=150" },
   { id:"p57", name:"Elegoo Centauri 2", category:"Imprimantes 3D", price:200, image:"https://fr.elegoo.com/cdn/shop/files/C2-_-260811.jpg?crop=center&v=1786696280&width=345" },
   { id:"p58", name:"Anycubic Photon P1 Max", category:"Imprimantes 3D", price:600, image:"https://fr.anycubic.com/cdn/shop/files/P1M_8bd4d344-b751-4497-a535-4e647ecef572.jpg?v=1784100048&width=150" },
@@ -674,9 +665,49 @@ products.push(
   { id:"p67", name:"BSTOEM pour Apple Watch Chargeur, Station de Charge USB C Magnétique 1M", category:"Adaptateurs / câbles / chargeurs", price:2.99, image:"https://m.media-amazon.com/images/I/61rGkIZqqCL._SL1500_.jpg" },
   { id:"p68", name:"StarTech Cordon d'alimentation PC de 1m - CEE 7/7 à C13", category:"Adaptateurs / câbles / chargeurs", price:4.50, image:"https://m.media-amazon.com/images/I/81b1fyIWcOL._AC_SL1500_.jpg" },
   { id:"p69", name:"Unicavu Webcam PC 2K 30 FPS Full HD 1080P", category:"Caméras & webcams", price:10, image:"https://m.media-amazon.com/images/I/61CJsbKfonL._AC_SL1500_.jpg" },
-  { id:"p70", name:"eMeet Nova 4K Webcam 4K Ultra HD avec 2 Microphones", category:"Caméras & webcams", price:23.99, image:"https://m.media-amazon.com/images/I/61bCeQBjUwL._AC_SL1500_.jpg" }
+  { id:"p70", name:"eMeet Nova 4K Webcam 4K Ultra HD avec 2 Microphones", category:"Caméras & webcams", price:23.99, image:"https://m.media-amazon.com/images/I/61bCeQBjUwL._AC_SL1500_.jpg" },
 
-);
+  // ---------- NOUVEAUX PRODUITS (catégories renforcées) ----------
+
+  { id:"p71", name:"Corsair CV650 - Alimentation PC 650W 80+ Bronze", category:"Alimentations", price:59.90, image:"https://m.media-amazon.com/images/I/71m8j7lXQBL._AC_SL1500_.jpg" },
+  { id:"p72", name:"be quiet! Pure Power 12 M 750W 80+ Gold Modulaire", category:"Alimentations", price:99.90, image:"https://m.media-amazon.com/images/I/71i8Zt3nOoL._AC_SL1500_.jpg" },
+  { id:"p73", name:"NZXT H5 Flow - Boîtier PC Moyen Tour Blanc", category:"Boîtiers", price:79.99, image:"https://m.media-amazon.com/images/I/81nXO0-a3fL._AC_SL1500_.jpg" },
+  { id:"p74", name:"Lian Li Lancool 216 - Boîtier PC ARGB Noir", category:"Boîtiers", price:109.90, image:"https://m.media-amazon.com/images/I/81cUYWXO4iL._AC_SL1500_.jpg" },
+  { id:"p75", name:"Noctua NH-D15 - Ventirad CPU Double Tour", category:"Refroidissement", price:99.90, image:"https://m.media-amazon.com/images/I/81YV1QGh2QL._AC_SL1500_.jpg" },
+  { id:"p76", name:"Corsair iCUE H150i Elite Capellix XT - Watercooling AIO 360mm", category:"Refroidissement", price:189.90, image:"https://m.media-amazon.com/images/I/71QpFQ6c0kL._AC_SL1500_.jpg" },
+  { id:"p77", name:"Elgato Stream Deck MK.2 - Contrôleur de Streaming", category:"Streaming", price:149.90, image:"https://m.media-amazon.com/images/I/71cq1cV3JcL._AC_SL1500_.jpg" },
+  { id:"p78", name:"Elgato Key Light Air - Panneau Lumineux pour Streaming", category:"Streaming", price:89.90, image:"https://m.media-amazon.com/images/I/61QwJq0J3ZL._AC_SL1500_.jpg" },
+  { id:"p79", name:"Xbox Wireless Controller - Manette Sans Fil Noire", category:"Manettes", price:59.90, image:"https://m.media-amazon.com/images/I/61SLuC-mvVL._AC_SL1500_.jpg" },
+  { id:"p80", name:"8BitDo Ultimate Bluetooth Controller - Manette Sans Fil", category:"Manettes", price:64.99, image:"https://m.media-amazon.com/images/I/61VYyOhxHrL._AC_SL1500_.jpg" },
+  { id:"p81", name:"Creality Ender 3 V3 SE - Imprimante 3D", category:"Imprimantes 3D", price:169.90, image:"https://m.media-amazon.com/images/I/71Gk1lOZbcL._AC_SL1500_.jpg" },
+  { id:"p82", name:"WD Black SN850X 1TB NVMe SSD", category:"Stockage", price:89.90, image:"https://m.media-amazon.com/images/I/61H1sHKJDcL._AC_SL1500_.jpg" },
+  { id:"p83", name:"PNY CS3140 2TB NVMe SSD Gen4", category:"Stockage", price:129.90, image:"https://m.media-amazon.com/images/I/71wJz2f6dfL._AC_SL1500_.jpg" },
+  { id:"p84", name:"Kit Gaines de Câble ARGB + Support GPU Vertical Aluminium", category:"Accessoires composants PC", price:34.90, image:"https://m.media-amazon.com/images/I/71m3nQ2xQmL._AC_SL1500_.jpg" },
+
+  { id:"p85", name:"AMD Ryzen 7 7800X3D Processeur avec La Technologie 3D V-Cache", category:"Composants PC", price:210, image:"https://m.media-amazon.com/images/I/51HqC0rU9HL._AC_SL1500_.jpg" },
+  { id:"p86", name:"Gigabyte GeForce RTX 5060 Gaming OC 8 GB GDDR7 Carte Graphique", category:"Composants PC", price:370, image:"https://owp.klarna.com/product/3255091236/Gigabyte-GeForce-RTX-5060-Gaming-OC-8-GB-GDDR7-Carte-Graphique.jpg" },
+  { id:"p87", name:"Kingston Fury Beast 16 Go (kit de 2 x 8 Go) DDR4 3200 MHz CL16", category:"Composants PC", price:130, image:"https://media.carrefour.fr/medias/200b40feb62d42f6a4c771cda396d77b/p_1500x1500/243be29db1e34fc180ed7c680853713a_image.jpg" },
+  { id:"p88", name:"Kingston Fury Beast RGB - 2 x 8 Go (16 Go) - DDR5 5600 MHz - CL40", category:"Composants PC", price:224.99, image:"https://media.materiel.net/r1600/products/MN0005959138_0005959149_0005959155.jpg" },
+  { id:"p89", name:"PC de bureau gaming NitroPC Avancé - AMD Ryzen 5 3400G, Radeon Graphics, 16 GB RAM, 480 GB SSD, Windows 11 Pro", category:"PC Gamer préconstruits", price:400, image:"https://media.cdn.kaufland.de/product-images/1024x1024/57311bd00475df1753bd85ef932af8d2.webp" },
+  { id:"p90", name:"PC Gamer FIREFLY", category:"PC Gamer préconstruits", price:500, image:"https://powerlab.fr/24081-large_default/pc-gamer-firefly-rtx-5060-ti.jpg" },
+  { id:"p91", name:"PC - CSL Sprint 5700 (Ryzen 7)", category:"PC Gamer préconstruits", price:700, image:"https://www.csl-computer.com/fr/media/catalog/product/cache/5/image/3000x3000/9df78eab33525d08d6e5fb8d27136e95/c/s/csl_aerovision-haupt_c40_nvidia_rot_3000px_3.webp" },
+  { id:"p92", name:"STGsivir PC Gamer Fixe, Ryzen 5 3400G, Vega 11, 16G DDR4, 512G SSD", category:"PC Gamer préconstruits", price:499.99, image:"https://m.media-amazon.com/images/I/71klP2vcMEL._AC_SL1500_.jpg" },
+  { id:"p93", name:"Unité centrale Gamer MSI EDM0009-R5/RTX 5060/16Go/480Go", category:"PC Gamer préconstruits", price:565.99, image:"https://www.electrodepot.fr/media/catalog/product/cache/207e23213cf636ccdef205098cf3c8a3/P10019951.jpg" },
+  { id:"p94", name:"ROG Strix G16 (2025) G615", category:"PC portables Gaming & Travail", price:1200, image:"https://dlcdnwebimgs.asus.com/gain/E20134EE-F6B3-4AB7-A1B5-73795E91011D/w717/h525/fwebp" },
+  { id:"p95", name:"PC Portable HP OmniBook 3 17-dk0006nf", category:"PC portables Gaming & Travail", price:600, image:"https://www.hp.com/fr-fr/shop/media/catalog/product/c/o/costa_17_dfplus_ob3_cs_glaciersilver_t_nt_fhd_ir_non-backlit_freedos_catalog_front_5964372_cus_1.png?store=fr-fr&image-type=image&auto=avif&quality=100&format=jpg&bg-color=ffffff&type=image-product&width=100p&fit=bounds" },
+  { id:"p96", name:"PC portable HP Victus by HP Laptop 16-d1148nf", category:"PC portables Gaming & Travail", price:500, image:"https://image.darty.com/darty?type=image&source=photos/2022/10/26/7081693A_163303179.jpg&height=457" },
+  { id:"p97", name:"Razer BlackWidow V4 Pro (Switches Jaune) - Clavier Gamer Mécanique Snap Tap, 8 Touches Macro, Repose-Poignet, AZERTY FR", category:"Claviers", price:76.99, image:"https://m.media-amazon.com/images/I/81az+Oft-qL._AC_SL1500_.jpg" },
+  { id:"p98", name:"SteelSeries Apex Pro TKL Gen 3 – Commutateurs magnétiques analogiques OmniPoint 3.0, OLED, RGB, USB-C, FR AZERTY", category:"Claviers", price:44.90, image:"https://m.media-amazon.com/images/I/719h65mTOEL._AC_SL1500_.jpg" },
+  { id:"p99", name:"ROG Strix Scope II 96 WL - Clavier gaming 96%, switches mécaniques, AZERTY", category:"Claviers", price:40, image:"https://m.media-amazon.com/images/I/71zmZbiUeAL._AC_SL1500_.jpg" },
+  { id:"p100", name:"CORSAIR K70 PRO TKL - Clavier gaming programmable à effet Hall hautes performances avec déclenchement rapide (FR)", category:"Claviers", price:56, image:"https://assets.corsair.com/image/upload/c_pad,q_85,h_1100,w_1100/products/Gaming-Keyboards/K70-PRO-TKL-APAC/Gallery/CH-911911G-JP/K70_PRO_TKL_BLACK_03.webp" },
+  { id:"p101", name:"Razer Viper V3 Pro", category:"Souris", price:42, image:"https://assets3.razerzone.com/02qK-glNv1jIlWfqTGAu7tkinI8=/1500x1000/https%3A%2F%2Fmedias-p1.phoenix.razer.com%2Fsys-master-phoenix-images-container%2Fhf0%2Fhba%2F9926492422174%2F250630-viper-v3-pro-faker-1500x1000-1.jpg" },
+  { id:"p102", name:"SteelSeries Aerox 5 Wireless", category:"Souris", price:50, image:"https://images.ctfassets.net/hmm5mo4qf4mf/Y5b4NuEOsLlGhzxCjj9Vf/697e03b1c784f66cb82b3a529964666f/aerox_5_wl_black_img_buy_01.png__1920x1080_crop-fit_optimize_subsampling-2-900.png?fm=webp&q=90&fit=scale&w=1200" },
+  { id:"p103", name:"Razer Gigantus V2 XXL - Tapis de souris gaming souple 940 x 410 x 4mm", category:"Tapis de souris", price:15, image:"https://m.media-amazon.com/images/I/61HtU7NkHQL._AC_SL1500_.jpg" },
+  { id:"p104", name:"Logitech G840 Tapis de Souris de Jeu Extra Large - 900 x 400 x 3 mm", category:"Tapis de souris", price:30, image:"https://m.media-amazon.com/images/I/51jlC3sL0BL._AC_SL1500_.jpg" },
+  { id:"p105", name:"SteelSeries QcK Heavy XXL - Tapis de souris gaming en tissu - Base antidérapante 6mm", category:"Tapis de souris", price:15, image:"https://m.media-amazon.com/images/I/41HRqeeyZ0L._AC_SL1500_.jpg" },
+  { id:"p106", name:"Logitech Brio 4K - Webcam Ultra HD avec HDR", category:"Caméras & webcams", price:169.90, image:"https://m.media-amazon.com/images/I/61bR3o1oYYL._AC_SL1500_.jpg" }
+
+];
 
 
 // ============================================================
@@ -824,6 +855,8 @@ function toast(message, type = "info"){
 
   toastElement._timer = setTimeout(() => {
     toastElement.classList.remove("show");
+    toastElement.className = "";
+    toastElement.textContent = "";
   }, 3000);
 
 }
@@ -832,6 +865,34 @@ function toast(message, type = "info"){
 // ============================================================
 // LANGUE
 // ============================================================
+
+function translateSortOptions(){
+
+  if(!sortSelect){
+    return;
+  }
+
+  const keys = {
+    "default":"sortDefault",
+    "price-low":"sortAsc",
+    "price-asc":"sortAsc",
+    "price-high":"sortDesc",
+    "price-desc":"sortDesc",
+    "name":"sortName",
+    "new":"sortNew"
+  };
+
+  Array.from(sortSelect.options).forEach(option => {
+
+    const key = keys[option.value];
+
+    if(key){
+      option.textContent = t(key);
+    }
+
+  });
+
+}
 
 function applyStaticTranslations(){
 
@@ -852,6 +913,40 @@ function applyStaticTranslations(){
   document.querySelectorAll("[data-i18n-title]").forEach(element => {
     element.title = t(element.dataset.i18nTitle);
   });
+
+  if(searchInput){
+    searchInput.placeholder = t("searchPlaceholder");
+  }
+
+  if(settingsBtn){
+    settingsBtn.title = t("titleSettings");
+  }
+
+  if(ordersBtn){
+    ordersBtn.title = t("titleOrders");
+  }
+
+  if(adminBtn){
+    adminBtn.title = t("titleAdmin");
+  }
+
+  if(cartBtn){
+    cartBtn.title = t("titleCart");
+  }
+
+  if(heroCartBtn){
+    heroCartBtn.textContent = t("heroCart");
+  }
+
+  if(productCount){
+    productCount.textContent = t(
+      getFilteredProducts().length > 1 ? "prodMany" : "prodOne",
+      { n:getFilteredProducts().length }
+    );
+  }
+
+  translateSortOptions();
+  updateAccountButton();
 
   if(langBtn){
     langBtn.textContent = `🌐 ${lang.toUpperCase()}`;
@@ -940,7 +1035,7 @@ function renderCategories(){
       .map(category => `
         <button
           type="button"
-          class="category-btn ${state.category === category ? "active" : ""}"
+          class="category category-btn ${state.category === category ? "active" : ""}"
           data-category="${escapeAttr(category)}"
         >
           ${escapeHTML(catLabel(category))}
@@ -990,11 +1085,12 @@ function getFilteredProducts(){
     result = result.filter(product => product.category === state.category);
   }
 
-  if(state.sort === "price-asc"){
+  // Compatible avec les valeurs du HTML (price-low / price-high) et price-asc / price-desc
+  if(state.sort === "price-asc" || state.sort === "price-low"){
     result.sort((a, b) => Number(a.price) - Number(b.price));
   }
 
-  if(state.sort === "price-desc"){
+  if(state.sort === "price-desc" || state.sort === "price-high"){
     result.sort((a, b) => Number(b.price) - Number(a.price));
   }
 
@@ -1121,7 +1217,19 @@ function renderProducts(){
     }).join("");
 
   productGrid.querySelectorAll(".product-add").forEach(button => {
-    button.addEventListener("click", () => addToCart(button.dataset.id));
+    button.addEventListener("click", () => {
+
+      const product = getProduct(button.dataset.id);
+
+      // Produit avec options : ouvrir la fiche pour choisir l'option
+      if(product?.options){
+        openProduct(button.dataset.id);
+        return;
+      }
+
+      addToCart(button.dataset.id);
+
+    });
   });
 
   productGrid.querySelectorAll(".product-view").forEach(button => {
@@ -1483,7 +1591,7 @@ function openProduct(id){
       optionsHTML += `
 
         <label for="option-${escapeAttr(name)}">
-          ${escapeHTML(OPTION_EN[name] && lang === "en" ? OPTION_EN[name] : name)}
+          ${escapeHTML(lang === "en" ? (OPTION_EN[name] || name) : name)}
         </label>
 
         <select
@@ -1512,8 +1620,8 @@ function openProduct(id){
 
       <div class="product-modal">
 
-        <div class="product-modal-image">
-          ${productImageHTML(product)}
+        <div class="product-modal-image" style="background:#fff;border-radius:14px;padding:14px;margin-bottom:16px;display:flex;justify-content:center;">
+          ${productImageHTML(product).replace("<img", '<img style="max-width:100%;max-height:260px;object-fit:contain;"')}
         </div>
 
         <div>
@@ -1621,7 +1729,6 @@ function injectNovaStyles(){
 
     .view-btn,
     .add-btn,
-    .category-btn,
     .payment-choice{
       cursor:pointer;
       border:1px solid var(--line);
@@ -1633,7 +1740,6 @@ function injectNovaStyles(){
 
     .view-btn:hover,
     .add-btn:hover,
-    .category-btn:hover,
     .payment-choice:hover{
       transform:translateY(-1px);
     }
@@ -1649,15 +1755,6 @@ function injectNovaStyles(){
       color:var(--text);
     }
 
-    .category-btn{
-      flex:0 0 auto;
-      background:var(--card);
-      color:var(--text);
-      border-radius:999px;
-      font-size:13px;
-    }
-
-    .category-btn.active,
     .payment-choice.selected{
       background:#2d8cff;
       color:#fff;
@@ -1667,10 +1764,13 @@ function injectNovaStyles(){
     .product-actions{
       display:flex;
       gap:8px;
+      margin-top:11px;
     }
 
     .product-actions button{
       flex:1;
+      padding:9px 8px;
+      font-size:12px;
     }
 
     .product-badge{
@@ -1737,6 +1837,18 @@ function injectNovaStyles(){
       display:block;
       opacity:.65;
       margin-top:3px;
+    }
+
+    .cart-item-controls button{
+      cursor:pointer;
+    }
+
+    .toast:empty{
+      display:none;
+    }
+
+    .toast:not(.show){
+      display:none;
     }
 
     @media(max-width:520px){
@@ -1813,6 +1925,24 @@ function injectNovaButtonStyles(){
     .theme-choice:hover,
     .lang-choice:hover{
       transform:translateY(-1px);
+    }
+
+    .modal-content input,
+    .modal-content select,
+    .modal-content textarea{
+      width:100%;
+      border:1px solid var(--line);
+      border-radius:10px;
+      padding:12px;
+      outline:none;
+      background:var(--card2);
+      color:var(--text);
+      margin-top:6px;
+    }
+
+    .modal-content label{
+      font-size:13px;
+      font-weight:800;
     }
 
   `;
@@ -3568,8 +3698,12 @@ function getTheme(){
 
 function applyTheme(){
 
-  document.documentElement.dataset.theme =
-    getTheme() === "light" ? "light" : "dark";
+  const light = getTheme() === "light";
+
+  document.documentElement.dataset.theme = light ? "light" : "dark";
+
+  // Le CSS du HTML utilise body.light
+  document.body.classList.toggle("light", light);
 
 }
 
