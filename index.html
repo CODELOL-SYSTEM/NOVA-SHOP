@@ -883,6 +883,7 @@ footer{
       <input
         id="searchInput"
         type="search"
+        data-i18n-placeholder="searchPlaceholder"
         placeholder="Rechercher un produit..."
         autocomplete="off"
       >
@@ -890,23 +891,27 @@ footer{
 
     <div class="header-actions">
 
-      <button class="icon-btn" id="settingsBtn" title="Paramètres">
+      <button class="icon-btn" id="langBtn" data-i18n-title="titleLang" title="Changer de langue">
+        🌐
+      </button>
+
+      <button class="icon-btn" id="settingsBtn" data-i18n-title="titleSettings" title="Paramètres">
         ⚙️
       </button>
 
-      <button class="icon-btn" id="accountBtn" title="Compte">
+      <button class="icon-btn" id="accountBtn" data-i18n-title="titleAccount" title="Compte">
         👤
       </button>
 
-      <button class="icon-btn" id="ordersBtn" title="Commandes">
+      <button class="icon-btn" id="ordersBtn" data-i18n-title="titleOrders" title="Commandes">
         📦
       </button>
 
-      <button class="icon-btn" id="adminBtn" title="Administration" style="display:none">
+      <button class="icon-btn" id="adminBtn" data-i18n-title="titleAdmin" title="Administration" style="display:none">
         🛠️
       </button>
 
-      <button class="icon-btn" id="cartBtn" title="Panier">
+      <button class="icon-btn" id="cartBtn" data-i18n-title="titleCart" title="Panier">
         🛒
         <span class="cart-badge" id="cartBadge">0</span>
       </button>
@@ -923,19 +928,19 @@ footer{
     <div class="hero-box">
 
       <div class="hero-text">
-        <h1>Bienvenue sur <span>NovaShop</span></h1>
+        <h1 data-i18n-html="heroTitle">Bienvenue sur <span>NovaShop</span></h1>
 
-        <p>
+        <p data-i18n="heroText">
           Composants PC, périphériques gaming, smartphones,
           écrans, accessoires et bien plus.
         </p>
 
         <div class="hero-actions">
-          <button class="btn btn-primary" id="heroCartBtn">
-            Voir mon panier
+          <button class="btn btn-primary" id="heroCartBtn" data-i18n="heroCart">
+            🛒 Voir mon panier
           </button>
 
-          <a class="btn" href="#products">
+          <a class="btn" href="#products" data-i18n="heroDiscover">
             Découvrir les produits
           </a>
         </div>
@@ -951,7 +956,7 @@ footer{
 
   <div class="toolbar">
     <div>
-      <h2 class="section-title" style="margin-bottom:4px">
+      <h2 class="section-title" style="margin-bottom:4px" data-i18n="products">
         Produits
       </h2>
 
@@ -961,11 +966,11 @@ footer{
     </div>
 
     <select class="sort" id="sortSelect">
-      <option value="default">Trier par défaut</option>
-      <option value="price-low">Prix croissant</option>
-      <option value="price-high">Prix décroissant</option>
-      <option value="name">Nom A-Z</option>
-      <option value="new">Nouveautés</option>
+      <option value="default" data-i18n="sortDefault">Trier par défaut</option>
+      <option value="price-low" data-i18n="sortAsc">Prix croissant</option>
+      <option value="price-high" data-i18n="sortDesc">Prix décroissant</option>
+      <option value="name" data-i18n="sortName">Nom A-Z</option>
+      <option value="new" data-i18n="sortNew">Nouveautés</option>
     </select>
   </div>
 
@@ -978,39 +983,39 @@ footer{
 <section class="section">
   <div class="container">
 
-    <h2 class="section-title">
+    <h2 class="section-title" data-i18n="whyTitle">
       Pourquoi NovaShop ?
     </h2>
 
     <div class="info-grid">
 
       <div class="info-card">
-        <strong>⚡ Catalogue gaming</strong>
-        <p>
+        <strong data-i18n="f1t">⚡ Catalogue gaming</strong>
+        <p data-i18n="f1p">
           Retrouvez composants PC, périphériques,
           écrans, consoles et accessoires.
         </p>
       </div>
 
       <div class="info-card">
-        <strong>🛒 Panier simple</strong>
-        <p>
+        <strong data-i18n="f2t">🛒 Panier simple</strong>
+        <p data-i18n="f2p">
           Ajoutez vos produits et gérez facilement
           les quantités directement depuis le panier.
         </p>
       </div>
 
       <div class="info-card">
-        <strong>🔐 Compte</strong>
-        <p>
+        <strong data-i18n="f3t">🔐 Compte</strong>
+        <p data-i18n="f3p">
           Connectez-vous avec votre compte NovaShop
           pour retrouver vos informations.
         </p>
       </div>
 
       <div class="info-card">
-        <strong>📦 Commandes</strong>
-        <p>
+        <strong data-i18n="f4t">📦 Commandes</strong>
+        <p data-i18n="f4p">
           Retrouvez vos commandes et leur statut
           depuis votre espace personnel.
         </p>
@@ -1024,7 +1029,7 @@ footer{
 <section class="section">
   <div class="container">
 
-    <h2 class="section-title">
+    <h2 class="section-title" data-i18n="reviewsTitle">
       Avis clients
     </h2>
 
@@ -1032,21 +1037,21 @@ footer{
 
       <div class="review">
         <div class="review-stars">★★★★★</div>
-        <p>
+        <p data-i18n="r1">
           Catalogue clair et produits faciles à trouver.
         </p>
       </div>
 
       <div class="review">
         <div class="review-stars">★★★★★</div>
-        <p>
+        <p data-i18n="r2">
           Le panier est rapide et simple à utiliser.
         </p>
       </div>
 
       <div class="review">
         <div class="review-stars">★★★★☆</div>
-        <p>
+        <p data-i18n="r3">
           Bonne présentation des produits et des catégories.
         </p>
       </div>
@@ -1059,12 +1064,12 @@ footer{
 <section class="section">
   <div class="container">
 
-    <h2 class="section-title">
+    <h2 class="section-title" data-i18n="returnsTitle">
       Retours & informations
     </h2>
 
     <div class="info-card">
-      <p>
+      <p data-i18n-html="returnsText">
         Pour toute question concernant une commande,
         contactez NovaShop via l'adresse :
         <strong style="display:inline">
@@ -1079,39 +1084,38 @@ footer{
 <section class="section">
   <div class="container">
 
-    <h2 class="section-title">
+    <h2 class="section-title" data-i18n="faqTitle">
       FAQ
     </h2>
 
     <div class="faq">
 
       <details>
-        <summary>Comment ajouter un produit au panier ?</summary>
-        <p>
+        <summary data-i18n="q1">Comment ajouter un produit au panier ?</summary>
+        <p data-i18n="a1">
           Cliquez simplement sur le bouton Ajouter au panier
           depuis la fiche du produit.
         </p>
       </details>
 
       <details>
-        <summary>Comment modifier la quantité ?</summary>
-        <p>
+        <summary data-i18n="q2">Comment modifier la quantité ?</summary>
+        <p data-i18n="a2">
           Ouvrez votre panier puis utilisez les boutons + et -.
         </p>
       </details>
 
       <details>
-        <summary>Comment retrouver mes commandes ?</summary>
-        <p>
+        <summary data-i18n="q3">Comment retrouver mes commandes ?</summary>
+        <p data-i18n="a3">
           Utilisez le bouton 📦 dans l'en-tête.
         </p>
       </details>
 
       <details>
-        <summary>Comment contacter NovaShop ?</summary>
-        <p>
-          Vous pouvez contacter NovaShop à
-          helpy.nova.sh0p@gmail.com.
+        <summary data-i18n="q4">Comment contacter NovaShop ?</summary>
+        <p data-i18n="a4">
+          Vous pouvez contacter NovaShop à helpy.nova.sh0p@gmail.com.
         </p>
       </details>
 
@@ -1127,7 +1131,7 @@ footer{
 <aside class="cart-drawer" id="cartDrawer">
 
   <div class="cart-head">
-    <strong>Mon panier</strong>
+    <strong data-i18n="myCart">Mon panier</strong>
 
     <button class="modal-close" id="closeCart">
       ✕
@@ -1139,11 +1143,11 @@ footer{
   <div class="cart-footer">
 
     <div class="cart-total">
-      <span>Total</span>
+      <span data-i18n="total">Total</span>
       <span id="cartTotal">0,00 €</span>
     </div>
 
-    <button class="btn btn-green" id="checkoutBtn" style="width:100%">
+    <button class="btn btn-green" id="checkoutBtn" data-i18n="checkout" style="width:100%">
       Commander
     </button>
 
@@ -1175,7 +1179,7 @@ footer{
   <div class="container footer-inner">
     <div>
       <strong>NovaShop</strong>
-      <div>Gaming • PC • Tech</div>
+      <div data-i18n="footerTag">Gaming • PC • Tech</div>
     </div>
 
     <a href="mailto:helpy.nova.sh0p@gmail.com">
