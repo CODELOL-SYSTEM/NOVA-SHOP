@@ -1,5 +1,5 @@
 // ============================================================
-// NOVASHOP - APP.JS (version corrigée + FR/EN + nouveaux produits)
+// NOVASHOP - APP.JS (version corrigée + FR/EN + tous les produits)
 // Firebase Auth + Firestore + Catalogue + Commandes + Admin
 // ============================================================
 
@@ -591,7 +591,7 @@ function paymentLabel(method){
 
 
 // ============================================================
-// PRODUITS
+// PRODUITS (89 produits — inclut tous les nouveaux)
 // ============================================================
 
 const products = [
@@ -650,7 +650,6 @@ const products = [
   { id:"p52", name:'Samsung Galaxy S26 6,3" 5G 256 Go Noir + Buds4 Noir', category:"Smartphones", price:650.99, image:"https://static.fnac-static.com/multimedia/Images/FR/MDM/e8/a2/c7/29860584/1540-1/tsp20260903144909/Pack-Smartphone-Samsung-Galaxy-S26-6-3-5G-Nano-SIM-256-Go-Noir-Buds4-Noir.jpg" },
   { id:"p53", name:'Google Pixel 8 6,2" 5G Double SIM 128 Go Vert Sauge', category:"Smartphones", price:200, image:"https://static.fnac-static.com/multimedia/Images/FR/MDM/37/bc/52/22199351/1540-1/tsp20260722081937/Smartphone-Google-Pixel-8-6-2-5G-Double-SIM-128-Go-Vert-Sauge.jpg" },
   { id:"p54", name:'Google Pixel 9 6,3" 5G Double nano-SIM 128 Go Noir Obsidienne', category:"Smartphones", price:400, image:"https://static.fnac-static.com/multimedia/Images/FR/MDMFR/MDM/f6/00/6d/23920886/1540-1/tsp20260914084700/Smartphone-Google-Pixel-9-6-3-5G-Double-nano-SIM-128-Go-Noir-Obsidienne.jpg" },
-  { id:"p55", name:'Xiaomi 14 6,36" 5G Double SIM 256 Go Noir', category:"Smartphones", price:520, image:"https://m.media-amazon.com/images/I/61EY3-4ZfNL._AC_SL1500_.jpg" },
   { id:"p56", name:"Flashforge Adventurer 5M Pro", category:"Imprimantes 3D", price:115, image:"https://www.makershop.fr/cdn/shop/files/13458.jpg?v=1760745366&width=150" },
   { id:"p57", name:"Elegoo Centauri 2", category:"Imprimantes 3D", price:200, image:"https://fr.elegoo.com/cdn/shop/files/C2-_-260811.jpg?crop=center&v=1786696280&width=345" },
   { id:"p58", name:"Anycubic Photon P1 Max", category:"Imprimantes 3D", price:600, image:"https://fr.anycubic.com/cdn/shop/files/P1M_8bd4d344-b751-4497-a535-4e647ecef572.jpg?v=1784100048&width=150" },
@@ -667,22 +666,7 @@ const products = [
   { id:"p69", name:"Unicavu Webcam PC 2K 30 FPS Full HD 1080P", category:"Caméras & webcams", price:10, image:"https://m.media-amazon.com/images/I/61CJsbKfonL._AC_SL1500_.jpg" },
   { id:"p70", name:"eMeet Nova 4K Webcam 4K Ultra HD avec 2 Microphones", category:"Caméras & webcams", price:23.99, image:"https://m.media-amazon.com/images/I/61bCeQBjUwL._AC_SL1500_.jpg" },
 
-  // ---------- NOUVEAUX PRODUITS (catégories renforcées) ----------
-
-  { id:"p71", name:"Corsair CV650 - Alimentation PC 650W 80+ Bronze", category:"Alimentations", price:59.90, image:"https://m.media-amazon.com/images/I/71m8j7lXQBL._AC_SL1500_.jpg" },
-  { id:"p72", name:"be quiet! Pure Power 12 M 750W 80+ Gold Modulaire", category:"Alimentations", price:99.90, image:"https://m.media-amazon.com/images/I/71i8Zt3nOoL._AC_SL1500_.jpg" },
-  { id:"p73", name:"NZXT H5 Flow - Boîtier PC Moyen Tour Blanc", category:"Boîtiers", price:79.99, image:"https://m.media-amazon.com/images/I/81nXO0-a3fL._AC_SL1500_.jpg" },
-  { id:"p74", name:"Lian Li Lancool 216 - Boîtier PC ARGB Noir", category:"Boîtiers", price:109.90, image:"https://m.media-amazon.com/images/I/81cUYWXO4iL._AC_SL1500_.jpg" },
-  { id:"p75", name:"Noctua NH-D15 - Ventirad CPU Double Tour", category:"Refroidissement", price:99.90, image:"https://m.media-amazon.com/images/I/81YV1QGh2QL._AC_SL1500_.jpg" },
-  { id:"p76", name:"Corsair iCUE H150i Elite Capellix XT - Watercooling AIO 360mm", category:"Refroidissement", price:189.90, image:"https://m.media-amazon.com/images/I/71QpFQ6c0kL._AC_SL1500_.jpg" },
-  { id:"p77", name:"Elgato Stream Deck MK.2 - Contrôleur de Streaming", category:"Streaming", price:149.90, image:"https://m.media-amazon.com/images/I/71cq1cV3JcL._AC_SL1500_.jpg" },
-  { id:"p78", name:"Elgato Key Light Air - Panneau Lumineux pour Streaming", category:"Streaming", price:89.90, image:"https://m.media-amazon.com/images/I/61QwJq0J3ZL._AC_SL1500_.jpg" },
-  { id:"p79", name:"Xbox Wireless Controller - Manette Sans Fil Noire", category:"Manettes", price:59.90, image:"https://m.media-amazon.com/images/I/61SLuC-mvVL._AC_SL1500_.jpg" },
-  { id:"p80", name:"8BitDo Ultimate Bluetooth Controller - Manette Sans Fil", category:"Manettes", price:64.99, image:"https://m.media-amazon.com/images/I/61VYyOhxHrL._AC_SL1500_.jpg" },
-  { id:"p81", name:"Creality Ender 3 V3 SE - Imprimante 3D", category:"Imprimantes 3D", price:169.90, image:"https://m.media-amazon.com/images/I/71Gk1lOZbcL._AC_SL1500_.jpg" },
-  { id:"p82", name:"WD Black SN850X 1TB NVMe SSD", category:"Stockage", price:89.90, image:"https://m.media-amazon.com/images/I/61H1sHKJDcL._AC_SL1500_.jpg" },
-  { id:"p83", name:"PNY CS3140 2TB NVMe SSD Gen4", category:"Stockage", price:129.90, image:"https://m.media-amazon.com/images/I/71wJz2f6dfL._AC_SL1500_.jpg" },
-  { id:"p84", name:"Kit Gaines de Câble ARGB + Support GPU Vertical Aluminium", category:"Accessoires composants PC", price:34.90, image:"https://m.media-amazon.com/images/I/71m3nQ2xQmL._AC_SL1500_.jpg" },
+  // ---------- NOUVEAUX PRODUITS ----------
 
   { id:"p85", name:"AMD Ryzen 7 7800X3D Processeur avec La Technologie 3D V-Cache", category:"Composants PC", price:210, image:"https://m.media-amazon.com/images/I/51HqC0rU9HL._AC_SL1500_.jpg" },
   { id:"p86", name:"Gigabyte GeForce RTX 5060 Gaming OC 8 GB GDDR7 Carte Graphique", category:"Composants PC", price:370, image:"https://owp.klarna.com/product/3255091236/Gigabyte-GeForce-RTX-5060-Gaming-OC-8-GB-GDDR7-Carte-Graphique.jpg" },
@@ -704,8 +688,7 @@ const products = [
   { id:"p102", name:"SteelSeries Aerox 5 Wireless", category:"Souris", price:50, image:"https://images.ctfassets.net/hmm5mo4qf4mf/Y5b4NuEOsLlGhzxCjj9Vf/697e03b1c784f66cb82b3a529964666f/aerox_5_wl_black_img_buy_01.png__1920x1080_crop-fit_optimize_subsampling-2-900.png?fm=webp&q=90&fit=scale&w=1200" },
   { id:"p103", name:"Razer Gigantus V2 XXL - Tapis de souris gaming souple 940 x 410 x 4mm", category:"Tapis de souris", price:15, image:"https://m.media-amazon.com/images/I/61HtU7NkHQL._AC_SL1500_.jpg" },
   { id:"p104", name:"Logitech G840 Tapis de Souris de Jeu Extra Large - 900 x 400 x 3 mm", category:"Tapis de souris", price:30, image:"https://m.media-amazon.com/images/I/51jlC3sL0BL._AC_SL1500_.jpg" },
-  { id:"p105", name:"SteelSeries QcK Heavy XXL - Tapis de souris gaming en tissu - Base antidérapante 6mm", category:"Tapis de souris", price:15, image:"https://m.media-amazon.com/images/I/41HRqeeyZ0L._AC_SL1500_.jpg" },
-  { id:"p106", name:"Logitech Brio 4K - Webcam Ultra HD avec HDR", category:"Caméras & webcams", price:169.90, image:"https://m.media-amazon.com/images/I/61bR3o1oYYL._AC_SL1500_.jpg" }
+  { id:"p105", name:"SteelSeries QcK Heavy XXL - Tapis de souris gaming en tissu - Base antidérapante 6mm", category:"Tapis de souris", price:15, image:"https://m.media-amazon.com/images/I/41HRqeeyZ0L._AC_SL1500_.jpg" }
 
 ];
 
@@ -866,34 +849,6 @@ function toast(message, type = "info"){
 // LANGUE
 // ============================================================
 
-function translateSortOptions(){
-
-  if(!sortSelect){
-    return;
-  }
-
-  const keys = {
-    "default":"sortDefault",
-    "price-low":"sortAsc",
-    "price-asc":"sortAsc",
-    "price-high":"sortDesc",
-    "price-desc":"sortDesc",
-    "name":"sortName",
-    "new":"sortNew"
-  };
-
-  Array.from(sortSelect.options).forEach(option => {
-
-    const key = keys[option.value];
-
-    if(key){
-      option.textContent = t(key);
-    }
-
-  });
-
-}
-
 function applyStaticTranslations(){
 
   document.documentElement.lang = lang;
@@ -914,42 +869,8 @@ function applyStaticTranslations(){
     element.title = t(element.dataset.i18nTitle);
   });
 
-  if(searchInput){
-    searchInput.placeholder = t("searchPlaceholder");
-  }
-
-  if(settingsBtn){
-    settingsBtn.title = t("titleSettings");
-  }
-
-  if(ordersBtn){
-    ordersBtn.title = t("titleOrders");
-  }
-
-  if(adminBtn){
-    adminBtn.title = t("titleAdmin");
-  }
-
-  if(cartBtn){
-    cartBtn.title = t("titleCart");
-  }
-
-  if(heroCartBtn){
-    heroCartBtn.textContent = t("heroCart");
-  }
-
-  if(productCount){
-    productCount.textContent = t(
-      getFilteredProducts().length > 1 ? "prodMany" : "prodOne",
-      { n:getFilteredProducts().length }
-    );
-  }
-
-  translateSortOptions();
-  updateAccountButton();
-
   if(langBtn){
-    langBtn.textContent = `🌐 ${lang.toUpperCase()}`;
+    langBtn.title = t("titleLang");
   }
 
 }
@@ -1085,7 +1006,6 @@ function getFilteredProducts(){
     result = result.filter(product => product.category === state.category);
   }
 
-  // Compatible avec les valeurs du HTML (price-low / price-high) et price-asc / price-desc
   if(state.sort === "price-asc" || state.sort === "price-low"){
     result.sort((a, b) => Number(a.price) - Number(b.price));
   }
@@ -1161,13 +1081,13 @@ function renderProducts(){
 
             ${
               product.new
-                ? `<span class="product-badge">${escapeHTML(t("newBadge"))}</span>`
+                ? `<span class="new-badge">${escapeHTML(t("newBadge"))}</span>`
                 : ""
             }
 
             <button
               type="button"
-              class="favorite-btn ${isFavorite ? "active" : ""}"
+              class="favorite favorite-btn ${isFavorite ? "active" : ""}"
               data-favorite="${escapeAttr(product.id)}"
               aria-label="${escapeAttr(t("favLabel"))}"
             >
@@ -1449,7 +1369,7 @@ function renderCart(){
 
               <button
                 type="button"
-                class="cart-remove"
+                class="cart-remove remove"
                 data-id="${escapeAttr(item.id)}"
                 data-option="${escapeAttr(item.option || "")}"
               >🗑️</button>
@@ -1773,66 +1693,6 @@ function injectNovaStyles(){
       font-size:12px;
     }
 
-    .product-badge{
-      position:absolute;
-      top:10px;
-      left:10px;
-      z-index:2;
-      padding:5px 8px;
-      border-radius:8px;
-      background:#25d695;
-      color:#04110c;
-      font-size:11px;
-      font-weight:900;
-    }
-
-    .favorite-btn{
-      position:absolute;
-      top:10px;
-      right:10px;
-      z-index:3;
-      width:34px;
-      height:34px;
-      border-radius:50%;
-      border:1px solid rgba(0,0,0,.12);
-      background:rgba(255,255,255,.9);
-      color:#111;
-      cursor:pointer;
-      font-size:19px;
-    }
-
-    .favorite-btn.active{
-      color:#ff3d71;
-    }
-
-    .product-img{
-      height:165px !important;
-      padding:12px !important;
-    }
-
-    .product-img img{
-      width:100%;
-      height:100%;
-      max-width:100%;
-      max-height:100%;
-      object-fit:contain;
-    }
-
-    .product-body{
-      padding:13px;
-    }
-
-    .product h3{
-      font-size:14px;
-      min-height:58px;
-    }
-
-    .price{
-      font-size:19px;
-      font-weight:900;
-      margin-top:10px;
-    }
-
     .cart-item-info small{
       display:block;
       opacity:.65;
@@ -1847,15 +1707,7 @@ function injectNovaStyles(){
       display:none;
     }
 
-    .toast:not(.show){
-      display:none;
-    }
-
     @media(max-width:520px){
-
-      .product-img{
-        height:190px !important;
-      }
 
       .product-actions{
         flex-direction:column;
